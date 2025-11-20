@@ -14,15 +14,60 @@
 
         <!-- Menu Items - Full Width -->
         <div class="flex-1 flex items-center justify-center gap-10 mx-12">
-          <a href="#" class="text-sm text-gray-300 hover:text-white transition whitespace-nowrap" @click.prevent="navigateTo('opportunities')">机会发现</a>
-          <a href="#" class="text-sm text-gray-300 hover:text-white transition whitespace-nowrap" @click.prevent="navigateTo('trading')">交易分析</a>
-          <a href="#" class="text-sm text-gray-300 hover:text-white transition whitespace-nowrap" @click.prevent="navigateTo('plan')">计划制定</a>
-          <a href="#" class="text-sm text-gray-300 hover:text-white transition whitespace-nowrap" @click.prevent="navigateTo('pingping')">盯盘提醒</a>
-          <a href="#" class="text-sm text-gray-300 hover:text-white transition whitespace-nowrap" @click.prevent="navigateTo('portfolio')">投资组合</a>
-          <a href="#" class="text-sm text-gray-300 hover:text-white transition whitespace-nowrap" @click.prevent="navigateTo('event')">事件分析</a>
-          <a href="#" class="text-sm text-gray-300 hover:text-white transition whitespace-nowrap" @click.prevent="navigateTo('history')">历史模式</a>
-          <a href="#" class="text-sm text-gray-300 hover:text-white transition whitespace-nowrap" @click.prevent="navigateTo('backtest')">实盘测试</a>
-          <a href="#" class="text-sm text-gray-300 hover:text-white transition whitespace-nowrap" @click.prevent="navigateTo('blog')">官方博客</a>
+          <a 
+            @click.prevent="navigateTo('opportunities')" 
+            href="#opportunities" 
+            :class="['text-sm transition whitespace-nowrap', currentPage === 'opportunities' ? 'text-blue-400 font-semibold' : 'text-gray-300 hover:text-white']">
+            机会发现
+          </a>
+          <a 
+            @click.prevent="navigateTo('trading')" 
+            href="#trading" 
+            :class="['text-sm transition whitespace-nowrap', currentPage === 'trading' ? 'text-blue-400 font-semibold' : 'text-gray-300 hover:text-white']">
+            交易分析
+          </a>
+          <a 
+            @click.prevent="navigateTo('plan')" 
+            href="#plan" 
+            :class="['text-sm transition whitespace-nowrap', currentPage === 'plan' ? 'text-blue-400 font-semibold' : 'text-gray-300 hover:text-white']">
+            计划制定
+          </a>
+          <a 
+            @click.prevent="navigateTo('pingping')" 
+            href="#pingping" 
+            :class="['text-sm transition whitespace-nowrap', currentPage === 'pingping' ? 'text-blue-400 font-semibold' : 'text-gray-300 hover:text-white']">
+            盯盘提醒
+          </a>
+          <a 
+            @click.prevent="navigateTo('portfolio')" 
+            href="#portfolio" 
+            :class="['text-sm transition whitespace-nowrap', currentPage === 'portfolio' ? 'text-blue-400 font-semibold' : 'text-gray-300 hover:text-white']">
+            投资组合
+          </a>
+          <a 
+            @click.prevent="navigateTo('event')" 
+            href="#event" 
+            :class="['text-sm transition whitespace-nowrap', currentPage === 'event' ? 'text-blue-400 font-semibold' : 'text-gray-300 hover:text-white']">
+            事件分析
+          </a>
+          <a 
+            @click.prevent="navigateTo('history')" 
+            href="#history" 
+            :class="['text-sm transition whitespace-nowrap', currentPage === 'history' ? 'text-blue-400 font-semibold' : 'text-gray-300 hover:text-white']">
+            历史模式
+          </a>
+          <a 
+            @click.prevent="navigateTo('backtest')" 
+            href="#backtest" 
+            :class="['text-sm transition whitespace-nowrap', currentPage === 'backtest' ? 'text-blue-400 font-semibold' : 'text-gray-300 hover:text-white']">
+            实盘测试
+          </a>
+          <a 
+            @click.prevent="navigateTo('blog')" 
+            href="#blog" 
+            :class="['text-sm transition whitespace-nowrap', currentPage === 'blog' ? 'text-blue-400 font-semibold' : 'text-gray-300 hover:text-white']">
+            官方博客
+          </a>
         </div>
 
         <!-- Right Icons -->
@@ -88,6 +133,7 @@
 import { ref, onMounted } from 'vue'
 
 const userEmail = ref('')
+const currentPage = ref('home')
 
 const emit = defineEmits(['logout'])
 
@@ -96,6 +142,11 @@ onMounted(() => {
   if (savedEmail) {
     userEmail.value = savedEmail
   }
+  
+  // 监听页面切换事件，更新当前页面状态
+  window.addEventListener('navigate', (e) => {
+    currentPage.value = e.detail.page
+  })
 })
 
 const navigateTo = (page) => {
