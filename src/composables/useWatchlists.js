@@ -10,7 +10,7 @@ import { ref, computed } from 'vue'
 // }
 
 const watchlists = ref([])
-const selectedGroupId = ref('all')
+const selectedGroupId = ref('recommended') // 默认选中"推荐信息"
 const STORAGE_KEY = 'scaleAlpha_watchlists'
 const SELECTED_KEY = 'scaleAlpha_selectedGroup'
 const VERSION_KEY = 'scaleAlpha_watchlists_version'

@@ -1,7 +1,42 @@
 <template>
   <aside class="w-[260px] bg-[#1f1f1f] border-r border-[#2a2a2a] h-full flex flex-col">
-    <!-- Header -->
-    <div class="p-6 border-b border-[#2a2a2a]">
+    <!-- Recommended Info Button -->
+    <div class="p-6 pb-4 border-b border-[#2a2a2a]">
+      <div 
+        @click="selectRecommended"
+        :class="[
+          'group px-4 py-3 rounded-lg cursor-pointer transition-all relative mb-4',
+          selectedGroupId === 'recommended' 
+            ? 'bg-blue-500/10 border-l-2 border-blue-500' 
+            : 'hover:bg-[#2a2a2a]'
+        ]"
+      >
+        <div class="flex items-center gap-3">
+          <svg 
+            :class="[
+              'w-5 h-5 transition-colors',
+              selectedGroupId === 'recommended' ? 'text-blue-500' : 'text-gray-500 group-hover:text-gray-400'
+            ]"
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+          </svg>
+          <span 
+            :class="[
+              'text-sm font-medium',
+              selectedGroupId === 'recommended' ? 'text-white' : 'text-gray-300 group-hover:text-white'
+            ]"
+          >
+            推荐信息
+          </span>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="border-t border-[#2a2a2a] mb-4"></div>
+
       <h2 class="text-lg font-bold text-white mb-4">我的自选</h2>
       <button 
         @click="showCreateModal = true"
@@ -293,6 +328,10 @@ const renameTargetGroup = ref(null)
 const activeMenuGroupId = ref(null)
 
 // Methods
+const selectRecommended = () => {
+  emit('select-group', 'recommended')
+}
+
 const selectGroup = (groupId) => {
   emit('select-group', groupId)
 }

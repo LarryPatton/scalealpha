@@ -93,24 +93,27 @@
             currentStep > 3 ? 'bg-blue-500' : 'bg-gray-700'
           ]"></div>
 
-          <!-- Step 4: 查看报告 -->
+          <!-- Step 4: 查看已保存报告 -->
           <div class="flex items-center">
             <button
               @click="goToStep4"
+              :disabled="!hasAnySavedReports"
               :class="[
                 'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300',
                 currentStep === 4 
                   ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/50' 
-                  : 'bg-[#3a3a3a] text-gray-300 hover:bg-[#404040]'
+                  : !hasAnySavedReports
+                    ? 'bg-[#3a3a3a] text-gray-600 cursor-not-allowed'
+                    : 'bg-[#3a3a3a] text-gray-300 hover:bg-[#404040]'
               ]"
             >
               <div :class="[
                 'w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold',
-                currentStep === 4 ? 'bg-white text-blue-600' : 'bg-gray-600 text-gray-300'
+                currentStep === 4 ? 'bg-white text-blue-600' : !hasAnySavedReports ? 'bg-gray-700 text-gray-600' : 'bg-gray-600 text-gray-300'
               ]">
                 4
               </div>
-              <span class="font-medium">查看报告</span>
+              <span class="font-medium">查看已保存报告</span>
             </button>
           </div>
         </div>
@@ -304,17 +307,17 @@
                   <button
                     v-for="framework in frameworks"
                     :key="framework.value"
-                    @click="selectedStrategy.framework = framework.value"
+                    @click="toggleFramework(framework.value)"
                     :class="[
                       'relative bg-[#2a2a2a] border-2 rounded-xl p-5 transition-all duration-300 text-left group hover:scale-105',
-                      selectedStrategy.framework === framework.value
+                      selectedStrategy.frameworks.includes(framework.value)
                         ? 'border-blue-500 bg-blue-500/10 shadow-lg shadow-blue-500/50'
                         : 'border-[#404040] hover:border-blue-400/50 hover:bg-[#333333]'
                     ]"
                   >
                     <!-- 选中标记 -->
                     <div
-                      v-if="selectedStrategy.framework === framework.value"
+                      v-if="selectedStrategy.frameworks.includes(framework.value)"
                       class="absolute top-2 right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center"
                     >
                       <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -504,7 +507,7 @@
               <div class="grid grid-cols-3 gap-4">
                 <div>
                   <div class="text-sm text-gray-400 mb-1">分析框架</div>
-                  <div class="text-white font-medium">{{ getFrameworkLabel(selectedStrategy.framework) }}</div>
+                  <div class="text-white font-medium">{{ getFrameworksLabel() }}</div>
                 </div>
                 <div>
                   <div class="text-sm text-gray-400 mb-1">投资周期</div>
@@ -542,6 +545,7 @@
                   :report="report"
                   :is-selected="selectedReportIds.includes(report.id)"
                   @click="viewReportDetail(report)"
+                  @view-detail="navigateToReportDetail(report)"
                   @toggle-select="toggleReportSelection(report.id)"
                 />
               </div>
@@ -572,9 +576,15 @@
                 </button>
                 <button
                   @click="goToStep4"
-                  class="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-medium shadow-lg shadow-blue-500/50 transition-all flex items-center gap-2"
+                  :disabled="!hasAnySavedReports"
+                  :class="[
+                    'px-8 py-3 rounded-lg font-medium transition-all flex items-center gap-2',
+                    hasAnySavedReports
+                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg shadow-blue-500/50'
+                      : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                  ]"
                 >
-                  <span>下一步：查看报告</span>
+                  <span>下一步：查看已保存报告</span>
                   <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
                   </svg>
@@ -585,7 +595,7 @@
         </div>
       </template>
       
-      <!-- Step 4: 查看报告 -->
+      <!-- Step 4: 查看已保存报告 -->
       <template v-else-if="currentStep === 4">
         <div class="flex-1 overflow-y-auto p-6">
           <div class="max-w-7xl mx-auto">
@@ -651,35 +661,60 @@
                         <p v-if="category.description" class="text-sm text-gray-500 mt-1">{{ category.description }}</p>
                       </div>
                     </div>
-                    <button
-                      @click="toggleSavedCategory(category.id)"
-                      :class="[
-                        'w-10 h-10 rounded-lg bg-[#3a3a3a] hover:bg-[#404040] flex items-center justify-center transition-all',
-                        expandedSavedCategories.includes(category.id) && 'bg-blue-600/20 hover:bg-blue-600/30'
-                      ]"
-                    >
-                      <svg 
-                        :class="['w-5 h-5 text-gray-400 transition-transform', expandedSavedCategories.includes(category.id) && 'rotate-180']"
-                        fill="currentColor" 
-                        viewBox="0 0 20 20"
+                    <div class="flex items-center gap-2">
+                      <!-- Select All for Category -->
+                      <button
+                        v-if="expandedSavedCategories.includes(category.id) && category.reports?.length > 0"
+                        @click="toggleSelectAllInCategory(category.id)"
+                        class="px-3 py-1.5 text-sm bg-[#3a3a3a] hover:bg-[#404040] text-gray-300 rounded-lg transition-colors"
                       >
-                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                      </svg>
-                    </button>
+                        {{ isAllReportsSelectedInCategory(category.id) ? '取消全选' : '全选' }}
+                      </button>
+                      <button
+                        @click="toggleSavedCategory(category.id)"
+                        :class="[
+                          'w-10 h-10 rounded-lg bg-[#3a3a3a] hover:bg-[#404040] flex items-center justify-center transition-all',
+                          expandedSavedCategories.includes(category.id) && 'bg-blue-600/20 hover:bg-blue-600/30'
+                        ]"
+                      >
+                        <svg 
+                          :class="['w-5 h-5 text-gray-400 transition-transform', expandedSavedCategories.includes(category.id) && 'rotate-180']"
+                          fill="currentColor" 
+                          viewBox="0 0 20 20"
+                        >
+                          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
 
                 <!-- Category Reports (Expandable) -->
                 <div v-show="expandedSavedCategories.includes(category.id)" class="p-6">
-                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                     <OpportunityReportCard
                       v-for="report in category.reports"
                       :key="report.id"
                       :report="report"
-                      :show-delete="true"
+                      :show-delete="false"
+                      :is-selected="selectedSavedReportIds.includes(report.id)"
                       @click="viewReportDetail(report)"
-                      @delete="deleteReport(category.id, report.id)"
+                      @view-detail="navigateToReportDetail(report)"
+                      @toggle-select="toggleSavedReportSelection(report.id)"
                     />
+                  </div>
+                  
+                  <!-- Batch Update Button -->
+                  <div v-if="getSelectedReportsInCategory(category.id).length > 0" class="flex items-center justify-center pt-4 border-t border-[#404040]">
+                    <button
+                      @click="batchRefreshReports(category.id)"
+                      class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-medium shadow-lg shadow-blue-500/50 transition-all flex items-center gap-2"
+                    >
+                      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                      </svg>
+                      <span>批量更新 ({{ getSelectedReportsInCategory(category.id).length }})</span>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -698,16 +733,16 @@
               </button>
               
               <button
-                @click="goToPlanning"
-                :disabled="!confirmedPositionData"
+                @click="handleEnterPlanning"
+                :disabled="selectedSavedReportIds.length === 0"
                 :class="[
                   'px-8 py-3 rounded-lg font-medium shadow-lg transition-all flex items-center gap-2',
-                  confirmedPositionData
+                  selectedSavedReportIds.length > 0
                     ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-blue-500/50'
                     : 'bg-gray-600 text-gray-400 cursor-not-allowed shadow-none'
                 ]"
               >
-                <span>{{ confirmedPositionData ? '进入计划制定' : '请先选择报告' }}</span>
+                <span>{{ selectedSavedReportIds.length > 0 ? `进入计划制定 (${selectedSavedReportIds.length})` : '请先选择报告' }}</span>
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
                 </svg>
@@ -717,153 +752,175 @@
         </div>
       </template>
 
-      <!-- Right Sidebar: My Reports (Always Visible) -->
+      <!-- Right Sidebar: Reports Panel (Redesigned) -->
       <div 
         :class="[
-          'bg-[#2a2a2a] border-l border-[#404040] overflow-y-auto transition-all duration-300',
-          isSidebarCollapsed ? 'w-12' : 'w-80'
+          'bg-[#2a2a2a] border-l border-[#404040] transition-all duration-300 flex flex-col',
+          isSidebarCollapsed ? 'w-16' : 'w-80'
         ]"
       >
-        <!-- Toggle Button -->
-        <button
-          @click="isSidebarCollapsed = !isSidebarCollapsed"
-          class="w-full py-3 px-4 bg-[#1f1f1f] hover:bg-[#333333] transition-colors flex items-center justify-center border-b border-[#404040]"
-        >
-          <svg 
-            :class="['w-5 h-5 text-gray-400 transition-transform', !isSidebarCollapsed && 'rotate-180']"
-            fill="currentColor" 
-            viewBox="0 0 20 20"
+        <!-- Collapsed State: Compact Badge Style -->
+        <div v-if="isSidebarCollapsed" class="flex-1 flex flex-col items-center justify-center">
+          <!-- Clickable Badge Container -->
+          <div 
+            @click="isSidebarCollapsed = false"
+            class="cursor-pointer space-y-2 group"
           >
-            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
-          </svg>
-        </button>
-
-        <!-- Sidebar Content (Hidden when collapsed) -->
-        <div v-if="!isSidebarCollapsed" class="p-4 space-y-6">
-          <!-- Module 1: 正在生成的报告 -->
-          <div>
-            <div class="flex items-center gap-2 mb-3">
-              <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-              <h3 class="text-sm font-semibold text-white">正在生成</h3>
-              <span class="text-xs text-gray-400">({{ generatingReports.length }})</span>
-            </div>
-            
-            <!-- Generating Reports List -->
-            <div v-if="generatingReports.length > 0" class="space-y-2">
-              <div
-                v-for="report in generatingReports"
-                :key="report.symbol"
-                class="bg-[#1f1f1f] border border-[#404040] rounded-lg p-3"
-              >
-                <div class="flex items-center justify-between mb-2">
-                  <div class="font-mono text-sm font-bold text-blue-400">{{ report.symbol }}</div>
-                  <div class="text-xs text-gray-400">{{ report.progress }}%</div>
-                </div>
-                
-                <!-- Progress Bar -->
-                <div class="w-full bg-[#333333] rounded-full h-1.5 mb-1">
-                  <div 
-                    class="bg-blue-500 h-1.5 rounded-full transition-all duration-300"
-                    :style="{ width: `${report.progress}%` }"
-                  ></div>
-                </div>
-                
-                <div class="text-xs text-gray-500">{{ report.status }}</div>
+            <!-- Badge 1: Generating Count (Blue) -->
+            <div class="bg-[#1f1f1f] hover:bg-[#2a2a2a] rounded-lg px-2 py-3 transition-all hover:shadow-lg hover:shadow-blue-500/20">
+              <div class="flex flex-col items-center gap-1.5">
+                <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                <span class="text-blue-400 font-bold text-base">{{ inProgressReports.length }}</span>
               </div>
             </div>
             
-            <div v-else class="text-xs text-gray-500 text-center py-4">
-              暂无正在生成的报告
+            <!-- Badge 2: Completed Count (Green) -->
+            <div class="bg-[#1f1f1f] hover:bg-[#2a2a2a] rounded-lg px-2 py-3 transition-all hover:shadow-lg hover:shadow-green-500/20">
+              <div class="flex flex-col items-center gap-1.5">
+                <svg class="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                <span class="text-green-400 font-bold text-base">{{ completedReports.length }}</span>
+              </div>
             </div>
           </div>
+        </div>
 
-          <!-- Divider -->
-          <div class="border-t border-[#404040]"></div>
+        <!-- Expanded State: Full sidebar content -->
+        <div v-else class="flex-1 flex flex-col overflow-hidden">
+          <!-- Scrollable content area -->
+          <div class="flex-1 overflow-y-auto p-4 relative">
+            <!-- Collapse Button (Floating) -->
+            <button
+              @click="isSidebarCollapsed = true"
+              class="absolute top-2 right-2 z-10 w-7 h-7 bg-[#1f1f1f] hover:bg-[#333333] rounded-md transition-all flex items-center justify-center group shadow-lg"
+              title="折叠侧边栏"
+            >
+              <svg class="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+              </svg>
+            </button>
 
-          <!-- Module 2: 已保存的报告 -->
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <div class="flex items-center gap-2">
-                <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                </svg>
-                <h3 class="text-sm font-semibold text-white">已保存</h3>
-              </div>
+            <!-- Module 1: 已生成的内容 (Completed Reports) -->
+            <div class="mb-6">
+              <!-- Module Header - Collapsible -->
               <button
-                @click="loadSavedReports"
-                class="text-xs text-blue-400 hover:text-blue-300 transition-colors"
-                title="刷新"
+                @click="toggleSection('completed')"
+                class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-[#333333] transition-colors mb-3 group"
               >
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  <h4 class="text-xs font-semibold text-green-400">已生成的内容</h4>
+                  <span class="text-xs px-2 py-0.5 rounded-full font-medium bg-green-500/20 text-green-400">
+                    {{ completedReports.length }}
+                  </span>
+                </div>
+                <svg 
+                  :class="[
+                    'w-4 h-4 text-gray-400 group-hover:text-white transition-all',
+                    expandedSections.completed ? 'rotate-180' : ''
+                  ]"
+                  fill="currentColor" 
+                  viewBox="0 0 20 20"
+                >
+                  <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
                 </svg>
               </button>
-            </div>
-
-            <!-- Saved Reports by Category -->
-            <div v-if="savedReportCategories.length > 0" class="space-y-2">
-              <div
-                v-for="category in savedReportCategories"
-                :key="category.id"
-                class="bg-[#1f1f1f] border border-[#404040] rounded-lg overflow-hidden"
-              >
-                <!-- Category Header -->
-                <button
-                  @click="toggleSavedCategory(category.id)"
-                  class="w-full px-3 py-2 flex items-center justify-between hover:bg-[#2a2a2a] transition-colors"
-                >
-                  <div class="flex items-center gap-2">
-                    <div 
-                      class="w-2 h-2 rounded-full" 
-                      :style="{ backgroundColor: category.color || '#3b82f6' }"
-                    ></div>
-                    <span class="text-sm text-white font-medium">{{ category.name }}</span>
-                    <span class="text-xs text-gray-500">({{ category.reports?.length || 0 }})</span>
-                  </div>
-                  <svg 
-                    :class="['w-4 h-4 text-gray-400 transition-transform', expandedSavedCategories.includes(category.id) && 'rotate-180']"
-                    fill="currentColor" 
-                    viewBox="0 0 20 20"
-                  >
-                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                  </svg>
-                </button>
-
-                <!-- Reports List -->
-                <div v-show="expandedSavedCategories.includes(category.id)" class="border-t border-[#404040]">
+              
+              <!-- Module Content -->
+              <div v-show="expandedSections.completed">
+                <div v-if="completedReports.length > 0" class="space-y-2">
                   <div
-                    v-for="report in category.reports"
-                    :key="report.id"
-                    class="px-3 py-2 hover:bg-[#2a2a2a] transition-colors cursor-pointer border-b border-[#333333] last:border-b-0 group"
-                    @click="viewReportDetail(report)"
+                    v-for="report in completedReports"
+                    :key="'completed-' + report.symbol"
+                    @click="viewGeneratedReport(report)"
+                    class="bg-gradient-to-r from-green-500/10 to-transparent border border-green-500/30 rounded-lg p-3 cursor-pointer hover:border-green-500/60 hover:from-green-500/20 transition-all group"
                   >
-                    <div class="flex items-start justify-between gap-2">
-                      <div class="flex-1 min-w-0">
-                        <div class="font-mono text-sm font-bold text-blue-400 truncate">{{ report.symbol }}</div>
-                        <div class="text-xs text-gray-500 truncate">{{ report.stockName }}</div>
-                        <div class="flex items-center gap-2 mt-1">
-                          <span class="text-xs text-green-400">{{ report.expectedReturn }}%</span>
-                          <span class="text-xs text-gray-600">•</span>
-                          <span class="text-xs text-gray-500">{{ formatDate(report.generatedAt) }}</span>
-                        </div>
-                      </div>
-                      <button
-                        @click.stop="deleteReport(category.id, report.id)"
-                        class="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-red-500/20 rounded"
-                        title="删除报告"
-                      >
-                        <svg class="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                          <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    <div class="flex items-start justify-between mb-2">
+                      <div class="flex items-center gap-2">
+                        <div class="font-mono text-sm font-bold text-green-400">{{ report.symbol }}</div>
+                        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                      </button>
+                      </div>
+                      <div class="text-xs font-bold text-green-400">+{{ report.expectedReturn }}%</div>
+                    </div>
+                    <div class="text-xs text-gray-400 mb-2">{{ report.stockName }}</div>
+                    <div class="flex items-center justify-between text-xs">
+                      <span class="text-gray-500">{{ report.status }}</span>
+                      <span class="text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">点击查看 →</span>
                     </div>
                   </div>
                 </div>
+                <div v-else class="text-center py-6">
+                  <p class="text-xs text-gray-500">暂无已生成的内容</p>
+                </div>
               </div>
             </div>
 
-            <div v-else class="text-xs text-gray-500 text-center py-4">
-              暂无已保存的报告
+            <!-- Module 2: 正在生成中 (Generating Reports) -->
+            <div>
+              <!-- Module Header - Collapsible -->
+              <button
+                @click="toggleSection('generating')"
+                class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-[#333333] transition-colors mb-3 group"
+              >
+                <div class="flex items-center gap-2">
+                  <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                  <h4 class="text-xs font-semibold text-blue-400">正在生成中</h4>
+                  <span class="text-xs px-2 py-0.5 rounded-full font-medium bg-blue-500/20 text-blue-400">
+                    {{ inProgressReports.length }}
+                  </span>
+                </div>
+                <svg 
+                  :class="[
+                    'w-4 h-4 text-gray-400 group-hover:text-white transition-all',
+                    expandedSections.generating ? 'rotate-180' : ''
+                  ]"
+                  fill="currentColor" 
+                  viewBox="0 0 20 20"
+                >
+                  <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                </svg>
+              </button>
+              
+              <!-- Module Content -->
+              <div v-show="expandedSections.generating">
+                <div v-if="inProgressReports.length > 0" class="space-y-2">
+                  <div
+                    v-for="report in inProgressReports"
+                    :key="'generating-' + report.symbol"
+                    class="bg-[#1f1f1f] border border-[#404040] rounded-lg p-3"
+                  >
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="font-mono text-sm font-bold text-blue-400">{{ report.symbol }}</div>
+                      <div class="text-xs text-gray-400">{{ report.progress }}%</div>
+                    </div>
+                    <div class="text-xs text-gray-500 mb-2">{{ report.stockName }}</div>
+                    <div class="w-full bg-[#333333] rounded-full h-1.5 mb-2">
+                      <div 
+                        class="bg-blue-500 h-1.5 rounded-full transition-all duration-300"
+                        :style="{ width: `${report.progress}%` }"
+                      ></div>
+                    </div>
+                    <div class="text-xs text-gray-500">{{ report.status }}</div>
+                  </div>
+                </div>
+                <div v-else class="text-center py-6">
+                  <p class="text-xs text-gray-500">暂无正在生成的内容</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Empty State (when both modules are empty) -->
+            <div v-if="generatingReports.length === 0" class="text-center py-12">
+              <svg class="w-16 h-16 text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              <p class="text-sm text-gray-500">暂无报告</p>
+              <p class="text-xs text-gray-600 mt-1">选择股票开始生成</p>
             </div>
           </div>
         </div>
@@ -884,6 +941,13 @@
       @close="handlePositionDialogClose"
       @confirm="handlePositionConfirm"
     />
+
+    <HoldingsClassificationDialog
+      :is-visible="showHoldingsDialog"
+      :selected-reports="selectedReportsForPlanning"
+      @close="handleHoldingsDialogClose"
+      @confirm="handleHoldingsConfirm"
+    />
   </div>
 </template>
 
@@ -893,15 +957,22 @@ import { useRouter } from 'vue-router'
 import OpportunityReportCard from '../components/opportunity/OpportunityReportCard.vue'
 import SaveReportsDialog from '../components/opportunity/SaveReportsDialog.vue'
 import PositionConfirmDialog from '../components/opportunity/PositionConfirmDialog.vue'
+import HoldingsClassificationDialog from '../components/opportunity/HoldingsClassificationDialog.vue'
+import { useSavedReports } from '../composables/useSavedReports'
 
 const router = useRouter()
+const { 
+  savedReports, 
+  checkSavedReports, 
+  refreshStatus 
+} = useSavedReports()
 
 // Current Step
 const currentStep = ref(1)
 
 // Step 1: Stock Selection
 const selectedStocks = ref([])
-const expandedCategories = ref(['my-holdings'])
+const expandedCategories = ref([]) // Default to collapsed state
 const myHoldings = ref([])
 
 // Step 3: Report Generation
@@ -910,10 +981,213 @@ const generatedReportsData = ref([])
 const selectedReportIds = ref([])
 const showSaveDialog = ref(false)
 
+// Step 4: Saved Reports Multi-Selection
+const selectedSavedReportIds = ref([])
+
 // Right Sidebar: My Reports
-const isSidebarCollapsed = ref(false)
-const generatingReports = ref([]) // Reports currently being generated
+const isSidebarCollapsed = ref(true) // Default to collapsed state
+
+// Module expand/collapse state
+const expandedSections = ref({
+  completed: true,    // 已生成的内容默认展开
+  generating: true    // 正在生成的内容默认展开
+})
+
+const toggleSection = (section) => {
+  expandedSections.value[section] = !expandedSections.value[section]
+}
+
+// Reports with demo data - mix of generating and completed
+const generatingReports = ref([
+  // 已完成的报告 (可点击查看) - 8条
+  {
+    symbol: 'AAPL',
+    stockName: 'Apple Inc.',
+    progress: 100,
+    status: '分析完成',
+    expectedReturn: 18.5,
+    riskLevel: '中低',
+    targetPrice: 195.0,
+    currentPrice: 165.2,
+    generatedAt: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
+    completed: true
+  },
+  {
+    symbol: 'MSFT',
+    stockName: 'Microsoft Corporation',
+    progress: 100,
+    status: '分析完成',
+    expectedReturn: 16.2,
+    riskLevel: '中等',
+    targetPrice: 425.0,
+    currentPrice: 365.8,
+    generatedAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+    completed: true
+  },
+  {
+    symbol: 'NVDA',
+    stockName: 'NVIDIA Corporation',
+    progress: 100,
+    status: '分析完成',
+    expectedReturn: 24.3,
+    riskLevel: '中高',
+    targetPrice: 580.0,
+    currentPrice: 466.5,
+    generatedAt: new Date(Date.now() - 1800000).toISOString(), // 30 minutes ago
+    completed: true
+  },
+  {
+    symbol: 'TSLA',
+    stockName: 'Tesla Inc.',
+    progress: 100,
+    status: '分析完成',
+    expectedReturn: 32.8,
+    riskLevel: '高',
+    targetPrice: 265.0,
+    currentPrice: 199.5,
+    generatedAt: new Date(Date.now() - 5400000).toISOString(), // 1.5 hours ago
+    completed: true
+  },
+  {
+    symbol: 'AMD',
+    stockName: 'Advanced Micro Devices Inc.',
+    progress: 100,
+    status: '分析完成',
+    expectedReturn: 21.5,
+    riskLevel: '中高',
+    targetPrice: 185.0,
+    currentPrice: 152.3,
+    generatedAt: new Date(Date.now() - 9000000).toISOString(), // 2.5 hours ago
+    completed: true
+  },
+  {
+    symbol: 'BABA',
+    stockName: 'Alibaba Group Holding Ltd.',
+    progress: 100,
+    status: '分析完成',
+    expectedReturn: 15.3,
+    riskLevel: '中等',
+    targetPrice: 92.0,
+    currentPrice: 79.8,
+    generatedAt: new Date(Date.now() - 10800000).toISOString(), // 3 hours ago
+    completed: true
+  },
+  {
+    symbol: 'TSM',
+    stockName: 'Taiwan Semiconductor Manufacturing',
+    progress: 100,
+    status: '分析完成',
+    expectedReturn: 19.7,
+    riskLevel: '中低',
+    targetPrice: 125.0,
+    currentPrice: 104.4,
+    generatedAt: new Date(Date.now() - 14400000).toISOString(), // 4 hours ago
+    completed: true
+  },
+  {
+    symbol: 'COIN',
+    stockName: 'Coinbase Global Inc.',
+    progress: 100,
+    status: '分析完成',
+    expectedReturn: 28.4,
+    riskLevel: '高',
+    targetPrice: 198.0,
+    currentPrice: 154.2,
+    generatedAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+    completed: true
+  },
+  // 正在生成中的报告 - 7条
+  {
+    symbol: 'GOOGL',
+    stockName: 'Alphabet Inc.',
+    progress: 35,
+    status: '分析基本面...',
+    expectedReturn: null,
+    riskLevel: null,
+    targetPrice: null,
+    currentPrice: 138.2,
+    generatedAt: null,
+    completed: false
+  },
+  {
+    symbol: 'META',
+    stockName: 'Meta Platforms Inc.',
+    progress: 68,
+    status: '计算指标...',
+    expectedReturn: null,
+    riskLevel: null,
+    targetPrice: null,
+    currentPrice: 396.5,
+    generatedAt: null,
+    completed: false
+  },
+  {
+    symbol: 'AMZN',
+    stockName: 'Amazon.com Inc.',
+    progress: 92,
+    status: '生成报告...',
+    expectedReturn: null,
+    riskLevel: null,
+    targetPrice: null,
+    currentPrice: 150.5,
+    generatedAt: null,
+    completed: false
+  },
+  {
+    symbol: 'NFLX',
+    stockName: 'Netflix Inc.',
+    progress: 12,
+    status: '收集数据...',
+    expectedReturn: null,
+    riskLevel: null,
+    targetPrice: null,
+    currentPrice: 489.3,
+    generatedAt: null,
+    completed: false
+  },
+  {
+    symbol: 'DIS',
+    stockName: 'The Walt Disney Company',
+    progress: 45,
+    status: '分析财务...',
+    expectedReturn: null,
+    riskLevel: null,
+    targetPrice: null,
+    currentPrice: 112.8,
+    generatedAt: null,
+    completed: false
+  },
+  {
+    symbol: 'SHOP',
+    stockName: 'Shopify Inc.',
+    progress: 78,
+    status: '计算指标...',
+    expectedReturn: null,
+    riskLevel: null,
+    targetPrice: null,
+    currentPrice: 82.5,
+    generatedAt: null,
+    completed: false
+  },
+  {
+    symbol: 'SQ',
+    stockName: 'Block Inc.',
+    progress: 88,
+    status: '生成报告...',
+    expectedReturn: null,
+    riskLevel: null,
+    targetPrice: null,
+    currentPrice: 68.9,
+    generatedAt: null,
+    completed: false
+  }
+])
 const savedReportCategories = ref([]) // Saved report categories from localStorage
+
+// Check if there are any saved reports
+const hasAnySavedReports = computed(() => {
+  return savedReportCategories.value.length > 0
+})
 const expandedSavedCategories = ref([]) // Expanded category IDs
 
 // Step 4: Position Confirmation
@@ -921,9 +1195,30 @@ const showPositionDialog = ref(false)
 const selectedReportForPlanning = ref(null)
 const confirmedPositionData = ref(null)
 
+// Holdings Classification Dialog
+const showHoldingsDialog = ref(false)
+const selectedReportsForPlanning = computed(() => {
+  return savedReportCategories.value
+    .flatMap(cat => cat.reports)
+    .filter(report => selectedSavedReportIds.value.includes(report.id))
+})
+
 // Computed: Selected reports for saving
 const selectedReportsToSave = computed(() => {
   return generatedReports.value.filter(r => selectedReportIds.value.includes(r.id))
+})
+
+// Computed: Sidebar reports separated by status
+const completedReports = computed(() => {
+  return generatingReports.value.filter(r => r.completed === true)
+})
+
+const inProgressReports = computed(() => {
+  return generatingReports.value.filter(r => r.completed === false)
+})
+
+const completedReportsCount = computed(() => {
+  return completedReports.value.length
 })
 
 // Stock Categories (similar to Info page)
@@ -962,7 +1257,7 @@ const stockCategories = ref([
 
 // Step 2: Strategy Selection
 const selectedStrategy = ref({
-  framework: '',
+  frameworks: [], // 改为数组支持多选
   period: '',
   risk: ''
 })
@@ -1081,7 +1376,7 @@ const risks = ref([
 
 // Computed
 const isStrategyComplete = computed(() => {
-  return selectedStrategy.value.framework && 
+  return selectedStrategy.value.frameworks.length > 0 && 
          selectedStrategy.value.period && 
          selectedStrategy.value.risk
 })
@@ -1130,6 +1425,18 @@ const goToStep2 = () => {
   }
 }
 
+// Toggle framework selection (支持多选)
+const toggleFramework = (frameworkValue) => {
+  const index = selectedStrategy.value.frameworks.indexOf(frameworkValue)
+  if (index > -1) {
+    // 如果已选中，则移除
+    selectedStrategy.value.frameworks.splice(index, 1)
+  } else {
+    // 如果未选中，则添加
+    selectedStrategy.value.frameworks.push(frameworkValue)
+  }
+}
+
 const goToStep3 = async () => {
   if (isStrategyComplete.value) {
     currentStep.value = 3
@@ -1149,7 +1456,7 @@ const goToStep3 = async () => {
         id: `report-${symbol}-${Date.now()}-${i}`,
         symbol: symbol,
         stockName: getStockName(symbol),
-        framework: selectedStrategy.value.framework,
+        frameworks: selectedStrategy.value.frameworks, // 改为数组
         period: selectedStrategy.value.period,
         risk: selectedStrategy.value.risk,
         riskRewardRatio: `${(2 + Math.random() * 3).toFixed(1)}:1`,
@@ -1206,12 +1513,102 @@ const restorePageState = () => {
   }
 }
 
+// View a generated report from the sidebar
+const viewGeneratedReport = (report) => {
+  if (!report.completed) return // Only allow viewing completed reports
+  
+  // Convert the demo report to the expected format
+  const formattedReport = {
+    id: `report-${report.symbol}-${Date.now()}`,
+    symbol: report.symbol,
+    stockName: report.stockName,
+    frameworks: ['价值投资', '趋势跟踪'], // Default frameworks for demo
+    period: '中长期',
+    risk: report.riskLevel,
+    riskRewardRatio: '3:1',
+    expectedReturn: report.expectedReturn.toFixed(1),
+    entryPrice: report.currentPrice.toFixed(2),
+    targetPrice: report.targetPrice.toFixed(2),
+    score: 85,
+    generatedAt: report.generatedAt
+  }
+  
+  // Set the generated reports data
+  generatedReportsData.value = [formattedReport]
+  selectedReportIds.value = []
+  
+  // Jump to step 3
+  currentStep.value = 3
+  isGeneratingReports.value = false
+  
+  // Save state
+  savePageState()
+}
+
 const goToStep4 = () => {
+  // Check if there are any saved reports
+  if (!hasAnySavedReports.value) {
+    return
+  }
   currentStep.value = 4
   // Ensure saved reports are loaded
   loadSavedReports()
 }
 
+// Handle enter planning button click
+const handleEnterPlanning = () => {
+  if (selectedSavedReportIds.value.length === 0) {
+    alert('请先选择至少一份报告')
+    return
+  }
+  
+  // Show holdings classification dialog
+  showHoldingsDialog.value = true
+}
+
+// Handle holdings dialog close
+const handleHoldingsDialogClose = () => {
+  showHoldingsDialog.value = false
+}
+
+// Handle holdings dialog confirm and navigate to planning
+const handleHoldingsConfirm = (classifiedData) => {
+  // Prepare data for planning page
+  const planningData = {
+    reports: [
+      // Reports with holdings
+      ...classifiedData.withHoldings.map(item => ({
+        report: item.report,
+        position: {
+          hasPosition: true,
+          costBasis: item.holding.cost,
+          shares: item.holding.position // Using position percentage as shares placeholder
+        }
+      })),
+      // Reports without holdings
+      ...classifiedData.withoutHoldings.map(report => ({
+        report: report,
+        position: {
+          hasPosition: false,
+          costBasis: null,
+          shares: null
+        }
+      }))
+    ],
+    timestamp: Date.now()
+  }
+  
+  // Save to sessionStorage
+  sessionStorage.setItem('planning_data', JSON.stringify(planningData))
+  
+  // Close dialog
+  showHoldingsDialog.value = false
+  
+  // Navigate to planning page
+  router.push('/planning')
+}
+
+// Legacy function - kept for compatibility
 const goToPlanning = () => {
   if (!confirmedPositionData.value) {
     alert('请先选择一份报告并确认持仓信息')
@@ -1249,6 +1646,9 @@ const handleSaveReports = (result) => {
   
   // Reload saved reports from localStorage to sync with sidebar
   loadSavedReports()
+  
+  // Update global saved reports status for navigation bar
+  checkSavedReports()
   
   // Auto expand the category that was just saved to
   if (result.categoryId && !expandedSavedCategories.value.includes(result.categoryId)) {
@@ -1292,15 +1692,21 @@ const getStockName = (symbol) => {
 
 // Navigate to report detail
 const viewReportDetail = (report) => {
-  // In Step 4, open position confirmation dialog
+  // In Step 4, clicking card does nothing (use multi-select instead)
   if (currentStep.value === 4) {
-    selectedReportForPlanning.value = report
-    showPositionDialog.value = true
-  } else {
-    // Store report data in sessionStorage for detail page
-    sessionStorage.setItem('current_report', JSON.stringify(report))
-    router.push(`/opportunity/report/${report.id}`)
+    // Do nothing - multi-select is handled by toggle-select event
+    return
   }
+  
+  // Store report data in sessionStorage for detail page
+  sessionStorage.setItem('current_report', JSON.stringify(report))
+  router.push(`/opportunity/report/${report.id}`)
+}
+
+// Navigate to report detail (called by view-detail button)
+const navigateToReportDetail = (report) => {
+  sessionStorage.setItem('current_report', JSON.stringify(report))
+  router.push(`/opportunity/report/${report.id}`)
 }
 
 const handlePositionConfirm = (positionData) => {
@@ -1317,7 +1723,7 @@ const handlePositionConfirm = (positionData) => {
     }
   }))
   
-  router.push('/planning')
+  router.push('/planning')  // ✅ 修复：使用正确的路径
 }
 
 const handlePositionDialogClose = () => {
@@ -1337,6 +1743,16 @@ const getFrameworkLabel = (value) => {
     'alternative': '另类数据'
   }
   return labels[value] || value
+}
+
+// Get multiple frameworks labels
+const getFrameworksLabel = () => {
+  if (selectedStrategy.value.frameworks.length === 0) {
+    return '未选择'
+  }
+  return selectedStrategy.value.frameworks
+    .map(value => getFrameworkLabel(value))
+    .join(' + ')
 }
 
 const getRiskLabel = (value) => {
@@ -1389,23 +1805,20 @@ const toggleSavedCategory = (categoryId) => {
 
 // Load saved reports from localStorage
 const loadSavedReports = () => {
-  const saved = localStorage.getItem('opportunity_report_categories')
-  if (saved) {
-    try {
-      const categories = JSON.parse(saved)
-      savedReportCategories.value = categories
-      // Auto expand first category
-      if (categories.length > 0 && expandedSavedCategories.value.length === 0) {
-        expandedSavedCategories.value.push(categories[0].id)
-      }
-    } catch (e) {
-      console.error('Failed to load saved reports:', e)
-      savedReportCategories.value = []
+  // 使用 composable 刷新状态
+  refreshStatus()
+  
+  // 从 composable 获取数据
+  const categories = savedReports.value
+  savedReportCategories.value = categories
+  
+  if (categories.length > 0) {
+    // Auto expand first category
+    if (expandedSavedCategories.value.length === 0) {
+      expandedSavedCategories.value.push(categories[0].id)
     }
-  } else {
-    // Initialize with demo data if no saved data exists
-    initializeDemoData()
   }
+  // 不再自动初始化演示数据，新用户应该看到空白状态
 }
 
 // Delete a report from category
@@ -1428,6 +1841,9 @@ const deleteReport = (categoryId, reportId) => {
       
       // Save back to localStorage (use same key as SaveReportsDialog)
       localStorage.setItem('opportunity_report_categories', JSON.stringify(savedReportCategories.value))
+      
+      // Update global saved reports status for navigation bar
+      checkSavedReports()
     }
   }
 }
@@ -1670,6 +2086,177 @@ const initializeDemoData = () => {
   if (demoCategories.length > 0) {
     expandedSavedCategories.value.push(demoCategories[0].id)
   }
+}
+
+// Step 4: Saved Reports Multi-Selection Functions
+const toggleSavedReportSelection = (reportId) => {
+  const index = selectedSavedReportIds.value.indexOf(reportId)
+  if (index > -1) {
+    selectedSavedReportIds.value.splice(index, 1)
+  } else {
+    selectedSavedReportIds.value.push(reportId)
+  }
+}
+
+const toggleSelectAllInCategory = (categoryId) => {
+  const category = savedReportCategories.value.find(c => c.id === categoryId)
+  if (!category || !category.reports) return
+  
+  const categoryReportIds = category.reports.map(r => r.id)
+  const allSelected = categoryReportIds.every(id => selectedSavedReportIds.value.includes(id))
+  
+  if (allSelected) {
+    // Deselect all reports in this category
+    selectedSavedReportIds.value = selectedSavedReportIds.value.filter(
+      id => !categoryReportIds.includes(id)
+    )
+  } else {
+    // Select all reports in this category
+    categoryReportIds.forEach(id => {
+      if (!selectedSavedReportIds.value.includes(id)) {
+        selectedSavedReportIds.value.push(id)
+      }
+    })
+  }
+}
+
+const isAllReportsSelectedInCategory = (categoryId) => {
+  const category = savedReportCategories.value.find(c => c.id === categoryId)
+  if (!category || !category.reports || category.reports.length === 0) return false
+  
+  const categoryReportIds = category.reports.map(r => r.id)
+  return categoryReportIds.every(id => selectedSavedReportIds.value.includes(id))
+}
+
+const getSelectedReportsInCategory = (categoryId) => {
+  const category = savedReportCategories.value.find(c => c.id === categoryId)
+  if (!category || !category.reports) return []
+  
+  return category.reports.filter(r => selectedSavedReportIds.value.includes(r.id))
+}
+
+// Batch Refresh Reports
+const batchRefreshReports = async (categoryId) => {
+  const selectedReports = getSelectedReportsInCategory(categoryId)
+  if (selectedReports.length === 0) return
+  
+  // Add selected reports to generating queue
+  selectedReports.forEach(report => {
+    const existingIndex = generatingReports.value.findIndex(
+      r => r.originalReportId === report.id && !r.completed
+    )
+    
+    // If report is not already in generating queue, add it
+    if (existingIndex === -1) {
+      generatingReports.value.push({
+        symbol: report.symbol,
+        stockName: report.stockName,
+        progress: 0,
+        status: '准备刷新...',
+        expectedReturn: null,
+        riskLevel: null,
+        targetPrice: null,
+        currentPrice: parseFloat(report.entryPrice),
+        generatedAt: null,
+        completed: false,
+        isRefresh: true,
+        categoryId: categoryId,
+        originalReportId: report.id
+      })
+    }
+  })
+  
+  // Expand sidebar to show progress
+  isSidebarCollapsed.value = false
+  
+  // Start refresh simulation
+  await simulateRefreshProgress(selectedReports, categoryId)
+  
+  // Clear selection after refresh starts
+  selectedSavedReportIds.value = selectedSavedReportIds.value.filter(
+    id => !selectedReports.map(r => r.id).includes(id)
+  )
+}
+
+// Simulate refresh progress for selected reports
+const simulateRefreshProgress = async (reports, categoryId) => {
+  for (const report of reports) {
+    await refreshSingleReport(report, categoryId)
+    // Add delay between reports
+    await new Promise(resolve => setTimeout(resolve, 500))
+  }
+}
+
+// Refresh a single report
+const refreshSingleReport = async (report, categoryId) => {
+  // Find the report in generating queue by its unique ID
+  const reportIndex = generatingReports.value.findIndex(
+    r => r.originalReportId === report.id && r.isRefresh && !r.completed
+  )
+  
+  if (reportIndex === -1) return
+  
+  // Simulate progress updates
+  const progressSteps = [
+    { progress: 0, status: '准备刷新...', delay: 300 },
+    { progress: 15, status: '获取最新数据...', delay: 800 },
+    { progress: 35, status: '分析基本面...', delay: 1000 },
+    { progress: 55, status: '计算技术指标...', delay: 900 },
+    { progress: 75, status: '评估风险收益...', delay: 800 },
+    { progress: 90, status: '生成报告...', delay: 700 },
+    { progress: 100, status: '刷新完成', delay: 500 }
+  ]
+  
+  for (const step of progressSteps) {
+    generatingReports.value[reportIndex].progress = step.progress
+    generatingReports.value[reportIndex].status = step.status
+    await new Promise(resolve => setTimeout(resolve, step.delay))
+  }
+  
+  // Generate updated report data
+  const basePrice = parseFloat(report.entryPrice) * (0.95 + Math.random() * 0.1)
+  const expectedReturn = 5 + Math.random() * 25
+  const targetPrice = basePrice * (1 + expectedReturn / 100)
+  const score = 75 + Math.floor(Math.random() * 20)
+  
+  const updatedReport = {
+    ...report,
+    expectedReturn: expectedReturn.toFixed(1),
+    entryPrice: basePrice.toFixed(2),
+    targetPrice: targetPrice.toFixed(2),
+    score: score,
+    riskRewardRatio: `${(2 + Math.random() * 3).toFixed(1)}:1`,
+    generatedAt: new Date().toISOString()
+  }
+  
+  // Update report in localStorage
+  const category = savedReportCategories.value.find(c => c.id === categoryId)
+  if (category) {
+    const reportIndexInCategory = category.reports.findIndex(r => r.id === report.id)
+    if (reportIndexInCategory > -1) {
+      category.reports[reportIndexInCategory] = updatedReport
+      
+      // Save to localStorage
+      localStorage.setItem('opportunity_report_categories', JSON.stringify(savedReportCategories.value))
+    }
+  }
+  
+  // Mark as completed in generating queue
+  generatingReports.value[reportIndex].completed = true
+  generatingReports.value[reportIndex].expectedReturn = parseFloat(updatedReport.expectedReturn)
+  generatingReports.value[reportIndex].riskLevel = updatedReport.risk
+  generatingReports.value[reportIndex].targetPrice = parseFloat(updatedReport.targetPrice)
+  generatingReports.value[reportIndex].generatedAt = updatedReport.generatedAt
+  
+  // Remove from generating queue after delay
+  setTimeout(() => {
+    const idx = generatingReports.value.findIndex(
+      r => r.symbol === report.symbol && r.isRefresh && r.originalReportId === report.id
+    )
+    if (idx > -1) {
+      generatingReports.value.splice(idx, 1)
+    }
+  }, 2000)
 }
 
 // Watch for report generation start

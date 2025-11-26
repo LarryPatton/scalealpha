@@ -46,14 +46,14 @@
       <div class="flex-1 overflow-y-auto">
         <div class="p-6 lg:p-8">
           <!-- Header -->
-          <div class="text-center md:text-left mb-6 relative z-10">
+          <div class="text-center mb-6 relative z-10">
             <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent mb-2">Info 信息中心</h1>
             <p class="text-gray-500 text-sm">实时聚合市场动态与投资机会</p>
           </div>
 
           <!-- Tab Navigation -->
           <div class="mb-8 relative z-10">
-            <div class="flex items-center gap-8 border-b border-[#404040]">
+            <div class="flex items-center justify-center gap-8 border-b border-[#404040]">
               <button
                 @click="activeTab = 'opportunity'"
                 :class="[
@@ -189,6 +189,266 @@ const {
   selectGroup
 } = useWatchlists()
 
+// Recommended Mock Data - 推荐内容数据（与自选组数据区分）
+const recommendedItems = [
+  // ========== 官方推荐 (Official Recommendations) ==========
+  {
+    id: 'r-o1',
+    type: 'official',
+    symbol: 'PLTR',
+    name: 'Palantir：AI大数据平台新机遇',
+    strategy: '基本面分析 + AI分析',
+    period: '3-6个月',
+    risk: '中等',
+    score: 86,
+    change: 5.2,
+    expectedReturn: 28.5,
+    entryPrice: 18.50,
+    targetPrice: 23.80,
+    reasoning: [
+      'AI平台产品AIP快速推广，商业客户数量激增',
+      '政府合同持续稳定，国防业务提供护城河',
+      '盈利能力大幅改善，现金流转正'
+    ],
+    tags: ['AI平台', '大数据', '政府合同'],
+    summary: 'Palantir的AI平台AIP在企业市场获得广泛认可，商业客户数量同比增长超50%。政府业务稳定，盈利能力持续改善。',
+    isFollowing: false
+  },
+  {
+    id: 'r-o2',
+    type: 'official',
+    symbol: 'AVGO',
+    name: '博通：AI基础设施的隐形冠军',
+    strategy: '技术分析 + 基本面分析',
+    period: '3-6个月',
+    risk: '低',
+    score: 90,
+    change: 3.8,
+    expectedReturn: 16.2,
+    entryPrice: 885.40,
+    targetPrice: 1028.70,
+    reasoning: [
+      '定制AI芯片需求旺盛，谷歌TPU主要供应商',
+      '网络芯片在数据中心市场占据主导地位',
+      '高股息回报，现金流稳健'
+    ],
+    tags: ['AI芯片', '网络设备', '高股息'],
+    summary: '博通在AI基础设施领域扮演关键角色，定制芯片和网络设备需求强劲。稳定的现金流和高股息使其成为优质投资标的。',
+    isFollowing: false
+  },
+  {
+    id: 'r-o3',
+    type: 'official',
+    symbol: 'COIN',
+    name: '加密货币交易所Coinbase反弹机会',
+    strategy: '事件驱动 + 趋势分析',
+    period: '1-3个月',
+    risk: '极高',
+    score: 75,
+    change: 8.5,
+    expectedReturn: 35.8,
+    entryPrice: 128.70,
+    targetPrice: 174.80,
+    reasoning: [
+      '比特币ETF审批预期升温，交易量大幅回升',
+      '加密货币市场情绪好转，机构资金流入',
+      '监管环境边际改善，合规优势凸显'
+    ],
+    tags: ['加密货币', '高风险', '监管利好'],
+    summary: 'Coinbase受益于加密货币市场回暖和ETF审批预期，交易量显著增长。尽管波动性大，但短期反弹机会明显。',
+    isFollowing: false
+  },
+  {
+    id: 'r-o4',
+    type: 'official',
+    symbol: 'SNOW',
+    name: 'Snowflake数据云转型价值',
+    strategy: '基本面分析 + 商业分析',
+    period: '3-6个月',
+    risk: '中等',
+    score: 81,
+    change: 4.1,
+    expectedReturn: 19.3,
+    entryPrice: 175.30,
+    targetPrice: 209.10,
+    reasoning: [
+      '数据云平台市场需求持续增长',
+      '产品创新加速，AI功能集成吸引客户',
+      '大客户续费率高，营收增速稳定'
+    ],
+    tags: ['云计算', '数据分析', 'SaaS'],
+    summary: 'Snowflake的数据云平台在企业数字化转型中扮演重要角色，AI功能集成提升产品竞争力，客户留存率保持高位。',
+    isFollowing: false
+  },
+
+  // ========== 大盘归因 (Market) ==========
+  {
+    id: 'r-m1',
+    type: 'market',
+    code: 'VIX',
+    name: 'VIX波动率指数',
+    change: -3.2,
+    summary: '市场波动率指数VIX大幅下降，投资者风险偏好回升。恐慌情绪消退，有利于股市继续上涨。',
+    tags: ['波动率', '情绪指标', '看涨'],
+    isFollowing: false
+  },
+  {
+    id: 'r-m2',
+    type: 'market',
+    code: 'NDX',
+    name: 'Nasdaq 100 Index',
+    change: 2.1,
+    summary: '纳斯达克100指数创近期新高，科技股领涨市场。AI、云计算板块表现强劲，资金持续流入成长股。',
+    tags: ['科技指数', '创新高', '成长股'],
+    isFollowing: false
+  },
+
+  // ========== 个股归因 (Stocks) ==========
+  {
+    id: 'r-s1',
+    type: 'stock',
+    code: 'PLTR',
+    name: 'Palantir Technologies',
+    price: '18.50',
+    change: 5.2,
+    summary: 'Palantir股价大涨，AI平台AIP商业化进展超预期。新增企业客户数量创季度新高，市场看好长期增长潜力。',
+    tags: ['AI平台', '财报利好', '强势股'],
+    isFollowing: false
+  },
+  {
+    id: 'r-s2',
+    type: 'stock',
+    code: 'COIN',
+    name: 'Coinbase Global Inc.',
+    price: '128.70',
+    change: 8.5,
+    summary: '比特币突破关键阻力位，Coinbase交易量激增。加密货币ETF审批预期推动股价大幅上涨。',
+    tags: ['加密货币', '交易量', '暴涨'],
+    isFollowing: false
+  },
+  {
+    id: 'r-s3',
+    type: 'stock',
+    code: 'AVGO',
+    name: 'Broadcom Inc.',
+    price: '885.40',
+    change: 3.8,
+    summary: '博通发布强劲财报，AI芯片订单饱满。管理层上调全年业绩指引，分析师纷纷上调目标价。',
+    tags: ['AI芯片', '财报', '业绩上调'],
+    isFollowing: false
+  },
+  {
+    id: 'r-s4',
+    type: 'stock',
+    code: 'SNOW',
+    name: 'Snowflake Inc.',
+    price: '175.30',
+    change: 4.1,
+    summary: 'Snowflake发布AI数据云新功能，客户反响积极。大客户续约率超95%，营收增长持续稳健。',
+    tags: ['数据云', 'AI', '客户增长'],
+    isFollowing: false
+  },
+  {
+    id: 'r-s5',
+    type: 'stock',
+    code: 'SHOP',
+    name: 'Shopify Inc.',
+    price: '68.90',
+    change: 6.3,
+    summary: 'Shopify电商平台假日季表现强劲，商家GMV大幅增长。AI购物助手功能提升转化率，盈利能力改善。',
+    tags: ['电商', '假日季', 'AI应用'],
+    isFollowing: false
+  },
+
+  // ========== ETF/基金分析 (ETF) ==========
+  {
+    id: 'r-e1',
+    type: 'etf',
+    code: 'SOXL',
+    name: 'Direxion Daily Semiconductor Bull 3X',
+    change: 7.5,
+    summary: '半导体三倍做多ETF大涨，芯片板块集体走强。AI芯片需求爆发，台积电、英伟达等权重股领涨。',
+    tags: ['半导体', '杠杆ETF', '高波动'],
+    isFollowing: false
+  },
+  {
+    id: 'r-e2',
+    type: 'etf',
+    code: 'ARKK',
+    name: 'ARK Innovation ETF',
+    change: 4.8,
+    summary: 'ARK创新基金反弹，科技成长股重获青睐。特斯拉、Coinbase等重仓股集体上涨，资金重新流入高成长板块。',
+    tags: ['创新科技', '成长股', '反弹'],
+    isFollowing: false
+  },
+  {
+    id: 'r-e3',
+    type: 'etf',
+    code: 'BOTZ',
+    name: 'Global X Robotics & AI ETF',
+    change: 3.2,
+    summary: '机器人与AI ETF稳步上涨，人形机器人概念升温。特斯拉Optimus、Figure AI等项目进展推动板块情绪。',
+    tags: ['机器人', 'AI', '未来科技'],
+    isFollowing: false
+  },
+  {
+    id: 'r-e4',
+    type: 'etf',
+    code: 'HACK',
+    name: 'ETFMG Prime Cyber Security ETF',
+    change: 2.5,
+    summary: '网络安全ETF上涨，勒索软件攻击事件频发推动需求。企业加大安全投入，板块景气度提升。',
+    tags: ['网络安全', '防御性', '需求增长'],
+    isFollowing: false
+  },
+
+  // ========== 社区机会 (Community) ==========
+  {
+    id: 'r-c1',
+    type: 'community',
+    author: 'CryptoKing',
+    time: '1小时前',
+    title: '比特币突破$38000，牛市真的来了吗？',
+    content: 'BTC突破关键阻力位$38000，成交量放大。技术面上，MACD金叉，RSI进入超买区。但需要警惕短期回调风险...',
+    likes: 892,
+    comments: 267,
+    isFollowing: false
+  },
+  {
+    id: 'r-c2',
+    type: 'community',
+    author: 'AIInvestor',
+    time: '3小时前',
+    title: 'Palantir是下一个英伟达吗？',
+    content: 'Palantir的AIP平台在企业AI市场快速渗透，商业模式类似英伟达的CUDA生态。估值虽高，但成长空间巨大...',
+    likes: 645,
+    comments: 198,
+    isFollowing: false
+  },
+  {
+    id: 'r-c3',
+    type: 'community',
+    author: 'GrowthHunter',
+    time: '5小时前',
+    title: 'SaaS板块反弹信号确认',
+    content: 'Snowflake、CrowdStrike等SaaS龙头股技术面集体走强。云计算需求复苏，高成长SaaS股估值修复行情启动...',
+    likes: 523,
+    comments: 145,
+    isFollowing: false
+  },
+  {
+    id: 'r-c4',
+    type: 'community',
+    author: 'SectorRotator',
+    time: '8小时前',
+    title: '板块轮动：从大盘股到小盘股',
+    content: '罗素2000指数近期跑赢标普500，资金开始向小盘股流动。经济软着陆预期升温，小盘成长股或迎来机会...',
+    likes: 734,
+    comments: 201,
+    isFollowing: false
+  },
+]
+
 // Mock Data - 扩充演示数据以更好展示自选组功能
 const allItems = [
   // ========== 官方推荐 (Official Recommendations) ==========
@@ -203,6 +463,8 @@ const allItems = [
     score: 88,
     change: 3.45,
     expectedReturn: 15.8,
+    entryPrice: 485.50,
+    targetPrice: 562.20,
     reasoning: [
       'AI芯片需求持续爆发，数据中心业务营收预计翻倍',
       '技术面突破关键阻力位，多家投行上调目标价',
@@ -223,6 +485,8 @@ const allItems = [
     score: 85,
     change: 2.15,
     expectedReturn: 12.3,
+    entryPrice: 375.80,
+    targetPrice: 422.00,
     reasoning: [
       'Azure云服务增速超预期，市场份额持续扩大',
       'Copilot商业化进展顺利，AI产品矩阵完善',
@@ -243,6 +507,8 @@ const allItems = [
     score: 82,
     change: 4.25,
     expectedReturn: 18.5,
+    entryPrice: 325.60,
+    targetPrice: 385.80,
     reasoning: [
       '财报超预期，广告收入恢复双位数增长',
       '效率年战略成效显著，运营成本大幅下降',
@@ -263,6 +529,8 @@ const allItems = [
     score: 79,
     change: 2.85,
     expectedReturn: 22.6,
+    entryPrice: 145.30,
+    targetPrice: 178.10,
     reasoning: [
       'MI300系列AI芯片对标英伟达，性价比优势明显',
       '数据中心CPU市场份额持续扩大',
@@ -283,6 +551,8 @@ const allItems = [
     score: 84,
     change: 1.75,
     expectedReturn: 13.2,
+    entryPrice: 138.50,
+    targetPrice: 156.80,
     reasoning: [
       'Bard AI集成搜索，用户体验大幅提升',
       '搜索广告收入恢复增长，云业务盈利改善',
@@ -641,6 +911,12 @@ const allItems = [
 ]
 
 const filteredItems = computed(() => {
+  // If "推荐信息" is selected, show recommended items
+  if (selectedGroupId.value === 'recommended') {
+    return recommendedItems
+  }
+  
+  // Otherwise, show items from watchlist groups
   let items = allItems
   
   // Filter by selected group
@@ -711,10 +987,15 @@ const totalItemsCount = computed(() => tabFilteredItems.value.length)
 
 const navigateToDetail = (type, id) => {
   if (type === 'market') {
-    router.push('/info/market') // Market detail is a singleton in this demo
+    router.push(`/info/market/${id || 'm1'}`) // Market detail with id support
   } else if (type === 'official') {
     // Navigate to opportunity report detail page
-    const item = allItems.find(i => i.id === id)
+    // Search in both allItems and recommendedItems
+    let item = allItems.find(i => i.id === id)
+    if (!item) {
+      item = recommendedItems.find(i => i.id === id && i.type === 'official')
+    }
+    
     if (item) {
       // Convert InfoPage official recommendation data to report format
       const reportData = {
@@ -726,8 +1007,8 @@ const navigateToDetail = (type, id) => {
         risk: parseRisk(item.risk),
         riskRewardRatio: calculateRiskReward(item.expectedReturn),
         expectedReturn: item.expectedReturn,
-        entryPrice: 0, // Placeholder, could fetch from API
-        targetPrice: 0, // Placeholder
+        entryPrice: item.entryPrice || 0,
+        targetPrice: item.targetPrice || 0,
         score: item.score,
         generatedAt: new Date().toISOString(),
         reasoning: item.reasoning,

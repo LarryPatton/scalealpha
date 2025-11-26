@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserProfile } from '../composables/useUserProfile'
+import { useSavedReports } from '../composables/useSavedReports'
 
 // Layouts
 import MarketingLayout from '../layouts/MarketingLayout.vue'
@@ -9,14 +11,12 @@ import AppLayout from '../layouts/AppLayout.vue'
 import HomePage from '../pages/HomePage.vue'
 import LoginPage from '../pages/LoginPage.vue'
 import InfoPage from '../pages/InfoPage.vue'
-import MarketDetail from '../pages/MarketDetail.vue'
-import ETFDetail from '../pages/ETFDetail.vue'
 import StockDetail from '../pages/StockDetail.vue'
 import CommunityDetail from '../pages/CommunityDetail.vue'
 import NotFound from '../pages/NotFound.vue'
 
 // Existing Pages
-import PlanPage from '../pages/PlanPage.vue'
+// import PlanPage from '../pages/PlanPage.vue'  // ❌ 已废弃，使用 PlanningPage
 import HistoryPage from '../pages/HistoryPage.vue'
 import PortfolioPage from '../pages/PortfolioPage.vue'
 import PortfolioInputPage from '../pages/PortfolioInputPage.vue'
@@ -43,7 +43,7 @@ const routes = [
     path: '/home',
     name: 'Home',
     component: HomePage,
-    meta: { layout: MarketingLayout }
+    meta: { layout: AppLayout }
   },
   
   // Auth Routes
@@ -62,15 +62,15 @@ const routes = [
     meta: { layout: AppLayout }
   },
   {
-    path: '/info/market',
+    path: '/info/market/:id?',
     name: 'MarketDetail',
-    component: MarketDetail,
+    component: StockDetail,
     meta: { layout: AppLayout }
   },
   {
     path: '/info/etf/:id',
     name: 'ETFDetail',
-    component: ETFDetail,
+    component: StockDetail,
     meta: { layout: AppLayout }
   },
   {
@@ -87,12 +87,7 @@ const routes = [
   },
 
   // Existing App Features
-  {
-    path: '/plan',
-    name: 'Plan',
-    component: PlanPage,
-    meta: { layout: AppLayout }
-  },
+  // 注意：旧的 /plan 路径已废弃，统一使用 /planning
   {
     path: '/history',
     name: 'History',
@@ -191,6 +186,61 @@ const router = createRouter({
       return { top: 0 }
     }
   }
+})
+
+// 定义需要用户信息的路由
+const requiresUserInfoRoutes = [
+  '/trading',
+  '/alerts',
+  '/portfolio',
+  '/event',
+  '/history',
+  '/backtest'
+  // '/plan' 已移除 - 允许直接访问计划制定页面
+]
+
+// 定义需要保存报告的路由
+const requiresSavedReportsRoutes = [
+  // '/plan' 已移除 - 允许直接访问计划制定页面
+]
+
+// 路由守卫
+router.beforeEach((to, from, next) => {
+  // 获取状态（直接从localStorage检查，避免响应式问题）
+  const { checkUserInfoStatus } = useUserProfile()
+  const { checkSavedReports } = useSavedReports()
+  
+  const hasUserInfo = checkUserInfoStatus()
+  const hasSavedReports = checkSavedReports()
+  
+  // 检查是否需要用户信息
+  const needsUserInfo = requiresUserInfoRoutes.some(route => 
+    to.path.startsWith(route)
+  )
+  
+  // 检查是否需要保存报告
+  const needsSavedReports = requiresSavedReportsRoutes.some(route => 
+    to.path.startsWith(route)
+  )
+  
+  // 如果需要用户信息但未填写，重定向到信息填写页
+  if (needsUserInfo && !hasUserInfo) {
+    if (to.path !== '/portfolio-input') {
+      next('/portfolio-input')
+      return
+    }
+  }
+  
+  // 如果需要保存报告但没有，重定向到机会发现页
+  if (needsSavedReports && hasUserInfo && !hasSavedReports) {
+    if (to.path !== '/opportunity') {
+      next('/opportunity')
+      return
+    }
+  }
+  
+  // 允许通过
+  next()
 })
 
 export default router

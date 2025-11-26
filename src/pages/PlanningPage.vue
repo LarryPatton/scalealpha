@@ -96,8 +96,20 @@
             <span class="text-sm text-gray-400">({{ completedPlans.length }})</span>
           </div>
 
-          <!-- Filter & Sort -->
-          <div class="flex items-center gap-3">
+        <!-- Filter & Sort -->
+        <div class="flex items-center gap-3">
+            <!-- Batch Update Button -->
+            <button
+              v-if="selectedPlanIds.length > 0"
+              @click="batchUpdatePlans"
+              class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-medium transition-all flex items-center gap-2 shadow-lg shadow-blue-500/30"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+              <span>一键更新 ({{ selectedPlanIds.length }})</span>
+            </button>
+
             <select
               v-model="filterType"
               class="px-4 py-2 bg-[#2a2a2a] border border-[#404040] rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
@@ -142,34 +154,59 @@
           <div
             v-for="plan in filteredPlans"
             :key="plan.id"
-            @click="viewPlanDetail(plan)"
-            class="bg-[#2a2a2a] border border-[#404040] rounded-xl p-5 hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/20 transition-all cursor-pointer group"
+            :class="[
+              'bg-[#2a2a2a] border rounded-xl p-5 hover:shadow-lg hover:shadow-blue-500/20 transition-all cursor-pointer group relative',
+              selectedPlanIds.includes(plan.id) 
+                ? 'border-blue-500 bg-blue-500/5' 
+                : 'border-[#404040] hover:border-blue-500'
+            ]"
           >
-            <!-- Plan Header -->
-            <div class="flex items-start justify-between mb-4">
-              <div class="flex items-center gap-3">
-                <div :class="[
-                  'w-10 h-10 rounded-lg flex items-center justify-center font-mono font-bold text-sm',
-                  getActionTypeStyle(plan.actionType)
-                ]">
-                  {{ plan.symbol.slice(0, 2) }}
-                </div>
-                <div>
-                  <div class="font-mono font-bold text-white group-hover:text-blue-400 transition-colors">
-                    {{ plan.symbol }}
-                  </div>
-                  <div class="text-xs text-gray-400">{{ plan.stockName }}</div>
-                </div>
-              </div>
-              <button
-                @click.stop="deletePlan(plan.id)"
-                class="w-8 h-8 rounded-lg bg-[#3a3a3a] hover:bg-red-600 flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
+            <!-- Selection Checkbox -->
+            <div 
+              @click.stop="togglePlanSelection(plan.id)"
+              class="absolute top-4 left-4 z-10 w-6 h-6 rounded border-2 flex items-center justify-center cursor-pointer transition-all"
+              :class="selectedPlanIds.includes(plan.id) 
+                ? 'bg-blue-600 border-blue-600' 
+                : 'bg-[#1a1a1a] border-gray-600 hover:border-blue-500'"
+            >
+              <svg 
+                v-if="selectedPlanIds.includes(plan.id)"
+                class="w-4 h-4 text-white" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
               >
-                <svg class="w-4 h-4 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                </svg>
-              </button>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+              </svg>
             </div>
+
+            <!-- Plan Card Content (with left padding to accommodate checkbox) -->
+            <div @click="viewPlanDetail(plan)" class="pl-8">
+              <!-- Plan Header -->
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div :class="[
+                    'w-10 h-10 rounded-lg flex items-center justify-center font-mono font-bold text-sm',
+                    getActionTypeStyle(plan.actionType)
+                  ]">
+                    {{ plan.symbol.slice(0, 2) }}
+                  </div>
+                  <div>
+                    <div class="font-mono font-bold text-white group-hover:text-blue-400 transition-colors">
+                      {{ plan.symbol }}
+                    </div>
+                    <div class="text-xs text-gray-400">{{ plan.stockName }}</div>
+                  </div>
+                </div>
+                <button
+                  @click.stop="deletePlan(plan.id)"
+                  class="w-8 h-8 rounded-lg bg-[#3a3a3a] hover:bg-red-600 flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
+                >
+                  <svg class="w-4 h-4 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                  </svg>
+                </button>
+              </div>
 
             <!-- Action Type Badge -->
             <div class="mb-4">
@@ -202,13 +239,14 @@
               </div>
             </div>
 
-            <!-- Footer -->
-            <div class="pt-4 border-t border-[#404040]">
-              <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500">点击查看完整计划</span>
-                <svg class="w-5 h-5 text-gray-600 group-hover:text-blue-400 group-hover:translate-x-1 transition-all" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                </svg>
+              <!-- Footer -->
+              <div class="pt-4 border-t border-[#404040]">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs text-gray-500">点击查看完整计划</span>
+                  <svg class="w-5 h-5 text-gray-600 group-hover:text-blue-400 group-hover:translate-x-1 transition-all" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
               </div>
             </div>
           </div>
@@ -229,6 +267,7 @@ const generatingPlans = ref([])
 const completedPlans = ref([])
 const filterType = ref('all')
 const sortBy = ref('newest')
+const selectedPlanIds = ref([]) // Track selected plans for batch update
 
 // Computed
 const filteredPlans = computed(() => {
@@ -343,23 +382,31 @@ const generatePlanFromSessionData = () => {
     if (!planningData) return
     
     const data = JSON.parse(planningData)
-    const report = data.report
-    const position = data.position
     
-    // Create a generating plan
-    const generatingPlan = {
-      id: `gen_${Date.now()}`,
-      symbol: report.symbol,
-      stockName: report.stockName,
-      status: '正在分析报告数据...',
-      progress: 0,
-      estimatedTime: 15
-    }
+    // Support both old single report format and new multiple reports format
+    const reports = data.reports || [{ report: data.report, position: data.position }]
     
-    generatingPlans.value.push(generatingPlan)
-    
-    // Simulate plan generation
-    simulatePlanGeneration(generatingPlan, report, position)
+    // Generate plans for each report
+    reports.forEach((item, index) => {
+      const { report, position } = item
+      
+      // Create a generating plan with slight delay for visual effect
+      setTimeout(() => {
+        const generatingPlan = {
+          id: `gen_${Date.now()}_${index}`,
+          symbol: report.symbol,
+          stockName: report.stockName,
+          status: '正在分析报告数据...',
+          progress: 0,
+          estimatedTime: 15
+        }
+        
+        generatingPlans.value.push(generatingPlan)
+        
+        // Simulate plan generation
+        simulatePlanGeneration(generatingPlan, report, position)
+      }, index * 500) // Stagger the start of each plan generation
+    })
     
     // Clear session data
     sessionStorage.removeItem('planning_data')
@@ -532,6 +579,99 @@ const generateStopLossTrigger = (actionType, report) => {
     reason: '跌破关键支撑位，趋势可能反转',
     allocation: 100
   }
+}
+
+// Multi-select functionality
+const togglePlanSelection = (planId) => {
+  const index = selectedPlanIds.value.indexOf(planId)
+  if (index === -1) {
+    selectedPlanIds.value.push(planId)
+  } else {
+    selectedPlanIds.value.splice(index, 1)
+  }
+}
+
+// Batch update functionality
+const batchUpdatePlans = async () => {
+  if (selectedPlanIds.value.length === 0) return
+  
+  // Get selected plans
+  const selectedPlans = completedPlans.value.filter(plan => 
+    selectedPlanIds.value.includes(plan.id)
+  )
+  
+  // Confirm with user
+  const confirmed = confirm(`确定要更新选中的 ${selectedPlans.length} 个计划吗？`)
+  if (!confirmed) return
+  
+  // Clear selection
+  selectedPlanIds.value = []
+  
+  // Start regenerating each plan
+  selectedPlans.forEach((plan, index) => {
+    setTimeout(() => {
+      const generatingPlan = {
+        id: `gen_${Date.now()}_${index}`,
+        symbol: plan.symbol,
+        stockName: plan.stockName,
+        status: '正在更新计划数据...',
+        progress: 0,
+        estimatedTime: 15,
+        originalPlanId: plan.id // Track which plan is being updated
+      }
+      
+      generatingPlans.value.push(generatingPlan)
+      
+      // Simulate plan regeneration
+      simulatePlanRegeneration(generatingPlan, plan)
+    }, index * 500) // Stagger the start of each plan update
+  })
+}
+
+const simulatePlanRegeneration = (generatingPlan, originalPlan) => {
+  const steps = [
+    { progress: 20, status: '重新分析市场数据...', time: 2000 },
+    { progress: 40, status: '更新入场计划...', time: 3000 },
+    { progress: 60, status: '重新计算止盈点位...', time: 3000 },
+    { progress: 80, status: '更新止损策略...', time: 2000 },
+    { progress: 100, status: '完成计划更新', time: 2000 }
+  ]
+  
+  let currentStep = 0
+  
+  const updateProgress = () => {
+    if (currentStep >= steps.length) {
+      // Plan update complete - replace the old plan with updated one
+      const updatedPlan = {
+        ...originalPlan,
+        id: `plan_${Date.now()}`, // New ID for updated plan
+        createdAt: new Date().toISOString(), // Update timestamp
+        // Simulate some changes to show it's been updated
+        confidenceLevel: Math.min(5, Math.max(3, originalPlan.confidenceLevel + (Math.random() > 0.5 ? 1 : -1))),
+        entryPointsCount: Math.max(2, originalPlan.entryPointsCount + (Math.random() > 0.5 ? 1 : 0))
+      }
+      
+      // Remove the old plan and add the updated one
+      completedPlans.value = completedPlans.value.filter(p => p.id !== originalPlan.id)
+      completedPlans.value.unshift(updatedPlan)
+      
+      // Remove from generating queue
+      generatingPlans.value = generatingPlans.value.filter(p => p.id !== generatingPlan.id)
+      
+      savePlansToStorage()
+      return
+    }
+    
+    const step = steps[currentStep]
+    generatingPlan.progress = step.progress
+    generatingPlan.status = step.status
+    generatingPlan.estimatedTime = Math.ceil((steps.length - currentStep) * 2.5)
+    
+    currentStep++
+    setTimeout(updateProgress, step.time)
+  }
+  
+  setTimeout(updateProgress, 1000)
 }
 
 // Lifecycle

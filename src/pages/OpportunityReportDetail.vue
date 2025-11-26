@@ -20,11 +20,33 @@
           </div>
           
           <div class="flex items-center gap-3">
-            <button class="px-4 py-2 bg-[#3a3a3a] hover:bg-[#404040] text-gray-300 rounded-lg transition-colors text-sm">
-              导出PDF
-            </button>
-            <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-medium">
-              加入计划
+            <button
+              @click="toggleSaveReport"
+              :class="[
+                'px-6 py-2.5 rounded-lg transition-all text-sm font-medium shadow-lg flex items-center gap-2',
+                isSaved 
+                  ? 'bg-green-600 hover:bg-green-700 text-white shadow-green-500/50' 
+                  : 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/50'
+              ]"
+            >
+              <svg 
+                v-if="!isSaved"
+                class="w-4 h-4" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+              </svg>
+              <svg 
+                v-else
+                class="w-4 h-4" 
+                fill="currentColor" 
+                viewBox="0 0 20 20"
+              >
+                <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/>
+              </svg>
+              <span>{{ isSaved ? '已保存' : '保存报告' }}</span>
             </button>
           </div>
         </div>
@@ -334,9 +356,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useSavedReports } from '../composables/useSavedReports'
 
 const route = useRoute()
 const router = useRouter()
+
+// 使用保存报告的 composable
+const { isReportSaved, saveReportToCategory, removeReportFromAll } = useSavedReports()
 
 // Report data - from sessionStorage or default
 const report = ref({
@@ -359,8 +385,9 @@ const expandedDimensions = ref(['fundamental']) // 默认展开基本面分析
 
 // Methods
 const goBack = () => {
-  // 使用编程式导航返回到 Opportunity 页面
-  router.push('/opportunity')
+  // 使用浏览器返回功能，智能返回到上一页
+  // 这样从 /info 进来就返回 /info，从 /opportunity 进来就返回 /opportunity
+  router.back()
 }
 
 const toggleDimension = (dimension) => {
@@ -417,6 +444,26 @@ const formatDate = (timestamp) => {
     minute: '2-digit',
     hour12: false
   })
+}
+
+// 检查报告是否已保存
+const isSaved = computed(() => isReportSaved(report.value.id))
+
+// 切换保存状态
+const toggleSaveReport = () => {
+  if (isSaved.value) {
+    // 取消保存
+    const result = removeReportFromAll(report.value.id)
+    if (result.success) {
+      console.log('报告已取消保存')
+    }
+  } else {
+    // 保存报告
+    const result = saveReportToCategory(report.value, 'default-category')
+    if (result.success) {
+      console.log('报告已保存')
+    }
+  }
 }
 
 // Load report data from sessionStorage

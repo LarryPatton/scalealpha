@@ -78,7 +78,7 @@
         <!-- Analysis Framework -->
         <div class="bg-[#1a1a1a] border border-[#404040] rounded-lg p-4">
           <div class="text-xs text-gray-500 mb-2">主要分析框架</div>
-          <div class="text-white font-semibold">{{ getFrameworkLabel(report.framework) }}</div>
+          <div class="text-white font-semibold">{{ getFrameworksDisplay() }}</div>
         </div>
 
         <!-- Time Period -->
@@ -140,7 +140,10 @@
           <span>{{ formatTime(report.generatedAt) }}</span>
         </div>
         
-        <button class="text-blue-400 text-sm font-medium hover:text-blue-300 transition-colors flex items-center gap-1">
+        <button 
+          @click.stop="$emit('view-detail')"
+          class="text-blue-400 text-sm font-medium hover:text-blue-300 transition-colors flex items-center gap-1"
+        >
           <span>查看详情</span>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -174,7 +177,7 @@ const props = defineProps({
   }
 })
 
-defineEmits(['click', 'toggle-select', 'delete'])
+defineEmits(['click', 'toggle-select', 'delete', 'view-detail'])
 
 const getFrameworkLabel = (value) => {
   const labels = {
@@ -188,6 +191,21 @@ const getFrameworkLabel = (value) => {
     'alternative': '另类数据'
   }
   return labels[value] || value
+}
+
+// Display multiple frameworks
+const getFrameworksDisplay = () => {
+  // 兼容旧数据（单个framework字符串）
+  if (props.report.framework) {
+    return getFrameworkLabel(props.report.framework)
+  }
+  // 新数据（frameworks数组）
+  if (props.report.frameworks && props.report.frameworks.length > 0) {
+    return props.report.frameworks
+      .map(value => getFrameworkLabel(value))
+      .join(' + ')
+  }
+  return '未指定'
 }
 
 const getPeriodLabel = (value) => {

@@ -12,8 +12,8 @@
           </span>
         </router-link>
 
-        <!-- Workflow Steps -->
-        <div class="flex-1 flex items-center justify-center mx-8">
+        <!-- Workflow Steps (Only shown when logged in) -->
+        <div v-if="isLoggedIn" class="flex-1 flex items-center justify-center mx-8">
           <div class="flex items-center gap-1">
             <div 
               v-for="(step, index) in steps" 
@@ -71,21 +71,33 @@
 
         <!-- Right Icons -->
         <div class="flex items-center gap-4 flex-shrink-0">
-          <!-- User Avatar -->
-          <div class="relative group">
-            <button class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 flex items-center justify-center text-white font-bold text-sm hover:shadow-lg transition border border-yellow-300">
+          <!-- Logged Out: Login/Register Button -->
+          <router-link 
+            v-if="!isLoggedIn" 
+            to="/login" 
+            class="px-4 py-2 bg-[#2a2a2a] hover:bg-[#3a3a3a] border border-[#404040] rounded-lg text-sm font-medium transition"
+          >
+            登录 / 注册
+          </router-link>
+
+          <!-- Logged In: User Avatar -->
+          <div v-else class="relative">
+            <button 
+              @click="toggleAccountMenu"
+              class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 flex items-center justify-center text-white font-bold text-sm hover:shadow-lg transition border border-yellow-300"
+            >
               U
             </button>
-            <div class="absolute right-0 mt-2 w-48 bg-[#2a2a2a] rounded-lg shadow-xl border border-[#404040] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-300 z-50">
+            <div 
+              v-if="showAccountMenu"
+              class="absolute right-0 mt-2 w-48 bg-[#2a2a2a] rounded-lg shadow-xl border border-[#404040] z-50"
+            >
               <div class="px-4 py-2 border-b border-[#404040] text-sm text-gray-400">
                 <p class="font-semibold">{{ userEmail }}</p>
               </div>
-              <router-link to="/settings" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-[#3a3a3a]">账户设置</router-link>
-              <router-link to="/portfolio" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-[#3a3a3a]">我的投资组合</router-link>
-              <button @click="handleResetProgress" class="w-full text-left px-4 py-2 text-sm text-yellow-400 hover:text-yellow-300 hover:bg-[#3a3a3a]">
+              <button @click="handleResetProgress" class="w-full text-left px-4 py-2 text-sm text-orange-400 hover:text-orange-300 hover:bg-[#3a3a3a]">
                 重置进度
               </button>
-              <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-[#3a3a3a]">帮助</a>
               <button @click="handleLogout" class="w-full text-left px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-[#3a3a3a] border-t border-[#404040] rounded-b-lg">
                 登出
               </button>
@@ -98,14 +110,49 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useWorkflowProgress } from '../composables/useWorkflowProgress'
+import { useUserProfile } from '../composables/useUserProfile'
+import { useSavedReports } from '../composables/useSavedReports'
 
 const emit = defineEmits(['logout'])
 const route = useRoute()
+const router = useRouter()
 
 const userEmail = ref('')
+const isLoggedIn = ref(false)
+
+// 账户菜单状态
+const showAccountMenu = ref(false)
+
+// 导入状态管理
+const { resetUserProfile } = useUserProfile()
+const { clearSavedReports } = useSavedReports()
+
+// 切换账户菜单
+const toggleAccountMenu = () => {
+  showAccountMenu.value = !showAccountMenu.value
+}
+
+// 关闭账户菜单
+const closeAccountMenu = () => {
+  showAccountMenu.value = false
+}
+
+// 点击外部关闭菜单
+const handleClickOutside = (event) => {
+  const accountMenu = event.target.closest('.relative')
+  if (!accountMenu && showAccountMenu.value) {
+    closeAccountMenu()
+  }
+}
+
+// 检查登录状态
+const checkLoginStatus = () => {
+  const loginStatus = localStorage.getItem('isLoggedIn')
+  isLoggedIn.value = loginStatus === 'true'
+}
 
 // 使用工作流进度管理
 const { 
@@ -118,6 +165,9 @@ const {
 
 // 初始化
 onMounted(() => {
+  // 检查登录状态
+  checkLoginStatus()
+  
   const savedEmail = localStorage.getItem('userEmail')
   if (savedEmail) {
     userEmail.value = savedEmail
@@ -128,6 +178,14 @@ onMounted(() => {
   
   // 标记当前页面为已访问
   markCurrentPageVisited()
+  
+  // 添加全局点击监听
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  // 移除全局点击监听
+  document.removeEventListener('click', handleClickOutside)
 })
 
 // 监听路由变化，自动标记页面为已访问
@@ -207,13 +265,57 @@ const getConnectorClasses = (currentStatus, nextStatus) => {
 
 // 重置进度
 const handleResetProgress = () => {
-  if (confirm('确定要重置工作流进度吗？这将清除所有已完成的步骤标记。')) {
-    resetProgress()
+  if (confirm('确定要重置所有进度吗？这将清除所有学习进度、自选组和设置数据，且无法恢复。')) {
+    // 清除localStorage中的所有数据
+    const keysToRemove = [
+      'scaleAlpha_userProfile',
+      'scaleAlpha_savedReports',
+      'scaleAlpha_watchlists',
+      'scaleAlpha_selectedGroup',
+      'scaleAlpha_watchlists_version',
+      'scaleAlpha_settings',
+      'scaleAlpha_workflowProgress',
+      'user_holdings',
+      'riskAssessmentResult',
+      'opportunity_report_categories',
+      'userEmail',
+      'portfolio_info_submitted',  // PortfolioInput 提交状态
+      'portfolio_input_data',       // PortfolioInput 数据
+      'portfolio_last_saved'        // PortfolioInput 草稿保存时间
+    ]
+    
+    // 先清除所有 localStorage
+    keysToRemove.forEach(key => {
+      localStorage.removeItem(key)
+    })
+    
+    // 确保 localStorage 同步完成后再更新状态
+    setTimeout(() => {
+      // 重置状态管理
+      resetUserProfile()
+      clearSavedReports()
+      resetProgress()
+      
+      // 关闭菜单
+      closeAccountMenu()
+      
+      // 重定向到首页或Info页面
+      router.push('/info')
+      
+      // 显示成功提示
+      alert('进度已重置！请重新开始。')
+      
+      // 延迟刷新，确保状态已完全更新
+      setTimeout(() => {
+        window.location.reload()
+      }, 100)
+    }, 50)
   }
 }
 
 // 登出
 const handleLogout = () => {
+  closeAccountMenu()
   emit('logout')
 }
 </script>

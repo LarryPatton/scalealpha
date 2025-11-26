@@ -96,8 +96,7 @@ export function useWorkflowProgress() {
         return userProgress.value.hasViewedInfo ? 'completed' : 'available'
 
       case 'portfolio-input':
-        // 我的信息：浏览过Info后解锁
-        if (!userProgress.value.hasViewedInfo) return 'locked'
+        // 我的信息：始终可用（新用户也可以直接填写）
         if (isCurrentPage) return 'current'
         return userProgress.value.hasInputPortfolio ? 'completed' : 'available'
 
@@ -169,9 +168,12 @@ export function useWorkflowProgress() {
     
     if (currentPath === '/info' || currentPath.startsWith('/info/')) {
       updateProgress('hasViewedInfo', true)
-    } else if (currentPath === '/portfolio-input') {
-      updateProgress('hasInputPortfolio', true)
-    } else if (currentPath === '/opportunity') {
+    }
+    // portfolio-input 不再自动标记为已完成，需要用户手动提交
+    // else if (currentPath === '/portfolio-input') {
+    //   updateProgress('hasInputPortfolio', true)
+    // }
+    else if (currentPath === '/opportunity') {
       updateProgress('hasViewedOpportunity', true)
     } else if (currentPath === '/planning') {
       updateProgress('hasCreatedPlan', true)

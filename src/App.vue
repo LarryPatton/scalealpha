@@ -22,11 +22,13 @@ const router = useRouter()
 // 动态获取当前路由配置的 layout
 const layout = computed(() => route.meta.layout || 'div')
 
-// 简单的登出逻辑
+// 登出逻辑 - 清除所有用户数据并刷新页面
 const handleLogout = () => {
-  localStorage.removeItem('isLoggedIn')
-  localStorage.removeItem('userEmail')
-  router.push('/')
+  // 清除所有 localStorage 数据
+  localStorage.clear()
+  
+  // 刷新页面，回到初始状态
+  window.location.href = '/'
 }
 </script>
 
