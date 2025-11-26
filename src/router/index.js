@@ -30,6 +30,7 @@ import OpportunityPage from '../pages/OpportunityPage.vue'
 import OpportunityReportDetail from '../pages/OpportunityReportDetail.vue'
 import PlanningPage from '../pages/PlanningPage.vue'
 import PlanningDetailPage from '../pages/PlanningDetailPage.vue'
+import OneClickTradingPage from '../pages/OneClickTradingPage.vue'
 
 const routes = [
   // Root redirect - automatically redirect to Home page
@@ -128,6 +129,12 @@ const routes = [
     path: '/planning/:planId',
     name: 'PlanningDetail',
     component: PlanningDetailPage,
+    meta: { layout: AppLayout }
+  },
+  {
+    path: '/scalealpha/trading',
+    name: 'OneClickTrading',
+    component: OneClickTradingPage,
     meta: { layout: AppLayout }
   },
   {

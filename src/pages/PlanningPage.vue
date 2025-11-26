@@ -252,6 +252,11 @@
           </div>
         </div>
       </div>
+      
+      <!-- Broker Account Section -->
+      <div class="mt-12">
+        <BrokerAccountCard />
+      </div>
     </div>
   </div>
 </template>
@@ -259,6 +264,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import BrokerAccountCard from '../components/broker/BrokerAccountCard.vue'
 
 const router = useRouter()
 

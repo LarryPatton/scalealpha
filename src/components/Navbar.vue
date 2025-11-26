@@ -56,6 +56,20 @@
 
         <!-- Right Icons -->
         <div class="flex items-center gap-4">
+          <!-- One-Click Trading Button -->
+          <button
+            @click="handleOneClickTrading"
+            :disabled="!isConnected"
+            :class="[
+              'px-4 py-2 rounded-lg text-sm font-medium transition-all',
+              isConnected
+                ? 'bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-lg shadow-green-500/20'
+                : 'bg-[#3a3a3a] text-gray-500 cursor-not-allowed'
+            ]"
+          >
+            一键交易
+          </button>
+          
           <!-- User Avatar -->
           <div class="relative">
             <button 
@@ -90,6 +104,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserProfile } from '../composables/useUserProfile'
 import { useSavedReports } from '../composables/useSavedReports'
+import { useBrokerAccount } from '../composables/useBrokerAccount'
 
 const router = useRouter()
 const route = useRoute()
@@ -99,6 +114,7 @@ const emit = defineEmits(['logout'])
 // 导入状态管理
 const { isUserInfoCompleted, resetUserProfile } = useUserProfile()
 const { hasSavedReports, clearSavedReports } = useSavedReports()
+const { isConnected } = useBrokerAccount()
 
 // 账户菜单状态
 const showAccountMenu = ref(false)
@@ -273,6 +289,13 @@ const handleNavClick = (event, item) => {
     } else if (item.requiresSavedReports && !hasSavedReports.value) {
       router.push('/opportunity')
     }
+  }
+}
+
+// 处理一键交易按钮点击
+const handleOneClickTrading = () => {
+  if (isConnected.value) {
+    router.push('/scalealpha/trading')
   }
 }
 </script>
