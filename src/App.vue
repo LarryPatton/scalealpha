@@ -27,8 +27,8 @@ const handleLogout = () => {
   // 清除所有 localStorage 数据
   localStorage.clear()
   
-  // 刷新页面，回到初始状态
-  window.location.href = '/'
+  // 刷新页面，回到初始状态（使用正确的 base path）
+  window.location.href = '/scalealpha/'
 }
 </script>
 
