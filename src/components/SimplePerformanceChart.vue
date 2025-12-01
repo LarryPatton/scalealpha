@@ -35,6 +35,7 @@
         
         <!-- Strategy Line (Blue) -->
         <polyline
+          class="chart-line"
           :points="strategyData.map((v, i) => `${i * 10},${300 - v * 10}`).join(' ')"
           fill="none"
           stroke="#3b82f6"
@@ -45,6 +46,7 @@
         
         <!-- QQQ Line (Green) -->
         <polyline
+          class="chart-line delay-1"
           :points="qqqData.map((v, i) => `${i * 10},${300 - v * 10}`).join(' ')"
           fill="none"
           stroke="#10b981"
@@ -56,6 +58,7 @@
         
         <!-- SPY Line (Yellow) -->
         <polyline
+          class="chart-line delay-2"
           :points="spyData.map((v, i) => `${i * 10},${300 - v * 10}`).join(' ')"
           fill="none"
           stroke="#eab308"
@@ -124,3 +127,25 @@ const spyData = ref([
   6, 7, 8, 9, 8, 7, 6, 7, 8, 7, 6, 7, 6, 5, 6, 7, 8, 7, 6, 5
 ])
 </script>
+
+<style scoped>
+.chart-line {
+  stroke-dasharray: 3000;
+  stroke-dashoffset: 3000;
+  animation: drawLine 2.5s ease-out forwards;
+}
+
+.delay-1 {
+  animation-delay: 0.2s;
+}
+
+.delay-2 {
+  animation-delay: 0.4s;
+}
+
+@keyframes drawLine {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+</style>

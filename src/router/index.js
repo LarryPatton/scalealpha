@@ -9,6 +9,7 @@ import AppLayout from '../layouts/AppLayout.vue'
 
 // Pages
 import HomePage from '../pages/HomePage.vue'
+import RevenuePage from '../pages/RevenuePage.vue'
 import LoginPage from '../pages/LoginPage.vue'
 import InfoPage from '../pages/InfoPage.vue'
 import StockDetail from '../pages/StockDetail.vue'
@@ -44,6 +45,12 @@ const routes = [
     path: '/home',
     name: 'Home',
     component: HomePage,
+    meta: { layout: AppLayout }
+  },
+  {
+    path: '/revenue',
+    name: 'Revenue',
+    component: RevenuePage,
     meta: { layout: AppLayout }
   },
   
