@@ -17,7 +17,7 @@
           </button>
         </nav>
         
-        <button class="mt-4 w-full flex items-center px-3 py-2 text-sm font-medium text-gray-500 hover:text-white transition-colors">
+        <button @click="showNewGroupModal = true" class="mt-4 w-full flex items-center px-3 py-2 text-sm font-medium text-gray-500 hover:text-white transition-colors">
           <span class="mr-3 text-lg">+</span> 更多分组
         </button>
       </div>
@@ -115,6 +115,56 @@
         </div>
       </div>
     </div>
+
+    <!-- New Group Modal -->
+    <div v-if="showNewGroupModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+      <div class="bg-[#1a1a1a] rounded-xl border border-[#333] w-full max-w-md p-6 shadow-2xl">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-lg font-bold text-white">新建分组</h3>
+          <button @click="closeNewGroupModal" class="text-gray-500 hover:text-white transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+        
+        <div class="space-y-4 mb-6">
+          <!-- Group Name Input -->
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-2">分组名称</label>
+            <input 
+              v-model="newGroupName" 
+              type="text" 
+              placeholder="例如：科技股观察"
+              class="w-full px-3 py-2 bg-[#0f0f0f] border border-[#333] rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-blue-500 transition-colors"
+            />
+          </div>
+          
+          <!-- Icon Selector -->
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-2">选择图标</label>
+            <div class="grid grid-cols-6 gap-2">
+              <button 
+                v-for="icon in availableIcons" 
+                :key="icon"
+                @click="newGroupIcon = icon"
+                class="w-10 h-10 flex items-center justify-center text-xl rounded-lg border transition-all"
+                :class="newGroupIcon === icon ? 'bg-blue-600 border-blue-600' : 'bg-[#0f0f0f] border-[#333] hover:border-gray-500'"
+              >
+                {{ icon }}
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex gap-3">
+          <button @click="closeNewGroupModal" class="flex-1 px-4 py-2 rounded-lg border border-[#333] text-gray-400 hover:text-white hover:bg-[#2a2a2a] transition-colors">
+            取消
+          </button>
+          <button @click="createNewGroup" :disabled="!newGroupName.trim()" class="flex-1 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-500 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+            创建分组
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -129,13 +179,18 @@ const activeGroup = ref('official')
 const activeFilter = ref('all')
 const sortBy = ref('time')
 
+// New Group Modal State
+const showNewGroupModal = ref(false)
+const newGroupName = ref('')
+const newGroupIcon = ref('📁')
+
+const availableIcons = ['📁', '⭐', '🔥', '💎', '🚀', '📊', '💰', '🎯', '⚡', '🌟', '💼', '🔔']
+
 // --- Data ---
-const groups = [
+const groups = ref([
   { id: 'official', name: '官方推荐', icon: '📂' },
-  { id: 'generated', name: '我的生成', icon: '👤' },
-  { id: 'watchlist', name: '重点观察', icon: '⭐' },
-  { id: 'short_term', name: '短线机会', icon: '⚡' }
-]
+  { id: 'generated', name: '我的生成', icon: '👤' }
+])
 
 const filters = [
   { label: 'All', value: 'all' },
@@ -221,7 +276,7 @@ const allOpportunities = [
 // --- Computed ---
 
 const currentGroup = computed(() => {
-  return groups.find(g => g.id === activeGroup.value) || groups[0]
+  return groups.value.find(g => g.id === activeGroup.value) || groups.value[0]
 })
 
 const filteredOpportunities = computed(() => {
@@ -262,6 +317,32 @@ const navigateToStrategy = (opportunity) => {
       strategyId: opportunity.id
     }
   })
+}
+
+const closeNewGroupModal = () => {
+  showNewGroupModal.value = false
+  newGroupName.value = ''
+  newGroupIcon.value = '📁'
+}
+
+const createNewGroup = () => {
+  if (!newGroupName.value.trim()) return
+  
+  // Generate unique ID
+  const newId = 'group_' + Date.now()
+  
+  // Add new group
+  groups.value.push({
+    id: newId,
+    name: newGroupName.value.trim(),
+    icon: newGroupIcon.value
+  })
+  
+  // Switch to new group
+  activeGroup.value = newId
+  
+  // Close modal
+  closeNewGroupModal()
 }
 
 </script>

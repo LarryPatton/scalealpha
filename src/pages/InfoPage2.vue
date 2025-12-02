@@ -102,16 +102,49 @@
         </div>
 
         <!-- Content Area -->
-        <div v-if="activeTabThemes === 'recommend' || (activeTabThemes === 'following' && currentThemes.length > 0)" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div v-if="activeTabThemes === 'recommend' || (activeTabThemes === 'following' && currentThemes.length > 0)" class="space-y-4">
           <!-- Theme Cards -->
-          <div v-for="theme in currentThemes" :key="theme.id" class="bg-[#1a1a1a] rounded-xl border border-[#333] p-5 hover:border-gray-500 transition-colors group relative">
-            <div class="flex justify-between items-start mb-3">
-              <span class="text-xs font-bold px-2 py-1 rounded bg-green-900/30 text-green-400 border border-green-900/50">{{ theme.sentiment }}</span>
-              <div class="flex items-center gap-2">
-                <div class="w-24 h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                  <div class="h-full bg-green-500" :style="{ width: theme.confidence + '%' }"></div>
+          <div v-for="theme in currentThemes" :key="theme.id" @click="toggleExpandTheme(theme)" class="bg-[#1a1a1a] rounded-xl border border-[#333] p-5 hover:border-gray-500 transition-colors group relative cursor-pointer">
+            <div class="flex flex-col md:flex-row gap-6">
+              <!-- Left: Sentiment & Confidence -->
+              <div class="md:w-48 flex-shrink-0">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="text-xs font-bold px-2 py-1 rounded border" 
+                    :class="{
+                      'bg-green-900/30 text-green-400 border-green-900/50': theme.sentiment === 'BULLISH',
+                      'bg-gray-700/30 text-gray-400 border-gray-700/50': theme.sentiment === 'NEUTRAL',
+                      'bg-red-900/30 text-red-400 border-red-900/50': theme.sentiment === 'BEARISH'
+                    }">
+                    {{ theme.sentiment }}
+                  </span>
+                  <span class="text-sm font-bold text-white">{{ theme.confidence }}%</span>
                 </div>
-                <span class="text-xs text-gray-400">{{ theme.confidence }}%</span>
+                <div class="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                  <div class="h-full" 
+                    :class="{
+                      'bg-green-500': theme.sentiment === 'BULLISH',
+                      'bg-gray-500': theme.sentiment === 'NEUTRAL',
+                      'bg-red-500': theme.sentiment === 'BEARISH'
+                    }"
+                    :style="{ width: theme.confidence + '%' }"></div>
+                </div>
+              </div>
+
+              <!-- Middle: Content -->
+              <div class="flex-1 min-w-0">
+                <h3 class="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors pr-20">{{ theme.title }}</h3>
+                <p class="text-sm text-gray-400 mb-3">{{ theme.desc }}</p>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs text-gray-500">Related:</span>
+                  <div class="flex flex-wrap gap-2">
+                    <span v-for="stock in theme.stocks" :key="stock" class="text-xs bg-[#2a2a2a] text-gray-300 px-2 py-0.5 rounded border border-[#333]">{{ stock }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right: Meta (placeholder for consistency) -->
+              <div class="flex flex-row md:flex-col justify-between items-end md:w-32 flex-shrink-0 text-right">
+                <div class="text-xs text-gray-500">今天</div>
               </div>
             </div>
             
@@ -124,10 +157,38 @@
               {{ theme.isFollowed ? '✓ 已关注' : '+ 关注' }}
             </button>
 
-            <h3 class="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors pr-16">{{ theme.title }}</h3>
-            <p class="text-sm text-gray-400 mb-4 line-clamp-2">{{ theme.desc }}</p>
-            <div class="flex flex-wrap gap-2">
-              <span v-for="stock in theme.stocks" :key="stock" class="text-xs bg-[#2a2a2a] text-gray-300 px-2 py-1 rounded border border-[#333]">{{ stock }}</span>
+            <!-- Expanded Content -->
+            <div v-if="theme.isExpanded" class="mt-6 pt-6 border-t border-[#333] animate-fade-in cursor-default" @click.stop>
+              <div class="mb-6">
+                <h4 class="text-sm font-bold text-gray-300 mb-2">📖 主题详情 (Theme Content)</h4>
+                <p class="text-sm text-gray-400 leading-relaxed">{{ theme.content }}</p>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-gray-300 mb-3">🔗 相关个股 (Related Stocks)</h4>
+                <div class="space-y-3">
+                  <div 
+                    v-for="stock in theme.stockDetails" 
+                    :key="stock.symbol" 
+                    @click="goToStockDetail(stock.symbol)"
+                    class="bg-[#222] rounded p-3 flex flex-col sm:flex-row sm:items-center gap-3 border border-[#333] hover:bg-[#2a2a2a] hover:border-gray-500 cursor-pointer transition-colors"
+                  >
+                    <div class="flex items-center gap-4 min-w-[120px]">
+                      <span class="font-bold text-white">{{ stock.symbol }}</span>
+                      <span class="text-xs font-mono" :class="stock.change >= 0 ? 'text-green-400' : 'text-red-400'">
+                        {{ stock.change >= 0 ? '+' : '' }}{{ stock.change }}% {{ stock.change >= 0 ? '↑' : '↓' }}
+                      </span>
+                    </div>
+                    <div class="text-xs text-gray-500 border-l border-[#444] pl-3 sm:pl-4">
+                      {{ stock.reason }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-4 flex justify-center">
+                <button @click.stop="toggleExpandTheme(theme)" class="text-xs text-gray-500 hover:text-white flex items-center gap-1">
+                  收起 (Collapse) 🔼
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -213,7 +274,7 @@
         <!-- Content Area -->
         <div v-if="activeTabAttribution === 'recommend' || (activeTabAttribution === 'following' && currentAttributions.length > 0)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Attribution Cards -->
-          <div v-for="item in currentAttributions" :key="item.id" class="bg-[#1a1a1a] rounded-xl border border-[#333] p-4 hover:border-gray-500 transition-colors relative group">
+          <div v-for="item in currentAttributions" :key="item.id" @click="goToStockDetail(item.symbol)" class="bg-[#1a1a1a] rounded-xl border border-[#333] p-4 hover:border-gray-500 transition-colors relative group cursor-pointer">
             <div class="flex justify-between items-start mb-3">
               <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded bg-[#2a2a2a] flex items-center justify-center text-xs font-bold text-white border border-[#333]">{{ item.symbol[0] }}</div>
@@ -268,7 +329,7 @@
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8 text-left">
-            <div v-for="item in attributionData.suggested" :key="item.id" class="bg-[#2a2a2a] rounded-xl border border-[#333] p-4 hover:border-gray-500 transition-colors relative group">
+            <div v-for="item in attributionData.suggested" :key="item.id" @click="goToStockDetail(item.symbol)" class="bg-[#2a2a2a] rounded-xl border border-[#333] p-4 hover:border-gray-500 transition-colors relative group cursor-pointer">
               <div class="flex justify-between items-start mb-3">
                 <div class="flex items-center gap-3">
                   <div class="w-8 h-8 rounded bg-[#1a1a1a] flex items-center justify-center text-xs font-bold text-white border border-[#333]">{{ item.symbol[0] }}</div>
@@ -335,7 +396,7 @@
         <!-- Content Area -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <!-- Opportunity Cards -->
-          <div v-for="opp in filteredOpportunities" :key="opp.id" class="bg-[#1a1a1a] rounded-xl border border-[#333] overflow-hidden hover:border-blue-500/50 transition-all group relative">
+          <div v-for="opp in filteredOpportunities" :key="opp.id" @click="navigateToStrategy(opp)" class="bg-[#1a1a1a] rounded-xl border border-[#333] overflow-hidden hover:border-blue-500/50 transition-all group relative cursor-pointer">
             <div class="p-5">
               <div class="flex justify-between items-start mb-4">
                 <div class="flex items-center gap-3">
@@ -437,6 +498,9 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 // Workflow Steps
 const steps = [
@@ -473,14 +537,93 @@ const oppFilters = [
 // 1. Market Themes
 const themesData = ref({
   recommend: [
-    { id: 1, title: 'AI Infrastructure Boom', desc: 'Enterprise AI adoption drives massive infrastructure investment across cloud and semiconductor sectors.', sentiment: 'BULLISH', confidence: 92, stocks: ['NVDA', 'AMD', 'SMCI', 'AVGO'], isFollowed: false },
-    { id: 2, title: 'Cybersecurity Renaissance', desc: 'Rising threats fuel enterprise security spending surge as companies fortify digital defenses.', sentiment: 'BULLISH', confidence: 78, stocks: ['CRWD', 'PANW', 'ZS', 'FTNT'], isFollowed: false },
-    { id: 3, title: 'Rate Cut Expectations', desc: 'Fed pivot hopes lift rate-sensitive sectors including banks and real estate.', sentiment: 'NEUTRAL', confidence: 65, stocks: ['XLF', 'JPM', 'SCHW', 'BLK'], isFollowed: false }
+    { 
+      id: 1, 
+      title: 'AI Infrastructure Boom', 
+      desc: 'Enterprise AI adoption drives massive infrastructure investment across cloud and semiconductor sectors.', 
+      sentiment: 'BULLISH', 
+      confidence: 92, 
+      stocks: ['NVDA', 'AMD', 'SMCI', 'AVGO'], 
+      isFollowed: false,
+      isExpanded: false,
+      content: 'The surge in Generative AI applications is creating an unprecedented demand for high-performance computing infrastructure. Hyperscalers are aggressively increasing their capex to secure GPU supplies, directly benefiting the semiconductor supply chain. We are seeing a structural shift where data center revenue is becoming the primary growth engine for chipmakers.',
+      stockDetails: [
+        { symbol: 'NVDA', change: 3.45, reason: 'Dominant market share in AI training GPUs; data center revenue +400% YoY.' },
+        { symbol: 'AMD', change: 1.20, reason: 'Emerging as a strong second player with MI300 series; gaining traction in inference workloads.' },
+        { symbol: 'SMCI', change: -0.50, reason: 'Leading liquid cooling solutions for high-density racks, though margin pressure remains.' },
+        { symbol: 'AVGO', change: 2.10, reason: 'Strong demand for custom AI accelerators (ASICs) from Google and Meta.' }
+      ]
+    },
+    { 
+      id: 2, 
+      title: 'Cybersecurity Renaissance', 
+      desc: 'Rising threats fuel enterprise security spending surge as companies fortify digital defenses.', 
+      sentiment: 'BULLISH', 
+      confidence: 78, 
+      stocks: ['CRWD', 'PANW', 'ZS', 'FTNT'], 
+      isFollowed: false,
+      isExpanded: false,
+      content: 'With the increasing sophistication of cyber attacks, including AI-driven threats, enterprises are prioritizing cybersecurity in their IT budgets. Zero-trust architecture and platformization are key trends driving consolidation in the industry.',
+      stockDetails: [
+        { symbol: 'CRWD', change: 1.85, reason: 'Platform consolidation thesis playing out; strong module adoption.' },
+        { symbol: 'PANW', change: 0.95, reason: 'Next-gen firewall demand remains robust; expanding into cloud security.' },
+        { symbol: 'ZS', change: -0.30, reason: 'High valuation multiples causing short-term volatility despite good growth.' },
+        { symbol: 'FTNT', change: 1.10, reason: 'Strong product cycle in secure networking.' }
+      ]
+    },
+    { 
+      id: 3, 
+      title: 'Rate Cut Expectations', 
+      desc: 'Fed pivot hopes lift rate-sensitive sectors including banks and real estate.', 
+      sentiment: 'NEUTRAL', 
+      confidence: 65, 
+      stocks: ['XLF', 'JPM', 'SCHW', 'BLK'], 
+      isFollowed: false,
+      isExpanded: false,
+      content: 'Market participants are pricing in potential rate cuts later this year. This sentiment is providing a floor for financials and real estate, although sticky inflation data could delay the Fed\'s pivot.',
+      stockDetails: [
+        { symbol: 'XLF', change: 0.45, reason: 'Sector ETF benefiting from yield curve steepening expectations.' },
+        { symbol: 'JPM', change: 0.80, reason: 'Best-in-class balance sheet; net interest income remains resilient.' },
+        { symbol: 'SCHW', change: -1.50, reason: 'Cash sorting headwinds persist, though slowing down.' },
+        { symbol: 'BLK', change: 1.20, reason: 'Asset management flows improving with market rally.' }
+      ]
+    }
   ],
   following: [], // Empty by default
   suggested: [
-    { id: 4, title: 'EV Market Shift', desc: 'Competition intensifies in the EV sector as traditional automakers ramp up production.', sentiment: 'BEARISH', confidence: 60, stocks: ['TSLA', 'RIVN', 'F', 'GM'], isFollowed: false },
-    { id: 5, title: 'Biotech Innovation', desc: 'New gene therapies and weight-loss drugs drive renewed interest in the biotech sector.', sentiment: 'BULLISH', confidence: 72, stocks: ['LLY', 'NVO', 'VRTX'], isFollowed: false }
+    { 
+      id: 4, 
+      title: 'EV Market Shift', 
+      desc: 'Competition intensifies in the EV sector as traditional automakers ramp up production.', 
+      sentiment: 'BEARISH', 
+      confidence: 60, 
+      stocks: ['TSLA', 'RIVN', 'F', 'GM'], 
+      isFollowed: false,
+      isExpanded: false,
+      content: 'The EV market is transitioning from early adopters to mass market, leading to price wars. High interest rates are also dampening demand for big-ticket items.',
+      stockDetails: [
+        { symbol: 'TSLA', change: -3.50, reason: 'Margin compression fears due to price cuts; delivery guidance missed.' },
+        { symbol: 'RIVN', change: -4.20, reason: 'Cash burn concerns; production ramp challenges.' },
+        { symbol: 'F', change: 0.20, reason: 'Hybrid strategy paying off; pulling back on pure EV spend.' },
+        { symbol: 'GM', change: 0.50, reason: 'Share buybacks supporting price; battery production improving.' }
+      ]
+    },
+    { 
+      id: 5, 
+      title: 'Biotech Innovation', 
+      desc: 'New gene therapies and weight-loss drugs drive renewed interest in the biotech sector.', 
+      sentiment: 'BULLISH', 
+      confidence: 72, 
+      stocks: ['LLY', 'NVO', 'VRTX'], 
+      isFollowed: false,
+      isExpanded: false,
+      content: 'The GLP-1 agonist revolution for obesity and diabetes is just the beginning. We are also seeing breakthroughs in gene editing (CRISPR) and Alzheimer\'s treatments, attracting capital back to the sector.',
+      stockDetails: [
+        { symbol: 'LLY', change: 2.75, reason: 'Mounjaro/Zepbound sales beating expectations; pipeline expansion.' },
+        { symbol: 'NVO', change: 1.90, reason: 'Wegovy supply constraints easing; cardiovascular benefits confirmed.' },
+        { symbol: 'VRTX', change: 0.60, reason: 'Dominance in cystic fibrosis; pain management drug shows promise.' }
+      ]
+    }
   ]
 })
 
@@ -501,7 +644,6 @@ const attributionData = ref({
 
 // 3. Opportunities
 const opportunitiesData = ref([
-    { id: 1, symbol: 'NVDA', score: 80, type: 'Long', title: '英伟达AI芯片投资机会', strategy: '技术分析 + 动量', period: '1-3个月', return: 15.8, risk: '中等', reason: '英伟达在AI芯片领域持续领先，新款H100/H200芯片供不应求。基于技术分析和基本面分析的...', tags: ['AI芯片', '强势股', '高成长'], isSaved: false, savedGroups: [] },
     { id: 2, symbol: 'MSFT', score: 85, type: 'Long', title: '微软云计算+AI双轮驱动', strategy: '基本面分析 + 估值', period: '3-6个月', return: 12.3, risk: '低', reason: 'Azure云业务保持强劲增长，AI产品Copilot已在企业端大规模部署，作为AI时代的...', tags: ['云计算', 'AI应用', '蓝筹股'], isSaved: false, savedGroups: [] },
     { id: 3, symbol: 'META', score: 82, type: 'Long', title: 'Meta广告业务全面复苏', strategy: '事件驱动 + 财报', period: '1个月-6个月', return: 18.5, risk: '中等', reason: 'Meta第三季度财报大超预期，广告业务全面复苏，管理层推行的效率年策略见效，成本控制...', tags: ['社交媒体', '广告复苏', '扭亏为盈'], isSaved: false, savedGroups: [] },
     { id: 4, symbol: 'AMD', score: 79, type: 'Long', title: 'AMD AI芯片挑战者地位', strategy: '技术分析 + 竞品', period: '1-3个月', return: 22.6, risk: '高', reason: 'AMD推出MI300系列AI加速器，凭借性价比优势抢占市场，尽管面临英伟达的强势竞争，但在...', tags: ['AI芯片', '竞争', '高风险高回报'], isSaved: false, savedGroups: [] },
@@ -509,6 +651,29 @@ const opportunitiesData = ref([
 ])
 
 // --- Actions ---
+
+const toggleExpandTheme = (theme) => {
+  theme.isExpanded = !theme.isExpanded
+}
+
+const goToStockDetail = (symbol) => {
+  router.push({ 
+    name: 'StockAttributionDetail', 
+    params: { id: symbol },
+    query: { tab: 'price' }
+  })
+}
+
+const navigateToStrategy = (opportunity) => {
+  // 跳转到个股详情页，自动打开策略Tab并显示该策略详情
+  router.push({
+    path: `/stock-attribution/${opportunity.symbol}`,
+    query: {
+      tab: 'strategies',
+      strategyId: opportunity.id
+    }
+  })
+}
 
 const toggleFollow = (category, item) => {
   let dataRef

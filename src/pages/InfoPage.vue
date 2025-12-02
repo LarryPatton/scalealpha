@@ -1022,6 +1022,18 @@ const navigateToDetail = (type, id) => {
       // Navigate to report detail
       router.push(`/opportunity/report/${item.id}`)
     }
+  } else if (type === 'stock') {
+    // Navigate to stock attribution detail page
+    // Find the stock item to get its code
+    let item = allItems.find(i => i.id === id)
+    if (!item) {
+      item = recommendedItems.find(i => i.id === id && i.type === 'stock')
+    }
+    
+    if (item && item.code) {
+      // Jump to stock attribution detail page using the stock code
+      router.push({ name: 'StockAttributionDetail', params: { id: item.code } })
+    }
   } else {
     router.push(`/info/${type}/${id}`)
   }

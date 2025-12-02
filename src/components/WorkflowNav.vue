@@ -12,50 +12,20 @@
           </span>
         </router-link>
 
-        <!-- Workflow Steps (Only shown when logged in) -->
+        <!-- Tab Navigation (Only shown when logged in) -->
         <div v-if="isLoggedIn" class="flex-1 flex items-center justify-center mx-8">
-          <div class="flex items-center gap-1">
-            <div 
-              v-for="(step, index) in steps" 
+          <div class="flex items-center gap-6">
+            <button
+              v-for="step in steps" 
               :key="step.id"
-              class="flex items-center"
+              @click="handleStepClick(step)"
+              :class="[
+                'px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
+                getTabClasses(step.status)
+              ]"
             >
-              <!-- Step Item -->
-              <button
-                @click="handleStepClick(step)"
-                :class="[
-                  'flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300',
-                  getStepClasses(step.status)
-                ]"
-              >
-                <!-- Small Dot Indicator -->
-                <div 
-                  :class="[
-                    'w-2 h-2 rounded-full transition-all duration-300',
-                    getDotClasses(step.status)
-                  ]"
-                ></div>
-
-                <!-- Step Label -->
-                <span 
-                  :class="[
-                    'font-medium text-sm whitespace-nowrap transition-all duration-300',
-                    getLabelClasses(step.status)
-                  ]"
-                >
-                  {{ step.label }}
-                </span>
-              </button>
-
-              <!-- Connector Line -->
-              <div 
-                v-if="index < steps.length - 1"
-                :class="[
-                  'w-8 h-0.5 transition-all duration-300',
-                  getConnectorClasses(step.status, steps[index + 1].status)
-                ]"
-              ></div>
-            </div>
+              {{ step.label }}
+            </button>
           </div>
         </div>
 
@@ -197,60 +167,12 @@ const handleStepClick = (step) => {
   navigateToStep(step.id)
 }
 
-// 获取步骤按钮的样式类（移除 locked 状态）
-const getStepClasses = (status) => {
-  switch (status) {
-    case 'current':
-      return 'bg-blue-600/20 hover:bg-blue-600/30 cursor-pointer border border-blue-500/50'
-    case 'completed':
-      return 'bg-blue-600/10 hover:bg-blue-600/20 cursor-pointer border border-transparent'
-    case 'available':
-      return 'bg-transparent hover:bg-[#3a3a3a] cursor-pointer border border-transparent'
-    default:
-      return 'bg-transparent hover:bg-[#3a3a3a] cursor-pointer border border-transparent'
+// 获取 Tab 标签的样式类（简约扁平风格）
+const getTabClasses = (status) => {
+  if (status === 'current') {
+    return 'bg-blue-600 text-white cursor-pointer'
   }
-}
-
-// 获取小圆点的样式类（移除 locked 状态）
-const getDotClasses = (status) => {
-  switch (status) {
-    case 'current':
-      return 'bg-blue-500 shadow-lg shadow-blue-500/50'
-    case 'completed':
-      return 'bg-blue-500'
-    case 'available':
-      return 'bg-gray-600'
-    default:
-      return 'bg-gray-600'
-  }
-}
-
-// 获取标签的样式类（移除 locked 状态）
-const getLabelClasses = (status) => {
-  switch (status) {
-    case 'current':
-      return 'text-white'
-    case 'completed':
-      return 'text-gray-300'
-    case 'available':
-      return 'text-gray-400'
-    default:
-      return 'text-gray-400'
-  }
-}
-
-// 获取连接线的样式类
-const getConnectorClasses = (currentStatus, nextStatus) => {
-  // 如果当前步骤已完成，连接线为蓝色
-  if (currentStatus === 'completed') {
-    return 'bg-blue-500'
-  }
-  // 如果当前步骤是当前页面，连接线为蓝色渐变
-  if (currentStatus === 'current') {
-    return 'bg-gradient-to-r from-blue-500 to-gray-700'
-  }
-  // 其他情况为灰色
-  return 'bg-gray-700'
+  return 'bg-transparent text-gray-300 hover:bg-[#3a3a3a] hover:text-white cursor-pointer'
 }
 
 // 重置进度

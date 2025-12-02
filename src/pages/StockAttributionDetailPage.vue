@@ -1,40 +1,150 @@
 <template>
   <div class="bg-[#0f0f0f] min-h-screen pt-24 pb-20 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-5xl mx-auto">
-      <!-- Header -->
-      <div class="mb-6 flex items-center gap-4">
-        <router-link to="/stock-attribution" class="text-gray-500 hover:text-white transition-colors">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-        </router-link>
-        <h1 class="text-2xl font-bold text-white">📊 {{ symbol }} 个股归因详情</h1>
+    <div class="max-w-7xl mx-auto">
+
+      <!-- Stock Basic Info Card -->
+      <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-6 mb-8">
+        <div class="flex items-start justify-between">
+          <!-- Left Section: Company Info & Price -->
+          <div class="flex-1">
+            <!-- Company Name & Symbol -->
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 bg-green-600 rounded flex items-center justify-center text-white font-bold">
+                {{ stockInfo.symbol.charAt(0) }}
+              </div>
+              <div>
+                <h1 class="text-xl font-bold text-white flex items-center gap-2">
+                  {{ stockInfo.companyName }} ({{ stockInfo.symbol }})
+                  <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </h1>
+                <div class="flex items-center gap-3 text-xs text-gray-500 mt-1">
+                  <span class="flex items-center gap-1">
+                    <img src="https://flagcdn.com/w20/us.png" alt="US" class="w-4 h-3">
+                    纳斯达克
+                  </span>
+                  <span>•</span>
+                  <span>按钮</span>
+                  <span>USD</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Current Price & Change -->
+            <div class="flex items-end gap-6 mb-4">
+              <div>
+                <div class="text-4xl font-bold text-white">{{ stockInfo.currentPrice }}</div>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="text-sm font-medium" :class="stockInfo.changePercent >= 0 ? 'text-green-500' : 'text-red-500'">
+                    {{ stockInfo.changePercent >= 0 ? '+' : '' }}{{ stockInfo.changeAmount }} ({{ stockInfo.changePercent >= 0 ? '+' : '' }}{{ stockInfo.changePercent }}%)
+                  </span>
+                  <span class="text-sm" :class="stockInfo.changePercent >= 0 ? 'text-green-500' : 'text-red-500'">
+                    {{ stockInfo.changePercent >= 0 ? '▲' : '▼' }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Pre-market Data -->
+              <div class="border-l border-[#333] pl-6">
+                <div class="flex items-center gap-2 text-xs text-gray-500 mb-1">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                  盘前 · {{ stockInfo.preMarket.time }}
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-medium" :class="stockInfo.preMarket.changePercent >= 0 ? 'text-green-500' : 'text-red-500'">
+                    {{ stockInfo.preMarket.changePercent >= 0 ? '▲' : '▼' }}
+                  </span>
+                  <span class="text-lg font-bold text-white">{{ stockInfo.preMarket.price }}</span>
+                  <span class="text-sm" :class="stockInfo.preMarket.changePercent >= 0 ? 'text-green-500' : 'text-red-500'">
+                    {{ stockInfo.preMarket.changePercent >= 0 ? '+' : '' }}{{ stockInfo.preMarket.changeAmount }} ({{ stockInfo.preMarket.changePercent >= 0 ? '+' : '' }}{{ stockInfo.preMarket.changePercent }}%)
+                  </span>
+                  <span class="text-xs text-gray-500">{{ stockInfo.preMarket.time }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Section: Fair Value & Ranges -->
+          <div class="flex flex-col gap-4 min-w-[320px]">
+            <!-- Fair Value -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs text-gray-500">公允价格</span>
+                <svg class="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              </div>
+              <div class="relative">
+                <div class="flex justify-between text-xs text-gray-500 mb-1">
+                  <span>{{ stockInfo.fairValue.low }}</span>
+                  <span>{{ stockInfo.fairValue.high }}</span>
+                </div>
+                <div class="h-2 bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 rounded-full relative">
+                  <div class="absolute top-1/2 -translate-y-1/2 w-1 h-4 bg-white rounded" :style="{ left: stockInfo.fairValue.position + '%' }"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Day Range -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs text-gray-500">当日幅度</span>
+              </div>
+              <div class="relative">
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-gray-400">{{ stockInfo.dayRange.low }}</span>
+                  <span class="text-gray-400">{{ stockInfo.dayRange.high }}</span>
+                </div>
+                <div class="h-1.5 bg-gray-700 rounded-full relative overflow-hidden">
+                  <div class="absolute left-0 h-full bg-gray-500 rounded-full" :style="{ width: stockInfo.dayRange.position + '%' }"></div>
+                  <div class="absolute top-1/2 -translate-y-1/2 w-0.5 h-3 bg-white" :style="{ left: stockInfo.dayRange.position + '%' }"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 52 Week Range -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs text-gray-500">52周范围</span>
+              </div>
+              <div class="relative">
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-gray-400">{{ stockInfo.week52Range.low }}</span>
+                  <span class="text-gray-400">{{ stockInfo.week52Range.high }}</span>
+                </div>
+                <div class="h-1.5 bg-gray-700 rounded-full relative overflow-hidden">
+                  <div class="absolute left-0 h-full bg-gray-500 rounded-full" :style="{ width: stockInfo.week52Range.position + '%' }"></div>
+                  <div class="absolute top-1/2 -translate-y-1/2 w-0.5 h-3 bg-white" :style="{ left: stockInfo.week52Range.position + '%' }"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Tabs -->
-      <div class="flex border-b border-[#333] mb-8 overflow-x-auto">
+      <div class="grid grid-cols-4 border-b border-[#333] mb-8">
         <button 
           @click="activeTab = 'price'"
-          class="px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap"
+          class="px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap text-center"
           :class="activeTab === 'price' ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-300'"
         >
           价格走势 (Price Trend)
         </button>
         <button 
           @click="activeTab = 'attribution'"
-          class="px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap"
+          class="px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap text-center"
           :class="activeTab === 'attribution' ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-300'"
         >
           个股归因 (Attribution)
         </button>
         <button 
           @click="activeTab = 'strategies'"
-          class="px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap"
+          class="px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap text-center"
           :class="activeTab === 'strategies' ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-300'"
         >
           个股相关策略 (Strategies)
         </button>
         <button 
           @click="activeTab = 'plan'"
-          class="px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap"
+          class="px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap text-center"
           :class="activeTab === 'plan' ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-300'"
         >
           计划制定 (Plan Formulation)
@@ -148,10 +258,285 @@
 
       <!-- Plan Tab -->
       <div v-if="activeTab === 'plan'" class="animate-fade-in">
-        <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-12 text-center">
-           <div class="text-4xl mb-4">📝</div>
-           <h3 class="text-xl font-bold text-white mb-2">Plan Formulation</h3>
-           <p class="text-gray-500">Create and manage your trading plans here.</p>
+        <div class="mb-6">
+          <h3 class="text-lg font-bold text-white mb-2">📊 {{ symbol }} 交易计划制定</h3>
+          <p class="text-sm text-gray-500">基于AI推荐与个人策略的综合交易计划</p>
+        </div>
+
+        <!-- Plan Items -->
+        <div class="space-y-4">
+          <!-- Plan Item 1 -->
+          <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-5">
+            <div class="flex items-start gap-4">
+              <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
+                1
+              </div>
+              <div class="flex-1">
+                <h4 class="text-white font-bold mb-2 flex items-center gap-2">
+                  🎯 建仓策略
+                  <span class="text-xs px-2 py-0.5 bg-green-900/30 text-green-400 border border-green-900/50 rounded">推荐</span>
+                </h4>
+                <p class="text-sm text-gray-400 mb-3">
+                  分批建仓策略：在 <span class="text-white font-medium">$172-178</span> 区间分3次建仓，每次买入总仓位的 <span class="text-white font-medium">33%</span>。首次建仓设置在 <span class="text-white font-medium">$176-178</span>，第二次在 <span class="text-white font-medium">$174-176</span>，第三次在 <span class="text-white font-medium">$172-174</span>。
+                </p>
+                <div class="flex items-center gap-4 text-xs text-gray-500">
+                  <span class="flex items-center gap-1">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    降低平均成本
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    风险控制
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Plan Item 2 -->
+          <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-5">
+            <div class="flex items-start gap-4">
+              <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
+                2
+              </div>
+              <div class="flex-1">
+                <h4 class="text-white font-bold mb-2">📈 目标价位设定</h4>
+                <p class="text-sm text-gray-400 mb-3">
+                  短期目标（1-2月）: <span class="text-green-400 font-medium">$195-200</span> (涨幅 +9-12%)<br>
+                  中期目标（3-6月）: <span class="text-green-400 font-medium">$210-220</span> (涨幅 +18-23%)<br>
+                  长期目标（6-12月）: <span class="text-green-400 font-medium">$230-240</span> (涨幅 +29-35%)
+                </p>
+                <div class="grid grid-cols-3 gap-2 text-xs">
+                  <div class="bg-[#0f0f0f] border border-[#333] rounded p-2 text-center">
+                    <div class="text-gray-500 mb-1">Q1 2025</div>
+                    <div class="text-green-400 font-bold">$200</div>
+                  </div>
+                  <div class="bg-[#0f0f0f] border border-[#333] rounded p-2 text-center">
+                    <div class="text-gray-500 mb-1">Q2 2025</div>
+                    <div class="text-green-400 font-bold">$215</div>
+                  </div>
+                  <div class="bg-[#0f0f0f] border border-[#333] rounded p-2 text-center">
+                    <div class="text-gray-500 mb-1">Q3-Q4 2025</div>
+                    <div class="text-green-400 font-bold">$235</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Plan Item 3 -->
+          <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-5">
+            <div class="flex items-start gap-4">
+              <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
+                3
+              </div>
+              <div class="flex-1">
+                <h4 class="text-white font-bold mb-2 flex items-center gap-2">
+                  �️ 止损策略
+                  <span class="text-xs px-2 py-0.5 bg-red-900/30 text-red-400 border border-red-900/50 rounded">关键</span>
+                </h4>
+                <p class="text-sm text-gray-400 mb-3">
+                  硬止损位：<span class="text-red-400 font-medium">$165</span> (跌幅约 -7.5%)<br>
+                  软止损位：<span class="text-yellow-400 font-medium">$170</span> (跌幅约 -4.5%)，观察3日K线确认趋势<br>
+                  移动止损：价格每上涨 <span class="text-white font-medium">$10</span>，止损位相应上移 <span class="text-white font-medium">$5</span>，锁定利润
+                </p>
+                <div class="flex items-center gap-2 text-xs text-yellow-500 bg-yellow-900/20 border border-yellow-900/50 rounded p-2">
+                  <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                  <span>纪律执行：触及止损位立即平仓，不抱有幻想</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Plan Item 4 -->
+          <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-5">
+            <div class="flex items-start gap-4">
+              <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
+                4
+              </div>
+              <div class="flex-1">
+                <h4 class="text-white font-bold mb-2">⚖️ 仓位管理</h4>
+                <p class="text-sm text-gray-400 mb-3">
+                  总仓位占比：不超过投资组合的 <span class="text-white font-medium">25%</span><br>
+                  单次加仓：不超过总仓位的 <span class="text-white font-medium">30%</span><br>
+                  减仓条件：达到短期目标价后，减仓 <span class="text-white font-medium">30-40%</span>，锁定部分利润，剩余仓位追求更高目标
+                </p>
+                <div class="bg-[#0f0f0f] border border-[#333] rounded p-3">
+                  <div class="flex items-center justify-between text-xs mb-2">
+                    <span class="text-gray-500">当前建议仓位</span>
+                    <span class="text-white font-medium">20%</span>
+                  </div>
+                  <div class="h-2 bg-gray-700 rounded-full overflow-hidden">
+                    <div class="h-full bg-blue-500" style="width: 20%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Plan Item 5 -->
+          <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-5">
+            <div class="flex items-start gap-4">
+              <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
+                5
+              </div>
+              <div class="flex-1">
+                <h4 class="text-white font-bold mb-2">📅 关键时间节点</h4>
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-start gap-3">
+                    <div class="flex-shrink-0 w-20 text-gray-500 text-xs">2025-01-30</div>
+                    <div class="flex-1">
+                      <div class="text-white font-medium">Q4 2024 财报发布</div>
+                      <div class="text-gray-400 text-xs mt-1">预期 EPS: $1.85-1.92，营收: $89-91B</div>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <div class="flex-shrink-0 w-20 text-gray-500 text-xs">2025-02-15</div>
+                    <div class="flex-1">
+                      <div class="text-white font-medium">Gemini 2.0 完整版发布</div>
+                      <div class="text-gray-400 text-xs mt-1">市场关注AI竞争力提升</div>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <div class="flex-shrink-0 w-20 text-gray-500 text-xs">2025-03-10</div>
+                    <div class="flex-1">
+                      <div class="text-white font-medium">反垄断案二审判决</div>
+                      <div class="text-gray-400 text-xs mt-1">监管风险评估关键节点</div>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <div class="flex-shrink-0 w-20 text-gray-500 text-xs">2025-05-14</div>
+                    <div class="flex-1">
+                      <div class="text-white font-medium">Google I/O 开发者大会</div>
+                      <div class="text-gray-400 text-xs mt-1">新产品和技术路线图披露</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Plan Item 6 -->
+          <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-5">
+            <div class="flex items-start gap-4">
+              <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
+                6
+              </div>
+              <div class="flex-1">
+                <h4 class="text-white font-bold mb-2">🔍 监控指标</h4>
+                <div class="grid grid-cols-2 gap-3 text-sm">
+                  <div class="bg-[#0f0f0f] border border-[#333] rounded p-3">
+                    <div class="text-gray-500 text-xs mb-1">技术指标</div>
+                    <ul class="space-y-1 text-gray-400 text-xs">
+                      <li>• RSI 保持在 40-70 区间</li>
+                      <li>• MACD 金叉确认上升趋势</li>
+                      <li>• 成交量放大配合突破</li>
+                      <li>• 50日均线支撑位 $172</li>
+                    </ul>
+                  </div>
+                  <div class="bg-[#0f0f0f] border border-[#333] rounded p-3">
+                    <div class="text-gray-500 text-xs mb-1">基本面指标</div>
+                    <ul class="space-y-1 text-gray-400 text-xs">
+                      <li>• YouTube 广告营收增速</li>
+                      <li>• Cloud 业务利润率</li>
+                      <li>• AI 产品用户增长</li>
+                      <li>• 自由现金流稳定性</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Plan Item 7 -->
+          <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-5">
+            <div class="flex items-start gap-4">
+              <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
+                7
+              </div>
+              <div class="flex-1">
+                <h4 class="text-white font-bold mb-2">⚠️ 风险提示与应对</h4>
+                <div class="space-y-3 text-sm">
+                  <div class="flex items-start gap-2">
+                    <span class="text-red-400 flex-shrink-0">•</span>
+                    <div>
+                      <span class="text-white font-medium">反垄断风险：</span>
+                      <span class="text-gray-400">若判决要求拆分，立即减仓至 10% 以下，评估影响后再决策</span>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <span class="text-yellow-400 flex-shrink-0">•</span>
+                    <div>
+                      <span class="text-white font-medium">AI 竞争加剧：</span>
+                      <span class="text-gray-400">关注 OpenAI、Anthropic 产品发布，若搜索份额下降超 2%，重新评估</span>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <span class="text-yellow-400 flex-shrink-0">•</span>
+                    <div>
+                      <span class="text-white font-medium">广告市场衰退：</span>
+                      <span class="text-gray-400">宏观经济恶化时，广告业务首当其冲，考虑对冲或减仓</span>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <span class="text-blue-400 flex-shrink-0">•</span>
+                    <div>
+                      <span class="text-white font-medium">Cloud 业务低于预期：</span>
+                      <span class="text-gray-400">若营收增速降至 20% 以下，下调目标价至 $190</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Plan Item 8 -->
+          <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-5">
+            <div class="flex items-start gap-4">
+              <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
+                8
+              </div>
+              <div class="flex-1">
+                <h4 class="text-white font-bold mb-2">🎓 持仓复盘与优化</h4>
+                <p class="text-sm text-gray-400 mb-3">
+                  定期复盘频率：每 <span class="text-white font-medium">2周</span> 进行一次持仓回顾，每 <span class="text-white font-medium">季度</span> 完整评估策略有效性
+                </p>
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-center gap-2 text-gray-400">
+                    <svg class="w-4 h-4 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    记录每次买卖决策的逻辑和市场环境
+                  </div>
+                  <div class="flex items-center gap-2 text-gray-400">
+                    <svg class="w-4 h-4 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    对比实际表现与预期目标的偏差
+                  </div>
+                  <div class="flex items-center gap-2 text-gray-400">
+                    <svg class="w-4 h-4 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    根据新信息及时调整计划（保持灵活性）
+                  </div>
+                  <div class="flex items-center gap-2 text-gray-400">
+                    <svg class="w-4 h-4 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    总结成功与失败的经验，持续改进
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Summary Card -->
+          <div class="bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-xl border border-blue-500/30 p-6 mt-6">
+            <div class="flex items-start gap-4">
+              <div class="text-4xl">💡</div>
+              <div class="flex-1">
+                <h4 class="text-white font-bold mb-2">计划执行要点</h4>
+                <p class="text-sm text-gray-300 leading-relaxed">
+                  <strong class="text-blue-400">严格遵守纪律</strong>是成功的关键。不要因为短期波动而偏离计划，也不要因为贪婪而忽视止损。
+                  市场永远充满不确定性，但有计划的投资者能够在长期中获得稳定回报。
+                  <span class="text-yellow-400">记住：保护本金永远是第一位的！</span>
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -368,6 +753,36 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const symbol = ref(route.params.id || 'NVDA')
+
+// --- Stock Basic Info Data ---
+const stockInfo = ref({
+  symbol: 'GOOGL',
+  companyName: 'Alphabet Inc.',
+  currentPrice: '178.35',
+  changeAmount: '3.12',
+  changePercent: 1.78,
+  preMarket: {
+    price: '179.85',
+    changeAmount: '1.50',
+    changePercent: 0.84,
+    time: '08:45:23'
+  },
+  fairValue: {
+    low: '165.00',
+    high: '190.00',
+    position: 53 // percentage position of current price
+  },
+  dayRange: {
+    low: '175.20',
+    high: '179.80',
+    position: 70
+  },
+  week52Range: {
+    low: '121.46',
+    high: '193.31',
+    position: 79
+  }
+})
 
 // --- State ---
 const activeTab = ref('attribution')

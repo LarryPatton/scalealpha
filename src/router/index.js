@@ -67,7 +67,7 @@ const routes = [
   {
     path: '/info2',
     name: 'Info2',
-    component: InfoPage2,
+    component: InfoPage,
     meta: { layout: AppLayout }
   },
   {
@@ -107,7 +107,7 @@ const routes = [
   {
     path: '/info',
     name: 'Info',
-    component: InfoPage,
+    component: InfoPage2,
     meta: { layout: AppLayout }
   },
   {
