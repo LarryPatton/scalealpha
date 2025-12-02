@@ -10,6 +10,12 @@ import AppLayout from '../layouts/AppLayout.vue'
 // Pages
 import HomePage from '../pages/HomePage.vue'
 import RevenuePage from '../pages/RevenuePage.vue'
+import DemoPage from '../pages/DemoPage.vue'
+import InfoPage2 from '../pages/InfoPage2.vue'
+import AllOpportunitiesPage from '../pages/AllOpportunitiesPage.vue'
+import AllMarketThemesPage from '../pages/AllMarketThemesPage.vue'
+import AllStockAttributionPage from '../pages/AllStockAttributionPage.vue'
+import StockAttributionDetailPage from '../pages/StockAttributionDetailPage.vue'
 import LoginPage from '../pages/LoginPage.vue'
 import InfoPage from '../pages/InfoPage.vue'
 import StockDetail from '../pages/StockDetail.vue'
@@ -31,7 +37,6 @@ import OpportunityPage from '../pages/OpportunityPage.vue'
 import OpportunityReportDetail from '../pages/OpportunityReportDetail.vue'
 import PlanningPage from '../pages/PlanningPage.vue'
 import PlanningDetailPage from '../pages/PlanningDetailPage.vue'
-import OneClickTradingPage from '../pages/OneClickTradingPage.vue'
 
 const routes = [
   // Root redirect - automatically redirect to Home page
@@ -51,6 +56,42 @@ const routes = [
     path: '/revenue',
     name: 'Revenue',
     component: RevenuePage,
+    meta: { layout: AppLayout }
+  },
+  {
+    path: '/demo',
+    name: 'Demo',
+    component: DemoPage,
+    meta: { layout: AppLayout }
+  },
+  {
+    path: '/info2',
+    name: 'Info2',
+    component: InfoPage2,
+    meta: { layout: AppLayout }
+  },
+  {
+    path: '/opportunities',
+    name: 'AllOpportunities',
+    component: AllOpportunitiesPage,
+    meta: { layout: AppLayout }
+  },
+  {
+    path: '/market-themes',
+    name: 'AllMarketThemes',
+    component: AllMarketThemesPage,
+    meta: { layout: AppLayout }
+  },
+  {
+    path: '/stock-attribution',
+    name: 'AllStockAttribution',
+    component: AllStockAttributionPage,
+    meta: { layout: AppLayout }
+  },
+  {
+    path: '/stock-attribution/:id',
+    name: 'StockAttributionDetail',
+    component: StockAttributionDetailPage,
     meta: { layout: AppLayout }
   },
   
@@ -139,12 +180,6 @@ const routes = [
     meta: { layout: AppLayout }
   },
   {
-    path: '/scalealpha/trading',
-    name: 'OneClickTrading',
-    component: OneClickTradingPage,
-    meta: { layout: AppLayout }
-  },
-  {
     path: '/insight',
     name: 'Insight',
     component: InsightPage,
@@ -202,58 +237,9 @@ const router = createRouter({
   }
 })
 
-// 定义需要用户信息的路由
-const requiresUserInfoRoutes = [
-  '/trading',
-  '/alerts',
-  '/portfolio',
-  '/event',
-  '/history',
-  '/backtest'
-  // '/plan' 已移除 - 允许直接访问计划制定页面
-]
-
-// 定义需要保存报告的路由
-const requiresSavedReportsRoutes = [
-  // '/plan' 已移除 - 允许直接访问计划制定页面
-]
-
-// 路由守卫
+// 路由守卫 - 简化版本，仅保留基础滚动行为
 router.beforeEach((to, from, next) => {
-  // 获取状态（直接从localStorage检查，避免响应式问题）
-  const { checkUserInfoStatus } = useUserProfile()
-  const { checkSavedReports } = useSavedReports()
-  
-  const hasUserInfo = checkUserInfoStatus()
-  const hasSavedReports = checkSavedReports()
-  
-  // 检查是否需要用户信息
-  const needsUserInfo = requiresUserInfoRoutes.some(route => 
-    to.path.startsWith(route)
-  )
-  
-  // 检查是否需要保存报告
-  const needsSavedReports = requiresSavedReportsRoutes.some(route => 
-    to.path.startsWith(route)
-  )
-  
-  // 如果需要用户信息但未填写，重定向到信息填写页
-  if (needsUserInfo && !hasUserInfo) {
-    if (to.path !== '/portfolio-input') {
-      next('/portfolio-input')
-      return
-    }
-  }
-  
-  // 如果需要保存报告但没有，重定向到机会发现页
-  if (needsSavedReports && hasUserInfo && !hasSavedReports) {
-    if (to.path !== '/opportunity') {
-      next('/opportunity')
-      return
-    }
-  }
-  
-  // 允许通过
+  // 允许自由访问所有路由
   next()
 })
 

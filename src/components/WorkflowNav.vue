@@ -23,10 +23,8 @@
               <!-- Step Item -->
               <button
                 @click="handleStepClick(step)"
-                :disabled="step.status === 'locked'"
                 :class="[
                   'flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300',
-                  'relative group',
                   getStepClasses(step.status)
                 ]"
               >
@@ -47,14 +45,6 @@
                 >
                   {{ step.label }}
                 </span>
-
-                <!-- Tooltip for locked steps -->
-                <div 
-                  v-if="step.status === 'locked'" 
-                  class="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-1 bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-10"
-                >
-                  完成前置步骤后解锁
-                </div>
               </button>
 
               <!-- Connector Line -->
@@ -95,6 +85,9 @@
               <div class="px-4 py-2 border-b border-[#404040] text-sm text-gray-400">
                 <p class="font-semibold">{{ userEmail }}</p>
               </div>
+              <button @click="handleMyInfo" class="w-full text-left px-4 py-2 text-sm text-blue-400 hover:text-blue-300 hover:bg-[#3a3a3a]">
+                我的信息
+              </button>
               <button @click="handleResetProgress" class="w-full text-left px-4 py-2 text-sm text-orange-400 hover:text-orange-300 hover:bg-[#3a3a3a]">
                 重置进度
               </button>
@@ -148,6 +141,12 @@ const handleClickOutside = (event) => {
   }
 }
 
+// 跳转到我的信息页面
+const handleMyInfo = () => {
+  closeAccountMenu()
+  router.push('/portfolio-input')
+}
+
 // 检查登录状态
 const checkLoginStatus = () => {
   const loginStatus = localStorage.getItem('isLoggedIn')
@@ -193,15 +192,12 @@ watch(() => route.path, () => {
   markCurrentPageVisited()
 })
 
-// 处理步骤点击
+// 处理步骤点击（移除锁定检查）
 const handleStepClick = (step) => {
-  if (step.status === 'locked') {
-    return
-  }
   navigateToStep(step.id)
 }
 
-// 获取步骤按钮的样式类
+// 获取步骤按钮的样式类（移除 locked 状态）
 const getStepClasses = (status) => {
   switch (status) {
     case 'current':
@@ -210,14 +206,12 @@ const getStepClasses = (status) => {
       return 'bg-blue-600/10 hover:bg-blue-600/20 cursor-pointer border border-transparent'
     case 'available':
       return 'bg-transparent hover:bg-[#3a3a3a] cursor-pointer border border-transparent'
-    case 'locked':
-      return 'bg-transparent cursor-not-allowed border border-transparent'
     default:
-      return 'bg-transparent border border-transparent'
+      return 'bg-transparent hover:bg-[#3a3a3a] cursor-pointer border border-transparent'
   }
 }
 
-// 获取小圆点的样式类
+// 获取小圆点的样式类（移除 locked 状态）
 const getDotClasses = (status) => {
   switch (status) {
     case 'current':
@@ -226,14 +220,12 @@ const getDotClasses = (status) => {
       return 'bg-blue-500'
     case 'available':
       return 'bg-gray-600'
-    case 'locked':
-      return 'bg-gray-700'
     default:
-      return 'bg-gray-700'
+      return 'bg-gray-600'
   }
 }
 
-// 获取标签的样式类
+// 获取标签的样式类（移除 locked 状态）
 const getLabelClasses = (status) => {
   switch (status) {
     case 'current':
@@ -242,10 +234,8 @@ const getLabelClasses = (status) => {
       return 'text-gray-300'
     case 'available':
       return 'text-gray-400'
-    case 'locked':
-      return 'text-gray-600'
     default:
-      return 'text-gray-600'
+      return 'text-gray-400'
   }
 }
 

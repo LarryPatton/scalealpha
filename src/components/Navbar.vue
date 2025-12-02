@@ -18,58 +18,15 @@
             v-for="item in navItems"
             :key="item.path"
             :to="item.path"
-            @click="(e) => handleNavClick(e, item)"
             active-class="text-blue-400 font-semibold"
-            :class="[
-              'text-sm transition whitespace-nowrap relative group',
-              isLocked(item) 
-                ? 'text-gray-600 cursor-not-allowed' 
-                : 'text-gray-300 hover:text-white'
-            ]"
+            class="text-sm transition whitespace-nowrap text-gray-300 hover:text-white"
           >
-            <span class="flex items-center gap-2">
-              {{ item.name }}
-              <!-- 锁定图标 -->
-              <svg 
-                v-if="isLocked(item)"
-                class="w-3.5 h-3.5 text-gray-500"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-              </svg>
-            </span>
-            
-            <!-- 悬停提示 -->
-            <div 
-              v-if="isLocked(item)"
-              class="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 bg-[#1a1a1a] border border-[#404040] rounded-lg text-xs text-gray-300 whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 shadow-xl"
-            >
-              <div class="relative">
-                {{ getLockTooltip(item) }}
-                <!-- 小箭头 -->
-                <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-[#404040]"></div>
-              </div>
-            </div>
+            {{ item.name }}
           </router-link>
         </div>
 
         <!-- Right Icons -->
         <div class="flex items-center gap-4">
-          <!-- One-Click Trading Button -->
-          <button
-            @click="handleOneClickTrading"
-            :disabled="!isConnected"
-            :class="[
-              'px-4 py-2 rounded-lg text-sm font-medium transition-all',
-              isConnected
-                ? 'bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-lg shadow-green-500/20'
-                : 'bg-[#3a3a3a] text-gray-500 cursor-not-allowed'
-            ]"
-          >
-            一键交易
-          </button>
-          
           <!-- User Avatar -->
           <div class="relative">
             <button 
@@ -85,6 +42,9 @@
               <div class="px-4 py-2 border-b border-[#404040] text-sm text-gray-400">
                 <p class="font-semibold">{{ userEmail }}</p>
               </div>
+              <button @click="handleMyInfo" class="w-full text-left px-4 py-2 text-sm text-blue-400 hover:text-blue-300 hover:bg-[#3a3a3a]">
+                我的信息
+              </button>
               <button @click="handleResetProgress" class="w-full text-left px-4 py-2 text-sm text-orange-400 hover:text-orange-300 hover:bg-[#3a3a3a]">
                 查看进度
               </button>
@@ -104,7 +64,6 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserProfile } from '../composables/useUserProfile'
 import { useSavedReports } from '../composables/useSavedReports'
-import { useBrokerAccount } from '../composables/useBrokerAccount'
 
 const router = useRouter()
 const route = useRoute()
@@ -114,7 +73,6 @@ const emit = defineEmits(['logout'])
 // 导入状态管理
 const { isUserInfoCompleted, resetUserProfile } = useUserProfile()
 const { hasSavedReports, clearSavedReports } = useSavedReports()
-const { isConnected } = useBrokerAccount()
 
 // 账户菜单状态
 const showAccountMenu = ref(false)
@@ -135,6 +93,12 @@ const handleClickOutside = (event) => {
   if (!accountMenu && showAccountMenu.value) {
     closeAccountMenu()
   }
+}
+
+// 跳转到我的信息页面
+const handleMyInfo = () => {
+  closeAccountMenu()
+  router.push('/portfolio-input')
 }
 
 // 重置进度
@@ -210,94 +174,42 @@ const handleLogout = () => {
 const navItems = [
   {
     name: 'Info 信息中心',
-    path: '/info',
-    requiresUserInfo: false
+    path: '/info'
   },
   {
     name: '交易分析',
-    path: '/trading',
-    requiresUserInfo: true
+    path: '/trading'
   },
   {
     name: '计划制定',
-    path: '/planning',
-    requiresUserInfo: true,
-    requiresSavedReports: true
+    path: '/planning'
   },
   {
     name: '盯盘提醒',
-    path: '/alerts',
-    requiresUserInfo: true
+    path: '/alerts'
   },
   {
     name: '投资组合',
-    path: '/portfolio',
-    requiresUserInfo: true
+    path: '/portfolio'
   },
   {
     name: '事件分析',
-    path: '/event',
-    requiresUserInfo: true
+    path: '/event'
   },
   {
     name: '历史模式',
-    path: '/history',
-    requiresUserInfo: true
+    path: '/history'
   },
   {
     name: '实盘测试',
-    path: '/backtest',
-    requiresUserInfo: true
+    path: '/backtest'
   },
   {
     name: '官方博客',
-    path: '/blog',
-    requiresUserInfo: false
+    path: '/blog'
   }
 ]
 
-// 判断导航项是否被锁定
-const isLocked = (item) => {
-  if (item.requiresSavedReports && !hasSavedReports.value) {
-    return true
-  }
-  if (item.requiresUserInfo && !isUserInfoCompleted.value) {
-    return true
-  }
-  return false
-}
-
-// 获取锁定提示信息
-const getLockTooltip = (item) => {
-  if (item.requiresSavedReports && !hasSavedReports.value) {
-    return '请先在"机会发现"中保存至少一份报告'
-  }
-  if (item.requiresUserInfo && !isUserInfoCompleted.value) {
-    return '请先在"我的投资信息"中完成基本信息填写'
-  }
-  return ''
-}
-
-// 处理导航点击
-const handleNavClick = (event, item) => {
-  if (isLocked(item)) {
-    event.preventDefault()
-    
-    // 重定向到对应的前置页面
-    if (!isUserInfoCompleted.value) {
-      router.push('/portfolio-input')
-    } else if (item.requiresSavedReports && !hasSavedReports.value) {
-      router.push('/opportunity')
-    }
-  }
-}
-
-// 处理一键交易按钮点击
-const handleOneClickTrading = () => {
-  if (isConnected.value) {
-    router.push('/scalealpha/trading')
-  }
-}
 </script>
 
 <style scoped>
