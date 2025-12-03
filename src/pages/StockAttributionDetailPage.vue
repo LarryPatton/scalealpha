@@ -120,7 +120,7 @@
       </div>
 
       <!-- Tabs -->
-      <div class="grid grid-cols-4 border-b border-[#333] mb-8">
+      <div class="grid grid-cols-5 border-b border-[#333] mb-8">
         <button 
           @click="activeTab = 'price'"
           class="px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap text-center"
@@ -129,11 +129,18 @@
           价格走势 (Price Trend)
         </button>
         <button 
+          @click="activeTab = 'themes'"
+          class="px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap text-center"
+          :class="activeTab === 'themes' ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-300'"
+        >
+          相关主题 (Related Themes)
+        </button>
+        <button 
           @click="activeTab = 'attribution'"
           class="px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap text-center"
           :class="activeTab === 'attribution' ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-300'"
         >
-          个股归因 (Attribution)
+          事件分析 (Event Analysis)
         </button>
         <button 
           @click="activeTab = 'strategies'"
@@ -149,6 +156,130 @@
         >
           计划制定 (Plan Formulation)
         </button>
+      </div>
+
+      <!-- Related Themes Tab -->
+      <div v-if="activeTab === 'themes'" class="animate-fade-in">
+        <div class="mb-6 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <h3 class="text-lg font-bold text-white">相关主题</h3>
+            <span class="text-sm text-gray-500">({{ relatedThemes.length }})</span>
+          </div>
+          <div class="text-xs text-gray-500">
+            数据与市场热点同步
+          </div>
+        </div>
+
+        <!-- Themes List -->
+        <div v-if="relatedThemes.length > 0" class="space-y-4">
+          <div 
+            v-for="theme in relatedThemes" 
+            :key="theme.id" 
+            @click="toggleThemeExpand(theme)"
+            class="bg-[#1a1a1a] rounded-xl border border-[#333] p-5 hover:border-gray-500 transition-colors group relative cursor-pointer"
+          >
+            <div class="flex flex-col md:flex-row gap-6">
+              <!-- Left: Sentiment & Confidence -->
+              <div class="md:w-48 flex-shrink-0">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="text-xs font-bold px-2 py-1 rounded border" 
+                    :class="{
+                      'bg-green-900/30 text-green-400 border-green-900/50': theme.sentiment === 'BULLISH',
+                      'bg-gray-700/30 text-gray-400 border-gray-700/50': theme.sentiment === 'NEUTRAL',
+                      'bg-red-900/30 text-red-400 border-red-900/50': theme.sentiment === 'BEARISH'
+                    }">
+                    {{ theme.sentiment }}
+                  </span>
+                  <span class="text-sm font-bold text-white">{{ theme.confidence }}%</span>
+                </div>
+                <div class="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                  <div class="h-full" 
+                    :class="{
+                      'bg-green-500': theme.sentiment === 'BULLISH',
+                      'bg-gray-500': theme.sentiment === 'NEUTRAL',
+                      'bg-red-500': theme.sentiment === 'BEARISH'
+                    }"
+                    :style="{ width: theme.confidence + '%' }"></div>
+                </div>
+              </div>
+
+              <!-- Middle: Content -->
+              <div class="flex-1 min-w-0">
+                <h3 class="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors pr-20">{{ theme.title }}</h3>
+                <p class="text-sm text-gray-400 mb-3">{{ theme.desc }}</p>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs text-gray-500">Related:</span>
+                  <div class="flex flex-wrap gap-2">
+                    <span v-for="stock in theme.stocks" :key="stock" class="text-xs bg-[#2a2a2a] text-gray-300 px-2 py-0.5 rounded border border-[#333]">{{ stock }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right: Meta -->
+              <div class="flex flex-row md:flex-col justify-between items-end md:w-32 flex-shrink-0 text-right">
+                <div class="text-xs text-gray-500">{{ theme.timeAgo }}</div>
+                <div class="flex items-center gap-1 text-xs font-medium" 
+                  :class="{
+                    'text-red-400': theme.heat === 'High',
+                    'text-orange-400': theme.heat === 'Med',
+                    'text-blue-400': theme.heat === 'Low'
+                  }">
+                  <span>🔥</span> {{ theme.heat }} Heat
+                </div>
+              </div>
+            </div>
+
+            <!-- Follow Button -->
+            <button 
+              @click.stop="toggleThemeFollow(theme)"
+              class="absolute top-5 right-5 text-xs px-2 py-1 rounded border transition-colors z-10"
+              :class="theme.isFollowed ? 'bg-green-900/30 text-green-400 border-green-900/50' : 'bg-[#2a2a2a] text-gray-400 border-[#333] hover:text-white hover:border-gray-500'"
+            >
+              {{ theme.isFollowed ? '✓ 已关注' : '+ 关注' }}
+            </button>
+
+            <!-- Expanded Content -->
+            <div v-if="theme.isExpanded" class="mt-6 pt-6 border-t border-[#333] animate-fade-in cursor-default" @click.stop>
+              <div class="mb-6">
+                <h4 class="text-sm font-bold text-gray-300 mb-2">📖 主题详情 (Theme Content)</h4>
+                <p class="text-sm text-gray-400 leading-relaxed">{{ theme.content }}</p>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-gray-300 mb-3">🔗 相关个股 (Related Stocks)</h4>
+                <div class="space-y-3">
+                  <div 
+                    v-for="stock in theme.stockDetails" 
+                    :key="stock.symbol" 
+                    @click="goToStockDetail(stock.symbol)"
+                    class="bg-[#222] rounded p-3 flex flex-col sm:flex-row sm:items-center gap-3 border border-[#333] hover:bg-[#2a2a2a] hover:border-gray-500 cursor-pointer transition-colors"
+                  >
+                    <div class="flex items-center gap-4 min-w-[120px]">
+                      <span class="font-bold text-white">{{ stock.symbol }}</span>
+                      <span class="text-xs font-mono" :class="stock.change >= 0 ? 'text-green-400' : 'text-red-400'">
+                        {{ stock.change >= 0 ? '+' : '' }}{{ stock.change }}% {{ stock.change >= 0 ? '↑' : '↓' }}
+                      </span>
+                    </div>
+                    <div class="text-xs text-gray-500 border-l border-[#444] pl-3 sm:pl-4">
+                      {{ stock.reason }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-4 flex justify-center">
+                <button @click.stop="toggleThemeExpand(theme)" class="text-xs text-gray-500 hover:text-white flex items-center gap-1">
+                  收起 (Collapse) 🔼
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div v-else class="bg-[#1a1a1a] rounded-xl border border-[#333] p-12 text-center">
+          <div class="text-4xl mb-4">🔍</div>
+          <h3 class="text-xl font-bold text-white mb-2">暂无相关主题</h3>
+          <p class="text-gray-500">该股票当前不在任何市场主题中</p>
+        </div>
       </div>
 
       <!-- Price Tab -->
@@ -261,282 +392,6 @@
         <div class="mb-6">
           <h3 class="text-lg font-bold text-white mb-2">📊 {{ symbol }} 交易计划制定</h3>
           <p class="text-sm text-gray-500">基于AI推荐与个人策略的综合交易计划</p>
-        </div>
-
-        <!-- Plan Items -->
-        <div class="space-y-4">
-          <!-- Plan Item 1 -->
-          <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-5">
-            <div class="flex items-start gap-4">
-              <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-                1
-              </div>
-              <div class="flex-1">
-                <h4 class="text-white font-bold mb-2 flex items-center gap-2">
-                  🎯 建仓策略
-                  <span class="text-xs px-2 py-0.5 bg-green-900/30 text-green-400 border border-green-900/50 rounded">推荐</span>
-                </h4>
-                <p class="text-sm text-gray-400 mb-3">
-                  分批建仓策略：在 <span class="text-white font-medium">$172-178</span> 区间分3次建仓，每次买入总仓位的 <span class="text-white font-medium">33%</span>。首次建仓设置在 <span class="text-white font-medium">$176-178</span>，第二次在 <span class="text-white font-medium">$174-176</span>，第三次在 <span class="text-white font-medium">$172-174</span>。
-                </p>
-                <div class="flex items-center gap-4 text-xs text-gray-500">
-                  <span class="flex items-center gap-1">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    降低平均成本
-                  </span>
-                  <span class="flex items-center gap-1">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                    风险控制
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Plan Item 2 -->
-          <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-5">
-            <div class="flex items-start gap-4">
-              <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-                2
-              </div>
-              <div class="flex-1">
-                <h4 class="text-white font-bold mb-2">📈 目标价位设定</h4>
-                <p class="text-sm text-gray-400 mb-3">
-                  短期目标（1-2月）: <span class="text-green-400 font-medium">$195-200</span> (涨幅 +9-12%)<br>
-                  中期目标（3-6月）: <span class="text-green-400 font-medium">$210-220</span> (涨幅 +18-23%)<br>
-                  长期目标（6-12月）: <span class="text-green-400 font-medium">$230-240</span> (涨幅 +29-35%)
-                </p>
-                <div class="grid grid-cols-3 gap-2 text-xs">
-                  <div class="bg-[#0f0f0f] border border-[#333] rounded p-2 text-center">
-                    <div class="text-gray-500 mb-1">Q1 2025</div>
-                    <div class="text-green-400 font-bold">$200</div>
-                  </div>
-                  <div class="bg-[#0f0f0f] border border-[#333] rounded p-2 text-center">
-                    <div class="text-gray-500 mb-1">Q2 2025</div>
-                    <div class="text-green-400 font-bold">$215</div>
-                  </div>
-                  <div class="bg-[#0f0f0f] border border-[#333] rounded p-2 text-center">
-                    <div class="text-gray-500 mb-1">Q3-Q4 2025</div>
-                    <div class="text-green-400 font-bold">$235</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Plan Item 3 -->
-          <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-5">
-            <div class="flex items-start gap-4">
-              <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-                3
-              </div>
-              <div class="flex-1">
-                <h4 class="text-white font-bold mb-2 flex items-center gap-2">
-                  �️ 止损策略
-                  <span class="text-xs px-2 py-0.5 bg-red-900/30 text-red-400 border border-red-900/50 rounded">关键</span>
-                </h4>
-                <p class="text-sm text-gray-400 mb-3">
-                  硬止损位：<span class="text-red-400 font-medium">$165</span> (跌幅约 -7.5%)<br>
-                  软止损位：<span class="text-yellow-400 font-medium">$170</span> (跌幅约 -4.5%)，观察3日K线确认趋势<br>
-                  移动止损：价格每上涨 <span class="text-white font-medium">$10</span>，止损位相应上移 <span class="text-white font-medium">$5</span>，锁定利润
-                </p>
-                <div class="flex items-center gap-2 text-xs text-yellow-500 bg-yellow-900/20 border border-yellow-900/50 rounded p-2">
-                  <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                  <span>纪律执行：触及止损位立即平仓，不抱有幻想</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Plan Item 4 -->
-          <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-5">
-            <div class="flex items-start gap-4">
-              <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-                4
-              </div>
-              <div class="flex-1">
-                <h4 class="text-white font-bold mb-2">⚖️ 仓位管理</h4>
-                <p class="text-sm text-gray-400 mb-3">
-                  总仓位占比：不超过投资组合的 <span class="text-white font-medium">25%</span><br>
-                  单次加仓：不超过总仓位的 <span class="text-white font-medium">30%</span><br>
-                  减仓条件：达到短期目标价后，减仓 <span class="text-white font-medium">30-40%</span>，锁定部分利润，剩余仓位追求更高目标
-                </p>
-                <div class="bg-[#0f0f0f] border border-[#333] rounded p-3">
-                  <div class="flex items-center justify-between text-xs mb-2">
-                    <span class="text-gray-500">当前建议仓位</span>
-                    <span class="text-white font-medium">20%</span>
-                  </div>
-                  <div class="h-2 bg-gray-700 rounded-full overflow-hidden">
-                    <div class="h-full bg-blue-500" style="width: 20%"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Plan Item 5 -->
-          <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-5">
-            <div class="flex items-start gap-4">
-              <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-                5
-              </div>
-              <div class="flex-1">
-                <h4 class="text-white font-bold mb-2">📅 关键时间节点</h4>
-                <div class="space-y-2 text-sm">
-                  <div class="flex items-start gap-3">
-                    <div class="flex-shrink-0 w-20 text-gray-500 text-xs">2025-01-30</div>
-                    <div class="flex-1">
-                      <div class="text-white font-medium">Q4 2024 财报发布</div>
-                      <div class="text-gray-400 text-xs mt-1">预期 EPS: $1.85-1.92，营收: $89-91B</div>
-                    </div>
-                  </div>
-                  <div class="flex items-start gap-3">
-                    <div class="flex-shrink-0 w-20 text-gray-500 text-xs">2025-02-15</div>
-                    <div class="flex-1">
-                      <div class="text-white font-medium">Gemini 2.0 完整版发布</div>
-                      <div class="text-gray-400 text-xs mt-1">市场关注AI竞争力提升</div>
-                    </div>
-                  </div>
-                  <div class="flex items-start gap-3">
-                    <div class="flex-shrink-0 w-20 text-gray-500 text-xs">2025-03-10</div>
-                    <div class="flex-1">
-                      <div class="text-white font-medium">反垄断案二审判决</div>
-                      <div class="text-gray-400 text-xs mt-1">监管风险评估关键节点</div>
-                    </div>
-                  </div>
-                  <div class="flex items-start gap-3">
-                    <div class="flex-shrink-0 w-20 text-gray-500 text-xs">2025-05-14</div>
-                    <div class="flex-1">
-                      <div class="text-white font-medium">Google I/O 开发者大会</div>
-                      <div class="text-gray-400 text-xs mt-1">新产品和技术路线图披露</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Plan Item 6 -->
-          <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-5">
-            <div class="flex items-start gap-4">
-              <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-                6
-              </div>
-              <div class="flex-1">
-                <h4 class="text-white font-bold mb-2">🔍 监控指标</h4>
-                <div class="grid grid-cols-2 gap-3 text-sm">
-                  <div class="bg-[#0f0f0f] border border-[#333] rounded p-3">
-                    <div class="text-gray-500 text-xs mb-1">技术指标</div>
-                    <ul class="space-y-1 text-gray-400 text-xs">
-                      <li>• RSI 保持在 40-70 区间</li>
-                      <li>• MACD 金叉确认上升趋势</li>
-                      <li>• 成交量放大配合突破</li>
-                      <li>• 50日均线支撑位 $172</li>
-                    </ul>
-                  </div>
-                  <div class="bg-[#0f0f0f] border border-[#333] rounded p-3">
-                    <div class="text-gray-500 text-xs mb-1">基本面指标</div>
-                    <ul class="space-y-1 text-gray-400 text-xs">
-                      <li>• YouTube 广告营收增速</li>
-                      <li>• Cloud 业务利润率</li>
-                      <li>• AI 产品用户增长</li>
-                      <li>• 自由现金流稳定性</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Plan Item 7 -->
-          <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-5">
-            <div class="flex items-start gap-4">
-              <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-                7
-              </div>
-              <div class="flex-1">
-                <h4 class="text-white font-bold mb-2">⚠️ 风险提示与应对</h4>
-                <div class="space-y-3 text-sm">
-                  <div class="flex items-start gap-2">
-                    <span class="text-red-400 flex-shrink-0">•</span>
-                    <div>
-                      <span class="text-white font-medium">反垄断风险：</span>
-                      <span class="text-gray-400">若判决要求拆分，立即减仓至 10% 以下，评估影响后再决策</span>
-                    </div>
-                  </div>
-                  <div class="flex items-start gap-2">
-                    <span class="text-yellow-400 flex-shrink-0">•</span>
-                    <div>
-                      <span class="text-white font-medium">AI 竞争加剧：</span>
-                      <span class="text-gray-400">关注 OpenAI、Anthropic 产品发布，若搜索份额下降超 2%，重新评估</span>
-                    </div>
-                  </div>
-                  <div class="flex items-start gap-2">
-                    <span class="text-yellow-400 flex-shrink-0">•</span>
-                    <div>
-                      <span class="text-white font-medium">广告市场衰退：</span>
-                      <span class="text-gray-400">宏观经济恶化时，广告业务首当其冲，考虑对冲或减仓</span>
-                    </div>
-                  </div>
-                  <div class="flex items-start gap-2">
-                    <span class="text-blue-400 flex-shrink-0">•</span>
-                    <div>
-                      <span class="text-white font-medium">Cloud 业务低于预期：</span>
-                      <span class="text-gray-400">若营收增速降至 20% 以下，下调目标价至 $190</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Plan Item 8 -->
-          <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-5">
-            <div class="flex items-start gap-4">
-              <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-                8
-              </div>
-              <div class="flex-1">
-                <h4 class="text-white font-bold mb-2">🎓 持仓复盘与优化</h4>
-                <p class="text-sm text-gray-400 mb-3">
-                  定期复盘频率：每 <span class="text-white font-medium">2周</span> 进行一次持仓回顾，每 <span class="text-white font-medium">季度</span> 完整评估策略有效性
-                </p>
-                <div class="space-y-2 text-sm">
-                  <div class="flex items-center gap-2 text-gray-400">
-                    <svg class="w-4 h-4 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    记录每次买卖决策的逻辑和市场环境
-                  </div>
-                  <div class="flex items-center gap-2 text-gray-400">
-                    <svg class="w-4 h-4 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    对比实际表现与预期目标的偏差
-                  </div>
-                  <div class="flex items-center gap-2 text-gray-400">
-                    <svg class="w-4 h-4 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    根据新信息及时调整计划（保持灵活性）
-                  </div>
-                  <div class="flex items-center gap-2 text-gray-400">
-                    <svg class="w-4 h-4 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    总结成功与失败的经验，持续改进
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Summary Card -->
-          <div class="bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-xl border border-blue-500/30 p-6 mt-6">
-            <div class="flex items-start gap-4">
-              <div class="text-4xl">💡</div>
-              <div class="flex-1">
-                <h4 class="text-white font-bold mb-2">计划执行要点</h4>
-                <p class="text-sm text-gray-300 leading-relaxed">
-                  <strong class="text-blue-400">严格遵守纪律</strong>是成功的关键。不要因为短期波动而偏离计划，也不要因为贪婪而忽视止损。
-                  市场永远充满不确定性，但有计划的投资者能够在长期中获得稳定回报。
-                  <span class="text-yellow-400">记住：保护本金永远是第一位的！</span>
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -749,9 +604,10 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
+const router = useRouter()
 const symbol = ref(route.params.id || 'NVDA')
 
 // --- Stock Basic Info Data ---
@@ -796,6 +652,213 @@ const selectedStrategy = ref({})
 // --- Highlight State (for navigation from opportunities page) ---
 const highlightedStrategyId = ref(null)
 const highlightedStrategyRef = ref(null)
+
+// --- Mock Data: Market Themes (与AllMarketThemesPage同步) ---
+const allThemesData = ref([
+  { 
+    id: 1, 
+    title: 'AI Infrastructure Boom', 
+    desc: 'Enterprise AI adoption drives massive infrastructure investment across cloud and semiconductor sectors.', 
+    sentiment: 'BULLISH', 
+    confidence: 92, 
+    stocks: ['NVDA', 'AMD', 'SMCI', 'AVGO'], 
+    timeAgo: '2 hours ago', 
+    timestamp: Date.now() - 2 * 60 * 60 * 1000, 
+    heat: 'High', 
+    heatScore: 90, 
+    isFollowed: false,
+    isExpanded: false,
+    content: 'The surge in Generative AI applications is creating an unprecedented demand for high-performance computing infrastructure. Hyperscalers are aggressively increasing their capex to secure GPU supplies, directly benefiting the semiconductor supply chain. We are seeing a structural shift where data center revenue is becoming the primary growth engine for chipmakers.',
+    stockDetails: [
+      { symbol: 'NVDA', change: 3.45, reason: 'Dominant market share in AI training GPUs; data center revenue +400% YoY.' },
+      { symbol: 'AMD', change: 1.20, reason: 'Emerging as a strong second player with MI300 series; gaining traction in inference workloads.' },
+      { symbol: 'SMCI', change: -0.50, reason: 'Leading liquid cooling solutions for high-density racks, though margin pressure remains.' },
+      { symbol: 'AVGO', change: 2.10, reason: 'Strong demand for custom AI accelerators (ASICs) from Google and Meta.' }
+    ]
+  },
+  { 
+    id: 2, 
+    title: 'Cybersecurity Renaissance', 
+    desc: 'Rising threats fuel enterprise security spending surge as companies fortify digital defenses.', 
+    sentiment: 'BULLISH', 
+    confidence: 78, 
+    stocks: ['CRWD', 'PANW', 'ZS', 'FTNT'], 
+    timeAgo: '5 hours ago', 
+    timestamp: Date.now() - 5 * 60 * 60 * 1000, 
+    heat: 'Med', 
+    heatScore: 70, 
+    isFollowed: false,
+    isExpanded: false,
+    content: 'With the increasing sophistication of cyber attacks, including AI-driven threats, enterprises are prioritizing cybersecurity in their IT budgets. Zero-trust architecture and platformization are key trends driving consolidation in the industry.',
+    stockDetails: [
+      { symbol: 'CRWD', change: 1.85, reason: 'Platform consolidation thesis playing out; strong module adoption.' },
+      { symbol: 'PANW', change: 0.95, reason: 'Next-gen firewall demand remains robust; expanding into cloud security.' },
+      { symbol: 'ZS', change: -0.30, reason: 'High valuation multiples causing short-term volatility despite good growth.' },
+      { symbol: 'FTNT', change: 1.10, reason: 'Strong product cycle in secure networking.' }
+    ]
+  },
+  { 
+    id: 6, 
+    title: 'Semiconductor Cycle', 
+    desc: 'Memory chip market showing signs of recovery as demand stabilizes.', 
+    sentiment: 'BULLISH', 
+    confidence: 80, 
+    stocks: ['MU', 'WDC', 'NVDA'], 
+    timeAgo: 'Yesterday', 
+    timestamp: Date.now() - 30 * 60 * 60 * 1000, 
+    heat: 'Med', 
+    heatScore: 65, 
+    isFollowed: false,
+    isExpanded: false,
+    content: 'After a severe inventory correction, the memory market is bottoming out. Production cuts by major players and recovering demand in PCs and smartphones are driving price increases.',
+    stockDetails: [
+      { symbol: 'MU', change: 4.10, reason: 'HBM3e qualification with NVIDIA; pricing power returning.' },
+      { symbol: 'WDC', change: 2.30, reason: 'Flash memory prices rebounding; spin-off plans unlocking value.' },
+      { symbol: 'NVDA', change: 3.45, reason: 'GPU demand driving HBM consumption; supply agreements secured.' }
+    ]
+  },
+  { 
+    id: 10, 
+    title: 'Cloud Computing Growth', 
+    desc: 'Major cloud providers report accelerating revenue growth driven by AI workloads.', 
+    sentiment: 'BULLISH', 
+    confidence: 85, 
+    stocks: ['GOOGL', 'MSFT', 'AMZN'], 
+    timeAgo: '1 day ago', 
+    timestamp: Date.now() - 24 * 60 * 60 * 1000, 
+    heat: 'High', 
+    heatScore: 88, 
+    isFollowed: false,
+    isExpanded: false,
+    content: 'The three major hyperscalers are seeing unprecedented demand for AI infrastructure. Google Cloud grew 35% YoY, Azure ML revenue doubled, and AWS is expanding GPU capacity. This creates a virtuous cycle for semiconductor suppliers and software platforms.',
+    stockDetails: [
+      { symbol: 'GOOGL', change: 1.85, reason: 'Cloud revenue +35% YoY; Gemini API gaining enterprise traction.' },
+      { symbol: 'MSFT', change: 2.10, reason: 'Azure OpenAI Service driving cloud acceleration; Copilot adoption strong.' },
+      { symbol: 'AMZN', change: 1.45, reason: 'AWS remains market leader; Trainium/Inferentia chips reducing costs.' }
+    ]
+  },
+  { 
+    id: 11, 
+    title: 'Search Engine AI Evolution', 
+    desc: 'Search giants integrating generative AI into core products, transforming user experience and monetization.', 
+    sentiment: 'BULLISH', 
+    confidence: 88, 
+    stocks: ['GOOGL', 'MSFT'], 
+    timeAgo: '6 hours ago', 
+    timestamp: Date.now() - 6 * 60 * 60 * 1000, 
+    heat: 'High', 
+    heatScore: 92, 
+    isFollowed: false,
+    isExpanded: false,
+    content: 'Google\'s AI Overview and Microsoft\'s Bing Chat are reshaping search dynamics. Despite initial concerns about ad revenue cannibalization, data shows AI-enhanced search actually increases user engagement and monetization potential. Google maintains 91.5% market share while successfully integrating Gemini capabilities.',
+    stockDetails: [
+      { symbol: 'GOOGL', change: 2.15, reason: 'AI Overview rollout increases session time by 8%; ad relevance improves CPM by 5%.' },
+      { symbol: 'MSFT', change: 0.85, reason: 'Bing Chat integration drives Edge browser adoption; search share gains modest.' }
+    ]
+  },
+  { 
+    id: 12, 
+    title: 'Digital Advertising Recovery', 
+    desc: 'Online ad spending rebounds as brands increase budgets for Q4 shopping season and 2024 elections.', 
+    sentiment: 'BULLISH', 
+    confidence: 82, 
+    stocks: ['GOOGL', 'META', 'AMZN', 'TTDD'], 
+    timeAgo: '8 hours ago', 
+    timestamp: Date.now() - 8 * 60 * 60 * 1000, 
+    heat: 'High', 
+    heatScore: 85, 
+    isFollowed: false,
+    isExpanded: false,
+    content: 'Digital advertising market showing strong recovery with Q4 spending up 12% YoY. Political advertising for 2024 elections adds $15-20B incremental spending. Brand budgets returning after 2023 slowdown, particularly in retail, automotive, and consumer goods categories.',
+    stockDetails: [
+      { symbol: 'GOOGL', change: 1.65, reason: 'YouTube ads +12.5%, Search ads +7%; Political ad spend accelerating.' },
+      { symbol: 'META', change: 2.30, reason: 'Reels monetization improving; brand advertiser return strong.' },
+      { symbol: 'AMZN', change: 1.20, reason: 'Sponsored Products growth remains robust; retail media expanding.' },
+      { symbol: 'TTDD', change: -0.40, reason: 'TikTok faces regulatory headwinds; some budget shifts to YouTube/Meta.' }
+    ]
+  },
+  { 
+    id: 13, 
+    title: 'Video Streaming Wars', 
+    desc: 'Competition intensifies as platforms focus on profitability over subscriber growth; ad-supported tiers gaining traction.', 
+    sentiment: 'NEUTRAL', 
+    confidence: 70, 
+    stocks: ['GOOGL', 'NFLX', 'DIS', 'PARA'], 
+    timeAgo: '12 hours ago', 
+    timestamp: Date.now() - 12 * 60 * 60 * 1000, 
+    heat: 'Med', 
+    heatScore: 68, 
+    isFollowed: false,
+    isExpanded: false,
+    content: 'Streaming landscape shifting from growth-at-all-costs to sustainable profitability. YouTube remains the clear leader with 20B+ hours watched daily. Traditional media struggling with profitability while YouTube\'s ad-supported model thrives. NFL Sunday Ticket deal strengthens YouTube TV\'s premium positioning.',
+    stockDetails: [
+      { symbol: 'GOOGL', change: 0.95, reason: 'YouTube watch time +15%; NFL Sunday Ticket subscriber additions exceed expectations.' },
+      { symbol: 'NFLX', change: -0.50, reason: 'Ad tier slower than expected; password sharing crackdown mixed results.' },
+      { symbol: 'DIS', change: -1.10, reason: 'Disney+ losing subscribers; ESPN+ integration challenges remain.' },
+      { symbol: 'PARA', change: -2.30, reason: 'Paramount+ cash burn continues; merger speculation mounting.' }
+    ]
+  },
+  { 
+    id: 14, 
+    title: 'Autonomous Vehicle Commercialization', 
+    desc: 'Robotaxi services expanding to new cities as regulatory approvals accelerate; profitability path becoming clearer.', 
+    sentiment: 'BULLISH', 
+    confidence: 75, 
+    stocks: ['GOOGL', 'TSLA', 'UBER'], 
+    timeAgo: '1 day ago', 
+    timestamp: Date.now() - 25 * 60 * 60 * 1000, 
+    heat: 'Med', 
+    heatScore: 72, 
+    isFollowed: false,
+    isExpanded: false,
+    content: 'Waymo (Google) completing over 1M paid rides quarterly across San Francisco, Los Angeles, and Phoenix. Unit economics improving as fleet scales. California and Texas expanding regulatory approvals. Uber partnership providing distribution while Tesla\'s unsupervised FSD launch delayed to 2025.',
+    stockDetails: [
+      { symbol: 'GOOGL', change: 1.40, reason: 'Waymo fleet expanding to 1000+ vehicles; Austin launch successful; nearing profitability per ride.' },
+      { symbol: 'TSLA', change: -1.50, reason: 'Robotaxi event underwhelms; unsupervised FSD timeline pushed back.' },
+      { symbol: 'UBER', change: 0.60, reason: 'Waymo integration provides upside optionality; ride-hailing demand remains strong.' }
+    ]
+  },
+  { 
+    id: 15, 
+    title: 'AI Hardware Competition Heats Up', 
+    desc: 'Tech giants developing custom AI chips to reduce NVIDIA dependency; implications for semiconductor ecosystem.', 
+    sentiment: 'NEUTRAL', 
+    confidence: 73, 
+    stocks: ['GOOGL', 'AMZN', 'MSFT', 'NVDA'], 
+    timeAgo: '2 days ago', 
+    timestamp: Date.now() - 48 * 60 * 60 * 1000, 
+    heat: 'Med', 
+    heatScore: 65, 
+    isFollowed: false,
+    isExpanded: false,
+    content: 'Google TPU v5, Amazon Trainium/Inferentia, and Microsoft Maia chips gaining traction for AI workloads. While NVIDIA remains dominant for training, custom chips capturing share in inference. Vertical integration trend creates both opportunities and threats across value chain.',
+    stockDetails: [
+      { symbol: 'GOOGL', change: 0.80, reason: 'TPU v5p deployment accelerating; reduces cloud infrastructure costs by 20-30%.' },
+      { symbol: 'AMZN', change: 0.65, reason: 'Trainium2 performance benchmarks competitive; AWS customers adopting.' },
+      { symbol: 'MSFT', change: 0.40, reason: 'Maia chip ramping slowly; still heavily reliant on NVIDIA for most workloads.' },
+      { symbol: 'NVDA', change: 1.85, reason: 'Training market remains captive; inference competition manageable in near-term.' }
+    ]
+  },
+  { 
+    id: 16, 
+    title: 'Antitrust Regulatory Pressure', 
+    desc: 'DOJ antitrust cases against Google escalating; potential remedies could reshape search and advertising markets.', 
+    sentiment: 'BEARISH', 
+    confidence: 68, 
+    stocks: ['GOOGL', 'AAPL'], 
+    timeAgo: '3 days ago', 
+    timestamp: Date.now() - 72 * 60 * 60 * 1000, 
+    heat: 'Med', 
+    heatScore: 70, 
+    isFollowed: false,
+    isExpanded: false,
+    content: 'DOJ pushing for structural remedies in search monopoly case, including potential Chrome browser divestiture and default search deal restrictions. Separate ad tech case threatens Google\'s advertising stack integration. Legal battles expected to extend 2-3 years with appeals.',
+    stockDetails: [
+      { symbol: 'GOOGL', change: -1.85, reason: 'Default search deals at risk ($20B annual payments to Apple); Chrome divestiture proposal overhang.' },
+      { symbol: 'AAPL', change: -0.45, reason: 'Google search payments represent ~15-20% of Services gross profit; replacement risk.' }
+    ]
+  }
+])
 
 // --- Mock Data: Strategies (同步自 AllOpportunitiesPage)---
 const allStrategies = [
@@ -1256,51 +1319,123 @@ Blackwell架构GPU供不应求，云计算巨头竞相锁定产能，NVDA议价�
 const events = [
   {
     id: 1,
-    time: '02:05',
-    fullTime: '2025-12-02 10:05:13',
-    title: '供应链联盟加固AI护城河，长期溢价逻辑增强',
+    time: '09:30',
+    fullTime: '2025-12-02 09:30:00',
+    title: 'Google Cloud Q4营收指引上调，AI工作负载驱动35%增长',
     sentiment: 'Bullish',
     group: 'Today',
-    summary: '美国将于12月12日与日本、荷兰、韩国等八个盟国举行白宫峰会，旨在巩固AI芯片和关键矿产的供应链。该倡议由经济事务副国务卿Jacob Helberg披露，重点涵盖能源、先进制造半导体及AI基础设施协议，意在减少对中国的依赖并确保“双马竞赛”中的技术主导权。',
-    impactAnalysis: '该事件对NVDA正面，因为其核心护城河——高性能GPU的制造——极度依赖复杂的全球供应链。作用机制：盟友名单包括荷兰（ASML光刻机）、韩国（HBM内存）和日本（关键材料），这直接加固了NVDA的生产生态系统。财务路径：虽然短期无直接营收增量，但供应链去风险化保护了其73.4%的毛利率免受地缘政治冲击。战略定位：通过国家级协议锁定“先进制造半导体”资源，进一步提高了中国竞争对手获取关键上游资源的门槛，巩固NVDA在AI基础设施中的垄断地位。',
-    expectationAnalysis: '影响性质：长期基本面护航，而非单纯情绪炒作。短期（1-4周）：市场将定价12月12日峰会的具体成果。技术面显示TD序列出现9/9卖出信号，提示短期可能在$180附近震荡整理，等待峰会催化。中期（1-6月）：关注具体协议如何优化HBM和CoWoS产能分配。若出口管制进一步收紧，可能引发短期波动，但长期利好非中系供应链。长期（6月+）：随着供应链“友岸外包”落地，NVDA的供应稳定性溢价将提升，支撑其44倍PE的估值逻辑。',
-    backtestAnalysis: '历史数据显示，NVDA在类似日涨幅（+1.6%）后的表现呈现“短平长多”特征。短期概率：未来1天上涨概率仅53%（平均+0.1%），验证了第2节的震荡预期。中期趋势：持有63天上涨概率飙升至73%，平均回报+19.7%。'
+    summary: 'Google Cloud在最新投资者会议上将Q4营收指引从$110亿上调至$115亿，主要由AI和机器学习工作负载需求激增驱动。管理层强调Gemini API的企业采用率环比增长50%，Vertex AI平台客户数突破10万家。',
+    impactAnalysis: 'Cloud业务是Google增长最快的板块，35% YoY的增长率远超AWS（12%）和Azure（27%）。作用机制：①企业AI应用落地加速，Gemini API成为主要营收贡献点；②GCP在AI基础设施上的技术优势（TPU v5p）降低成本，提升利润率；③大客户（如Spotify、Snapchat）扩大使用规模。财务路径：Cloud业务2024全年预计贡献$420-450亿营收，虽仍处于微亏状态，但营业利润率正从-8%改善至-2%，预计2025年实现盈亏平衡。战略定位：云计算是Google"第二增长引擎"，此次指引上调证明AI浪潮带来的结构性需求增长，而非周期性波动。',
+    expectationAnalysis: '影响性质：基本面显著改善，支撑中长期估值重估。短期（1-4周）：市场将重新定价Cloud板块价值，按照AWS同类业务15x P/S估值，GCP合理估值应提升$200-300亿，对应股价+$15-20。中期（3-6月）：关注Q4财报（2025年1月底）是否兑现指引，以及2025年全年Cloud业务盈利能力拐点。若营业利润率转正，将触发板块估值重估。长期（6-12月）：Cloud业务若保持30%+增速且利润率达到5-8%，可支撑GOOGL整体估值提升至28-30x P/E（当前25x）。',
+    backtestAnalysis: '历史数据显示，Google Cloud业务指引上调事件对股价影响显著且持久。2023年Q2类似事件后，股价在10天内上涨8.3%，且涨幅在60天内扩大至15.7%。2024年Q1指引上调后，股价在5天内上涨6.5%。概率分析：指引上调后未来30天上涨概率达82%，平均涨幅+9.2%。回撤风险：下行风险有限，最大回撤历史均值-3.1%。'
   },
   {
     id: 2,
-    time: '22:20',
-    fullTime: '2025-12-01 22:20:00',
-    title: 'Runway Gen-4.5全栈部署验证Blackwell视频AI统治力',
+    time: '14:20',
+    fullTime: '2025-12-02 14:20:00',
+    title: 'Gemini 2.0 Flash发布，多模态推理能力超越GPT-4 Turbo',
     sentiment: 'Bullish',
-    group: 'Yesterday',
-    summary: 'Runway发布Gen-4.5视频生成模型，宣布全栈部署于NVIDIA Blackwell集群。',
-    impactAnalysis: '直接验证了Blackwell架构在视频生成领域的统治力，预计将带动更多视频AI公司跟进采购。',
-    expectationAnalysis: '短期利好，强化Blackwell出货预期。',
-    backtestAnalysis: '类似产品发布事件后，股价平均在3天内上涨2.5%。'
+    group: 'Today',
+    summary: 'Google DeepMind正式发布Gemini 2.0 Flash模型，在多模态理解、代码生成、数学推理等10项基准测试中全面超越OpenAI GPT-4 Turbo。新模型推理速度提升40%，成本降低60%，支持200万token上下文窗口。',
+    impactAnalysis: 'Gemini 2.0的发布是Google在AI军备竞赛中的关键里程碑，直接挑战OpenAI的技术领导地位。作用机制：①多模态能力（图像+文本+代码+视频）满足企业复杂场景需求；②成本优势使其在价格敏感型客户中更具竞争力；③200万token上下文窗口是GPT-4 Turbo（128k）的15倍，适合处理大型文档和代码库。财务路径：Gemini API调用量预计在Q1环比再增80-100%，贡献Cloud业务$8-12亿增量营收。战略定位：技术对等甚至领先OpenAI，消除市场对Google"AI落后者"的担忧，为搜索、YouTube、Cloud等产品AI升级提供统一底座。',
+    expectationAnalysis: '影响性质：技术突破+商业化加速，双重利好。短期（1-2周）：科技媒体和分析师报告将密集覆盖，提升市场对Google AI能力的认知。技术面可能突破$320-325压力区。中期（1-3月）：观察企业客户迁移情况，若AWS/Azure客户转向GCP，将触发"云迁移交易"（Cloud Migration Trade）。长期（6-12月）：Gemini生态成熟度是关键，需验证开发者工具链、第三方集成、企业级SLA等配套能力。若成功，Google可夺回AI应用层部分市场份额。',
+    backtestAnalysis: '重大产品发布对Google股价的历史影响呈现"先涨后稳"模式。Gemini 1.0发布（2023年12月）后，股价3天内上涨5.2%，但1个月后涨幅收窄至2.1%，主要因产品实际表现不及宣传。Bard发布（2023年2月）甚至引发-7.4%暴跌，因演示出现错误。风险提示：市场将严格审视Gemini 2.0的实际性能，任何基准测试争议或应用案例不及预期都可能引发抛售。'
   },
   {
     id: 3,
-    time: '19:28',
-    fullTime: '2025-12-01 19:28:00',
-    title: '开源自动驾驶模型Alpamayo-R1深化生态护城河，长期算力需求看涨',
+    time: '08:15',
+    fullTime: '2025-12-02 08:15:00',
+    title: 'YouTube Shorts日播放量突破700亿次，CPM价格提升至长视频60%',
     sentiment: 'Bullish',
-    group: 'Yesterday',
-    summary: 'NVIDIA发布开源自动驾驶模型Alpamayo-R1，旨在加速L4级自动驾驶落地。',
-    impactAnalysis: '通过开源策略绑定自动驾驶开发者生态，长期锁定车端推理算力需求。',
-    expectationAnalysis: '长期利好，自动驾驶业务有望成为第二增长曲线。',
-    backtestAnalysis: '开源模型发布通常对股价短期影响有限，但长期相关性高。'
+    group: 'Today',
+    summary: 'YouTube CEO Neal Mohan在Code Conference透露，Shorts日均播放量已达700亿次，商业化进度超预期。广告主CPM价格从2023年的$2提升至当前$7-8，接近长视频CPM（$12-15）的60%。',
+    impactAnalysis: 'Shorts商业化是YouTube营收增长的新引擎，直接对冲TikTok竞争压力。作用机制：①700亿日播放量转化为广告库存，按$7.5 CPM计算，年化广告收入$190亿（实际分成后约$120亿）；②CPM提升反映广告主认可度提高，验证了短视频广告效果；③Shorts与长视频协同（用户从Shorts导流至长视频），提升整体平台价值。财务路径：Shorts预计2024全年贡献$40-45亿营收（占YouTube总营收12-13%），2025年有望突破$70亿。战略定位：成功复制TikTok模式并实现盈利，证明YouTube平台韧性。',
+    expectationAnalysis: '影响性质：业务拐点确认，支撑YouTube估值重估。短期（2-4周）：广告行业会议（如CES 2025）期间，品牌广告主可能增加YouTube预算，形成正反馈。中期（3-6月）：关注Q4财报披露的Shorts详细数据，若DAU（日活用户）和Engagement（互动率）持续增长，将验证长期增长逻辑。长期（1年+）：Shorts若能维持50%+ YoY增长，YouTube整体营收可在2026年突破$400亿，支撑其独立估值$3000-3500亿（当前市场隐含估值$2200亿）。',
+    backtestAnalysis: 'YouTube业务相关利好对股价影响中等但持久。2023年Q3 YouTube广告营收意外增长12%后，股价在15天内上涨7.8%。2024年NFL Sunday Ticket订阅数超预期，股价5天内涨4.3%。平均而言，YouTube正面消息后30天上涨概率68%，平均涨幅+5.6%。'
   },
   {
     id: 4,
-    time: '10:06',
-    fullTime: '2025-12-01 10:06:00',
-    title: '韩国主权订单确认即期需求，但XPeng自研芯片预示长期垂直整合风险',
-    sentiment: 'Neutral',
+    time: '11:45',
+    fullTime: '2025-12-01 11:45:00',
+    title: 'DOJ提交最终补救方案：要求剥离Chrome浏览器并终止与苹果搜索协议',
+    sentiment: 'Bearish',
     group: 'Yesterday',
-    summary: '韩国政府确认大额GPU采购订单，同时小鹏汽车宣布加大自研芯片投入。',
-    impactAnalysis: '短期需求强劲，但长期面临客户自研芯片的替代风险（垂直整合）。',
-    expectationAnalysis: '中性偏多，短期业绩有保障，长期竞争格局需关注。',
-    backtestAnalysis: '混合消息发布后，股价通常呈现高波动震荡。'
+    summary: '美国司法部在反垄断案中正式提交最终补救方案，要求Google剥离Chrome浏览器（全球市场份额65%）、终止与Apple的默认搜索引擎协议（年支付约$200亿）、并开放搜索索引数据给竞争对手。Google法务团队回应称方案"极端且不合理"，将提起上诉。',
+    impactAnalysis: '这是Google面临的最大监管风险，潜在影响远超欧盟罚款。作用机制：①Chrome剥离将削弱搜索分发能力，用户可能转向Edge（Bing）或Safari（可能换默认引擎）；②失去Apple默认搜索位将直接损失15-20%搜索查询量，对应$250-300亿年营收（按$18 RPM计算）；③开放索引数据降低搜索护城河，但短期内竞争对手难以复制Google算法优势。财务路径：最坏情况下（Chrome剥离+Apple协议终止+数据开放），搜索营收可能下滑20-25%，对应EPS减少$8-12/股，按25x P/E估值，股价理论下行空间$200-300。战略定位：核心现金牛业务面临结构性威胁，但补救方案执行需2-3年上诉期，期间业务正常运营。',
+    expectationAnalysis: '影响性质：长期负面，但短期因执行不确定性被部分消化。短期（1-3月）：市场已部分定价该风险（8月初判决后股价曾跌-8%），若无新进展，负面影响有限。关注12月中旬Google提交抗辩文件的措辞。中期（6-12月）：2025年H1法院将举行补救方案听证会，届时市场波动加剧。若法官采纳DOJ建议，股价可能再跌10-15%；若仅要求改变商业行为（如降低Apple付款），影响可控。长期（2-3年）：上诉到最高法院需2-3年，期间Google可继续运营。最终和解可能性高（参考微软2001年反垄断案），实际惩罚可能远轻于DOJ要求。',
+    backtestAnalysis: '监管事件对Google股价的历史影响复杂。2023年8月反垄断判决（搜索垄断成立）后，股价初期跌-4.5%，但30天后因业绩强劲反弹+6.2%。欧盟2018年Android反垄断罚款$50亿后，股价1周跌-2.3%，但3个月后涨+11.5%。关键洞察：市场更关注实际财务影响而非法律判决本身，只要核心业务增长不受阻，监管风险溢价会逐步消化。'
+  },
+  {
+    id: 5,
+    time: '16:30',
+    fullTime: '2025-12-01 16:30:00',
+    title: 'Waymo宣布进军东京，国际化战略提速',
+    sentiment: 'Bullish',
+    group: 'Yesterday',
+    summary: 'Waymo宣布与日本出租车巨头Nihon Kotsu合作，将于2025年Q3在东京启动Robotaxi试运营。这是Waymo首次进军美国以外市场，标志着自动驾驶商业化进入全球扩张阶段。',
+    impactAnalysis: 'Waymo国际化是Google"Other Bets"（其他赌注）业务价值重估的催化剂。作用机制：①日本是全球第三大出行市场（TAM $800亿），且监管相对开放；②与本地龙头合作降低准入门槛，复制美国成功经验；③东京高密度城市特征适合Robotaxi运营，单车economics可能优于美国。财务路径：Waymo当前估值$300-450亿（非上市，基于二级市场交易），若东京试点成功，国际化潜力可支撑$600-800亿估值，对应GOOGL股价+$20-30。战略定位：Waymo是Google少有的"moonshot"项目接近盈利，国际化验证其可复制性，降低投资者对"烧钱黑洞"的担忧。',
+    expectationAnalysis: '影响性质：长期期权价值，短期影响有限。短期（1-3月）：市场对Waymo关注度有限（营收占比<1%），除非管理层在财报会议上大力强调，否则股价反应平淡。中期（6-12月）：2025年Q3东京试运营数据是关键，若用户接受度高、安全记录良好，将引发"Waymo Re-rating"（重估）交易。长期（2-3年）：若Waymo在5个以上城市实现盈利，可能启动分拆上市（Spin-off IPO），类似通用汽车Cruise（估值曾达$300亿）。届时GOOGL股东将获得Waymo股票，形成价值显性化。',
+    backtestAnalysis: 'Waymo相关消息对股价影响微弱但方向正面。2023年10月Waymo与Uber合作公告后，股价3天涨+1.8%。2024年6月洛杉矶扩张消息发布后，股价1周涨+2.1%。总体而言，Waymo进展对股价的边际贡献约+0.5-1.5%，主要因市场尚未充分定价其期权价值。'
+  },
+  {
+    id: 6,
+    time: '10:20',
+    fullTime: '2025-11-30 10:20:00',
+    title: '搜索市场份额小幅下滑至91.2%，AI搜索竞争初现压力',
+    sentiment: 'Bearish',
+    group: 'This Week',
+    summary: 'StatCounter最新数据显示，Google搜索全球市场份额从9月的91.6%降至11月的91.2%，主要流失至Bing（从3.2%升至3.7%）和其他AI搜索工具（如Perplexity）。移动端份额相对稳定（94.8%），但桌面端降至89.5%。',
+    impactAnalysis: '搜索市场份额是Google核心护城河的晴雨表，任何下滑都会引发投资者担忧。作用机制：①Bing集成ChatGPT后在"深度搜索"场景吸引部分用户；②Perplexity、You.com等AI原生搜索工具在科技从业者中渗透率提升；③年轻用户（18-24岁）越来越多使用TikTok、Instagram作为"搜索入口"。财务路径：0.4%市场份额流失对应约$7-10亿年营收（搜索总营收$1800亿），短期影响有限，但若趋势持续，2025年可能累计流失1-2%份额，对应$20-40亿营收风险。战略定位：虽然AI Overview已推出，但用户迁移成本低（切换搜索引擎只需1秒），护城河并非不可突破。',
+    expectationAnalysis: '影响性质：早期预警信号，尚未构成基本面威胁。短期（1-2月）：市场可能过度反应，做空者会炒作"搜索流失"叙事。但91.2%份额仍是绝对垄断地位，且AI Overview尚未全量推出（当前覆盖率约40%）。中期（3-6月）：Q4财报（2025年1月）的搜索查询量增长率是关键验证指标。若查询量仍保持+5% YoY，则份额下滑不影响营收增长（可能是低价值查询流失）。长期（1-2年）：真正威胁是用户行为范式转变（从"搜索"到"对话助手"），但这需5-10年时间。短期内Google仍有足够时间调整策略。',
+    backtestAnalysis: '市场份额数据对股价的影响取决于媒体报道强度。2023年6月StatCounter首次报告市场份额跌破92%时，股价1周跌-3.2%。但当Q3财报显示搜索营收仍增长8%后，股价反弹+5.7%。关键洞察：投资者最终关注绝对营收增长而非相对份额，只要定价权（CPC）提升能抵消查询量下滑，影响有限。'
+  },
+  {
+    id: 7,
+    time: '14:55',
+    fullTime: '2025-11-29 14:55:00',
+    title: 'Google推出AI Overviews全量版，搜索体验重大升级',
+    sentiment: 'Bullish',
+    group: 'This Week',
+    summary: 'Google正式在全球120个国家推出AI Overviews全量版，所有搜索查询都将展示AI生成摘要。新版本增加了"Deep Research"深度研究模式、多步骤推理、实时数据整合等功能。',
+    impactAnalysis: 'AI Overviews是Google搜索20年来最大产品升级，旨在抵御ChatGPT Search等竞争。作用机制：①AI摘要提升用户满意度，平均会话时长增加8%；②"Deep Research"模式针对复杂查询（如学术研究、商业分析），创造新的用户场景；③实时数据整合（天气、股价、航班）强化实用性。财务路径：初期可能因用户停留在AI摘要而减少广告点击（CTR可能下降5-10%），但长期通过提升查询量和用户粘性实现增长。Google内部测试显示，AI Overviews用户的搜索频次增加12%。战略定位：防御性升级，确保搜索体验不输给AI原生产品，维护$1800亿搜索营收基本盘。',
+    expectationAnalysis: '影响性质：战略防御成功，但短期财务影响不确定。短期（1-3月）：市场将密切关注用户反馈和广告主意见。若CTR显著下滑，股价可能承压；若查询量增长抵消CTR下降，则影响中性偏正。中期（6-12月）：Q1和Q2财报的搜索营收增速是验证指标。管理层指引"AI Overviews对营收影响中性至微正"，但需实际数据确认。长期（1-2年）：成功整合AI能力可延长搜索生命周期5-10年，失败则可能加速用户向纯AI助手迁移。关键在于广告货币化能力（在AI摘要中嵌入Sponsored内容）。',
+    backtestAnalysis: '重大产品升级对Google股价的影响历史上呈现"先跌后涨"模式。2023年5月SGE（Search Generative Experience）测试版推出后，股价因广告货币化担忧跌-5.8%，但3个月后因用户数据良好反弹+9.3%。关键在于管理层沟通：若在财报会议上明确"AI Overviews不影响广告收入"，市场信心会迅速恢复。'
+  },
+  {
+    id: 8,
+    time: '09:10',
+    fullTime: '2025-11-28 09:10:00',
+    title: 'Q3财报超预期，营收$883亿同比增长11%，云业务首次季度盈利',
+    sentiment: 'Bullish',
+    group: 'This Week',
+    summary: 'Google Q3财报全面超预期：总营收$883亿（预期$862亿），EPS $2.12（预期$1.85），Google Cloud营收$113亿且实现首次季度盈利（营业利润$2.66亿）。搜索广告、YouTube广告、Cloud三大板块全线增长。',
+    impactAnalysis: 'Q3财报是Google"AI商业化元年"的成绩单，验证了AI投资的回报。作用机制：①搜索广告营收$491亿（+12% YoY），证明AI Overview未伤害广告收入；②YouTube广告$79.5亿（+12.5% YoY），扭转连续两季度下滑；③Cloud首次盈利是里程碑，验证规模效应和AI工作负载的高利润率。财务路径：全年营收预计$3420-3450亿（+10-11% YoY），净利润$900-950亿，对应EPS约$7.20-7.60。按25x P/E估值，公允股价$180-190。战略定位：三大业务引擎协同增长，打消市场对"单一依赖搜索"的担忧，估值折扣应收窄。',
+    expectationAnalysis: '影响性质：基本面全面验证，支撑股价上行。短期（1-2周）：财报发布后股价通常上涨3-7%（若超预期），期权市场隐含波动率8.5%。技术面可能突破$325阻力位，下一目标$340-350。中期（3-6月）：Cloud业务盈利能力是持续关注焦点，若Q4和2025 Q1继续盈利且利润率提升，可触发"Cloud Re-rating"交易，目标价上调至$200+。长期（1年）：若2025年保持10%+营收增长且AI业务（Cloud+Gemini API）贡献占比提升至30%，估值有望向Microsoft（30x P/E）靠拢，目标价$220-240。',
+    backtestAnalysis: 'Google财报超预期后的股价表现历史上非常稳定。过去8个季度中，6次超预期后平均3天涨+4.8%，30天涨+8.3%。2023年Q1财报超预期后股价涨+6.9%，2024年Q2财报超预期后涨+5.2%。概率分析：财报超预期后未来10天上涨概率83%，平均涨幅+4.5%。'
+  },
+  {
+    id: 9,
+    time: '15:40',
+    fullTime: '2025-11-27 15:40:00',
+    title: 'Pixel 9系列销量突破1200万台，硬件业务增长提速',
+    sentiment: 'Neutral',
+    group: 'This Week',
+    summary: 'Google Pixel 9系列智能手机全球销量突破1200万台，同比增长35%。其中Pixel 9 Pro Fold折叠屏手机在美国市场份额达8%，仅次于三星。Tensor G4芯片的AI功能（如实时通话翻译、照片魔法橡皮擦）广受好评。',
+    impactAnalysis: 'Pixel硬件业务虽然营收占比小（约3-4%），但战略意义重大。作用机制：①Pixel是Gemini AI的最佳展示窗口，驱动消费者AI应用采用；②硬件数据（用户行为、语音、图像）反哺AI模型训练；③Pixel生态（手机+手表+耳机+平板）增强用户粘性。财务路径：Pixel 2024全年销量预计4000万台（平均售价$600），对应营收$240亿，贡献净利润约$15-20亿（利润率6-8%）。虽然绝对值小，但35%的增速高于智能手机市场平均（-2%）。战略定位：硬件是Google从"软件公司"向"全栈科技公司"转型的重要一环，参考Apple的硬件+软件+服务闭环模式。',
+    expectationAnalysis: '影响性质：正面但边际贡献小，短期对股价影响有限。短期（1-2月）：Pixel销量数据通常不会单独影响股价，除非在财报会议上被管理层重点提及。中期（6-12月）：若Pixel市场份额持续提升至10%+（当前7-8%），可能引发"硬件业务重估"，但仍是次要驱动因素。长期（2-3年）：Pixel若能复制AirPods的成功（高利润率配件生态），可贡献$50-80亿年利润，对应股价+$15-25。但执行难度大，需验证。',
+    backtestAnalysis: 'Pixel销量数据对股价影响微弱。2023年Pixel 8发布后股价1周涨+1.2%，2024年Pixel 9发布后涨+0.8%。总体而言，硬件消息的股价弹性<2%，远低于Cloud或Search相关消息（5-10%）。'
+  },
+  {
+    id: 10,
+    time: '11:30',
+    fullTime: '2025-11-26 11:30:00',
+    title: 'DeepMind AlphaFold 3商业化启动，蛋白质预测平台向药企开放',
+    sentiment: 'Bullish',
+    group: 'This Week',
+    summary: 'Google DeepMind宣布AlphaFold 3蛋白质结构预测平台正式商业化，已与辉瑞、诺华、罗氏等10家头部药企签订合作协议。平台订阅费$500万/年，同时提供按项目收费模式（$50万/蛋白质）。',
+    impactAnalysis: 'AlphaFold商业化是Google"AI变现"的创新路径，展示了基础科研向商业价值的转化能力。作用机制：①蛋白质结构预测加速新药研发，传统方法需3-5年，AlphaFold缩短至数周；②药企愿意为此支付高额费用（ROI极高）；③建立Google在生命科学AI领域的领导地位。财务路径：假设签约50家药企（全球大药企约200家），年订阅费$2.5亿+按项目费用$1-2亿，总计$3.5-4.5亿营收。虽然绝对值小，但毛利率极高（>80%），且展示了AI货币化的多样性。战略定位：Google不再仅依赖广告和云计算，开始探索垂直行业AI SaaS模式（类似Palantir），打开新的增长空间。',
+    expectationAnalysis: '影响性质：长期战略价值高，短期财务贡献小。短期（1-3月）：AlphaFold消息属于"好故事"但非"大钱"，市场反应平淡。除非分析师在研报中大力宣传，否则股价弹性<1%。中期（1-2年）：若AlphaFold签约药企超100家且拓展至农业（蛋白质工程）、材料科学等领域，年营收可达$10-15亿，成为"Other Bets"中的明星项目。长期（3-5年）：生命科学AI市场TAM达$500亿+，若Google占据20%份额，可贡献$100亿营收（利润率40%），对应股价+$15-20。',
+    backtestAnalysis: 'DeepMind相关消息对股价影响极小。2020年AlphaFold 2发布（《自然》封面）后股价1周涨+0.5%，2023年AlphaFold数据库开放后涨+0.3%。市场对"科研突破"兴趣有限，更关注"商业变现"，AlphaFold商业化可能改变这一局面。'
   }
 ]
 
@@ -1354,6 +1489,28 @@ const closeModal = () => {
 const relatedStrategies = computed(() => {
   return allStrategies.filter(s => s.symbol === symbol.value)
 })
+
+// --- Computed: Related Themes (筛选包含当前股票的主题) ---
+const relatedThemes = computed(() => {
+  return allThemesData.value.filter(theme => theme.stocks.includes(symbol.value))
+})
+
+// --- Methods: Theme Expansion & Navigation ---
+const toggleThemeExpand = (theme) => {
+  theme.isExpanded = !theme.isExpanded
+}
+
+const toggleThemeFollow = (theme) => {
+  theme.isFollowed = !theme.isFollowed
+}
+
+const goToStockDetail = (stockSymbol) => {
+  router.push({ 
+    name: 'StockAttributionDetail', 
+    params: { id: stockSymbol },
+    query: { tab: 'price' }
+  })
+}
 
 // --- Methods: Strategy Modal ---
 const openStrategyDetail = (strategy) => {

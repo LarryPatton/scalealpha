@@ -70,7 +70,7 @@ export function useWatchlists() {
           assets: [
             // 大盘归因 (Market)
             'QQQ',      // m2: 纳指100
-            // 个股归因 (Stocks) - 科技成长股
+            // 事件分析 (Stocks) - 科技成长股
             'NVDA',     // s1: 英伟达 - AI芯片龙头
             'TSLA',     // s2: 特斯拉 - 电动车
             'AMD',      // s8: AMD - 芯片竞争者
@@ -102,7 +102,7 @@ export function useWatchlists() {
             'XLE',      // e2: 能源板块
             'KWEB',     // e6: 中概互联网
             'XLF',      // e8: 金融板块
-            // 个股归因 (Stocks) - 部分核心持仓参考
+            // 事件分析 (Stocks) - 部分核心持仓参考
             'AAPL',     // s4: 苹果
             'MSFT',     // s3: 微软
             // 社区机会 (Community) - ETF策略讨论

@@ -7,7 +7,7 @@
           <router-link to="/info" class="text-gray-500 hover:text-white transition-colors">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
           </router-link>
-          <h1 class="text-2xl font-bold text-white">📊 所有个股归因 (All Stock Attribution)</h1>
+          <h1 class="text-2xl font-bold text-white">📊 所有事件分析 (All Event Analysis)</h1>
         </div>
 
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[#333] pb-4">

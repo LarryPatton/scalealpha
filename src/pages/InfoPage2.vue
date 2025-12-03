@@ -98,7 +98,7 @@
               </button>
             </div>
           </div>
-          <router-link to="/market-themes" class="text-sm text-gray-500 hover:text-white transition-colors">View All ></router-link>
+          <router-link to="/opportunities?tab=themes" class="text-sm text-gray-500 hover:text-white transition-colors">View All ></router-link>
         </div>
 
         <!-- Content Area -->
@@ -248,7 +248,7 @@
         <div class="flex items-center justify-between mb-6">
           <div class="flex items-center gap-4">
             <h2 class="text-xl font-bold text-white flex items-center gap-2">
-              📊 个股归因 <span class="bg-gray-700 text-gray-300 text-xs px-2 py-0.5 rounded-full">{{ attributionData.recommend.length }}</span>
+              📊 事件分析 <span class="bg-gray-700 text-gray-300 text-xs px-2 py-0.5 rounded-full">{{ attributionData.recommend.length }}</span>
             </h2>
             <!-- Tabs -->
             <div class="flex bg-[#1a1a1a] rounded-lg p-1 border border-[#333]">
@@ -268,7 +268,7 @@
               </button>
             </div>
           </div>
-          <router-link to="/stock-attribution" class="text-sm text-gray-500 hover:text-white transition-colors">View All ></router-link>
+          <router-link to="/opportunities?tab=events" class="text-sm text-gray-500 hover:text-white transition-colors">View All ></router-link>
         </div>
 
         <!-- Content Area -->

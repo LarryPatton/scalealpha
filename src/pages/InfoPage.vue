@@ -134,7 +134,7 @@
               <!-- Stock Attribution -->
               <InfoSection 
                 v-if="displayedContent.stock.length > 0"
-                title="个股归因" 
+                title="事件分析"
                 type="stock" 
                 :items="displayedContent.stock"
                 @card-click="(id) => navigateToDetail('stock', id)"
@@ -303,7 +303,7 @@ const recommendedItems = [
     isFollowing: false
   },
 
-  // ========== 个股归因 (Stocks) ==========
+  // ========== 事件分析 (Stocks) ==========
   {
     id: 'r-s1',
     type: 'stock',

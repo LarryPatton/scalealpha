@@ -1,7 +1,36 @@
 <template>
   <div class="min-h-screen bg-[#1a1a1a]">
-    <!-- Page-level Progress Navigation -->
-    <div class="bg-[#2a2a2a] border-b border-[#404040] py-4">
+    <!-- Tab切换区域 -->
+    <div class="bg-[#2a2a2a] border-b border-[#404040] py-3">
+      <div class="max-w-7xl mx-auto px-6 flex justify-center">
+        <div class="flex bg-[#1a1a1a] rounded-lg p-1 border border-[#333] w-fit">
+          <button 
+            @click="switchTab('generate')"
+            class="px-6 py-2 text-sm rounded-md transition-all"
+            :class="activeTab === 'generate' ? 'bg-[#333] text-white shadow' : 'text-gray-500 hover:text-gray-300'"
+          >
+            生成策略
+          </button>
+          <button 
+            @click="switchTab('queue')"
+            class="px-6 py-2 text-sm rounded-md transition-all"
+            :class="activeTab === 'queue' ? 'bg-[#333] text-white shadow' : 'text-gray-500 hover:text-gray-300'"
+          >
+            生成队列
+          </button>
+          <button 
+            @click="switchTab('mystrategy')"
+            class="px-6 py-2 text-sm rounded-md transition-all"
+            :class="activeTab === 'mystrategy' ? 'bg-[#333] text-white shadow' : 'text-gray-500 hover:text-gray-300'"
+          >
+            查看我的策略
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page-level Progress Navigation (只在生成策略tab显示) -->
+    <div v-if="activeTab === 'generate'" class="bg-[#2a2a2a] border-b border-[#404040] py-4">
       <div class="max-w-7xl mx-auto px-6">
         <div class="flex items-center justify-center gap-4">
           <!-- Step 1: 选股 -->
@@ -121,7 +150,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="flex h-[calc(100vh-180px)]">
+    <div v-if="activeTab === 'generate'" class="flex h-[calc(100vh-180px)]">
       <!-- Step 1: 选股 -->
       <template v-if="currentStep === 1">
         <!-- Sidebar -->
@@ -927,6 +956,163 @@
       </div>
     </div>
 
+    <!-- Tab 2: 生成队列 -->
+    <div v-else-if="activeTab === 'queue'" class="min-h-[calc(100vh-240px)]">
+      <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- 统计信息栏 -->
+        <div class="bg-[#2a2a2a] border border-[#404040] rounded-xl p-6 mb-8">
+          <div class="flex items-center justify-center gap-8">
+            <div class="text-center">
+              <div class="text-sm text-gray-400 mb-2">正在生成</div>
+              <div class="text-3xl font-bold text-blue-400">{{ generatingCount }}</div>
+            </div>
+            <div class="w-px h-12 bg-[#404040]"></div>
+            <div class="text-center">
+              <div class="text-sm text-gray-400 mb-2">已完成</div>
+              <div class="text-3xl font-bold text-green-400">{{ completedCount }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 正在生成的策略 -->
+        <div v-if="inProgressReports.length > 0" class="mb-8">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+            <h2 class="text-xl font-bold text-white">正在生成的策略</h2>
+            <span class="text-sm text-gray-400">({{ inProgressReports.length }})</span>
+          </div>
+
+          <div class="space-y-4">
+            <div
+              v-for="report in inProgressReports"
+              :key="report.symbol"
+              class="bg-[#2a2a2a] border border-[#404040] rounded-xl p-6 hover:border-blue-500/50 transition-all"
+            >
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-3 mb-1">
+                      <span class="font-mono text-lg font-bold text-blue-400">{{ report.symbol }}</span>
+                      <span class="text-gray-300">{{ report.stockName }}</span>
+                    </div>
+                    <div class="text-sm text-gray-400">{{ report.status }}</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-2xl font-bold text-blue-400">{{ report.progress }}%</div>
+                  <div class="text-xs text-gray-500">处理中...</div>
+                </div>
+              </div>
+
+              <!-- 进度条 -->
+              <div class="w-full bg-[#1a1a1a] rounded-full h-2 overflow-hidden">
+                <div 
+                  class="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-500 ease-out"
+                  :style="{ width: `${report.progress}%` }"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 已完成的策略 -->
+        <div>
+          <div class="flex items-center gap-3 mb-4">
+            <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            <h2 class="text-xl font-bold text-white">已完成的策略</h2>
+            <span class="text-sm text-gray-400">({{ completedReports.length }})</span>
+          </div>
+
+          <!-- 空状态 -->
+          <div v-if="completedReports.length === 0" class="text-center py-16">
+            <div class="inline-flex items-center justify-center w-24 h-24 bg-gray-800 rounded-full mb-6">
+              <svg class="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-white mb-2">暂无已完成的策略</h3>
+            <p class="text-gray-400 mb-6">开始生成您的第一个投资策略</p>
+            <button
+              @click="switchTab('generate')"
+              class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            >
+              前往生成策略
+            </button>
+          </div>
+
+          <!-- 策略卡片网格 -->
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div
+              v-for="report in completedReports"
+              :key="report.symbol"
+              class="bg-[#2a2a2a] border border-[#404040] rounded-xl p-5 hover:shadow-lg hover:shadow-blue-500/20 hover:border-blue-500 transition-all cursor-pointer group"
+              @click="viewReportDetail(report)"
+            >
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-green-600 to-blue-600 flex items-center justify-center font-mono font-bold text-sm text-white">
+                    {{ report.symbol.slice(0, 2) }}
+                  </div>
+                  <div>
+                    <div class="font-mono font-bold text-white group-hover:text-blue-400 transition-colors">
+                      {{ report.symbol }}
+                    </div>
+                    <div class="text-xs text-gray-400">{{ report.stockName }}</div>
+                  </div>
+                </div>
+                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+
+              <div class="space-y-2">
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-gray-400">预期收益</span>
+                  <span class="font-semibold text-green-400">+{{ report.expectedReturn }}%</span>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-gray-400">风险等级</span>
+                  <span class="font-semibold text-yellow-400">{{ report.riskLevel }}</span>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-gray-400">生成时间</span>
+                  <span class="text-xs text-gray-500">{{ formatTime(report.generatedAt) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: 查看我的策略 -->
+    <div v-else-if="activeTab === 'mystrategy'" class="min-h-[calc(100vh-240px)]">
+      <div class="max-w-4xl mx-auto px-6 py-16">
+        <div class="text-center">
+          <div class="inline-flex items-center justify-center w-32 h-32 bg-[#2a2a2a] border border-[#404040] rounded-full mb-8">
+            <svg class="w-16 h-16 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-white mb-4">此功能即将上线</h2>
+          <p class="text-gray-400 mb-8">在这里您可以查看和管理您保存的策略</p>
+          <div class="inline-flex items-center gap-2 px-6 py-3 bg-[#2a2a2a] border border-[#404040] rounded-lg text-gray-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>敬请期待</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Save Reports Dialog -->
     <SaveReportsDialog
       :is-open="showSaveDialog"
@@ -953,7 +1139,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import OpportunityReportCard from '../components/opportunity/OpportunityReportCard.vue'
 import SaveReportsDialog from '../components/opportunity/SaveReportsDialog.vue'
 import PositionConfirmDialog from '../components/opportunity/PositionConfirmDialog.vue'
@@ -961,11 +1147,15 @@ import HoldingsClassificationDialog from '../components/opportunity/HoldingsClas
 import { useSavedReports } from '../composables/useSavedReports'
 
 const router = useRouter()
+const route = useRoute()
 const { 
   savedReports, 
   checkSavedReports, 
   refreshStatus 
 } = useSavedReports()
+
+// Tab State Management
+const activeTab = ref('generate') // 'generate' | 'queue' | 'mystrategy'
 
 // Current Step
 const currentStep = ref(1)
@@ -1218,6 +1408,15 @@ const inProgressReports = computed(() => {
 })
 
 const completedReportsCount = computed(() => {
+  return completedReports.value.length
+})
+
+// Tab-related computed properties
+const generatingCount = computed(() => {
+  return inProgressReports.value.length
+})
+
+const completedCount = computed(() => {
   return completedReports.value.length
 })
 
@@ -1543,6 +1742,33 @@ const viewGeneratedReport = (report) => {
   
   // Save state
   savePageState()
+}
+
+// Tab switching function
+const switchTab = (tab) => {
+  activeTab.value = tab
+  // Update URL query parameter
+  router.push({
+    path: route.path,
+    query: { ...route.query, tab }
+  })
+}
+
+// Format time helper
+const formatTime = (timestamp) => {
+  if (!timestamp) return '-'
+  const date = new Date(timestamp)
+  const now = new Date()
+  const diff = now - date
+  const minutes = Math.floor(diff / 60000)
+  const hours = Math.floor(diff / 3600000)
+  const days = Math.floor(diff / 86400000)
+  
+  if (minutes < 1) return '刚刚'
+  if (minutes < 60) return `${minutes}分钟前`
+  if (hours < 24) return `${hours}小时前`
+  if (days < 7) return `${days}天前`
+  return date.toLocaleDateString('zh-CN')
 }
 
 const goToStep4 = () => {
@@ -1929,21 +2155,139 @@ const startGenerating = () => {
 
 // Initialize demo data for generating reports
 const initializeDemoGeneratingReports = () => {
+  const now = Date.now()
   generatingReports.value = [
+    // 正在生成的报告
     {
-      symbol: 'GOOGL',
-      progress: 35,
-      status: '分析基本面...'
+      id: 'gen-600519',
+      symbol: '600519',
+      stockName: '贵州茅台',
+      progress: 75,
+      status: '分析财务数据...',
+      completed: false
     },
     {
-      symbol: 'META',
-      progress: 68,
-      status: '计算指标...'
+      id: 'gen-000001',
+      symbol: '000001',
+      stockName: '平安银行',
+      progress: 40,
+      status: '获取行业数据...',
+      completed: false
     },
     {
-      symbol: 'AMZN',
-      progress: 92,
-      status: '生成报告...'
+      id: 'gen-000858',
+      symbol: '000858',
+      stockName: '五粮液',
+      progress: 15,
+      status: '初始化策略引擎...',
+      completed: false
+    },
+    {
+      id: 'gen-601318',
+      symbol: '601318',
+      stockName: '中国平安',
+      progress: 58,
+      status: '计算技术指标...',
+      completed: false
+    },
+    {
+      id: 'gen-600036',
+      symbol: '600036',
+      stockName: '招商银行',
+      progress: 88,
+      status: '生成投资建议...',
+      completed: false
+    },
+    // 已完成的报告
+    {
+      id: 'completed-600887',
+      symbol: '600887',
+      stockName: '伊利股份',
+      expectedReturn: '18.5',
+      riskLevel: '中等',
+      generatedAt: now - 3600000, // 1小时前
+      progress: 100,
+      completed: true
+    },
+    {
+      id: 'completed-000333',
+      symbol: '000333',
+      stockName: '美的集团',
+      expectedReturn: '22.3',
+      riskLevel: '中等',
+      generatedAt: now - 7200000, // 2小时前
+      progress: 100,
+      completed: true
+    },
+    {
+      id: 'completed-601888',
+      symbol: '601888',
+      stockName: '中国中免',
+      expectedReturn: '28.7',
+      riskLevel: '较高',
+      generatedAt: now - 10800000, // 3小时前
+      progress: 100,
+      completed: true
+    },
+    {
+      id: 'completed-600276',
+      symbol: '600276',
+      stockName: '恒瑞医药',
+      expectedReturn: '15.2',
+      riskLevel: '较低',
+      generatedAt: now - 14400000, // 4小时前
+      progress: 100,
+      completed: true
+    },
+    {
+      id: 'completed-000568',
+      symbol: '000568',
+      stockName: '泸州老窖',
+      expectedReturn: '20.8',
+      riskLevel: '中等',
+      generatedAt: now - 21600000, // 6小时前
+      progress: 100,
+      completed: true
+    },
+    {
+      id: 'completed-601012',
+      symbol: '601012',
+      stockName: '隆基绿能',
+      expectedReturn: '25.4',
+      riskLevel: '较高',
+      generatedAt: now - 28800000, // 8小时前
+      progress: 100,
+      completed: true
+    },
+    {
+      id: 'completed-002594',
+      symbol: '002594',
+      stockName: '比亚迪',
+      expectedReturn: '32.1',
+      riskLevel: '高',
+      generatedAt: now - 43200000, // 12小时前
+      progress: 100,
+      completed: true
+    },
+    {
+      id: 'completed-600309',
+      symbol: '600309',
+      stockName: '万华化学',
+      expectedReturn: '16.9',
+      riskLevel: '中等',
+      generatedAt: now - 86400000, // 1天前
+      progress: 100,
+      completed: true
+    },
+    {
+      id: 'completed-300750',
+      symbol: '300750',
+      stockName: '宁德时代',
+      expectedReturn: '35.6',
+      riskLevel: '高',
+      generatedAt: now - 172800000, // 2天前
+      progress: 100,
+      completed: true
     }
   ]
 }
@@ -2267,11 +2611,23 @@ watch(isGeneratingReports, (newValue) => {
 })
 
 // Initialize
+// Watch route query parameter changes
+watch(() => route.query.tab, (newTab) => {
+  if (newTab && ['generate', 'queue', 'mystrategy'].includes(newTab)) {
+    activeTab.value = newTab
+  }
+})
+
 onMounted(() => {
   loadMyHoldings()
   restorePageState()
   loadSavedReports()
   // Initialize demo generating reports
   initializeDemoGeneratingReports()
+  
+  // Initialize activeTab from URL query parameter
+  if (route.query.tab && ['generate', 'queue', 'mystrategy'].includes(route.query.tab)) {
+    activeTab.value = route.query.tab
+  }
 })
 </script>
