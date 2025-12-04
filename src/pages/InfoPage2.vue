@@ -55,6 +55,11 @@
       </div>
     </div>
 
+    <!-- Macro Dashboard (宏观看板) -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-20">
+      <MacroDashboard />
+    </div>
+
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
       <!-- Stats Section -->
@@ -597,6 +602,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import MacroDashboard from '@/components/dashboard/MacroDashboard.vue'
 
 const router = useRouter()
 

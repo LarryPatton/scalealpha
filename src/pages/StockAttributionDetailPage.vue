@@ -307,7 +307,7 @@
         <div class="mb-6 flex items-center justify-between">
           <div class="flex items-center gap-3">
             <h3 class="text-lg font-bold text-white">个股相关策略</h3>
-            <span class="text-sm text-gray-500">({{ relatedStrategies.length }})</span>
+            <span class="text-sm text-gray-500">({{ filteredStrategies.length }})</span>
           </div>
           <div class="flex items-center gap-4">
             <div class="text-xs text-gray-500">
@@ -323,10 +323,107 @@
           </div>
         </div>
 
+        <!-- Strategy Filters -->
+        <div class="mb-4 space-y-3">
+          <!-- 策略生成来源筛选器 -->
+          <div class="bg-[#1a1a1a] rounded-lg border border-[#333] p-3">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-xs font-semibold text-gray-300">策略生成来源</span>
+              <span class="text-[10px] text-gray-500">(多选)</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button
+                v-for="model in aiModels"
+                :key="model.id"
+                @click="toggleModelFilter(model.id)"
+                class="px-2 py-1 rounded-md text-[11px] font-medium transition-all border flex items-center gap-1"
+                :class="selectedModels.includes(model.id)
+                  ? `${model.bgColor} ${model.borderColor} ${model.textColor}`
+                  : 'bg-[#0f0f0f] border-[#333] text-gray-500 hover:border-gray-600'"
+              >
+                <span class="text-sm">{{ model.icon }}</span>
+                <span>{{ model.name }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 其他筛选器 (方向、持续时间、评级) -->
+          <div class="grid grid-cols-3 gap-3">
+            <!-- 策略方向 -->
+            <div class="bg-[#1a1a1a] rounded-lg border border-[#333] p-3">
+              <div class="text-xs font-semibold text-gray-300 mb-2">策略方向</div>
+              <div class="flex gap-1.5">
+                <button
+                  v-for="direction in ['LONG', 'SHORT', 'WAIT']"
+                  :key="direction"
+                  @click="toggleDirectionFilter(direction)"
+                  class="flex-1 px-2 py-1 rounded-md text-[11px] font-medium transition-all border"
+                  :class="selectedDirections.includes(direction)
+                    ? direction === 'LONG' ? 'bg-green-500/10 border-green-500/30 text-green-400'
+                      : direction === 'SHORT' ? 'bg-red-500/10 border-red-500/30 text-red-400'
+                      : 'bg-gray-500/10 border-gray-500/30 text-gray-400'
+                    : 'bg-[#0f0f0f] border-[#333] text-gray-500 hover:border-gray-600'"
+                >
+                  {{ direction }}
+                </button>
+              </div>
+            </div>
+
+            <!-- 持续时间 -->
+            <div class="bg-[#1a1a1a] rounded-lg border border-[#333] p-3">
+              <div class="text-xs font-semibold text-gray-300 mb-2">持续时间</div>
+              <div class="flex gap-1.5">
+                <button
+                  v-for="duration in ['Short-term', 'Medium-term', 'Long-term']"
+                  :key="duration"
+                  @click="toggleDurationFilter(duration)"
+                  class="flex-1 px-2 py-1 rounded-md text-[11px] font-medium transition-all border"
+                  :class="selectedDurations.includes(duration)
+                    ? 'bg-blue-500/10 border-blue-500/30 text-blue-400'
+                    : 'bg-[#0f0f0f] border-[#333] text-gray-500 hover:border-gray-600'"
+                >
+                  {{ duration.replace('-term', '') }}
+                </button>
+              </div>
+            </div>
+
+            <!-- 策略评级 -->
+            <div class="bg-[#1a1a1a] rounded-lg border border-[#333] p-3">
+              <div class="text-xs font-semibold text-gray-300 mb-2">策略评级</div>
+              <div class="flex flex-wrap gap-1.5">
+                <button
+                  v-for="grade in ['A+', 'A', 'A-', 'B+', 'B', 'C']"
+                  :key="grade"
+                  @click="toggleGradeFilter(grade)"
+                  class="px-2 py-1 rounded-md text-[11px] font-medium transition-all border min-w-[36px]"
+                  :class="selectedGrades.includes(grade)
+                    ? grade.startsWith('A') ? 'bg-green-500/10 border-green-500/30 text-green-400'
+                      : grade.startsWith('B') ? 'bg-blue-500/10 border-blue-500/30 text-blue-400'
+                      : 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400'
+                    : 'bg-[#0f0f0f] border-[#333] text-gray-500 hover:border-gray-600'"
+                >
+                  {{ grade }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 清除筛选器按钮 -->
+          <div v-if="hasActiveFilters" class="flex justify-end">
+            <button
+              @click="clearAllFilters"
+              class="px-3 py-1.5 bg-[#0f0f0f] border border-[#333] hover:border-gray-600 text-gray-400 text-[11px] font-medium rounded-md transition-all flex items-center gap-1.5"
+            >
+              <span>✕</span>
+              <span>清除所有筛选</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Strategies List -->
-        <div v-if="relatedStrategies.length > 0" class="space-y-4">
+        <div v-if="filteredStrategies.length > 0" class="space-y-4">
           <div 
-            v-for="strategy in relatedStrategies" 
+            v-for="strategy in filteredStrategies"
             :key="strategy.id"
             :ref="el => { if (strategy.id === highlightedStrategyId) highlightedStrategyRef = el }"
             @click="openStrategyDetail(strategy)"
@@ -353,6 +450,15 @@
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 mb-1">
                   <span v-if="strategy.isNew" class="px-1.5 py-0.5 bg-blue-600 text-white text-[10px] font-bold rounded uppercase">NEW</span>
+                  <!-- AI Model Badge -->
+                  <span 
+                    v-if="strategy.model"
+                    class="px-2 py-0.5 rounded-md text-[10px] font-semibold border flex items-center gap-1"
+                    :class="getModelConfig(strategy.model)?.bgColor + ' ' + getModelConfig(strategy.model)?.borderColor + ' ' + getModelConfig(strategy.model)?.textColor"
+                  >
+                    <span class="text-xs">{{ getModelConfig(strategy.model)?.icon }}</span>
+                    <span>{{ getModelConfig(strategy.model)?.name }}</span>
+                  </span>
                   <h3 class="text-base font-bold text-white truncate group-hover:text-blue-400 transition-colors">{{ strategy.title }}</h3>
                 </div>
                 <div class="text-sm text-gray-400 space-y-1 mb-2">
@@ -506,65 +612,265 @@
       </div> <!-- End of Attribution Tab -->
     </div>
 
-    <!-- Strategy Detail Modal -->
+    <!-- Strategy Detail Modal (Apple-inspired Minimalist Design) -->
     <div v-if="showStrategyModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" @click.self="closeStrategyModal">
-      <div class="bg-[#1a1a1a] rounded-xl border border-[#333] w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl">
-        <!-- Modal Header -->
-        <div class="p-6 border-b border-[#333] flex justify-between items-start sticky top-0 bg-[#1a1a1a] z-10">
-          <div class="flex items-center gap-3 flex-1">
-            <div class="px-2 py-0.5 rounded text-xs font-bold" 
+      <div class="bg-[#1a1a1a] rounded-2xl border border-[#333] w-full max-w-6xl max-h-[90vh] overflow-hidden shadow-2xl">
+        
+        <!-- Modal Header (Sticky) -->
+        <div class="px-8 py-5 border-b border-[#2a2a2a] flex justify-between items-center sticky top-0 bg-[#1a1a1a]/95 backdrop-blur-xl z-10">
+          <div class="flex items-center gap-3">
+            <!-- Grade Badge -->
+            <div class="px-2.5 py-1 rounded-md text-xs font-semibold tracking-wide" 
               :class="{
-                'bg-green-900/30 text-green-400 border border-green-900/50': selectedStrategy.grade === 'A' || selectedStrategy.grade === 'A+',
-                'bg-blue-900/30 text-blue-400 border border-blue-900/50': selectedStrategy.grade === 'B',
-                'bg-yellow-900/30 text-yellow-400 border border-yellow-900/50': selectedStrategy.grade === 'C'
+                'bg-green-500/10 text-green-400': selectedStrategy.grade === 'A' || selectedStrategy.grade === 'A+',
+                'bg-blue-500/10 text-blue-400': selectedStrategy.grade === 'B',
+                'bg-yellow-500/10 text-yellow-400': selectedStrategy.grade === 'C'
               }">
-              Grade {{ selectedStrategy.grade }}
+              GRADE {{ selectedStrategy.grade }}
             </div>
-            <div class="flex items-center gap-1 font-bold text-sm"
+            <!-- Direction Badge -->
+            <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold"
               :class="{
-                'text-green-500': selectedStrategy.direction === 'LONG',
-                'text-red-500': selectedStrategy.direction === 'SHORT',
-                'text-gray-400': selectedStrategy.direction === 'WAIT'
+                'bg-green-500/10 text-green-400': selectedStrategy.direction === 'LONG',
+                'bg-red-500/10 text-red-400': selectedStrategy.direction === 'SHORT',
+                'bg-gray-500/10 text-gray-400': selectedStrategy.direction === 'WAIT'
               }">
               <span v-if="selectedStrategy.direction === 'LONG'">↑</span>
               <span v-if="selectedStrategy.direction === 'SHORT'">↓</span>
               {{ selectedStrategy.direction }}
             </div>
+            <div class="h-4 w-px bg-[#333] mx-1"></div>
             <span class="text-xs text-gray-500">{{ selectedStrategy.timeAgo }}</span>
           </div>
-          <button @click="closeStrategyModal" class="text-gray-500 hover:text-white transition-colors ml-4">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          <!-- Close Button -->
+          <button 
+            @click="closeStrategyModal" 
+            class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/5 transition-all duration-200"
+          >
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
           </button>
         </div>
 
-        <!-- Modal Content -->
-        <div class="p-6 space-y-6">
-          <div>
-            <div class="text-2xl font-bold text-white mb-1">{{ selectedStrategy.symbol }}</div>
-            <h2 class="text-lg font-bold text-gray-300 leading-tight mb-4">{{ selectedStrategy.title }}</h2>
+        <!-- Modal Body (Split Layout) -->
+        <div class="flex max-h-[calc(90vh-80px)]">
+          
+          <!-- Left: Strategy Content (60%) -->
+          <div class="flex-1 w-3/5 overflow-y-auto px-8 py-6 scrollbar-thin scrollbar-thumb-[#333] scrollbar-track-transparent">
             
-            <div class="flex items-center gap-4 text-sm text-gray-400 mb-4">
-              <span class="flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
-                {{ selectedStrategy.strategy }}
-              </span>
-              <span class="flex items-center gap-1">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                {{ selectedStrategy.duration }}
-              </span>
+            <!-- Strategy Title -->
+            <div class="mb-6">
+              <div class="text-sm font-medium text-gray-500 mb-2">{{ selectedStrategy.symbol }}</div>
+              <h2 class="text-2xl font-semibold text-white leading-tight mb-4">{{ selectedStrategy.title }}</h2>
+              
+              <!-- Meta Info -->
+              <div class="flex items-center gap-4 text-sm text-gray-400">
+                <span class="flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+                  {{ selectedStrategy.strategy }}
+                </span>
+                <span class="flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  {{ selectedStrategy.duration }}
+                </span>
+              </div>
             </div>
+
+            <!-- Strategy Summary -->
+            <div class="bg-[#0f0f0f] rounded-xl p-5 mb-6 border border-[#2a2a2a]">
+              <div class="flex items-center gap-2 mb-3">
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Strategy Summary</span>
+              </div>
+              <p class="text-sm text-gray-300 leading-relaxed">{{ selectedStrategy.description }}</p>
+            </div>
+
+            <!-- Full Strategy Content -->
+            <div class="prose prose-invert prose-sm max-w-none markdown-content">
+              <div 
+                class="text-sm text-gray-300 leading-relaxed"
+                v-html="renderedStrategyContent"
+              >
+              </div>
+            </div>
+
+            <!-- CTA Button -->
+            <div class="mt-8 pt-6 border-t border-[#2a2a2a]">
+              <button 
+                @click="generatePlanForStrategy(selectedStrategy)"
+                class="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-medium rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/25 flex items-center justify-center gap-2"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                <span>针对此策略生成我的计划</span>
+              </button>
+            </div>
+
           </div>
 
-          <!-- Summary Box -->
-          <div class="bg-[#222] rounded-lg p-4 border border-[#333] text-sm text-gray-300 leading-relaxed">
-            {{ selectedStrategy.description }}
-          </div>
-
-          <!-- Full Strategy Content (Markdown-style) -->
-          <div class="prose prose-invert prose-sm max-w-none">
-            <div class="text-gray-300 space-y-4 leading-relaxed" style="white-space: pre-line;">
-              {{ selectedStrategy.fullContent }}
+          <!-- Right: Related Plans (40%) -->
+          <div class="w-2/5 border-l border-[#2a2a2a] bg-[#0f0f0f] overflow-y-auto px-6 py-6 scrollbar-thin scrollbar-thumb-[#333] scrollbar-track-transparent">
+            
+            <!-- Plans Header -->
+            <div class="mb-5">
+              <div class="flex items-center gap-2 mb-2">
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                </svg>
+                <h3 class="text-sm font-semibold text-white">基于此策略的计划</h3>
+                <span class="text-xs text-gray-500">({{ relatedPlans.length }})</span>
+              </div>
+              <p class="text-xs text-gray-500">已有 {{ relatedPlans.length }} 个计划使用此策略</p>
             </div>
+
+            <!-- Plans List -->
+            <div v-if="relatedPlans.length > 0" class="space-y-3">
+              <div 
+                v-for="plan in relatedPlans" 
+                :key="plan.id"
+                class="bg-[#1a1a1a] rounded-lg border border-[#2a2a2a] hover:border-[#404040] transition-all duration-200"
+              >
+                <!-- Plan Header (Collapsible) -->
+                <button 
+                  @click="togglePlanExpand(plan)"
+                  class="w-full px-4 py-3 flex items-center justify-between text-left"
+                >
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <svg 
+                        class="w-3.5 h-3.5 text-gray-500 transition-transform duration-200" 
+                        :class="{ 'rotate-90': plan.isExpanded }"
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                      </svg>
+                      <h4 class="text-sm font-medium text-white truncate">{{ plan.title }}</h4>
+                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-medium flex-shrink-0">
+                        <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        官方生成
+                      </span>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs text-gray-500 ml-5">
+                      <span class="flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        ${{ (plan.capital / 1000).toFixed(0) }}K
+                      </span>
+                      <span class="flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        {{ plan.createdAt }}
+                      </span>
+                    </div>
+                  </div>
+                </button>
+
+                <!-- Plan Details (Expanded) -->
+                <transition name="expand">
+                  <div v-if="plan.isExpanded" class="px-4 pb-4 border-t border-[#2a2a2a] pt-3 space-y-3">
+                    <!-- Plan Metrics -->
+                    <div class="grid grid-cols-2 gap-3">
+                      <div class="bg-[#0f0f0f] rounded-lg p-2.5">
+                        <div class="text-xs text-gray-500 mb-0.5">目标收益</div>
+                        <div class="text-sm font-semibold text-green-400">{{ plan.targetReturn }}</div>
+                      </div>
+                      <div class="bg-[#0f0f0f] rounded-lg p-2.5">
+                        <div class="text-xs text-gray-500 mb-0.5">风险等级</div>
+                        <div class="text-sm font-semibold" :class="{
+                          'text-green-400': plan.riskLevel === 'low',
+                          'text-yellow-400': plan.riskLevel === 'medium',
+                          'text-red-400': plan.riskLevel === 'high'
+                        }">{{ plan.riskLevel === 'low' ? '低' : plan.riskLevel === 'medium' ? '中' : '高' }}</div>
+                      </div>
+                    </div>
+
+                    <!-- Positions -->
+                    <div v-if="plan.positions && plan.positions.length > 0">
+                      <div class="text-xs text-gray-500 mb-2">操作记录</div>
+                      <div class="space-y-2">
+                        <div 
+                          v-for="(position, idx) in plan.positions" 
+                          :key="idx"
+                          class="text-xs"
+                        >
+                          <div class="flex items-start gap-2 text-gray-300">
+                            <span class="w-1 h-1 rounded-full bg-blue-500/60 mt-1.5 flex-shrink-0"></span>
+                            <div class="flex-1">
+                              <span class="font-medium">{{ position.action }}</span>
+                              <span class="text-blue-400 ml-1.5">{{ position.amount }}</span>
+                              <span v-if="position.price !== '-'" class="text-gray-500 ml-1.5">@ {{ position.price }}</span>
+                              <div v-if="position.note" class="text-gray-500 mt-0.5 text-[11px]">{{ position.note }}</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-2 pt-2">
+                      <button 
+                        @click="viewPlanDetail(plan)"
+                        class="flex-1 py-2 px-3 bg-[#2a2a2a] hover:bg-[#333] text-white text-xs font-medium rounded-lg transition-colors"
+                      >
+                        查看详情
+                      </button>
+                      <button 
+                        @click="editPlan(plan)"
+                        class="flex-1 py-2 px-3 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-xs font-medium rounded-lg transition-colors"
+                      >
+                        编辑计划
+                      </button>
+                    </div>
+                  </div>
+                </transition>
+              </div>
+            </div>
+
+            <!-- Empty State -->
+            <div v-else class="mt-8 text-center py-8">
+              <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-[#1a1a1a] flex items-center justify-center">
+                <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </div>
+              <h4 class="text-sm font-medium text-white mb-2">暂无相关计划</h4>
+              <p class="text-xs text-gray-500 mb-4">基于此策略创建您的第一个计划</p>
+              <button 
+                @click="generatePlanForStrategy(selectedStrategy)"
+                class="py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium rounded-lg transition-colors inline-flex items-center gap-1.5"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                立即生成计划
+              </button>
+            </div>
+
+            <!-- View All Plans Button -->
+            <div v-if="relatedPlans.length > 0" class="mt-4 pt-4 border-t border-[#2a2a2a]">
+              <button 
+                @click="viewAllPlans"
+                class="w-full py-2.5 text-xs font-medium text-gray-400 hover:text-white transition-colors flex items-center justify-center gap-1.5"
+              >
+                <span>查看全部计划</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </button>
+            </div>
+
           </div>
         </div>
       </div>
@@ -639,6 +945,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { marked } from 'marked'
+
+// 配置 marked 选项
+marked.setOptions({
+  breaks: true,  // 支持 GitHub 风格的换行
+  gfm: true,     // 启用 GitHub Flavored Markdown
+})
 
 const route = useRoute()
 const router = useRouter()
@@ -682,6 +995,88 @@ const showModal = ref(false)
 const selectedEvent = ref({})
 const showStrategyModal = ref(false)
 const selectedStrategy = ref({})
+const relatedPlans = ref([])
+
+// --- AI Models Configuration ---
+const aiModels = [
+  {
+    id: 'openai',
+    name: 'OpenAI',
+    icon: '●', // 圆圈图标
+    color: '#FF6B6B', // 红色
+    bgColor: 'bg-red-500/10',
+    borderColor: 'border-red-500/30',
+    textColor: 'text-red-400'
+  },
+  {
+    id: 'claude',
+    name: 'Claude',
+    icon: '✦', // 星形图标
+    color: '#FF9E5C', // 橙色
+    bgColor: 'bg-orange-500/10',
+    borderColor: 'border-orange-500/30',
+    textColor: 'text-orange-400'
+  },
+  {
+    id: 'grok',
+    name: 'Grok',
+    icon: '✓', // 对勾图标
+    color: '#E5E7EB', // 灰白色
+    bgColor: 'bg-gray-500/10',
+    borderColor: 'border-gray-500/30',
+    textColor: 'text-gray-400'
+  },
+  {
+    id: 'deepseek',
+    name: 'DeepSeek',
+    icon: '◆', // 菱形图标
+    color: '#60A5FA', // 蓝色
+    bgColor: 'bg-blue-500/10',
+    borderColor: 'border-blue-500/30',
+    textColor: 'text-blue-400'
+  },
+  {
+    id: 'qwen',
+    name: 'Qwen',
+    icon: '◉', // 圆点图标
+    color: '#A78BFA', // 紫色
+    bgColor: 'bg-purple-500/10',
+    borderColor: 'border-purple-500/30',
+    textColor: 'text-purple-400'
+  },
+  {
+    id: 'kimi',
+    name: 'Kimi',
+    icon: '▪', // 方块图标
+    color: '#1F2937', // 黑色
+    bgColor: 'bg-gray-700/10',
+    borderColor: 'border-gray-700/30',
+    textColor: 'text-gray-300'
+  },
+  {
+    id: 'gemini',
+    name: 'Gemini',
+    icon: '✧', // 星形图标
+    color: '#34D399', // 青绿色
+    bgColor: 'bg-emerald-500/10',
+    borderColor: 'border-emerald-500/30',
+    textColor: 'text-emerald-400'
+  }
+]
+
+// Strategy Filters State
+const selectedModels = ref([]) // 选中的模型来源
+const selectedDirections = ref([]) // 选中的方向
+const selectedDurations = ref([]) // 选中的持续时间
+const selectedGrades = ref([]) // 选中的评级
+
+// Computed property to render markdown content
+const renderedStrategyContent = computed(() => {
+  if (!selectedStrategy.value || !selectedStrategy.value.fullContent) {
+    return ''
+  }
+  return marked.parse(selectedStrategy.value.fullContent)
+})
 
 // --- Highlight State (for navigation from opportunities page) ---
 const highlightedStrategyId = ref(null)
@@ -905,6 +1300,7 @@ const allStrategies = [
     direction: 'LONG', 
     duration: 'Short to Medium-term (2-8 weeks)', 
     strategy: 'AI Infrastructure',
+    model: 'openai',
     timeAgo: '2 hours ago',
     timestamp: 1701420000000,
     isNew: true,
@@ -941,6 +1337,7 @@ const allStrategies = [
     direction: 'LONG', 
     duration: 'Medium-term (3-6 months)', 
     strategy: 'Digital Advertising Recovery',
+    model: 'claude',
     timeAgo: '6 hours ago',
     timestamp: 1701406000000,
     isNew: true,
@@ -1003,6 +1400,7 @@ YouTube作为全球第二大数字广告平台，正经历广告市场复苏周�
     direction: 'LONG', 
     duration: 'Long-term (6-12 months)', 
     strategy: 'Core Business Defense',
+    model: 'qwen',
     timeAgo: '1 day ago',
     timestamp: 1701340000000,
     isNew: false,
@@ -1085,6 +1483,7 @@ YouTube作为全球第二大数字广告平台，正经历广告市场复苏周�
     direction: 'LONG', 
     duration: 'Long-term (12-24 months)', 
     strategy: 'Emerging Tech Moonshot',
+    model: 'grok',
     timeAgo: '2 days ago',
     timestamp: 1701253000000,
     isNew: false,
@@ -1160,8 +1559,523 @@ Waymo是全球唯一实现大规模商业化运营的L4级自动驾驶公司，�
     `
   },
   { 
+    id: 12, 
+    symbol: 'GOOGL', 
+    grade: 'B+', 
+    title: 'YouTube Shorts货币化加速 - 对标TikTok的增量市场', 
+    description: 'YouTube Shorts日活用户突破20亿，广告收入环比增长35%。创作者分成计划吸引大量网红入驻，内容质量显著提升。随着AI推荐算法优化，用户时长增长至平均28分钟/日。当前估值尚未充分反映Shorts的长期价值，建议在$170-180区间逢低布局。', 
+    direction: 'LONG', 
+    duration: '波段操作 (2-4周)', 
+    strategy: '增长驱动 + 估值修复',
+    model: 'kimi',
+    timeAgo: '6小时前',
+    timestamp: 1701399600000,
+    isNew: false,
+    fullContent: `
+## 投资主题：短视频赛道的"迟到者"逆袭
+
+YouTube Shorts推出仅3年，已成为TikTok最强劲的竞争对手。随着货币化机制成熟，Shorts有望贡献YouTube总收入的15-20%。
+
+## 业务进展
+
+### 用户增长
+- **日活用户**：20亿+（TikTok为15亿）
+- **用户时长**：月均使用时长从18分钟增至28分钟
+- **创作者数量**：500万+活跃创作者（YoY +120%）
+
+### 货币化突破
+- **广告收入**：Q3达$8.5亿，环比增长35%
+- **RPM提升**：每千次播放收入从$0.8升至$1.2
+- **分成计划**：创作者可获得45%广告收入，高于TikTok的30%
+
+### 技术优势
+- **AI推荐**：基于YouTube 18年积累的用户数据，推荐精准度高
+- **生态整合**：Shorts可无缝导流至长视频，转化率达12%
+- **创作工具**：YouTube Studio提供专业剪辑、配音、字幕工具
+
+## 财务预测
+
+### 收入预测（2024-2026）
+- **2024E**：$35亿（占YouTube总收入的10%）
+- **2025E**：$65亿（占比15%）
+- **2026E**：$100亿（占比18%）
+
+### 利润率
+- **当前毛利率**：45%（低于YouTube整体的55%）
+- **目标毛利率**：2025年达50%，2027年追平主站
+
+## 投资逻辑
+
+### 催化剂
+1. **年底购物季**：Shorts电商广告需求激增
+2. **NFL合作**：2024年独家播放权，带来体育内容增量
+3. **创作者大会**：1月举办，预计公布重磅激励政策
+
+### 估值修复空间
+- **当前隐含估值**：市场给Shorts $800-1000亿估值
+- **公允价值**：对标TikTok $2000亿，Shorts合理估值$1200-1500亿
+- **对应股价提升**：$15-25/股（+8-14%）
+
+## 操作建议
+
+**建仓区间**: $170-180
+**目标价位**: $195-205
+**止损位**: $165
+**持仓周期**: 2-4周（波段操作）
+
+**仓位配置**: 
+- 激进型：20-30%仓位
+- 稳健型：10-15%仓位
+
+## 风险提示
+
+- TikTok禁令若解除，竞争加剧
+- 创作者分成比例压缩利润率
+- 监管部门对短视频内容审查趋严
+    `
+  },
+  { 
+    id: 13, 
+    symbol: 'GOOGL', 
+    grade: 'A', 
+    title: 'Google Cloud季度盈利超预期 - AWS份额争夺战', 
+    description: 'GCP（Google Cloud Platform）Q3营收$86亿，同比增长29%，首次实现季度营业利润$2.66亿。AI服务（Vertex AI）收入占比升至35%，大客户留存率达97%。随着企业AI应用落地加速，GCP有望在2025年挑战Azure的市场第二地位。技术面看，$175支撑强劲，突破$185可追。', 
+    direction: 'LONG', 
+    duration: '短线交易 (3-7天)', 
+    strategy: '业绩驱动 + 动量突破',
+    model: 'deepseek',
+    timeAgo: '3小时前',
+    timestamp: 1701414600000,
+    isNew: true,
+    fullContent: `
+## 投资主题：云计算三国杀的"后来者"突围
+
+Google Cloud终于实现盈利，标志着其从"烧钱抢市场"转向"质量增长"的战略拐点。AI时代的云服务重新洗牌，GCP凭借技术优势有望弯道超车。
+
+## 业务亮点
+
+### 财务表现
+- **营收**：Q3 $86亿，YoY +29%（AWS +12%, Azure +27%）
+- **营业利润**：$2.66亿（首次为正！）
+- **利润率**：3.1%（2025年目标10%）
+
+### AI服务爆发
+- **Vertex AI**：Q3收入$30亿，占GCP总收入的35%
+- **企业客户**：财富500强中48%使用GCP AI服务
+- **典型案例**：
+  - Spotify用GCP训练推荐模型，成本降低40%
+  - Target用Vertex AI优化库存，准确率提升25%
+
+### 市场份额
+- **当前份额**：全球云市场10%（AWS 32%, Azure 23%）
+- **增速对比**：GCP增速29% > Azure 27% > AWS 12%
+- **2025年目标**：份额提升至13-15%
+
+## 竞争优势
+
+### 1. AI原生架构
+- TPU（Tensor Processing Unit）性价比是NVIDIA GPU的2倍
+- Gemini模型直接集成，开发者无需额外部署
+
+### 2. 数据分析
+- BigQuery处理速度领先Snowflake 30%
+- 与YouTube/Maps数据打通，洞察能力强
+
+### 3. 价格策略
+- 存储成本比AWS低15-20%
+- 按秒计费（AWS按小时），对小企业友好
+
+## 估值分析
+
+### 分部估值
+- **Google Cloud公允价值**：$2500-3000亿
+  - 对标AWS $5000亿（份额32%），GCP合理估值 = $5000B × (10%/32%) × 1.3倍增速溢价 = $2600B
+- **当前隐含估值**：$2000亿（被低估20-30%）
+
+### 股价影响
+- GCP估值修复可推动股价上涨$25-35/股
+
+## 交易策略
+
+**技术面分析**：
+- **支撑位**：$175（50日均线）
+- **阻力位**：$185（前高）
+- **突破信号**：放量突破$185，目标$195
+
+**短线操作**：
+- **入场**：$175-180
+- **加仓**：突破$185后加仓30%
+- **止盈**：$195（分批减仓）
+- **止损**：$172（跌破立即离场）
+
+**持仓周期**：3-7天（快进快出）
+
+## 催化剂
+
+- **12月Google Cloud Next大会**：预计公布重磅AI产品
+- **AWS re:Invent对比**：若GCP发布更激进的AI价格策略，股价有望大涨
+- **分析师上调**：摩根士丹利、高盛可能因盈利超预期上调目标价
+
+## 风险提示
+
+- 微软Azure与OpenAI绑定，AI市场份额难以撼动
+- 企业客户迁移成本高，换云意愿低
+- 价格战压缩利润率
+    `
+  },
+  { 
+    id: 14, 
+    symbol: 'GOOGL', 
+    grade: 'C', 
+    title: '反垄断判决阴影下的防御性减仓 - 等待靴子落地', 
+    description: '美国司法部要求Google剥离Chrome浏览器，欧盟DMA法案限制搜索引擎预装，印度反垄断机构罚款$1.6亿。多重监管压力下，搜索业务面临结构性拆分风险。虽然法律程序可能拖延2-3年，但不确定性已经反映在股价波动率上。建议降低仓位至10-15%，等待政策明朗后再行动。', 
+    direction: 'SHORT', 
+    duration: '中期对冲 (1-2个月)', 
+    strategy: '风险对冲 + 波动率套利',
+    model: 'claude',
+    timeAgo: '1天前',
+    timestamp: 1701336000000,
+    isNew: false,
+    fullContent: `
+## 投资主题：监管"达摩克利斯之剑"下的防御性策略
+
+反垄断诉讼已从"狼来了"变成"狼真的来了"。虽然Google最终可能不会被拆分，但诉讼过程将持续压制估值。
+
+## 监管风险梳理
+
+### 美国司法部
+- **判决结果**（2024年8月）：认定Google在搜索领域构成垄断
+- **补救措施**（预计2025年Q1公布）：
+  - 方案A：禁止与苹果、三星签订默认搜索协议（年损失$200亿）
+  - 方案B：强制剥离Chrome浏览器（市值损失$500-800亿）
+  - 方案C：开放搜索索引给竞争对手（搜索市占率-5-8%）
+
+### 欧盟DMA法案
+- **生效时间**：2024年3月
+- **核心要求**：
+  - Android手机必须提供搜索引擎选择界面
+  - 禁止预装Google Search为默认选项
+  - 违规罚款：全球营收的10%（约$300亿）
+- **影响预测**：欧洲搜索市占率可能从92%降至75-80%
+
+### 印度反垄断
+- **罚款金额**：$1.6亿
+- **整改要求**：Play Store开放第三方支付，分成比例从30%降至15%
+
+## 财务影响测算
+
+### 最坏情景（Chrome剥离 + 默认协议禁止）
+- **收入损失**：$250-300亿/年（约占总收入的8-10%）
+- **估值影响**：市值缩水$2000-3000亿（股价-$80-120）
+
+### 基准情景（仅禁止默认协议）
+- **收入损失**：$150-200亿/年
+- **估值影响**：市值缩水$1000-1500亿（股价-$40-60）
+
+### 乐观情景（罚款了事）
+- **一次性罚款**：$50-100亿
+- **估值影响**：短期波动，长期影响有限
+
+## 对冲策略
+
+### 策略1：买入Put期权（适合激进投资者）
+- **标的**：GOOGL 2025年3月到期
+- **行权价**：$160（当前价-10%）
+- **权利金**：约$8/股
+- **最大亏损**：权利金$8
+- **保险收益**：若股价跌破$152，开始盈利
+
+### 策略2：Collar策略（适合长期持有者）
+- **卖出Call**：$195行权价（上涨空间+10%）
+- **买入Put**：$165行权价（下跌保护-8%）
+- **净成本**：接近零（Call收入覆盖Put成本）
+- **效果**：锁定收益区间在[-8%, +10%]
+
+### 策略3：减仓等待（适合稳健投资者）
+- **当前仓位**：假设30%
+- **减至**：10-15%
+- **腾出资金**：配置防御性资产（国债、黄金）
+- **重新入场时机**：判决明朗后
+
+## 时间线预判
+
+- **2024年12月**：司法部提交补救方案建议
+- **2025年3月**：法院听证会
+- **2025年6-8月**：初步判决（大概率会上诉）
+- **2026-2027年**：上诉审理
+- **2028年**：最终判决（最快也要3-4年）
+
+## 交易建议
+
+**防御性操作**：
+- **立即行动**：减持20-30%仓位
+- **止损位**：$165（跌破则清仓）
+- **观察信号**：
+  - 若司法部方案温和（仅罚款）→ 股价反弹至$190+，可回补
+  - 若要求剥离Chrome → 股价暴跌至$150-160，继续离场
+
+**仓位建议**：
+- **多头仓位**：降至10-15%
+- **对冲仓位**：配置5-8% Put期权
+- **现金比例**：提升至30-40%
+
+## 风险提示
+
+- 政策风险无法精确预测，可能出现黑天鹅事件
+- 拆分传闻可能反而推高股价（参考AT&T拆分后各部分涨幅超100%）
+- 过度对冲可能错失反弹行情
+    `
+  },
+  { 
+    id: 15, 
+    symbol: 'GOOGL', 
+    grade: 'A-', 
+    title: '搜索广告ROAS提升40% - AI驱动的利润率扩张', 
+    description: 'Google搜索广告接入Gemini后，广告相关性得分提升32%，点击率(CTR)提高28%，广告主ROAS（广告支出回报率）从1:4.2增至1:5.9。电商、旅游类广告主纷纷加大投放预算，Q3搜索广告收入$485亿，超预期$12亿。考虑到AI增强广告的渗透率仅18%，未来2年仍有50-60%增长空间。', 
+    direction: 'LONG', 
+    duration: '中长线持有 (6-12个月)', 
+    strategy: '盈利质量改善 + 护城河加深',
+    model: 'gemini',
+    timeAgo: '8小时前',
+    timestamp: 1701396000000,
+    isNew: false,
+    fullContent: `
+## 投资主题：AI重塑搜索广告的"印钞机"模式
+
+市场担心ChatGPT会蚕食Google搜索份额，但数据显示：AI不仅没有削弱搜索，反而让广告变现效率大幅提升。
+
+## 核心数据
+
+### 广告效果提升
+- **点击率（CTR）**：从3.8%升至4.9%（+28%）
+- **转化率（CVR）**：从2.1%升至2.7%（+29%）
+- **ROAS**：从1:4.2升至1:5.9（+40%）
+  - 即：广告主每投入$1，可获得$5.9收入（之前只有$4.2）
+
+### 收入增长
+- **Q3搜索广告收入**：$485亿（YoY +12%，超预期$12亿）
+- **AI增强广告占比**：18%（Q2仅8%）
+- **预测**：2024 Q4可达25%，2025全年达50%+
+
+### 利润率扩张
+- **搜索业务毛利率**：从56%升至61%（AI降低人工审核成本）
+- **营业利润率**：从32%升至36%
+
+## AI驱动的广告革命
+
+### 1. 更精准的用户意图理解
+- **传统搜索**："iPhone 15 价格" → 展示比价网站广告
+- **AI搜索**："适合拍照的手机" → Gemini分析用户场景，推荐iPhone 15 Pro + 电商链接
+
+### 2. 动态广告生成
+- **传统模式**：广告主预设10-20个广告文案
+- **AI模式**：根据用户搜索词实时生成定制化广告
+  - 例：搜索"减肥"，30岁女性看到"产后瘦身"，50岁男性看到"降低三高"
+
+### 3. 跨场景归因
+- **整合数据源**：YouTube观看记录 + Gmail购物邮件 + Maps位置数据
+- **效果**：广告归因准确率从65%升至82%
+
+## 竞争护城河加深
+
+### vs. Meta（Facebook/Instagram）
+- **搜索广告转化率**：2.7% > Meta信息流广告1.8%
+- **广告主留存率**：Google 94% > Meta 87%
+
+### vs. Amazon（电商广告）
+- **品类优势**：Amazon强在产品搜索，Google强在服务类（教育、旅游、医疗）
+- **市场规模**：Google搜索TAM $2000亿 > Amazon广告 $600亿
+
+### vs. ChatGPT（生成式AI）
+- **商业化进度**：ChatGPT仍在探索广告模式，Google已成熟
+- **用户习惯**：搜索引擎+广告的心智已建立18年
+
+## 财务预测
+
+### 收入预测（2024-2026）
+- **2024E**：搜索广告$1980亿（+10%）
+- **2025E**：搜索广告$2200亿（+11%）
+- **2026E**：搜索广告$2450亿（+11%）
+
+### AI广告贡献
+- **2025年**：AI增强广告贡献$350亿增量收入
+- **2026年**：贡献$550亿增量收入
+
+## 投资逻辑
+
+### 估值修复逻辑
+- **当前PE**：22倍（低于5年均值26倍）
+- **合理PE**：考虑AI提升利润率，应给28-30倍
+- **目标价**：$220-240（+25-35%）
+
+### 长期持有理由
+1. **现金流稳定**：搜索业务年现金流$800亿+
+2. **股息潜力**：当前股息率0.5%，未来可提升至1.5-2%
+3. **回购力度**：年回购$700亿，相当于每年注销3-4%股本
+
+## 配置建议
+
+**仓位配置**：
+- **核心持仓**：30-40%（长期配置，不做波段）
+- **成本控制**：$170-185分批建仓
+- **止损纪律**：仅在基本面恶化时止损（如AI广告增长停滞）
+
+**适合人群**：
+- 追求稳健收益的价值投资者
+- 看好AI长期趋势的成长投资者
+- 退休账户、养老金等长期资金
+
+## 催化剂
+
+- **2024年12月财报**：预计AI广告占比将达25%
+- **Google I/O 2025**（5月）：发布新一代AI广告产品
+- **竞品失误**：若Meta、TikTok广告业务遇阻，Google将受益
+
+## 风险提示
+
+- 监管限制AI使用用户数据训练广告模型
+- 用户隐私保护趋严，cookie淘汰影响广告精准度
+- ChatGPT等新搜索方式分流用户注意力
+    `
+  },
+  { 
+    id: 16, 
+    symbol: 'GOOGL', 
+    grade: 'B', 
+    title: '财报前的波动率交易 - Straddle策略获利机会', 
+    description: 'GOOGL将于1月30日盘后公布Q4财报。历史数据显示，财报日股价平均波动±6.5%，而当前隐含波动率（IV）仅28%，处于过去12个月的35分位。市场预期过于温和，无论财报好坏都可能引发大幅波动。建议采用Long Straddle（买入跨式期权）策略，同时买入Call和Put，赌波动率而非方向。', 
+    direction: 'WAIT', 
+    duration: '短期事件驱动 (3-5天)', 
+    strategy: '波动率套利 + 事件交易',
+    model: 'grok',
+    timeAgo: '12小时前',
+    timestamp: 1701381600000,
+    isNew: false,
+    fullContent: `
+## 投资主题：财报博弈的"稳赚"策略
+
+不赌涨跌，只赌波动。当市场预期过于平静，反而是期权交易的黄金机会。
+
+## 历史财报波动分析
+
+### 过去8个季度财报日表现
+| 财报日期 | 盘前价格 | 盘后价格 | 波动幅度 | 方向 |
+|---------|---------|---------|---------|------|
+| 2024-10-24 | $168 | $175 | +4.2% | 上涨 |
+| 2024-07-23 | $182 | $172 | -5.5% | 下跌 |
+| 2024-04-25 | $156 | $166 | +6.4% | 上涨 |
+| 2024-01-30 | $148 | $141 | -4.7% | 下跌 |
+| 2023-10-24 | $138 | $146 | +5.8% | 上涨 |
+| 2023-07-25 | $126 | $132 | +4.8% | 上涨 |
+| 2023-04-25 | $112 | $105 | -6.3% | 下跌 |
+| 2023-01-31 | $102 | $110 | +7.8% | 上涨 |
+
+**关键发现**：
+- **平均波动**：±6.5%
+- **超过5%的次数**：8次中6次（75%概率）
+- **方向不确定**：上涨5次，下跌3次
+
+## 当前市场定价
+
+### 隐含波动率（IV）
+- **当前IV**：28%
+- **过去12个月均值**：35%
+- **分位数**：35%（意味着65%的时间IV比现在高）
+- **结论**：市场低估了财报波动风险
+
+### 期权价格
+- **2025年2月7日到期Call（$185行权）**：$6.50
+- **2025年2月7日到期Put（$165行权）**：$5.80
+- **合计成本**：$12.30
+
+## Straddle策略详解
+
+### 策略构建
+1. **买入1份Call期权**：行权价$175（当前价），成本$8.50
+2. **买入1份Put期权**：行权价$175（当前价），成本$7.80
+3. **总成本**：$16.30/股
+
+### 盈亏分析
+- **盈亏平衡点**：
+  - 上行：$175 + $16.30 = $191.30（+9.3%）
+  - 下行：$175 - $16.30 = $158.70（-9.3%）
+- **最大亏损**：$16.30（股价不动）
+- **理论最大收益**：无限（股价大涨）或$158.70（股价跌至零）
+
+### 实际场景模拟
+| 财报后股价 | Call收益 | Put收益 | 总盈亏 | 回报率 |
+|-----------|---------|---------|--------|--------|
+| $195 (+11%) | $20 | $0 | +$3.70 | +23% |
+| $190 (+9%) | $15 | $0 | -$1.30 | -8% |
+| $185 (+6%) | $10 | $0 | -$6.30 | -39% |
+| $175 (不变) | $0 | $0 | -$16.30 | -100% |
+| $165 (-6%) | $0 | $10 | -$6.30 | -39% |
+| $160 (-9%) | $0 | $15 | -$1.30 | -8% |
+| $155 (-11%) | $0 | $20 | +$3.70 | +23% |
+
+**关键洞察**：
+- 只要波动超过±9.3%，策略盈利
+- 历史上75%的财报日波动>5%，但我们需要>9.3%才盈利
+- 考虑到IV被低估，实际盈利概率约50-60%
+
+## 优化策略：Iron Condor（降低成本）
+
+### 策略构建（适合保守投资者）
+1. **买入Call**：$175行权价，成本$8.50
+2. **卖出Call**：$195行权价，收入$2.50
+3. **买入Put**：$175行权价，成本$7.80
+4. **卖出Put**：$155行权价，收入$2.20
+5. **净成本**：$11.60（比Straddle便宜$4.70）
+
+### 盈亏分析
+- **最大收益**：$8.40（股价涨至$195或跌至$155）
+- **最大亏损**：$11.60（股价不动）
+- **盈亏平衡点**：$186.60 或 $163.40
+
+## 财报预期分析
+
+### 市场共识预期
+- **EPS**：$1.85（同比+12%）
+- **营收**：$880亿（同比+11%）
+- **Cloud盈利**：$30亿（首次超预期可能性高）
+
+### 超预期因素
+- YouTube广告受益于假日购物季
+- Gemini订阅用户突破500万
+- Waymo公布详细财务数据
+
+### 不及预期风险
+- 搜索广告增速放缓
+- AI投入拖累利润率
+- 反垄断罚款计提
+
+## 执行建议
+
+### 时间表
+- **1月27日**：建立Straddle仓位（财报前3天）
+- **1月30日盘后**：财报发布
+- **1月31日开盘**：根据波动幅度决策
+  - 若股价波动>8%，立即平仓获利
+  - 若波动<5%，持有至2月3日等待进一步波动
+
+### 仓位控制
+- **建议投入**：总资产的3-5%
+- **最大亏损承受**：假设$16.30全部亏损，占总资产<2%
+
+### 风险管理
+- **止损**：若财报后股价几乎不动，次日开盘立即止损
+- **止盈**：盈利超过50%，减仓50%锁定利润
+
+## 风险提示
+
+- 财报后波动可能不及预期，导致策略亏损
+- IV Crush（波动率坍缩）会快速侵蚀期权价值
+- 黑天鹅事件（如CEO辞职）可能导致单边暴涨/暴跌，Straddle反而吃亏
+    `
+  },
+  { 
     id: 2, 
-    symbol: 'JNJ', 
+    symbol: 'JNJ',
     grade: 'B', 
     title: '强生防御性轮动与超买回调布局', 
     description: '第一幕: 市场目前因宏观避险情绪升温及Q3财报强劲 (营收$24B, EPS $2.80)，将JNJ推升至历史高位$207附近。分析师纷纷上调目标价至$215-$230，散户情绪高涨。第二幕: 然而...', 
@@ -1524,6 +2438,101 @@ const relatedStrategies = computed(() => {
   return allStrategies.filter(s => s.symbol === symbol.value)
 })
 
+// --- Computed: Filtered Strategies (应用所有筛选器) ---
+const filteredStrategies = computed(() => {
+  let strategies = relatedStrategies.value
+
+  // 按模型来源筛选
+  if (selectedModels.value.length > 0) {
+    strategies = strategies.filter(s => 
+      s.model && selectedModels.value.includes(s.model)
+    )
+  }
+
+  // 按方向筛选
+  if (selectedDirections.value.length > 0) {
+    strategies = strategies.filter(s => 
+      selectedDirections.value.includes(s.direction)
+    )
+  }
+
+  // 按持续时间筛选
+  if (selectedDurations.value.length > 0) {
+    strategies = strategies.filter(s => {
+      // 匹配包含关键词的duration
+      return selectedDurations.value.some(d => 
+        s.duration && s.duration.toLowerCase().includes(d.toLowerCase())
+      )
+    })
+  }
+
+  // 按评级筛选
+  if (selectedGrades.value.length > 0) {
+    strategies = strategies.filter(s => 
+      selectedGrades.value.includes(s.grade)
+    )
+  }
+
+  return strategies
+})
+
+// --- Computed: Has Active Filters ---
+const hasActiveFilters = computed(() => {
+  return selectedModels.value.length > 0 || 
+         selectedDirections.value.length > 0 || 
+         selectedDurations.value.length > 0 || 
+         selectedGrades.value.length > 0
+})
+
+// --- Methods: Filter Toggle Functions ---
+const toggleModelFilter = (modelId) => {
+  const index = selectedModels.value.indexOf(modelId)
+  if (index === -1) {
+    selectedModels.value.push(modelId)
+  } else {
+    selectedModels.value.splice(index, 1)
+  }
+}
+
+const toggleDirectionFilter = (direction) => {
+  const index = selectedDirections.value.indexOf(direction)
+  if (index === -1) {
+    selectedDirections.value.push(direction)
+  } else {
+    selectedDirections.value.splice(index, 1)
+  }
+}
+
+const toggleDurationFilter = (duration) => {
+  const index = selectedDurations.value.indexOf(duration)
+  if (index === -1) {
+    selectedDurations.value.push(duration)
+  } else {
+    selectedDurations.value.splice(index, 1)
+  }
+}
+
+const toggleGradeFilter = (grade) => {
+  const index = selectedGrades.value.indexOf(grade)
+  if (index === -1) {
+    selectedGrades.value.push(grade)
+  } else {
+    selectedGrades.value.splice(index, 1)
+  }
+}
+
+const clearAllFilters = () => {
+  selectedModels.value = []
+  selectedDirections.value = []
+  selectedDurations.value = []
+  selectedGrades.value = []
+}
+
+// --- Helper: Get Model Config ---
+const getModelConfig = (modelId) => {
+  return aiModels.find(m => m.id === modelId)
+}
+
 // --- Computed: Related Themes (筛选包含当前股票的主题) ---
 const relatedThemes = computed(() => {
   return allThemesData.value.filter(theme => theme.stocks.includes(symbol.value))
@@ -1549,11 +2558,276 @@ const goToStockDetail = (stockSymbol) => {
 // --- Methods: Strategy Modal ---
 const openStrategyDetail = (strategy) => {
   selectedStrategy.value = strategy
+  relatedPlans.value = generateMockPlans(strategy.id)
   showStrategyModal.value = true
 }
 
 const closeStrategyModal = () => {
   showStrategyModal.value = false
+}
+
+// --- Methods: Plan Management ---
+const generateMockPlans = (strategyId) => {
+  // 根据不同策略生成对应的交易计划
+  const strategyPlansMap = {
+    // AI基础设施策略的计划
+    '1': [
+      {
+        id: `plan-1-001`,
+        title: `${symbol.value} AI转型长线持仓计划`,
+        strategyId: '1',
+        capital: 50000,
+        createdAt: '01/10',
+        targetReturn: '+35%',
+        riskLevel: 'medium',
+        isExpanded: false,
+        status: 'active',
+        positions: [
+          { action: '首次建仓', amount: '30%', price: '$172.50', note: '2024年1月' },
+          { action: '加仓', amount: '20%', price: '$178.20', note: 'Gemini发布后' },
+          { action: '待加仓', amount: '50%', price: '$182+', note: '等待回调' }
+        ]
+      },
+      {
+        id: `plan-1-002`,
+        title: `${symbol.value} AI主题轮动配置`,
+        strategyId: '1',
+        capital: 120000,
+        createdAt: '12/28',
+        targetReturn: '+28%',
+        riskLevel: 'low',
+        isExpanded: false,
+        status: 'active',
+        positions: [
+          { action: '核心持仓', amount: '60%', price: '$168-175', note: '长期不动' },
+          { action: '波段仓', amount: '40%', price: '$180', note: '已止盈' }
+        ]
+      }
+    ],
+    
+    // YouTube广告策略的计划
+    '8': [
+      {
+        id: `plan-8-001`,
+        title: `${symbol.value} YouTube增长押注计划`,
+        strategyId: '8',
+        capital: 30000,
+        createdAt: '01/12',
+        targetReturn: '+18%',
+        riskLevel: 'medium',
+        isExpanded: false,
+        status: 'active',
+        positions: [
+          { action: '已建仓', amount: '70%', price: '$174.80', note: '主力仓位' },
+          { action: '待加仓', amount: '30%', price: '-', note: '财报后决定' }
+        ]
+      }
+    ],
+    
+    // Waymo自动驾驶策略的计划
+    '11': [
+      {
+        id: `plan-11-001`,
+        title: `${symbol.value} Waymo长期期权计划`,
+        strategyId: '11',
+        capital: 15000,
+        createdAt: '01/05',
+        targetReturn: '+50%',
+        riskLevel: 'high',
+        isExpanded: false,
+        status: 'active',
+        positions: [
+          { action: '买入Call期权', amount: '100%', price: '$180行权/2025年12月', note: '赌分拆上市' },
+          { action: '持有观察', amount: '-', price: '-', note: '等待催化剂' }
+        ]
+      }
+    ],
+    
+    // YouTube Shorts策略的计划
+    '12': [
+      {
+        id: `plan-12-001`,
+        title: `${symbol.value} Shorts货币化波段计划`,
+        strategyId: '12',
+        capital: 25000,
+        createdAt: '01/14',
+        targetReturn: '+12%',
+        riskLevel: 'medium',
+        isExpanded: false,
+        status: 'active',
+        positions: [
+          { action: '建仓', amount: '50%', price: '$176.20', note: '首次进场' },
+          { action: '待加仓', amount: '30%', price: '$173以下', note: '逢低吸纳' },
+          { action: '预留', amount: '20%', price: '-', note: '机动资金' }
+        ]
+      },
+      {
+        id: `plan-12-002`,
+        title: `${symbol.value} Shorts创作者大会事件套利`,
+        strategyId: '12',
+        capital: 10000,
+        createdAt: '01/16',
+        targetReturn: '+8%',
+        riskLevel: 'low',
+        isExpanded: false,
+        status: 'active',
+        positions: [
+          { action: '短线仓位', amount: '100%', price: '$178.50', note: '1月20日建仓' },
+          { action: '止盈目标', amount: '-', price: '$185+', note: '大会利好兑现' }
+        ]
+      }
+    ],
+    
+    // GCP云计算策略的计划
+    '13': [
+      {
+        id: `plan-13-001`,
+        title: `${symbol.value} GCP盈利拐点突破计划`,
+        strategyId: '13',
+        capital: 35000,
+        createdAt: '01/13',
+        targetReturn: '+15%',
+        riskLevel: 'medium',
+        isExpanded: false,
+        status: 'active',
+        positions: [
+          { action: '首次建仓', amount: '60%', price: '$177.30', note: '财报后进场' },
+          { action: '加仓', amount: '20%', price: '$180.50', note: '突破$185前' },
+          { action: '待执行', amount: '20%', price: '$185+', note: '突破追涨' }
+        ]
+      }
+    ],
+    
+    // 反垄断风险对冲策略的计划
+    '14': [
+      {
+        id: `plan-14-001`,
+        title: `${symbol.value} 反垄断风险对冲组合`,
+        strategyId: '14',
+        capital: 20000,
+        createdAt: '01/08',
+        targetReturn: '保本为主',
+        riskLevel: 'low',
+        isExpanded: false,
+        status: 'active',
+        positions: [
+          { action: '持有正股', amount: '50%', price: '$175均价', note: '长期底仓' },
+          { action: '买入Put保护', amount: '10%权利金', price: '$165行权', note: '下跌保险' },
+          { action: '卖出Call', amount: '-', price: '$195行权', note: '补贴成本' }
+        ]
+      }
+    ],
+    
+    // 搜索广告AI策略的计划
+    '15': [
+      {
+        id: `plan-15-001`,
+        title: `${symbol.value} AI广告核心持仓计划`,
+        strategyId: '15',
+        capital: 80000,
+        createdAt: '12/20',
+        targetReturn: '+30%',
+        riskLevel: 'low',
+        isExpanded: false,
+        status: 'active',
+        positions: [
+          { action: '核心仓位', amount: '80%', price: '$168-176', note: '分批建仓完成' },
+          { action: '机动仓位', amount: '20%', price: '-', note: '等待回调' }
+        ]
+      },
+      {
+        id: `plan-15-002`,
+        title: `${symbol.value} ROAS提升长期投资`,
+        strategyId: '15',
+        capital: 150000,
+        createdAt: '11/15',
+        targetReturn: '+40%',
+        riskLevel: 'low',
+        isExpanded: false,
+        status: 'active',
+        positions: [
+          { action: '持有中', amount: '100%', price: '$165均价', note: '退休账户配置' },
+          { action: '计划持有', amount: '-', price: '-', note: '至2025年底' }
+        ]
+      }
+    ],
+    
+    // 财报波动率套利策略的计划
+    '16': [
+      {
+        id: `plan-16-001`,
+        title: `${symbol.value} Q4财报Straddle期权策略`,
+        strategyId: '16',
+        capital: 12000,
+        createdAt: '01/15',
+        targetReturn: '+25%',
+        riskLevel: 'high',
+        isExpanded: false,
+        status: 'active',
+        positions: [
+          { action: '买入Call期权', amount: '50%', price: '$175行权/$8.5权利金', note: '2月7日到期' },
+          { action: '买入Put期权', amount: '50%', price: '$175行权/$7.8权利金', note: '同日到期' }
+        ]
+      }
+    ],
+    
+    // 默认通用计划（适用于其他策略）
+    'default': [
+      {
+        id: `plan-${strategyId}-001`,
+        title: `${symbol.value} 基础跟随计划`,
+        strategyId: strategyId,
+        capital: 20000,
+        createdAt: '01/10',
+        targetReturn: '+10%',
+        riskLevel: 'medium',
+        isExpanded: false,
+        status: 'active',
+        positions: [
+          { action: '已建仓', amount: '50%', price: '$176.50', note: '初始仓位' },
+          { action: '待加仓', amount: '50%', price: '-', note: '等待信号' }
+        ]
+      }
+    ]
+  }
+  
+  // 获取对应策略的计划，如果没有则返回默认计划
+  const plans = strategyPlansMap[strategyId] || strategyPlansMap['default']
+  
+  // 随机返回 1-3 个计划（70%概率显示计划）
+  const showPlans = Math.random() > 0.3
+  if (!showPlans) return []
+  
+  const randomCount = Math.floor(Math.random() * plans.length) + 1
+  return plans.slice(0, randomCount)
+}
+
+const togglePlanExpand = (plan) => {
+  plan.isExpanded = !plan.isExpanded
+}
+
+const generatePlanForStrategy = (strategy) => {
+  // 跳转到计划生成页面，预填充策略信息
+  console.log('Generate plan for strategy:', strategy)
+  // TODO: 实现跳转到计划生成页面
+  // router.push({ path: '/planning', query: { strategyId: strategy.id } })
+}
+
+const viewPlanDetail = (plan) => {
+  console.log('View plan detail:', plan)
+  // TODO: 实现跳转到计划详情页面
+  // router.push({ path: '/plans', query: { id: plan.id } })
+}
+
+const editPlan = (plan) => {
+  console.log('Edit plan:', plan)
+  // TODO: 实现编辑计划功能
+}
+
+const viewAllPlans = () => {
+  console.log('View all plans')
+  // TODO: 跳转到计划列表页面
+  // router.push({ path: '/plans', query: { strategyId: selectedStrategy.value.id } })
 }
 
 const navigateToGenerateStrategy = (stockSymbol) => {
@@ -1594,3 +2868,174 @@ onMounted(() => {
   console.log('Fetching data for', symbol.value)
 })
 </script>
+
+<style scoped>
+/* Expand/Collapse Animation */
+.expand-enter-active,
+.expand-leave-active {
+  transition: all 0.3s ease;
+  max-height: 500px;
+  opacity: 1;
+  overflow: hidden;
+}
+
+.expand-enter-from,
+.expand-leave-to {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+/* Custom Scrollbar for Webkit browsers */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}
+
+/* Markdown Content Styling */
+.markdown-content :deep(h2) {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.markdown-content :deep(h3) {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e5e5e5;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.markdown-content :deep(h4) {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #d4d4d4;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.markdown-content :deep(p) {
+  margin-bottom: 1rem;
+  line-height: 1.7;
+  color: #d1d5db;
+}
+
+.markdown-content :deep(ul),
+.markdown-content :deep(ol) {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+  color: #d1d5db;
+}
+
+.markdown-content :deep(li) {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.markdown-content :deep(strong) {
+  font-weight: 600;
+  color: #fff;
+}
+
+.markdown-content :deep(em) {
+  font-style: italic;
+  color: #9ca3af;
+}
+
+.markdown-content :deep(code) {
+  background: #1a1a1a;
+  padding: 0.2em 0.4em;
+  border-radius: 0.25rem;
+  font-size: 0.9em;
+  color: #60a5fa;
+  font-family: 'Courier New', monospace;
+}
+
+.markdown-content :deep(pre) {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+
+.markdown-content :deep(pre code) {
+  background: transparent;
+  padding: 0;
+  color: #d1d5db;
+}
+
+.markdown-content :deep(table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.markdown-content :deep(thead) {
+  background: #1a1a1a;
+  border-bottom: 2px solid #2a2a2a;
+}
+
+.markdown-content :deep(th) {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #fff;
+  border: 1px solid #2a2a2a;
+}
+
+.markdown-content :deep(td) {
+  padding: 0.75rem 1rem;
+  border: 1px solid #2a2a2a;
+  color: #d1d5db;
+}
+
+.markdown-content :deep(tbody tr:hover) {
+  background: #1a1a1a;
+}
+
+.markdown-content :deep(blockquote) {
+  border-left: 3px solid #3b82f6;
+  padding-left: 1rem;
+  margin-left: 0;
+  margin-bottom: 1rem;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.markdown-content :deep(hr) {
+  border: none;
+  border-top: 1px solid #2a2a2a;
+  margin: 2rem 0;
+}
+
+.markdown-content :deep(a) {
+  color: #60a5fa;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.markdown-content :deep(a:hover) {
+  color: #93c5fd;
+  text-decoration: underline;
+}
+</style>
