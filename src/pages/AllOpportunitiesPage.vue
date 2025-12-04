@@ -334,6 +334,34 @@
           <span class="text-sm font-normal text-gray-500 ml-2">({{ filteredOpportunities.length }})</span>
         </h1>
 
+        <!-- CTA Banner: Generate Strategy -->
+        <div 
+          @click="navigateToGenerateStrategy"
+          class="mb-6 p-6 rounded-xl border-2 border-blue-500/30 bg-gradient-to-r from-blue-600/10 to-purple-600/10 hover:from-blue-600/20 hover:to-purple-600/20 transition-all cursor-pointer group"
+        >
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-600/20 group-hover:bg-blue-600/30 transition-colors">
+                <span class="text-2xl">✨</span>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">
+                  还没有找到合适的策略？
+                </h3>
+                <p class="text-sm text-gray-400">
+                  基于AI量化分析，为你定制专属投资策略
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 text-blue-400 group-hover:text-blue-300 transition-colors">
+              <span class="font-medium">生成我的策略</span>
+              <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
         <!-- Filters & Sort -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[#333] pb-4">
           <!-- Filters -->
@@ -884,6 +912,11 @@ const navigateToStrategy = (opportunity) => {
       strategyId: opportunity.id
     }
   })
+}
+
+const navigateToGenerateStrategy = () => {
+  // 跳转到策略生成页面
+  router.push('/opportunity')
 }
 
 const closeNewGroupModal = () => {

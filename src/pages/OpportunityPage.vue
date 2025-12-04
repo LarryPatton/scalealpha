@@ -25,138 +25,92 @@
           >
             查看我的策略
           </button>
+          <button 
+            @click="switchTab('myplan')"
+            class="px-6 py-2 text-sm rounded-md transition-all"
+            :class="activeTab === 'myplan' ? 'bg-[#333] text-white shadow' : 'text-gray-500 hover:text-gray-300'"
+          >
+            查看我的计划
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Page-level Progress Navigation (只在生成策略tab显示) -->
-    <div v-if="activeTab === 'generate'" class="bg-[#2a2a2a] border-b border-[#404040] py-4">
-      <div class="max-w-7xl mx-auto px-6">
-        <div class="flex items-center justify-center gap-4">
-          <!-- Step 1: 选股 -->
-          <div class="flex items-center">
-            <button
-              @click="currentStep = 1"
-              :class="[
-                'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300',
-                currentStep === 1 
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/50' 
-                  : currentStep > 1 
-                    ? 'bg-blue-600/20 text-blue-400 hover:bg-blue-600/30' 
-                    : 'bg-[#3a3a3a] text-gray-400'
-              ]"
-            >
-              <div :class="[
-                'w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold',
-                currentStep === 1 ? 'bg-white text-blue-600' : currentStep > 1 ? 'bg-blue-500 text-white' : 'bg-gray-600 text-white'
-              ]">
-                1
-              </div>
-              <span class="font-medium">选股</span>
-            </button>
-          </div>
-
-          <!-- Connector -->
-          <div :class="[
-            'w-12 h-0.5 transition-all duration-300',
-            currentStep > 1 ? 'bg-blue-500' : 'bg-gray-700'
-          ]"></div>
-
-          <!-- Step 2: 选择策略 -->
-          <div class="flex items-center">
-            <button
-              @click="currentStep >= 2 && (currentStep = 2)"
-              :disabled="currentStep < 2"
-              :class="[
-                'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300',
-                currentStep === 2 
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/50' 
-                  : currentStep > 2 
-                    ? 'bg-blue-600/20 text-blue-400 hover:bg-blue-600/30' 
-                    : 'bg-[#3a3a3a] text-gray-500 cursor-not-allowed'
-              ]"
-            >
-              <div :class="[
-                'w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold',
-                currentStep === 2 ? 'bg-white text-blue-600' : currentStep > 2 ? 'bg-blue-500 text-white' : 'bg-gray-600 text-gray-400'
-              ]">
-                2
-              </div>
-              <span class="font-medium">选择策略</span>
-            </button>
-          </div>
-
-          <!-- Connector -->
-          <div :class="[
-            'w-12 h-0.5 transition-all duration-300',
-            currentStep > 2 ? 'bg-blue-500' : 'bg-gray-700'
-          ]"></div>
-
-          <!-- Step 3: 查看机会 -->
-          <div class="flex items-center">
-            <button
-              @click="currentStep >= 3 && (currentStep = 3)"
-              :disabled="currentStep < 3"
-              :class="[
-                'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300',
-                currentStep === 3 
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/50' 
-                  : currentStep > 3
-                    ? 'bg-blue-600/20 text-blue-400 hover:bg-blue-600/30'
-                    : 'bg-[#3a3a3a] text-gray-500 cursor-not-allowed'
-              ]"
-            >
-              <div :class="[
-                'w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold',
-                currentStep === 3 ? 'bg-white text-blue-600' : currentStep > 3 ? 'bg-blue-500 text-white' : 'bg-gray-600 text-gray-400'
-              ]">
-                3
-              </div>
-              <span class="font-medium">查看机会</span>
-            </button>
-          </div>
-
-          <!-- Connector -->
-          <div :class="[
-            'w-12 h-0.5 transition-all duration-300',
-            currentStep > 3 ? 'bg-blue-500' : 'bg-gray-700'
-          ]"></div>
-
-          <!-- Step 4: 查看已保存报告 -->
-          <div class="flex items-center">
-            <button
-              @click="goToStep4"
-              :disabled="!hasAnySavedReports"
-              :class="[
-                'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300',
-                currentStep === 4 
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/50' 
-                  : !hasAnySavedReports
-                    ? 'bg-[#3a3a3a] text-gray-600 cursor-not-allowed'
-                    : 'bg-[#3a3a3a] text-gray-300 hover:bg-[#404040]'
-              ]"
-            >
-              <div :class="[
-                'w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold',
-                currentStep === 4 ? 'bg-white text-blue-600' : !hasAnySavedReports ? 'bg-gray-700 text-gray-600' : 'bg-gray-600 text-gray-300'
-              ]">
-                4
-              </div>
-              <span class="font-medium">查看已保存报告</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- Main Content -->
     <div v-if="activeTab === 'generate'" class="flex h-[calc(100vh-180px)]">
-      <!-- Step 1: 选股 -->
-      <template v-if="currentStep === 1">
-        <!-- Sidebar -->
+      <!-- Step 1 & 2 Merged: Stock Selection + Strategy Configuration -->
+      <template v-if="currentStep !== 3">
+        <!-- Left Sidebar: Stock Selection -->
         <div class="w-80 bg-[#2a2a2a] border-r border-[#404040] overflow-y-auto">
           <div class="p-4">
             <h2 class="text-lg font-semibold text-white mb-4">股票分类</h2>
+            
+            <!-- Search Box -->
+            <div class="mb-4">
+              <div class="relative">
+                <input
+                  v-model="stockSearchQuery"
+                  type="text"
+                  placeholder="搜索股票代码或名称..."
+                  class="w-full px-3 py-2 pl-9 bg-[#1f1f1f] border border-[#404040] rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
+                  @focus="showSearchResults = true"
+                  @blur="handleSearchBlur"
+                />
+                <svg class="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                <button
+                  v-if="stockSearchQuery"
+                  @click="clearSearch"
+                  class="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-gray-600 hover:bg-gray-500 flex items-center justify-center transition-colors"
+                >
+                  <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                  </svg>
+                </button>
+              </div>
+              
+              <!-- Search Results Dropdown -->
+              <div
+                v-if="showSearchResults && stockSearchQuery && filteredStocks.length > 0"
+                class="absolute z-10 w-[272px] mt-1 bg-[#1f1f1f] border border-[#404040] rounded-lg shadow-xl max-h-64 overflow-y-auto"
+              >
+                <div
+                  v-for="stock in filteredStocks"
+                  :key="stock.symbol"
+                  @mousedown.prevent="addStockFromSearch(stock.symbol)"
+                  class="px-3 py-2 hover:bg-[#3a3a3a] cursor-pointer border-b border-[#2a2a2a] last:border-b-0 transition-colors"
+                >
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <div class="font-mono text-sm text-white font-semibold">{{ stock.symbol }}</div>
+                      <div class="text-xs text-gray-400">{{ stock.name }}</div>
+                    </div>
+                    <div
+                      v-if="selectedStocks.includes(stock.symbol)"
+                      class="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center"
+                    >
+                      <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                      </svg>
+                    </div>
+                    <div v-else class="text-xs text-gray-500">点击添加</div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- No Results Message -->
+              <div
+                v-if="showSearchResults && stockSearchQuery && filteredStocks.length === 0"
+                class="absolute z-10 w-[272px] mt-1 bg-[#1f1f1f] border border-[#404040] rounded-lg shadow-xl p-4 text-center"
+              >
+                <svg class="w-8 h-8 text-gray-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <p class="text-sm text-gray-400">未找到匹配的股票</p>
+              </div>
+            </div>
             
             <!-- My Holdings Section (Pinned) -->
             <div class="mb-2">
@@ -246,86 +200,55 @@
           </div>
         </div>
 
-        <!-- Main Area: Selected Stocks -->
+        <!-- Right Area: Strategy Configuration and Selected Stocks -->
         <div class="flex-1 overflow-y-auto p-6">
-          <div class="max-w-5xl mx-auto">
-            <div class="flex items-center justify-between mb-6">
-              <div>
-                <h1 class="text-2xl font-bold text-white mb-2">已选股票</h1>
-                <p class="text-gray-400">已选择 {{ selectedStocks.length }} 只股票</p>
-              </div>
-              <div class="flex gap-2">
-                <button
-                  @click="selectAllStocks"
-                  class="px-4 py-2 bg-[#3a3a3a] hover:bg-[#404040] text-gray-300 rounded-lg transition-colors"
-                >
-                  全选
-                </button>
-                <button
-                  @click="clearAllStocks"
-                  class="px-4 py-2 bg-[#3a3a3a] hover:bg-[#404040] text-gray-300 rounded-lg transition-colors"
-                >
-                  清空
-                </button>
-              </div>
-            </div>
+        <div class="max-w-6xl mx-auto">
+          <h1 class="text-2xl font-bold text-white mb-2">生成投资策略</h1>
+          <p class="text-gray-400 mb-6">选择分析策略并生成投资机会报告</p>
 
-            <!-- Selected Stocks Grid -->
-            <div v-if="selectedStocks.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-              <div
-                v-for="symbol in selectedStocks"
-                :key="symbol"
-                class="bg-[#2a2a2a] border border-[#404040] rounded-lg p-4 relative group"
-              >
-                <button
-                  @click="toggleStock(symbol)"
-                  class="absolute top-2 right-2 w-6 h-6 bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white rounded-full flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
-                >
-                  ×
-                </button>
-                <div class="font-mono font-bold text-white text-lg">{{ symbol }}</div>
-                <div class="text-sm text-gray-400 mt-1">点击移除</div>
+          <!-- Selected Stocks Summary -->
+          <div class="bg-gradient-to-r from-blue-600/10 to-purple-600/10 border border-blue-500/30 rounded-xl p-4 mb-6">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                  <svg class="w-6 h-6 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="text-sm text-gray-400">已选股票</div>
+                  <div class="text-lg font-bold text-white">{{ selectedStocks.length }} 只</div>
+                </div>
               </div>
-            </div>
-
-            <div v-else class="text-center py-12">
-              <svg class="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-              </svg>
-              <p class="text-gray-400">请从左侧选择股票</p>
-            </div>
-
-            <!-- Next Button -->
-            <div class="flex justify-end pt-6 border-t border-[#404040]">
-              <button
-                @click="goToStep2"
-                :disabled="selectedStocks.length === 0"
-                :class="[
-                  'px-8 py-3 rounded-lg font-medium flex items-center gap-2 transition-all',
-                  selectedStocks.length > 0
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/50'
-                    : 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                ]"
-              >
-                <span>下一步：选择策略</span>
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                </svg>
-              </button>
+              <div class="flex items-center gap-2">
+                <div v-if="selectedStocks.length > 0" class="flex flex-wrap gap-1 max-w-md">
+                  <span
+                    v-for="(symbol, index) in selectedStocks.slice(0, 6)"
+                    :key="symbol"
+                    class="px-2 py-1 bg-blue-500/20 text-blue-300 text-xs font-mono rounded"
+                  >
+                    {{ symbol }}
+                  </span>
+                  <span
+                    v-if="selectedStocks.length > 6"
+                    class="px-2 py-1 bg-gray-500/20 text-gray-400 text-xs rounded"
+                  >
+                    +{{ selectedStocks.length - 6 }}
+                  </span>
+                </div>
+                <button
+                  v-if="selectedStocks.length === 0"
+                  class="px-4 py-2 bg-blue-600/20 text-blue-400 text-sm rounded-lg border border-blue-500/30"
+                >
+                  ← 请从左侧选择股票
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </template>
 
-      <!-- Step 2: 选择策略 -->
-      <template v-else-if="currentStep === 2">
-        <div class="flex-1 overflow-y-auto p-6">
-          <div class="max-w-6xl mx-auto">
-            <h1 class="text-2xl font-bold text-white mb-6">选择分析策略</h1>
-            <p class="text-gray-400 mb-8">点击选择您想要的分析框架、投资周期和风险偏好</p>
-
-            <!-- Strategy Selection Grid -->
-            <div class="space-y-8">
+          <!-- Strategy Selection Grid -->
+          <div class="space-y-6">
               <!-- 主分析框架 -->
               <div>
                 <label class="block text-lg font-semibold text-white mb-4 flex items-center gap-2">
@@ -451,32 +374,32 @@
               </div>
             </div>
 
-            <!-- Navigation Buttons -->
-            <div class="flex justify-between pt-8 border-t border-[#404040] mt-8">
+            <!-- Generate Button -->
+            <div class="flex justify-center pt-8 border-t border-[#404040] mt-8">
               <button
-                @click="currentStep = 1"
-                class="px-6 py-3 bg-[#3a3a3a] hover:bg-[#404040] text-gray-300 rounded-lg transition-colors flex items-center gap-2"
-              >
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
-                </svg>
-                <span>上一步</span>
-              </button>
-              
-              <button
-                @click="goToStep3"
-                :disabled="!isStrategyComplete"
+                @click="generateReports"
+                :disabled="!canGenerate"
                 :class="[
-                  'px-8 py-3 rounded-lg font-medium flex items-center gap-2 transition-all',
-                  isStrategyComplete
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/50'
-                    : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                  'group relative px-12 py-6 rounded-2xl font-bold text-xl transition-all duration-300 transform',
+                  canGenerate
+                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-2xl shadow-blue-500/50 hover:scale-105 hover:shadow-purple-500/50'
+                    : 'bg-gray-700 text-gray-500 cursor-not-allowed'
                 ]"
               >
-                <span>下一步：查看机会</span>
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                </svg>
+                <div class="flex items-center gap-4">
+                  <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+                  </svg>
+                  <span>{{ canGenerate ? `生成 ${selectedStocks.length} 只股票的投资报告` : '请选择股票和策略' }}</span>
+                  <svg
+                    v-if="canGenerate"
+                    class="w-6 h-6 transition-transform duration-300 group-hover:translate-x-1"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
               </button>
             </div>
           </div>
@@ -484,7 +407,7 @@
       </template>
 
       <!-- Step 3: 查看机会 -->
-      <template v-else-if="currentStep === 3">
+      <template v-if="currentStep === 3">
         <div class="flex-1 overflow-y-auto p-6">
           <div class="max-w-7xl mx-auto">
             <h1 class="text-2xl font-bold text-white mb-6">投资机会报告</h1>
@@ -603,179 +526,7 @@
                   </svg>
                   <span>保存选中报告 ({{ selectedReportIds.length }})</span>
                 </button>
-                <button
-                  @click="goToStep4"
-                  :disabled="!hasAnySavedReports"
-                  :class="[
-                    'px-8 py-3 rounded-lg font-medium transition-all flex items-center gap-2',
-                    hasAnySavedReports
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg shadow-blue-500/50'
-                      : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                  ]"
-                >
-                  <span>下一步：查看已保存报告</span>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                  </svg>
-                </button>
               </div>
-            </div>
-          </div>
-        </div>
-      </template>
-      
-      <!-- Step 4: 查看已保存报告 -->
-      <template v-else-if="currentStep === 4">
-        <div class="flex-1 overflow-y-auto p-6">
-          <div class="max-w-7xl mx-auto">
-            <div class="flex items-center justify-between mb-6">
-              <div>
-                <h1 class="text-2xl font-bold text-white mb-2">已保存的报告</h1>
-                <p class="text-gray-400">管理您保存的投资机会报告</p>
-              </div>
-              <button
-                @click="loadSavedReports"
-                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2"
-              >
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
-                </svg>
-                <span>刷新</span>
-              </button>
-            </div>
-
-            <!-- Empty State -->
-            <div v-if="savedReportCategories.length === 0" class="text-center py-16">
-              <div class="inline-flex items-center justify-center w-24 h-24 bg-gray-800 rounded-full mb-6">
-                <svg class="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-              </div>
-              <h2 class="text-xl font-semibold text-white mb-2">暂无已保存的报告</h2>
-              <p class="text-gray-400 mb-6">开始生成并保存您的第一份投资机会报告</p>
-              <button
-                @click="currentStep = 1"
-                class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-              >
-                返回选股
-              </button>
-            </div>
-
-            <!-- Saved Categories List -->
-            <div v-else class="space-y-6">
-              <div
-                v-for="category in savedReportCategories"
-                :key="category.id"
-                class="bg-[#2a2a2a] border border-[#404040] rounded-xl overflow-hidden"
-              >
-                <!-- Category Header -->
-                <div class="bg-gradient-to-r from-[#2a2a2a] to-[#1f1f1f] border-b border-[#404040] p-6">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                      <div 
-                        class="w-12 h-12 rounded-lg flex items-center justify-center"
-                        :style="{ backgroundColor: category.color + '20', border: `2px solid ${category.color}40` }"
-                      >
-                        <svg class="w-6 h-6" :style="{ color: category.color }" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
-                        </svg>
-                      </div>
-                      <div>
-                        <h3 class="text-xl font-bold text-white mb-1">{{ category.name }}</h3>
-                        <div class="flex items-center gap-3 text-sm text-gray-400">
-                          <span>{{ category.reports?.length || 0 }} 份报告</span>
-                          <span>•</span>
-                          <span>创建于 {{ formatDate(category.createdAt) }}</span>
-                        </div>
-                        <p v-if="category.description" class="text-sm text-gray-500 mt-1">{{ category.description }}</p>
-                      </div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                      <!-- Select All for Category -->
-                      <button
-                        v-if="expandedSavedCategories.includes(category.id) && category.reports?.length > 0"
-                        @click="toggleSelectAllInCategory(category.id)"
-                        class="px-3 py-1.5 text-sm bg-[#3a3a3a] hover:bg-[#404040] text-gray-300 rounded-lg transition-colors"
-                      >
-                        {{ isAllReportsSelectedInCategory(category.id) ? '取消全选' : '全选' }}
-                      </button>
-                      <button
-                        @click="toggleSavedCategory(category.id)"
-                        :class="[
-                          'w-10 h-10 rounded-lg bg-[#3a3a3a] hover:bg-[#404040] flex items-center justify-center transition-all',
-                          expandedSavedCategories.includes(category.id) && 'bg-blue-600/20 hover:bg-blue-600/30'
-                        ]"
-                      >
-                        <svg 
-                          :class="['w-5 h-5 text-gray-400 transition-transform', expandedSavedCategories.includes(category.id) && 'rotate-180']"
-                          fill="currentColor" 
-                          viewBox="0 0 20 20"
-                        >
-                          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Category Reports (Expandable) -->
-                <div v-show="expandedSavedCategories.includes(category.id)" class="p-6">
-                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-                    <OpportunityReportCard
-                      v-for="report in category.reports"
-                      :key="report.id"
-                      :report="report"
-                      :show-delete="false"
-                      :is-selected="selectedSavedReportIds.includes(report.id)"
-                      @click="viewReportDetail(report)"
-                      @view-detail="navigateToReportDetail(report)"
-                      @toggle-select="toggleSavedReportSelection(report.id)"
-                    />
-                  </div>
-                  
-                  <!-- Batch Update Button -->
-                  <div v-if="getSelectedReportsInCategory(category.id).length > 0" class="flex items-center justify-center pt-4 border-t border-[#404040]">
-                    <button
-                      @click="batchRefreshReports(category.id)"
-                      class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-medium shadow-lg shadow-blue-500/50 transition-all flex items-center gap-2"
-                    >
-                      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
-                      </svg>
-                      <span>批量更新 ({{ getSelectedReportsInCategory(category.id).length }})</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Navigation Buttons -->
-            <div class="flex justify-between pt-8 border-t border-[#404040] mt-8">
-              <button
-                @click="currentStep = 3"
-                class="px-6 py-3 bg-[#3a3a3a] hover:bg-[#404040] text-gray-300 rounded-lg transition-colors flex items-center gap-2"
-              >
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
-                </svg>
-                <span>上一步</span>
-              </button>
-              
-              <button
-                @click="handleEnterPlanning"
-                :disabled="selectedSavedReportIds.length === 0"
-                :class="[
-                  'px-8 py-3 rounded-lg font-medium shadow-lg transition-all flex items-center gap-2',
-                  selectedSavedReportIds.length > 0
-                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-blue-500/50'
-                    : 'bg-gray-600 text-gray-400 cursor-not-allowed shadow-none'
-                ]"
-              >
-                <span>{{ selectedSavedReportIds.length > 0 ? `进入计划制定 (${selectedSavedReportIds.length})` : '请先选择报告' }}</span>
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                </svg>
-              </button>
             </div>
           </div>
         </div>
@@ -959,60 +710,265 @@
     <!-- Tab 2: 生成队列 -->
     <div v-else-if="activeTab === 'queue'" class="min-h-[calc(100vh-240px)]">
       <div class="max-w-7xl mx-auto px-6 py-8">
-        <!-- 统计信息栏 -->
+        <!-- 统计信息栏和全局控制 -->
         <div class="bg-[#2a2a2a] border border-[#404040] rounded-xl p-6 mb-8">
-          <div class="flex items-center justify-center gap-8">
-            <div class="text-center">
-              <div class="text-sm text-gray-400 mb-2">正在生成</div>
-              <div class="text-3xl font-bold text-blue-400">{{ generatingCount }}</div>
+          <div class="flex items-center justify-between">
+            <!-- 统计信息 -->
+            <div class="flex items-center gap-8">
+              <div class="text-center">
+                <div class="text-sm text-gray-400 mb-2">正在生成</div>
+                <div class="text-3xl font-bold text-blue-400">{{ generatingCount }}</div>
+              </div>
+              <div class="w-px h-12 bg-[#404040]"></div>
+              <div class="text-center">
+                <div class="text-sm text-gray-400 mb-2">已完成</div>
+                <div class="text-3xl font-bold text-green-400">{{ completedCount }}</div>
+              </div>
             </div>
-            <div class="w-px h-12 bg-[#404040]"></div>
-            <div class="text-center">
-              <div class="text-sm text-gray-400 mb-2">已完成</div>
-              <div class="text-3xl font-bold text-green-400">{{ completedCount }}</div>
+
+            <!-- 全局控制按钮 -->
+            <div class="flex items-center gap-3">
+              <button 
+                @click="resumeAllQueueReports"
+                class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center gap-2"
+                :disabled="generatingCount === 0"
+                :class="{ 'opacity-50 cursor-not-allowed': generatingCount === 0 }"
+              >
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+                </svg>
+                全部开始
+              </button>
+              <button 
+                @click="pauseAllQueueReports"
+                class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors flex items-center gap-2"
+                :disabled="generatingCount === 0"
+                :class="{ 'opacity-50 cursor-not-allowed': generatingCount === 0 }"
+              >
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                全部暂停
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- 正在生成的策略 -->
+        <!-- 正在生成的策略 (按配置分组) -->
         <div v-if="inProgressReports.length > 0" class="mb-8">
-          <div class="flex items-center gap-3 mb-4">
+          <div class="flex items-center gap-3 mb-6">
             <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
             <h2 class="text-xl font-bold text-white">正在生成的策略</h2>
             <span class="text-sm text-gray-400">({{ inProgressReports.length }})</span>
           </div>
 
-          <div class="space-y-4">
+          <!-- 按配置分组显示 -->
+          <div v-if="groupedReports.length > 0" class="space-y-6">
+            <div v-for="(group, groupIndex) in groupedReports" :key="groupIndex" class="border border-[#404040] rounded-xl overflow-hidden">
+              <!-- 配置标题 -->
+              <div class="bg-[#2a2a2a] border-b border-[#404040] px-6 py-4">
+                <h3 class="text-lg font-semibold text-white mb-3">策略配置</h3>
+                <div class="grid grid-cols-3 gap-4">
+                  <div>
+                    <div class="text-xs text-gray-500 mb-1">分析框架</div>
+                    <div class="text-sm text-blue-400 font-medium">{{ group.config.framework }}</div>
+                  </div>
+                  <div>
+                    <div class="text-xs text-gray-500 mb-1">投资周期</div>
+                    <div class="text-sm text-green-400 font-medium">{{ group.config.period }}</div>
+                  </div>
+                  <div>
+                    <div class="text-xs text-gray-500 mb-1">风险偏好</div>
+                    <div class="text-sm text-orange-400 font-medium">{{ group.config.riskPreference }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 该配置下的策略列表 -->
+              <div class="bg-[#1f1f1f] divide-y divide-[#404040]">
+                <div
+                  v-for="report in group.reports"
+                  :key="report.symbol"
+                  class="p-6 hover:bg-[#252525] transition-all"
+                >
+                  <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-4 flex-1">
+                      <!-- 图标 -->
+                      <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center relative">
+                        <svg v-if="!report.isPaused" class="w-6 h-6 text-white animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        <svg v-else class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                      </div>
+
+                      <!-- 策略信息 -->
+                      <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-1">
+                          <span class="font-mono text-lg font-bold text-blue-400">{{ report.symbol }}</span>
+                          <span class="text-gray-300">{{ report.stockName }}</span>
+                          <span v-if="report.isPaused" class="px-2 py-1 bg-orange-600/20 border border-orange-600 text-orange-400 text-xs rounded">
+                            已暂停
+                          </span>
+                        </div>
+                        <div class="text-sm text-gray-400">{{ report.status }}</div>
+                        
+                        <!-- 预估剩余时间 -->
+                        <div v-if="!report.isPaused && report.estimatedTimeRemaining > 0" class="flex items-center gap-2 mt-2">
+                          <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                          </svg>
+                          <span class="text-xs text-gray-500">预估剩余: {{ formatTimeRemaining(report.estimatedTimeRemaining) }}</span>
+                        </div>
+                      </div>
+
+                      <!-- 进度 -->
+                      <div class="text-right mr-4">
+                        <div class="text-2xl font-bold text-blue-400">{{ report.progress }}%</div>
+                        <div class="text-xs text-gray-500">{{ report.isPaused ? '已暂停' : '处理中...' }}</div>
+                      </div>
+
+                      <!-- 操作按钮 -->
+                      <div class="flex items-center gap-2">
+                        <button 
+                          v-if="!report.isPaused"
+                          @click="pauseQueueReport(report.symbol)"
+                          class="p-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors"
+                          title="暂停"
+                        >
+                          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                          </svg>
+                        </button>
+                        <button 
+                          v-else
+                          @click="resumeQueueReport(report.symbol)"
+                          class="p-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                          title="继续"
+                        >
+                          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+                          </svg>
+                        </button>
+                        <button 
+                          @click="deleteQueueReport(report.symbol)"
+                          class="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                          title="删除"
+                        >
+                          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 进度条 -->
+                  <div class="w-full bg-[#2a2a2a] rounded-full h-2 overflow-hidden">
+                    <div 
+                      class="h-2 rounded-full transition-all duration-500 ease-out"
+                      :class="report.isPaused ? 'bg-gray-600' : 'bg-gradient-to-r from-blue-500 to-purple-500'"
+                      :style="{ width: `${report.progress}%` }"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fallback: 如果分组为空，显示简单列表 -->
+          <div v-else class="space-y-4">
             <div
               v-for="report in inProgressReports"
               :key="report.symbol"
               class="bg-[#2a2a2a] border border-[#404040] rounded-xl p-6 hover:border-blue-500/50 transition-all"
             >
               <div class="flex items-start justify-between mb-4">
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-4 flex-1">
+                  <!-- 图标 -->
                   <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-white animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg v-if="!report.isPaused" class="w-6 h-6 text-white animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                     </svg>
+                    <svg v-else class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
                   </div>
-                  <div>
+
+                  <!-- 策略信息 -->
+                  <div class="flex-1">
                     <div class="flex items-center gap-3 mb-1">
                       <span class="font-mono text-lg font-bold text-blue-400">{{ report.symbol }}</span>
                       <span class="text-gray-300">{{ report.stockName }}</span>
+                      <span v-if="report.isPaused" class="px-2 py-1 bg-orange-600/20 border border-orange-600 text-orange-400 text-xs rounded">
+                        已暂停
+                      </span>
                     </div>
                     <div class="text-sm text-gray-400">{{ report.status }}</div>
+                    
+                    <!-- 配置信息 -->
+                    <div v-if="report.config" class="flex items-center gap-3 mt-2 text-xs">
+                      <span class="text-blue-400">{{ report.config.framework }}</span>
+                      <span class="text-green-400">{{ report.config.period }}</span>
+                      <span class="text-orange-400">风险: {{ report.config.riskPreference }}</span>
+                    </div>
+                    
+                    <!-- 预估剩余时间 -->
+                    <div v-if="!report.isPaused && report.estimatedTimeRemaining > 0" class="flex items-center gap-2 mt-2">
+                      <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                      <span class="text-xs text-gray-500">预估剩余: {{ formatTimeRemaining(report.estimatedTimeRemaining) }}</span>
+                    </div>
                   </div>
-                </div>
-                <div class="text-right">
-                  <div class="text-2xl font-bold text-blue-400">{{ report.progress }}%</div>
-                  <div class="text-xs text-gray-500">处理中...</div>
+
+                  <!-- 进度 -->
+                  <div class="text-right mr-4">
+                    <div class="text-2xl font-bold text-blue-400">{{ report.progress }}%</div>
+                    <div class="text-xs text-gray-500">{{ report.isPaused ? '已暂停' : '处理中...' }}</div>
+                  </div>
+
+                  <!-- 操作按钮 -->
+                  <div class="flex items-center gap-2">
+                    <button 
+                      v-if="!report.isPaused"
+                      @click="pauseQueueReport(report.symbol)"
+                      class="p-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors"
+                      title="暂停"
+                    >
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                      </svg>
+                    </button>
+                    <button 
+                      v-else
+                      @click="resumeQueueReport(report.symbol)"
+                      class="p-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                      title="继续"
+                    >
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+                      </svg>
+                    </button>
+                    <button 
+                      @click="deleteQueueReport(report.symbol)"
+                      class="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                      title="删除"
+                    >
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
 
               <!-- 进度条 -->
-              <div class="w-full bg-[#1a1a1a] rounded-full h-2 overflow-hidden">
+              <div class="w-full bg-[#2a2a2a] rounded-full h-2 overflow-hidden">
                 <div 
-                  class="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-500 ease-out"
+                  class="h-2 rounded-full transition-all duration-500 ease-out"
+                  :class="report.isPaused ? 'bg-gray-600' : 'bg-gradient-to-r from-blue-500 to-purple-500'"
                   :style="{ width: `${report.progress}%` }"
                 ></div>
               </div>
@@ -1022,12 +978,27 @@
 
         <!-- 已完成的策略 -->
         <div>
-          <div class="flex items-center gap-3 mb-4">
-            <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-            </svg>
-            <h2 class="text-xl font-bold text-white">已完成的策略</h2>
-            <span class="text-sm text-gray-400">({{ completedReports.length }})</span>
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+              <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              <h2 class="text-xl font-bold text-white">已完成的策略</h2>
+              <span class="text-sm text-gray-400">({{ completedReports.length }})</span>
+            </div>
+
+            <!-- Selection Controls -->
+            <div v-if="completedReports.length > 0" class="flex items-center gap-4">
+              <button
+                @click="toggleSelectAllCompleted"
+                class="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+              >
+                {{ selectedCompletedReportIds.length === completedReports.length ? '取消全选' : '全选' }}
+              </button>
+              <span class="text-sm text-gray-400">
+                {{ selectedCompletedReportIds.length > 0 ? `已选择 ${selectedCompletedReportIds.length} 份报告` : '点击报告卡片查看详细分析' }}
+              </span>
+            </div>
           </div>
 
           <!-- 空状态 -->
@@ -1047,45 +1018,31 @@
             </button>
           </div>
 
-          <!-- 策略卡片网格 -->
-          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div
-              v-for="report in completedReports"
-              :key="report.symbol"
-              class="bg-[#2a2a2a] border border-[#404040] rounded-xl p-5 hover:shadow-lg hover:shadow-blue-500/20 hover:border-blue-500 transition-all cursor-pointer group"
-              @click="viewReportDetail(report)"
-            >
-              <div class="flex items-start justify-between mb-4">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-green-600 to-blue-600 flex items-center justify-center font-mono font-bold text-sm text-white">
-                    {{ report.symbol.slice(0, 2) }}
-                  </div>
-                  <div>
-                    <div class="font-mono font-bold text-white group-hover:text-blue-400 transition-colors">
-                      {{ report.symbol }}
-                    </div>
-                    <div class="text-xs text-gray-400">{{ report.stockName }}</div>
-                  </div>
-                </div>
-                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                </svg>
-              </div>
+          <!-- 策略卡片网格 (使用 OpportunityReportCard) -->
+          <div v-else>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <OpportunityReportCard
+                v-for="report in completedReports"
+                :key="report.id"
+                :report="report"
+                :is-selected="selectedCompletedReportIds.includes(report.id)"
+                @click="viewReportDetail(report)"
+                @view-detail="navigateToReportDetail(report)"
+                @toggle-select="toggleCompletedReportSelection(report.id)"
+              />
+            </div>
 
-              <div class="space-y-2">
-                <div class="flex items-center justify-between text-sm">
-                  <span class="text-gray-400">预期收益</span>
-                  <span class="font-semibold text-green-400">+{{ report.expectedReturn }}%</span>
-                </div>
-                <div class="flex items-center justify-between text-sm">
-                  <span class="text-gray-400">风险等级</span>
-                  <span class="font-semibold text-yellow-400">{{ report.riskLevel }}</span>
-                </div>
-                <div class="flex items-center justify-between text-sm">
-                  <span class="text-gray-400">生成时间</span>
-                  <span class="text-xs text-gray-500">{{ formatTime(report.generatedAt) }}</span>
-                </div>
-              </div>
+            <!-- Save Button -->
+            <div v-if="selectedCompletedReportIds.length > 0" class="mt-8 flex justify-center">
+              <button
+                @click="showSaveDialog = true"
+                class="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl transition-all flex items-center gap-3 shadow-lg hover:shadow-green-500/30 hover:scale-105"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z"/>
+                </svg>
+                <span class="font-semibold">保存选中报告 ({{ selectedCompletedReportIds.length }})</span>
+              </button>
             </div>
           </div>
         </div>
@@ -1103,6 +1060,27 @@
           </div>
           <h2 class="text-2xl font-bold text-white mb-4">此功能即将上线</h2>
           <p class="text-gray-400 mb-8">在这里您可以查看和管理您保存的策略</p>
+          <div class="inline-flex items-center gap-2 px-6 py-3 bg-[#2a2a2a] border border-[#404040] rounded-lg text-gray-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>敬请期待</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: 查看我的计划 -->
+    <div v-else-if="activeTab === 'myplan'" class="min-h-[calc(100vh-240px)]">
+      <div class="max-w-4xl mx-auto px-6 py-16">
+        <div class="text-center">
+          <div class="inline-flex items-center justify-center w-32 h-32 bg-[#2a2a2a] border border-[#404040] rounded-full mb-8">
+            <svg class="w-16 h-16 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-white mb-4">此功能即将上线</h2>
+          <p class="text-gray-400 mb-8">在这里您可以查看和管理您的交易计划</p>
           <div class="inline-flex items-center gap-2 px-6 py-3 bg-[#2a2a2a] border border-[#404040] rounded-lg text-gray-400">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -1165,11 +1143,18 @@ const selectedStocks = ref([])
 const expandedCategories = ref([]) // Default to collapsed state
 const myHoldings = ref([])
 
+// Stock Search
+const stockSearchQuery = ref('')
+const showSearchResults = ref(false)
+
 // Step 3: Report Generation
 const isGeneratingReports = ref(false)
 const generatedReportsData = ref([])
 const selectedReportIds = ref([])
 const showSaveDialog = ref(false)
+
+// Queue Tab: Completed Reports Selection
+const selectedCompletedReportIds = ref([])
 
 // Step 4: Saved Reports Multi-Selection
 const selectedSavedReportIds = ref([])
@@ -1200,7 +1185,14 @@ const generatingReports = ref([
     targetPrice: 195.0,
     currentPrice: 165.2,
     generatedAt: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
-    completed: true
+    completed: true,
+    config: {
+      framework: '基本面分析 + 趋势分析',
+      period: '1m-6m',
+      riskPreference: '高'
+    },
+    isPaused: false,
+    estimatedTimeRemaining: 0
   },
   {
     symbol: 'MSFT',
@@ -1212,7 +1204,14 @@ const generatingReports = ref([
     targetPrice: 425.0,
     currentPrice: 365.8,
     generatedAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
-    completed: true
+    completed: true,
+    config: {
+      framework: '基本面分析 + 趋势分析',
+      period: '1m-6m',
+      riskPreference: '高'
+    },
+    isPaused: false,
+    estimatedTimeRemaining: 0
   },
   {
     symbol: 'NVDA',
@@ -1224,7 +1223,14 @@ const generatingReports = ref([
     targetPrice: 580.0,
     currentPrice: 466.5,
     generatedAt: new Date(Date.now() - 1800000).toISOString(), // 30 minutes ago
-    completed: true
+    completed: true,
+    config: {
+      framework: '技术分析 + 量化',
+      period: '3m-12m',
+      riskPreference: '中'
+    },
+    isPaused: false,
+    estimatedTimeRemaining: 0
   },
   {
     symbol: 'TSLA',
@@ -1236,7 +1242,14 @@ const generatingReports = ref([
     targetPrice: 265.0,
     currentPrice: 199.5,
     generatedAt: new Date(Date.now() - 5400000).toISOString(), // 1.5 hours ago
-    completed: true
+    completed: true,
+    config: {
+      framework: '基本面分析 + 趋势分析',
+      period: '1m-6m',
+      riskPreference: '高'
+    },
+    isPaused: false,
+    estimatedTimeRemaining: 0
   },
   {
     symbol: 'AMD',
@@ -1248,7 +1261,14 @@ const generatingReports = ref([
     targetPrice: 185.0,
     currentPrice: 152.3,
     generatedAt: new Date(Date.now() - 9000000).toISOString(), // 2.5 hours ago
-    completed: true
+    completed: true,
+    config: {
+      framework: '技术分析 + 量化',
+      period: '3m-12m',
+      riskPreference: '中'
+    },
+    isPaused: false,
+    estimatedTimeRemaining: 0
   },
   {
     symbol: 'BABA',
@@ -1260,7 +1280,14 @@ const generatingReports = ref([
     targetPrice: 92.0,
     currentPrice: 79.8,
     generatedAt: new Date(Date.now() - 10800000).toISOString(), // 3 hours ago
-    completed: true
+    completed: true,
+    config: {
+      framework: '价值投资 + 宏观',
+      period: '6m-24m',
+      riskPreference: '低'
+    },
+    isPaused: false,
+    estimatedTimeRemaining: 0
   },
   {
     symbol: 'TSM',
@@ -1272,7 +1299,14 @@ const generatingReports = ref([
     targetPrice: 125.0,
     currentPrice: 104.4,
     generatedAt: new Date(Date.now() - 14400000).toISOString(), // 4 hours ago
-    completed: true
+    completed: true,
+    config: {
+      framework: '技术分析 + 量化',
+      period: '3m-12m',
+      riskPreference: '中'
+    },
+    isPaused: false,
+    estimatedTimeRemaining: 0
   },
   {
     symbol: 'COIN',
@@ -1284,7 +1318,14 @@ const generatingReports = ref([
     targetPrice: 198.0,
     currentPrice: 154.2,
     generatedAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-    completed: true
+    completed: true,
+    config: {
+      framework: '基本面分析 + 趋势分析',
+      period: '1m-6m',
+      riskPreference: '高'
+    },
+    isPaused: false,
+    estimatedTimeRemaining: 0
   },
   // 正在生成中的报告 - 7条
   {
@@ -1297,7 +1338,14 @@ const generatingReports = ref([
     targetPrice: null,
     currentPrice: 138.2,
     generatedAt: null,
-    completed: false
+    completed: false,
+    config: {
+      framework: '基本面分析 + 趋势分析',
+      period: '1m-6m',
+      riskPreference: '高'
+    },
+    isPaused: false,
+    estimatedTimeRemaining: 195 // seconds
   },
   {
     symbol: 'META',
@@ -1309,7 +1357,14 @@ const generatingReports = ref([
     targetPrice: null,
     currentPrice: 396.5,
     generatedAt: null,
-    completed: false
+    completed: false,
+    config: {
+      framework: '基本面分析 + 趋势分析',
+      period: '1m-6m',
+      riskPreference: '高'
+    },
+    isPaused: false,
+    estimatedTimeRemaining: 96
   },
   {
     symbol: 'AMZN',
@@ -1321,7 +1376,14 @@ const generatingReports = ref([
     targetPrice: null,
     currentPrice: 150.5,
     generatedAt: null,
-    completed: false
+    completed: false,
+    config: {
+      framework: '基本面分析 + 趋势分析',
+      period: '1m-6m',
+      riskPreference: '高'
+    },
+    isPaused: false,
+    estimatedTimeRemaining: 24
   },
   {
     symbol: 'NFLX',
@@ -1333,7 +1395,14 @@ const generatingReports = ref([
     targetPrice: null,
     currentPrice: 489.3,
     generatedAt: null,
-    completed: false
+    completed: false,
+    config: {
+      framework: '技术分析 + 量化',
+      period: '3m-12m',
+      riskPreference: '中'
+    },
+    isPaused: false,
+    estimatedTimeRemaining: 264
   },
   {
     symbol: 'DIS',
@@ -1345,7 +1414,128 @@ const generatingReports = ref([
     targetPrice: null,
     currentPrice: 112.8,
     generatedAt: null,
-    completed: false
+    completed: false,
+    config: {
+      framework: '技术分析 + 量化',
+      period: '3m-12m',
+      riskPreference: '中'
+    },
+    isPaused: false,
+    estimatedTimeRemaining: 165
+  },
+  {
+    symbol: 'BABA',
+    stockName: 'Alibaba Group',
+    progress: 58,
+    status: '评估宏观环境...',
+    expectedReturn: null,
+    riskLevel: null,
+    targetPrice: null,
+    currentPrice: 78.5,
+    generatedAt: null,
+    completed: false,
+    config: {
+      framework: '技术分析 + 量化',
+      period: '3m-12m',
+      riskPreference: '中'
+    },
+    isPaused: false,
+    estimatedTimeRemaining: 126
+  },
+  {
+    symbol: 'BRK.B',
+    stockName: 'Berkshire Hathaway',
+    progress: 23,
+    status: '分析基本面...',
+    expectedReturn: null,
+    riskLevel: null,
+    targetPrice: null,
+    currentPrice: 367.8,
+    generatedAt: null,
+    completed: false,
+    config: {
+      framework: '价值投资 + 宏观分析',
+      period: '6m-24m',
+      riskPreference: '低'
+    },
+    isPaused: false,
+    estimatedTimeRemaining: 231
+  },
+  {
+    symbol: 'JNJ',
+    stockName: 'Johnson & Johnson',
+    progress: 67,
+    status: '计算估值...',
+    expectedReturn: null,
+    riskLevel: null,
+    targetPrice: null,
+    currentPrice: 158.2,
+    generatedAt: null,
+    completed: false,
+    config: {
+      framework: '价值投资 + 宏观分析',
+      period: '6m-24m',
+      riskPreference: '低'
+    },
+    isPaused: true,
+    estimatedTimeRemaining: 99
+  },
+  {
+    symbol: 'PG',
+    stockName: 'Procter & Gamble',
+    progress: 41,
+    status: '分析财务数据...',
+    expectedReturn: null,
+    riskLevel: null,
+    targetPrice: null,
+    currentPrice: 162.5,
+    generatedAt: null,
+    completed: false,
+    config: {
+      framework: '价值投资 + 宏观分析',
+      period: '6m-24m',
+      riskPreference: '低'
+    },
+    isPaused: false,
+    estimatedTimeRemaining: 177
+  },
+  {
+    symbol: 'TSLA',
+    stockName: 'Tesla Inc.',
+    progress: 85,
+    status: '生成投资建议...',
+    expectedReturn: null,
+    riskLevel: null,
+    targetPrice: null,
+    currentPrice: 248.5,
+    generatedAt: null,
+    completed: false,
+    config: {
+      framework: '成长股分析 + 动量策略',
+      period: '1m-3m',
+      riskPreference: '高'
+    },
+    isPaused: false,
+    estimatedTimeRemaining: 45
+  },
+  {
+    symbol: 'NVDA',
+    stockName: 'NVIDIA Corporation',
+    progress: 52,
+    status: '分析行业趋势...',
+    expectedReturn: null,
+    riskLevel: null,
+    targetPrice: null,
+    currentPrice: 875.3,
+    generatedAt: null,
+    completed: false,
+    config: {
+      framework: '成长股分析 + 动量策略',
+      period: '1m-3m',
+      riskPreference: '高'
+    },
+    isPaused: true,
+    estimatedTimeRemaining: 144
   },
   {
     symbol: 'SHOP',
@@ -1357,7 +1547,14 @@ const generatingReports = ref([
     targetPrice: null,
     currentPrice: 82.5,
     generatedAt: null,
-    completed: false
+    completed: false,
+    config: {
+      framework: '价值投资 + 宏观',
+      period: '6m-24m',
+      riskPreference: '低'
+    },
+    isPaused: false,
+    estimatedTimeRemaining: 66
   },
   {
     symbol: 'SQ',
@@ -1369,15 +1566,19 @@ const generatingReports = ref([
     targetPrice: null,
     currentPrice: 68.9,
     generatedAt: null,
-    completed: false
+    completed: false,
+    config: {
+      framework: '价值投资 + 宏观',
+      period: '6m-24m',
+      riskPreference: '低'
+    },
+    isPaused: false,
+    estimatedTimeRemaining: 36
   }
 ])
 const savedReportCategories = ref([]) // Saved report categories from localStorage
 
 // Check if there are any saved reports
-const hasAnySavedReports = computed(() => {
-  return savedReportCategories.value.length > 0
-})
 const expandedSavedCategories = ref([]) // Expanded category IDs
 
 // Step 4: Position Confirmation
@@ -1395,6 +1596,11 @@ const selectedReportsForPlanning = computed(() => {
 
 // Computed: Selected reports for saving
 const selectedReportsToSave = computed(() => {
+  // Queue Tab: use completedReports and selectedCompletedReportIds
+  if (activeTab.value === 'queue') {
+    return completedReports.value.filter(r => selectedCompletedReportIds.value.includes(r.id))
+  }
+  // Generate Tab (Step 3): use generatedReports and selectedReportIds
   return generatedReports.value.filter(r => selectedReportIds.value.includes(r.id))
 })
 
@@ -1405,6 +1611,36 @@ const completedReports = computed(() => {
 
 const inProgressReports = computed(() => {
   return generatingReports.value.filter(r => r.completed === false)
+})
+
+// Computed: Group IN-PROGRESS reports by config
+const groupedReports = computed(() => {
+  const groups = {}
+  
+  // Default config for reports without config
+  const defaultConfig = {
+    framework: '智能分析',
+    period: '灵活配置',
+    riskPreference: '中'
+  }
+  
+  // Only group in-progress reports (not completed)
+  inProgressReports.value.forEach(report => {
+    // Use report's config or default config
+    const config = report.config || defaultConfig
+    const key = `${config.framework}|${config.period}|${config.riskPreference}`
+    
+    if (!groups[key]) {
+      groups[key] = {
+        config: config,
+        reports: []
+      }
+    }
+    
+    groups[key].reports.push(report)
+  })
+  
+  return Object.values(groups)
 })
 
 const completedReportsCount = computed(() => {
@@ -1453,6 +1689,47 @@ const stockCategories = ref([
     stocks: ['XOM', 'CVX', 'COP', 'SLB', 'XLE']
   }
 ])
+
+// Stock names mapping for search
+const stockNames = {
+  // Tech
+  'AAPL': '苹果公司',
+  'MSFT': '微软',
+  'GOOGL': '谷歌',
+  'META': 'Meta（Facebook）',
+  'AMZN': '亚马逊',
+  'NVDA': '英伟达',
+  'AMD': '超威半导体',
+  'INTC': '英特尔',
+  // Finance
+  'JPM': '摩根大通',
+  'BAC': '美国银行',
+  'WFC': '富国银行',
+  'GS': '高盛',
+  'MS': '摩根士丹利',
+  'V': 'Visa',
+  'MA': '万事达',
+  // Healthcare
+  'JNJ': '强生',
+  'UNH': '联合健康',
+  'PFE': '辉瑞',
+  'ABBV': '艾伯维',
+  'TMO': '赛默飞',
+  'DHR': '丹纳赫',
+  // Consumer
+  'KO': '可口可乐',
+  'PEP': '百事可乐',
+  'WMT': '沃尔玛',
+  'COST': '好市多',
+  'NKE': '耐克',
+  'SBUX': '星巴克',
+  // Energy
+  'XOM': '埃克森美孚',
+  'CVX': '雪佛龙',
+  'COP': '康菲石油',
+  'SLB': '斯伦贝谢',
+  'XLE': '能源ETF'
+}
 
 // Step 2: Strategy Selection
 const selectedStrategy = ref({
@@ -1580,6 +1857,37 @@ const isStrategyComplete = computed(() => {
          selectedStrategy.value.risk
 })
 
+// Check if can generate (both stocks and strategy selected)
+const canGenerate = computed(() => {
+  return selectedStocks.value.length > 0 && isStrategyComplete.value
+})
+
+// Filtered stocks for search
+const filteredStocks = computed(() => {
+  if (!stockSearchQuery.value.trim()) {
+    return []
+  }
+  
+  const query = stockSearchQuery.value.toLowerCase()
+  const allStocks = []
+  
+  // Collect all stocks from categories
+  stockCategories.value.forEach(category => {
+    category.stocks.forEach(symbol => {
+      allStocks.push({
+        symbol,
+        name: stockNames[symbol] || symbol
+      })
+    })
+  })
+  
+  // Filter by symbol or name
+  return allStocks.filter(stock => 
+    stock.symbol.toLowerCase().includes(query) || 
+    stock.name.toLowerCase().includes(query)
+  ).slice(0, 10) // Limit to 10 results
+})
+
 // Methods
 const toggleCategory = (categoryId) => {
   const index = expandedCategories.value.indexOf(categoryId)
@@ -1618,10 +1926,26 @@ const clearAllStocks = () => {
   selectedStocks.value = []
 }
 
-const goToStep2 = () => {
-  if (selectedStocks.value.length > 0) {
-    currentStep.value = 2
+// Search methods
+const clearSearch = () => {
+  stockSearchQuery.value = ''
+  showSearchResults.value = false
+}
+
+const handleSearchBlur = () => {
+  // Delay hiding results to allow click events to fire
+  setTimeout(() => {
+    showSearchResults.value = false
+  }, 200)
+}
+
+const addStockFromSearch = (symbol) => {
+  if (!selectedStocks.value.includes(symbol)) {
+    selectedStocks.value.push(symbol)
   }
+  // Clear search after adding
+  stockSearchQuery.value = ''
+  showSearchResults.value = false
 }
 
 // Toggle framework selection (支持多选)
@@ -1636,8 +1960,9 @@ const toggleFramework = (frameworkValue) => {
   }
 }
 
-const goToStep3 = async () => {
-  if (isStrategyComplete.value) {
+// Generate investment reports (merged from goToStep3)
+const generateReports = async () => {
+  if (canGenerate.value) {
     currentStep.value = 3
     isGeneratingReports.value = true
     generatedReportsData.value = []
@@ -1771,14 +2096,53 @@ const formatTime = (timestamp) => {
   return date.toLocaleDateString('zh-CN')
 }
 
-const goToStep4 = () => {
-  // Check if there are any saved reports
-  if (!hasAnySavedReports.value) {
-    return
+// Format time remaining (seconds to readable format)
+const formatTimeRemaining = (seconds) => {
+  if (seconds <= 0) return '即将完成'
+  const minutes = Math.floor(seconds / 60)
+  const remainingSeconds = seconds % 60
+  if (minutes > 0) {
+    return `约 ${minutes} 分 ${remainingSeconds} 秒`
   }
-  currentStep.value = 4
-  // Ensure saved reports are loaded
-  loadSavedReports()
+  return `约 ${remainingSeconds} 秒`
+}
+
+// Queue control functions
+const deleteQueueReport = (symbol) => {
+  const index = generatingReports.value.findIndex(r => r.symbol === symbol)
+  if (index !== -1) {
+    generatingReports.value.splice(index, 1)
+  }
+}
+
+const pauseQueueReport = (symbol) => {
+  const report = generatingReports.value.find(r => r.symbol === symbol)
+  if (report) {
+    report.isPaused = true
+  }
+}
+
+const resumeQueueReport = (symbol) => {
+  const report = generatingReports.value.find(r => r.symbol === symbol)
+  if (report) {
+    report.isPaused = false
+  }
+}
+
+const pauseAllQueueReports = () => {
+  generatingReports.value.forEach(report => {
+    if (!report.completed) {
+      report.isPaused = true
+    }
+  })
+}
+
+const resumeAllQueueReports = () => {
+  generatingReports.value.forEach(report => {
+    if (!report.completed) {
+      report.isPaused = false
+    }
+  })
 }
 
 // Handle enter planning button click
@@ -1867,6 +2231,24 @@ const selectAllReports = () => {
   }
 }
 
+// Queue Tab: Completed Reports Selection Methods
+const toggleCompletedReportSelection = (reportId) => {
+  const index = selectedCompletedReportIds.value.indexOf(reportId)
+  if (index > -1) {
+    selectedCompletedReportIds.value.splice(index, 1)
+  } else {
+    selectedCompletedReportIds.value.push(reportId)
+  }
+}
+
+const toggleSelectAllCompleted = () => {
+  if (selectedCompletedReportIds.value.length === completedReports.value.length) {
+    selectedCompletedReportIds.value = []
+  } else {
+    selectedCompletedReportIds.value = completedReports.value.map(r => r.id)
+  }
+}
+
 const handleSaveReports = (result) => {
   console.log('Reports saved:', result)
   
@@ -1881,49 +2263,34 @@ const handleSaveReports = (result) => {
     expandedSavedCategories.value.push(result.categoryId)
   }
   
+  // Determine which selection list to use
+  const selectedCount = activeTab.value === 'queue' 
+    ? selectedCompletedReportIds.value.length 
+    : selectedReportIds.value.length
+  
   // Show success message (you can add a toast notification here)
   if (result.isNew) {
-    alert(`✅ 成功创建分类"${result.categoryName}"并保存了 ${selectedReportIds.value.length} 份报告！`)
+    alert(`✅ 成功创建分类"${result.categoryName}"并保存了 ${selectedCount} 份报告！`)
   } else {
-    const count = result.addedCount || selectedReportIds.value.length
+    const count = result.addedCount || selectedCount
     alert(`✅ 成功将 ${count} 份报告添加到"${result.categoryName}"！`)
   }
   
-  // Clear selection after save
-  selectedReportIds.value = []
+  // Clear selection after save (based on active tab)
+  if (activeTab.value === 'queue') {
+    selectedCompletedReportIds.value = []
+  } else {
+    selectedReportIds.value = []
+  }
 }
 
 // Get stock name (mock data)
 const getStockName = (symbol) => {
-  const names = {
-    'AAPL': 'Apple Inc.',
-    'MSFT': 'Microsoft Corporation',
-    'GOOGL': 'Alphabet Inc.',
-    'META': 'Meta Platforms Inc.',
-    'AMZN': 'Amazon.com Inc.',
-    'NVDA': 'NVIDIA Corporation',
-    'AMD': 'Advanced Micro Devices',
-    'TSLA': 'Tesla Inc.',
-    'INTC': 'Intel Corporation',
-    'JPM': 'JPMorgan Chase & Co.',
-    'BAC': 'Bank of America Corp',
-    'WFC': 'Wells Fargo & Company',
-    'GS': 'Goldman Sachs Group',
-    'MS': 'Morgan Stanley',
-    'V': 'Visa Inc.',
-    'MA': 'Mastercard Inc.'
-  }
-  return names[symbol] || `${symbol} Corporation`
+  return stockNames[symbol] || `${symbol} Corporation`
 }
 
 // Navigate to report detail
 const viewReportDetail = (report) => {
-  // In Step 4, clicking card does nothing (use multi-select instead)
-  if (currentStep.value === 4) {
-    // Do nothing - multi-select is handled by toggle-select event
-    return
-  }
-  
   // Store report data in sessionStorage for detail page
   sessionStorage.setItem('current_report', JSON.stringify(report))
   router.push(`/opportunity/report/${report.id}`)
@@ -2157,22 +2524,21 @@ const startGenerating = () => {
 const initializeDemoGeneratingReports = () => {
   const now = Date.now()
   generatingReports.value = [
-    // 正在生成的报告
+    // 正在生成的报告 - 分组1: 基本面分析 + 趋势分析（短期高风险）
     {
       id: 'gen-600519',
       symbol: '600519',
       stockName: '贵州茅台',
       progress: 75,
       status: '分析财务数据...',
-      completed: false
-    },
-    {
-      id: 'gen-000001',
-      symbol: '000001',
-      stockName: '平安银行',
-      progress: 40,
-      status: '获取行业数据...',
-      completed: false
+      completed: false,
+      config: {
+        framework: '基本面分析 + 趋势分析',
+        period: '1m-6m',
+        riskPreference: '高'
+      },
+      isPaused: false,
+      estimatedTimeRemaining: 75
     },
     {
       id: 'gen-000858',
@@ -2180,15 +2546,30 @@ const initializeDemoGeneratingReports = () => {
       stockName: '五粮液',
       progress: 15,
       status: '初始化策略引擎...',
-      completed: false
+      completed: false,
+      config: {
+        framework: '基本面分析 + 趋势分析',
+        period: '1m-6m',
+        riskPreference: '高'
+      },
+      isPaused: false,
+      estimatedTimeRemaining: 255
     },
+    // 分组2: 技术分析 + 量化（中期中风险）
     {
-      id: 'gen-601318',
-      symbol: '601318',
-      stockName: '中国平安',
-      progress: 58,
-      status: '计算技术指标...',
-      completed: false
+      id: 'gen-000001',
+      symbol: '000001',
+      stockName: '平安银行',
+      progress: 40,
+      status: '获取行业数据...',
+      completed: false,
+      config: {
+        framework: '技术分析 + 量化',
+        period: '3m-12m',
+        riskPreference: '中'
+      },
+      isPaused: false,
+      estimatedTimeRemaining: 180
     },
     {
       id: 'gen-600036',
@@ -2196,7 +2577,106 @@ const initializeDemoGeneratingReports = () => {
       stockName: '招商银行',
       progress: 88,
       status: '生成投资建议...',
-      completed: false
+      completed: false,
+      config: {
+        framework: '技术分析 + 量化',
+        period: '3m-12m',
+        riskPreference: '中'
+      },
+      isPaused: false,
+      estimatedTimeRemaining: 36
+    },
+    {
+      id: 'gen-002594',
+      symbol: '002594',
+      stockName: '比亚迪',
+      progress: 62,
+      status: '评估成长性...',
+      completed: false,
+      config: {
+        framework: '技术分析 + 量化',
+        period: '3m-12m',
+        riskPreference: '中'
+      },
+      isPaused: true,
+      estimatedTimeRemaining: 114
+    },
+    // 分组3: 价值投资 + 宏观分析（长期低风险）
+    {
+      id: 'gen-601318',
+      symbol: '601318',
+      stockName: '中国平安',
+      progress: 58,
+      status: '计算技术指标...',
+      completed: false,
+      config: {
+        framework: '价值投资 + 宏观分析',
+        period: '6m-24m',
+        riskPreference: '低'
+      },
+      isPaused: false,
+      estimatedTimeRemaining: 126
+    },
+    {
+      id: 'gen-600276',
+      symbol: '600276',
+      stockName: '恒瑞医药',
+      progress: 33,
+      status: '分析行业地位...',
+      completed: false,
+      config: {
+        framework: '价值投资 + 宏观分析',
+        period: '6m-24m',
+        riskPreference: '低'
+      },
+      isPaused: false,
+      estimatedTimeRemaining: 201
+    },
+    {
+      id: 'gen-600887',
+      symbol: '600887',
+      stockName: '伊利股份',
+      progress: 71,
+      status: '计算内在价值...',
+      completed: false,
+      config: {
+        framework: '价值投资 + 宏观分析',
+        period: '6m-24m',
+        riskPreference: '低'
+      },
+      isPaused: false,
+      estimatedTimeRemaining: 87
+    },
+    // 分组4: 成长股分析 + 动量策略（超短期高风险）
+    {
+      id: 'gen-300750',
+      symbol: '300750',
+      stockName: '宁德时代',
+      progress: 92,
+      status: '生成交易信号...',
+      completed: false,
+      config: {
+        framework: '成长股分析 + 动量策略',
+        period: '1m-3m',
+        riskPreference: '高'
+      },
+      isPaused: false,
+      estimatedTimeRemaining: 24
+    },
+    {
+      id: 'gen-601012',
+      symbol: '601012',
+      stockName: '隆基绿能',
+      progress: 47,
+      status: '分析新能源趋势...',
+      completed: false,
+      config: {
+        framework: '成长股分析 + 动量策略',
+        period: '1m-3m',
+        riskPreference: '高'
+      },
+      isPaused: true,
+      estimatedTimeRemaining: 159
     },
     // 已完成的报告
     {

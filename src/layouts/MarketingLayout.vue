@@ -13,10 +13,18 @@
           </span>
         </router-link>
 
-        <!-- Login Button -->
-        <router-link to="/login" class="px-4 py-2 bg-[#2a2a2a] hover:bg-[#3a3a3a] border border-[#404040] rounded-lg text-sm font-medium transition">
-          登录 / 注册
-        </router-link>
+        <!-- Right Actions -->
+        <div class="flex items-center gap-4">
+          <!-- Pricing Link -->
+          <router-link to="/pricing" class="px-4 py-2 text-gray-300 hover:text-white text-sm font-medium transition">
+            Pricing
+          </router-link>
+          
+          <!-- Login Button -->
+          <router-link to="/login" class="px-4 py-2 bg-[#2a2a2a] hover:bg-[#3a3a3a] border border-[#404040] rounded-lg text-sm font-medium transition">
+            登录 / 注册
+          </router-link>
+        </div>
       </div>
     </header>
 

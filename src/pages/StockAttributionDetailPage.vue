@@ -309,8 +309,17 @@
             <h3 class="text-lg font-bold text-white">个股相关策略</h3>
             <span class="text-sm text-gray-500">({{ relatedStrategies.length }})</span>
           </div>
-          <div class="text-xs text-gray-500">
-            数据与官方推荐同步
+          <div class="flex items-center gap-4">
+            <div class="text-xs text-gray-500">
+              数据与官方推荐同步
+            </div>
+            <button 
+              @click="navigateToGenerateStrategy(symbol)"
+              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all hover:scale-105 shadow-lg hover:shadow-blue-500/50 flex items-center gap-2"
+            >
+              <span>✨</span>
+              <span>生成 {{ symbol }} 策略</span>
+            </button>
           </div>
         </div>
 
@@ -381,9 +390,34 @@
 
         <!-- Empty State -->
         <div v-else class="bg-[#1a1a1a] rounded-xl border border-[#333] p-12 text-center">
-          <div class="text-4xl mb-4">🧩</div>
-          <h3 class="text-xl font-bold text-white mb-2">暂无相关策略</h3>
-          <p class="text-gray-500">该股票当前没有推荐策略</p>
+          <div class="text-6xl mb-6">🎯</div>
+          <h3 class="text-2xl font-bold text-white mb-3">暂无 {{ symbol }} 相关策略</h3>
+          <p class="text-gray-400 mb-8 max-w-md mx-auto">
+            还没有针对此股票的投资策略？基于AI量化分析，为 {{ symbol }} 生成专属策略
+          </p>
+          
+          <!-- Primary CTA -->
+          <button 
+            @click="navigateToGenerateStrategy(symbol)"
+            class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-lg rounded-xl transition-all transform hover:scale-105 shadow-xl hover:shadow-blue-500/50 mb-4"
+          >
+            <span class="text-2xl">✨</span>
+            <span>生成 {{ symbol }} 专属策略</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+          
+          <!-- Secondary CTA -->
+          <div class="text-sm text-gray-500">
+            或者
+            <button 
+              @click="router.push('/opportunities?tab=opportunities')"
+              class="text-blue-400 hover:text-blue-300 underline ml-1"
+            >
+              浏览所有策略
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1520,6 +1554,14 @@ const openStrategyDetail = (strategy) => {
 
 const closeStrategyModal = () => {
   showStrategyModal.value = false
+}
+
+const navigateToGenerateStrategy = (stockSymbol) => {
+  // 跳转到策略生成页面，并携带股票代码参数
+  router.push({
+    path: '/opportunity',
+    query: { symbol: stockSymbol }
+  })
 }
 
 onMounted(() => {

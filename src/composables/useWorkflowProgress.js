@@ -14,12 +14,6 @@ const WORKFLOW_STEPS = [
     label: '机会发现', 
     route: '/opportunity',
     icon: 'search'
-  },
-  { 
-    id: 'planning', 
-    label: '计划制定', 
-    route: '/planning',
-    icon: 'plan'
   }
 ]
 

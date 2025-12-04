@@ -14,13 +14,13 @@
 
         <!-- Tab Navigation (Only shown when logged in) -->
         <div v-if="isLoggedIn" class="flex-1 flex items-center justify-center mx-8">
-          <div class="flex items-center gap-6">
+          <div class="flex items-center gap-16 transform -translate-x-16">
             <button
               v-for="step in steps" 
               :key="step.id"
               @click="handleStepClick(step)"
               :class="[
-                'px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
+                'px-6 py-2 rounded-lg text-base font-medium transition-all duration-200',
                 getTabClasses(step.status)
               ]"
             >
@@ -31,6 +31,14 @@
 
         <!-- Right Icons -->
         <div class="flex items-center gap-4 flex-shrink-0">
+          <!-- Pricing Link (Always visible) -->
+          <router-link 
+            to="/pricing" 
+            class="px-4 py-2 text-gray-300 hover:text-white text-sm font-medium transition"
+          >
+            Pricing
+          </router-link>
+
           <!-- Logged Out: Login/Register Button -->
           <router-link 
             v-if="!isLoggedIn" 

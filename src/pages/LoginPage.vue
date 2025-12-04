@@ -1,4 +1,11 @@
 <template>
+  <!-- Onboarding Flow -->
+  <OnboardingFlow 
+    :isOpen="showOnboarding" 
+    @close="handleOnboardingClose"
+    @complete="handleOnboardingComplete"
+  />
+
   <div class="p-8">
     <!-- Header -->
     <div class="text-center mb-8">
@@ -89,10 +96,12 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import OnboardingFlow from '../components/OnboardingFlow.vue'
 
 const router = useRouter()
 const email = ref('')
 const password = ref('')
+const showOnboarding = ref(false)
 
 const handleLogin = () => {
   // 验证输入
@@ -105,7 +114,28 @@ const handleLogin = () => {
   localStorage.setItem('isLoggedIn', 'true')
   localStorage.setItem('userEmail', email.value)
 
-  // 使用 router 跳转
+  // 检查是否首次登录
+  const onboardingCompleted = localStorage.getItem('scaleAlpha_onboarding_completed')
+  const onboardingSkipped = localStorage.getItem('scaleAlpha_onboarding_skipped')
+  
+  if (!onboardingCompleted && !onboardingSkipped) {
+    // 首次登录，显示引导流程
+    showOnboarding.value = true
+  } else {
+    // 非首次登录，直接跳转
+    router.push('/info')
+  }
+}
+
+const handleOnboardingClose = () => {
+  showOnboarding.value = false
+  // 跳过引导后也进入网站
+  router.push('/info')
+}
+
+const handleOnboardingComplete = () => {
+  showOnboarding.value = false
+  // 完成引导后进入网站
   router.push('/info')
 }
 </script>

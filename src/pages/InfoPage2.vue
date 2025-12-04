@@ -39,7 +39,7 @@
     <!-- CTA Button Section -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-20">
       <div class="flex justify-center">
-        <button class="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+        <button @click="navigateToOpportunity" class="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
           <span class="relative z-10">生成我的策略</span>
           <div class="absolute inset-0 rounded-xl bg-blue-400 opacity-0 group-hover:opacity-20 blur-xl transition-opacity"></div>
         </button>
@@ -70,6 +70,198 @@
         <div class="text-center">
           <div class="text-3xl font-bold text-yellow-500 mb-1">0</div>
           <div class="text-xs text-gray-500 uppercase tracking-wider">New Events</div>
+        </div>
+      </div>
+
+      <!-- Module 3: Opportunities (机会推荐) -->
+      <div class="mb-12">
+        <div class="flex flex-col gap-4 mb-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                🎯 机会推荐 <span class="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">{{ opportunitiesData.recommend.length }}</span>
+              </h2>
+              <!-- Tabs -->
+              <div class="flex bg-[#1a1a1a] rounded-lg p-1 border border-[#333]">
+                <button 
+                  @click="activeTabOpportunities = 'recommend'"
+                  class="px-4 py-1 text-sm rounded-md transition-all"
+                  :class="activeTabOpportunities === 'recommend' ? 'bg-[#333] text-white shadow' : 'text-gray-500 hover:text-gray-300'"
+                >
+                  推荐
+                </button>
+                <button 
+                  @click="activeTabOpportunities = 'following'"
+                  class="px-4 py-1 text-sm rounded-md transition-all"
+                  :class="activeTabOpportunities === 'following' ? 'bg-[#333] text-white shadow' : 'text-gray-500 hover:text-gray-300'"
+                >
+                  关注
+                </button>
+              </div>
+            </div>
+            <router-link to="/opportunities" class="text-sm text-gray-500 hover:text-white transition-colors">查看所有机会 ></router-link>
+          </div>
+
+          <!-- Filters (Only for Opportunities) -->
+          <div class="flex items-center gap-6 border-b border-[#333] pb-2">
+            <button 
+              v-for="filter in oppFilters" 
+              :key="filter.value"
+              @click="activeOppFilter = filter.value"
+              class="text-sm font-medium pb-2 relative transition-colors"
+              :class="activeOppFilter === filter.value ? 'text-blue-500' : 'text-gray-500 hover:text-gray-300'"
+            >
+              {{ filter.label }}
+              <div v-if="activeOppFilter === filter.value" class="absolute bottom-0 left-0 w-full h-0.5 bg-blue-500 rounded-t-full"></div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Content Area -->
+        <div v-if="activeTabOpportunities === 'recommend' || (activeTabOpportunities === 'following' && opportunitiesData.following && opportunitiesData.following.length > 0)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Opportunity Cards -->
+          <div v-for="opp in currentOpportunities" :key="opp.id" @click="navigateToStrategy(opp)" class="bg-[#1a1a1a] rounded-xl border border-[#333] overflow-hidden hover:border-blue-500/50 transition-all group relative cursor-pointer">
+            <div class="p-5">
+              <div class="flex justify-between items-start mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="px-2 py-1 bg-blue-900/30 text-blue-400 text-xs font-bold rounded border border-blue-900/50">{{ opp.symbol }}</div>
+                  <div class="flex items-center gap-1 text-xs text-green-400 bg-green-900/20 px-1.5 py-0.5 rounded">
+                    <span>★</span> {{ opp.score }}分
+                  </div>
+                </div>
+                <div class="text-xs font-bold px-2 py-1 rounded" :class="opp.type === 'Long' ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'">
+                  {{ opp.type }}
+                </div>
+              </div>
+              
+              <h3 class="text-base font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">{{ opp.title }}</h3>
+              <div class="flex items-center gap-2 text-[10px] text-gray-500 mb-4">
+                <span>{{ opp.strategy }}</span>
+                <span>•</span>
+                <span>{{ opp.period }}</span>
+              </div>
+
+              <div class="flex items-end justify-between mb-4">
+                <div>
+                  <div class="text-[10px] text-gray-500 mb-0.5">预期收益</div>
+                  <div class="text-xl font-bold text-green-500">+{{ opp.return }}%</div>
+                </div>
+                <div class="text-right">
+                   <div class="text-[10px] text-gray-500 mb-0.5">风险等级</div>
+                   <div class="text-xs font-medium text-yellow-500">{{ opp.risk }}</div>
+                </div>
+              </div>
+
+              <p class="text-xs text-gray-400 line-clamp-2 mb-4 h-8">
+                {{ opp.reason }}
+              </p>
+
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span v-for="tag in opp.tags" :key="tag" class="text-[10px] bg-[#2a2a2a] text-gray-500 px-1.5 py-0.5 rounded border border-[#333]">{{ tag }}</span>
+              </div>
+            </div>
+            
+            <div class="bg-[#222] px-5 py-3 border-t border-[#333] flex justify-between items-center group-hover:bg-[#2a2a2a] transition-colors cursor-pointer">
+              <span class="text-xs text-gray-400 flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> AI 推荐
+              </span>
+              <div class="flex items-center gap-3">
+                <span class="text-xs text-blue-400 font-medium flex items-center">
+                  查看详情 <span class="ml-1">→</span>
+                </span>
+                <!-- Save Button -->
+                <button 
+                  @click.stop="openSaveModal(opp)"
+                  class="text-xs px-2 py-0.5 rounded border transition-colors flex items-center gap-1"
+                  :class="opp.isSaved ? 'bg-blue-900/30 text-blue-400 border-blue-900/50' : 'bg-[#1a1a1a] text-gray-400 border-[#333] hover:text-white hover:border-gray-500'"
+                >
+                  <span v-if="opp.isSaved">✓ 已保存</span>
+                  <span v-else>💾 保存</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State for Following (Opportunities) -->
+        <div v-else class="bg-[#1a1a1a] rounded-xl border border-[#333] p-8 text-center">
+          <div class="mb-8">
+            <div class="w-16 h-16 bg-[#2a2a2a] rounded-full flex items-center justify-center mx-auto mb-4 text-gray-500">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+            </div>
+            <h3 class="text-lg font-medium text-white mb-2">您还没有保存任何策略机会</h3>
+            <p class="text-gray-500 text-sm">保存感兴趣的策略，随时查看和跟踪</p>
+          </div>
+
+          <div class="relative">
+            <div class="absolute inset-0 flex items-center" aria-hidden="true">
+              <div class="w-full border-t border-[#333]"></div>
+            </div>
+            <div class="relative flex justify-center">
+              <span class="px-3 bg-[#1a1a1a] text-sm text-gray-500">👇 AI 为您推荐 (Recommended by AI) 👇</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8 text-left">
+            <div v-for="opp in opportunitiesData.recommend.slice(0, 4)" :key="opp.id" @click="navigateToStrategy(opp)" class="bg-[#2a2a2a] rounded-xl border border-[#333] overflow-hidden hover:border-blue-500/50 transition-all group relative cursor-pointer">
+              <div class="p-5">
+                <div class="flex justify-between items-start mb-4">
+                  <div class="flex items-center gap-3">
+                    <div class="px-2 py-1 bg-blue-900/30 text-blue-400 text-xs font-bold rounded border border-blue-900/50">{{ opp.symbol }}</div>
+                    <div class="flex items-center gap-1 text-xs text-green-400 bg-green-900/20 px-1.5 py-0.5 rounded">
+                      <span>★</span> {{ opp.score }}分
+                    </div>
+                  </div>
+                  <div class="text-xs font-bold px-2 py-1 rounded" :class="opp.type === 'Long' ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'">
+                    {{ opp.type }}
+                  </div>
+                </div>
+                
+                <h3 class="text-base font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">{{ opp.title }}</h3>
+                <div class="flex items-center gap-2 text-[10px] text-gray-500 mb-4">
+                  <span>{{ opp.strategy }}</span>
+                  <span>•</span>
+                  <span>{{ opp.period }}</span>
+                </div>
+
+                <div class="flex items-end justify-between mb-4">
+                  <div>
+                    <div class="text-[10px] text-gray-500 mb-0.5">预期收益</div>
+                    <div class="text-xl font-bold text-green-500">+{{ opp.return }}%</div>
+                  </div>
+                  <div class="text-right">
+                     <div class="text-[10px] text-gray-500 mb-0.5">风险等级</div>
+                     <div class="text-xs font-medium text-yellow-500">{{ opp.risk }}</div>
+                  </div>
+                </div>
+
+                <p class="text-xs text-gray-400 line-clamp-2 mb-4 h-8">
+                  {{ opp.reason }}
+                </p>
+
+                <div class="flex flex-wrap gap-2 mb-4">
+                  <span v-for="tag in opp.tags" :key="tag" class="text-[10px] bg-[#1a1a1a] text-gray-500 px-1.5 py-0.5 rounded border border-[#333]">{{ tag }}</span>
+                </div>
+              </div>
+              
+              <div class="bg-[#111] px-5 py-3 border-t border-[#333] flex justify-between items-center group-hover:bg-[#1a1a1a] transition-colors cursor-pointer">
+                <span class="text-xs text-gray-400 flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> AI 推荐
+                </span>
+                <div class="flex items-center gap-3">
+                  <span class="text-xs text-blue-400 font-medium flex items-center">
+                    查看详情 <span class="ml-1">→</span>
+                  </span>
+                  <button 
+                    @click.stop="openSaveModal(opp)"
+                    class="text-xs px-2 py-0.5 rounded border transition-colors flex items-center gap-1 bg-[#2a2a2a] text-gray-400 border-[#333] hover:text-white hover:border-gray-500"
+                  >
+                    💾 保存
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -366,100 +558,6 @@
         </div>
       </div>
 
-      <!-- Module 3: Opportunities -->
-      <div class="mb-12">
-        <div class="flex flex-col gap-4 mb-6">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-4">
-              <h2 class="text-xl font-bold text-white flex items-center gap-2">
-                🎯 机会推荐 <span class="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">{{ opportunitiesData.length }}</span>
-              </h2>
-            </div>
-            <router-link to="/opportunities" class="text-sm text-gray-500 hover:text-white transition-colors">查看所有机会 ></router-link>
-          </div>
-
-          <!-- Filters (Only for Opportunities) -->
-          <div class="flex items-center gap-6 border-b border-[#333] pb-2">
-            <button 
-              v-for="filter in oppFilters" 
-              :key="filter.value"
-              @click="activeOppFilter = filter.value"
-              class="text-sm font-medium pb-2 relative transition-colors"
-              :class="activeOppFilter === filter.value ? 'text-blue-500' : 'text-gray-500 hover:text-gray-300'"
-            >
-              {{ filter.label }}
-              <div v-if="activeOppFilter === filter.value" class="absolute bottom-0 left-0 w-full h-0.5 bg-blue-500 rounded-t-full"></div>
-            </button>
-          </div>
-        </div>
-
-        <!-- Content Area -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <!-- Opportunity Cards -->
-          <div v-for="opp in filteredOpportunities" :key="opp.id" @click="navigateToStrategy(opp)" class="bg-[#1a1a1a] rounded-xl border border-[#333] overflow-hidden hover:border-blue-500/50 transition-all group relative cursor-pointer">
-            <div class="p-5">
-              <div class="flex justify-between items-start mb-4">
-                <div class="flex items-center gap-3">
-                  <div class="px-2 py-1 bg-blue-900/30 text-blue-400 text-xs font-bold rounded border border-blue-900/50">{{ opp.symbol }}</div>
-                  <div class="flex items-center gap-1 text-xs text-green-400 bg-green-900/20 px-1.5 py-0.5 rounded">
-                    <span>★</span> {{ opp.score }}分
-                  </div>
-                </div>
-                <div class="text-xs font-bold px-2 py-1 rounded" :class="opp.type === 'Long' ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'">
-                  {{ opp.type }}
-                </div>
-              </div>
-              
-              <h3 class="text-base font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">{{ opp.title }}</h3>
-              <div class="flex items-center gap-2 text-[10px] text-gray-500 mb-4">
-                <span>{{ opp.strategy }}</span>
-                <span>•</span>
-                <span>{{ opp.period }}</span>
-              </div>
-
-              <div class="flex items-end justify-between mb-4">
-                <div>
-                  <div class="text-[10px] text-gray-500 mb-0.5">预期收益</div>
-                  <div class="text-xl font-bold text-green-500">+{{ opp.return }}%</div>
-                </div>
-                <div class="text-right">
-                   <div class="text-[10px] text-gray-500 mb-0.5">风险等级</div>
-                   <div class="text-xs font-medium text-yellow-500">{{ opp.risk }}</div>
-                </div>
-              </div>
-
-              <p class="text-xs text-gray-400 line-clamp-2 mb-4 h-8">
-                {{ opp.reason }}
-              </p>
-
-              <div class="flex flex-wrap gap-2 mb-4">
-                <span v-for="tag in opp.tags" :key="tag" class="text-[10px] bg-[#2a2a2a] text-gray-500 px-1.5 py-0.5 rounded border border-[#333]">{{ tag }}</span>
-              </div>
-            </div>
-            
-            <div class="bg-[#222] px-5 py-3 border-t border-[#333] flex justify-between items-center group-hover:bg-[#2a2a2a] transition-colors cursor-pointer">
-              <span class="text-xs text-gray-400 flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> AI 推荐
-              </span>
-              <div class="flex items-center gap-3">
-                <span class="text-xs text-blue-400 font-medium flex items-center">
-                  查看详情 <span class="ml-1">→</span>
-                </span>
-                <!-- Save Button -->
-                <button 
-                  @click.stop="openSaveModal(opp)"
-                  class="text-xs px-2 py-0.5 rounded border transition-colors flex items-center gap-1"
-                  :class="opp.isSaved ? 'bg-blue-900/30 text-blue-400 border-blue-900/50' : 'bg-[#1a1a1a] text-gray-400 border-[#333] hover:text-white hover:border-gray-500'"
-                >
-                  <span v-if="opp.isSaved">✓ 已保存</span>
-                  <span v-else>💾 保存</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Save Group Modal -->
       <div v-if="showSaveModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
         <div class="bg-[#1a1a1a] rounded-xl border border-[#333] w-full max-w-md p-6 shadow-2xl transform transition-all">
@@ -513,7 +611,7 @@ const steps = [
 // --- State Management ---
 const activeTabThemes = ref('recommend')
 const activeTabAttribution = ref('recommend')
-// const activeTabOpportunities = ref('recommend') // Removed
+const activeTabOpportunities = ref('recommend')
 const activeOppFilter = ref('all')
 
 const showSaveModal = ref(false)
@@ -643,12 +741,15 @@ const attributionData = ref({
 })
 
 // 3. Opportunities
-const opportunitiesData = ref([
+const opportunitiesData = ref({
+  recommend: [
     { id: 2, symbol: 'MSFT', score: 85, type: 'Long', title: '微软云计算+AI双轮驱动', strategy: '基本面分析 + 估值', period: '3-6个月', return: 12.3, risk: '低', reason: 'Azure云业务保持强劲增长，AI产品Copilot已在企业端大规模部署，作为AI时代的...', tags: ['云计算', 'AI应用', '蓝筹股'], isSaved: false, savedGroups: [] },
     { id: 3, symbol: 'META', score: 82, type: 'Long', title: 'Meta广告业务全面复苏', strategy: '事件驱动 + 财报', period: '1个月-6个月', return: 18.5, risk: '中等', reason: 'Meta第三季度财报大超预期，广告业务全面复苏，管理层推行的效率年策略见效，成本控制...', tags: ['社交媒体', '广告复苏', '扭亏为盈'], isSaved: false, savedGroups: [] },
     { id: 4, symbol: 'AMD', score: 79, type: 'Long', title: 'AMD AI芯片挑战者地位', strategy: '技术分析 + 竞品', period: '1-3个月', return: 22.6, risk: '高', reason: 'AMD推出MI300系列AI加速器，凭借性价比优势抢占市场，尽管面临英伟达的强势竞争，但在...', tags: ['AI芯片', '竞争', '高风险高回报'], isSaved: false, savedGroups: [] },
     { id: 5, symbol: 'TSLA', score: 65, type: 'Short', title: '特斯拉短期回调压力', strategy: '技术分析 + 趋势', period: '1-2周', return: 8.5, risk: '高', reason: '技术指标显示超买，且面临交付数据不及预期的风险，短期存在回调需求。', tags: ['新能源', '做空', '波段'], isSaved: false, savedGroups: [] }
-])
+  ],
+  following: []
+})
 
 // --- Actions ---
 
@@ -673,6 +774,11 @@ const navigateToStrategy = (opportunity) => {
       strategyId: opportunity.id
     }
   })
+}
+
+const navigateToOpportunity = () => {
+  // 跳转到机会发现页面
+  router.push('/opportunity')
 }
 
 const toggleFollow = (category, item) => {
@@ -718,8 +824,20 @@ const currentAttributions = computed(() => {
   return attributionData.value[activeTabAttribution.value] || []
 })
 
+const currentOpportunities = computed(() => {
+  const baseList = opportunitiesData.value[activeTabOpportunities.value] || []
+  
+  // Apply filters based on activeOppFilter
+  if (activeOppFilter.value === 'all') return baseList
+  if (activeOppFilter.value === 'long') return baseList.filter(item => item.type === 'Long')
+  if (activeOppFilter.value === 'short') return baseList.filter(item => item.type === 'Short')
+  if (activeOppFilter.value === 'grade_a') return baseList.filter(item => item.score >= 80)
+  
+  return baseList
+})
+
 const filteredOpportunities = computed(() => {
-  let list = opportunitiesData.value || []
+  let list = opportunitiesData.value.recommend || []
   
   if (activeOppFilter.value === 'all') return list
   if (activeOppFilter.value === 'long') return list.filter(item => item.type === 'Long')
