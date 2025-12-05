@@ -40,9 +40,8 @@
     <!-- Main Content -->
     <div v-if="activeTab === 'generate'" class="flex h-[calc(100vh-180px)]">
       <!-- Step 1 & 2 Merged: Stock Selection + Strategy Configuration -->
-      <template v-if="currentStep !== 3">
-        <!-- Left Sidebar: Stock Selection -->
-        <div class="w-80 bg-[#2a2a2a] border-r border-[#404040] overflow-y-auto">
+      <!-- Left Sidebar: Stock Selection -->
+      <div class="w-80 bg-[#2a2a2a] border-r border-[#404040] overflow-y-auto">
           <div class="p-4">
             <h2 class="text-lg font-semibold text-white mb-4">股票分类</h2>
             
@@ -404,133 +403,6 @@
             </div>
           </div>
         </div>
-      </template>
-
-      <!-- Step 3: 查看机会 -->
-      <template v-if="currentStep === 3">
-        <div class="flex-1 overflow-y-auto p-6">
-          <div class="max-w-7xl mx-auto">
-            <h1 class="text-2xl font-bold text-white mb-6">投资机会报告</h1>
-
-            <!-- Loading State -->
-            <div v-if="isGeneratingReports" class="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-xl p-8 mb-6">
-              <div class="text-center">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-500/20 rounded-full mb-4">
-                  <svg class="w-8 h-8 text-blue-400 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                </div>
-                <h2 class="text-xl font-semibold text-white mb-2">正在生成报告...</h2>
-                <p class="text-gray-300 mb-6">
-                  已完成 {{ generatedReports.length }} / {{ selectedStocks.length }} 份报告
-                </p>
-                
-                <!-- Progress Bar -->
-                <div class="w-full bg-[#1f1f1f] rounded-full h-3 mb-2">
-                  <div 
-                    class="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500 ease-out"
-                    :style="{ width: `${(generatedReports.length / selectedStocks.length) * 100}%` }"
-                  ></div>
-                </div>
-                <div class="text-sm text-gray-400">
-                  {{ Math.round((generatedReports.length / selectedStocks.length) * 100) }}%
-                </div>
-              </div>
-            </div>
-
-            <!-- Report Summary (After Loading) -->
-            <div v-else class="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-xl p-6 mb-6">
-              <div class="flex items-center justify-between">
-                <div>
-                  <h2 class="text-xl font-semibold text-white mb-2">分析完成</h2>
-                  <p class="text-gray-300">基于 {{ selectedStocks.length }} 只股票和您选择的策略生成报告</p>
-                </div>
-                <div class="text-right">
-                  <div class="text-3xl font-bold text-white">{{ generatedReports.length }}</div>
-                  <div class="text-sm text-gray-400">份报告</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Strategy Info -->
-            <div class="bg-[#2a2a2a] border border-[#404040] rounded-xl p-6 mb-6">
-              <h3 class="text-lg font-semibold text-white mb-4">策略配置</h3>
-              <div class="grid grid-cols-3 gap-4">
-                <div>
-                  <div class="text-sm text-gray-400 mb-1">分析框架</div>
-                  <div class="text-white font-medium">{{ getFrameworksLabel() }}</div>
-                </div>
-                <div>
-                  <div class="text-sm text-gray-400 mb-1">投资周期</div>
-                  <div class="text-white font-medium">{{ selectedStrategy.period }}</div>
-                </div>
-                <div>
-                  <div class="text-sm text-gray-400 mb-1">风险偏好</div>
-                  <div class="text-white font-medium">{{ getRiskLabel(selectedStrategy.risk) }}</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Reports Grid -->
-            <div v-if="!isGeneratingReports" class="mb-6">
-              <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-white">投资机会报告</h3>
-                <div class="flex items-center gap-4">
-                  <button
-                    v-if="generatedReports.length > 0"
-                    @click="selectAllReports"
-                    class="text-sm text-blue-400 hover:text-blue-300 transition-colors"
-                  >
-                    {{ selectedReportIds.length === generatedReports.length ? '取消全选' : '全选' }}
-                  </button>
-                  <div class="text-sm text-gray-400">
-                    {{ selectedReportIds.length > 0 ? `已选择 ${selectedReportIds.length} 份报告` : '点击报告卡片查看详细分析' }}
-                  </div>
-                </div>
-              </div>
-              
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <OpportunityReportCard
-                  v-for="report in generatedReports"
-                  :key="report.id"
-                  :report="report"
-                  :is-selected="selectedReportIds.includes(report.id)"
-                  @click="viewReportDetail(report)"
-                  @view-detail="navigateToReportDetail(report)"
-                  @toggle-select="toggleReportSelection(report.id)"
-                />
-              </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div v-if="!isGeneratingReports" class="flex justify-between pt-6 border-t border-[#404040]">
-              <button
-                @click="currentStep = 2"
-                class="px-6 py-3 bg-[#3a3a3a] hover:bg-[#404040] text-gray-300 rounded-lg transition-colors flex items-center gap-2"
-              >
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
-                </svg>
-                <span>上一步</span>
-              </button>
-              
-              <div class="flex gap-3">
-                <button
-                  v-if="selectedReportIds.length > 0"
-                  @click="showSaveDialog = true"
-                  class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center gap-2"
-                >
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z"/>
-                  </svg>
-                  <span>保存选中报告 ({{ selectedReportIds.length }})</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </template>
 
       <!-- Right Sidebar: Reports Panel (Redesigned) -->
       <div 
@@ -1050,21 +922,328 @@
     </div>
 
     <!-- Tab 3: 查看我的策略 -->
-    <div v-else-if="activeTab === 'mystrategy'" class="min-h-[calc(100vh-240px)]">
-      <div class="max-w-4xl mx-auto px-6 py-16">
-        <div class="text-center">
-          <div class="inline-flex items-center justify-center w-32 h-32 bg-[#2a2a2a] border border-[#404040] rounded-full mb-8">
-            <svg class="w-16 h-16 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+    <div v-else-if="activeTab === 'mystrategy'" class="flex h-[calc(100vh-180px)]">
+      <!-- Left Sidebar: Collections -->
+      <div class="w-56 bg-[#1a1a1a] border-r border-[#404040] flex flex-col">
+        <!-- Collections Header -->
+        <div class="p-4 border-b border-[#404040] flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-white">Collections</h3>
+          <button class="text-gray-400 hover:text-white transition-colors">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
             </svg>
+          </button>
+        </div>
+
+        <!-- Collection Items -->
+        <div class="flex-1 overflow-y-auto py-2">
+          <button
+            v-for="collection in strategyCollections"
+            :key="collection.id"
+            @click="selectedCollection = collection.id"
+            :class="[
+              'w-full px-4 py-2.5 flex items-center justify-between transition-colors text-left',
+              selectedCollection === collection.id
+                ? 'bg-[#2a2a2a] text-white'
+                : 'text-gray-400 hover:text-white hover:bg-[#202020]'
+            ]"
+          >
+            <div class="flex items-center gap-3">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path v-if="collection.id === 'all'" d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"/>
+                <path v-else-if="collection.id === 'official'" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"/>
+                <path v-else-if="collection.id === 'my-strategies'" d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+                <path v-else-if="collection.id === 'with-plans'" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                <path v-else-if="collection.id === 'watchlist'" d="M10 12a2 2 0 100-4 2 2 0 000 4z M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"/>
+                <path v-else d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z M3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8z M9 11a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z"/>
+              </svg>
+              <span class="text-sm">{{ collection.name }}</span>
+            </div>
+            <span class="text-xs px-2 py-0.5 rounded bg-[#2a2a2a] text-gray-400">
+              {{ collection.count }}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Content Area -->
+      <div class="flex-1 bg-[#0f0f0f] flex flex-col">
+        <!-- Header Bar -->
+        <div class="px-6 py-4 border-b border-[#404040] flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-white">{{ currentCollectionName }}</h2>
+            <p class="text-sm text-gray-400">{{ displayedStrategies.length }} strategies</p>
           </div>
-          <h2 class="text-2xl font-bold text-white mb-4">此功能即将上线</h2>
-          <p class="text-gray-400 mb-8">在这里您可以查看和管理您保存的策略</p>
-          <div class="inline-flex items-center gap-2 px-6 py-3 bg-[#2a2a2a] border border-[#404040] rounded-lg text-gray-400">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <span>敬请期待</span>
+
+          <div class="flex items-center gap-3">
+            <!-- Search Box -->
+            <div class="relative">
+              <input
+                v-model="strategySearchQuery"
+                type="text"
+                placeholder="Search strategies..."
+                class="w-64 px-4 py-2 pl-10 bg-[#1a1a1a] border border-[#404040] rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+              />
+              <svg class="w-4 h-4 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+
+            <!-- Filter Dropdown -->
+            <select
+              v-model="strategyFilterOption"
+              class="px-4 py-2 bg-[#1a1a1a] border border-[#404040] rounded-lg text-sm text-white focus:outline-none focus:border-blue-500"
+            >
+              <option value="all">All</option>
+              <option value="long">Long Only</option>
+              <option value="short">Short Only</option>
+            </select>
+
+            <!-- Sort Dropdown -->
+            <select
+              v-model="strategySortOption"
+              class="px-4 py-2 bg-[#1a1a1a] border border-[#404040] rounded-lg text-sm text-white focus:outline-none focus:border-blue-500"
+            >
+              <option value="date-desc">Date ↓</option>
+              <option value="date-asc">Date ↑</option>
+              <option value="ticker">Ticker</option>
+            </select>
+
+            <!-- View Toggle Buttons -->
+            <div class="flex items-center gap-1 bg-[#1a1a1a] border border-[#404040] rounded-lg p-1">
+              <button
+                @click="strategyViewMode = 'grid'"
+                :class="[
+                  'p-1.5 rounded transition-colors',
+                  strategyViewMode === 'grid' ? 'bg-[#2a2a2a] text-white' : 'text-gray-400 hover:text-white'
+                ]"
+              >
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M3 4a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 12a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1v-4zM11 4a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V4zM11 12a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/>
+                </svg>
+              </button>
+              <button
+                @click="strategyViewMode = 'list'"
+                :class="[
+                  'p-1.5 rounded transition-colors',
+                  strategyViewMode === 'list' ? 'bg-[#2a2a2a] text-white' : 'text-gray-400 hover:text-white'
+                ]"
+              >
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                </svg>
+              </button>
+              <button
+                @click="strategyViewMode = 'table'"
+                :class="[
+                  'p-1.5 rounded transition-colors',
+                  strategyViewMode === 'table' ? 'bg-[#2a2a2a] text-white' : 'text-gray-400 hover:text-white'
+                ]"
+              >
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H5zm-1 9v-1h5v2H5a1 1 0 01-1-1zm7 1h4a1 1 0 001-1v-1h-5v2zm0-4h5V8h-5v2zM9 8H4v2h5V8z" clip-rule="evenodd"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Refresh Button -->
+            <button
+              @click="loadSavedStrategies"
+              class="p-2 text-gray-400 hover:text-white transition-colors"
+            >
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Strategies Table/Grid/List -->
+        <div class="flex-1 overflow-y-auto">
+          <!-- Empty State -->
+          <div v-if="displayedStrategies.length === 0" class="flex flex-col items-center justify-center h-full text-center py-16">
+            <div class="inline-flex items-center justify-center w-24 h-24 bg-[#1a1a1a] border border-[#404040] rounded-full mb-6">
+              <svg class="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-white mb-2">暂无策略</h3>
+            <p class="text-gray-400 mb-6">您还没有保存任何策略报告</p>
+            <button
+              @click="activeTab = 'generate'"
+              class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            >
+              生成新策略
+            </button>
+          </div>
+
+          <!-- Table View -->
+          <div v-else-if="strategyViewMode === 'table'" class="px-6 py-4">
+            <table class="w-full">
+              <thead>
+                <tr class="border-b border-[#404040]">
+                  <th class="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    <input type="checkbox" class="rounded border-gray-600 bg-[#1a1a1a]" />
+                  </th>
+                  <th class="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Ticker</th>
+                  <th class="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Strategy</th>
+                  <th class="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Direction</th>
+                  <th class="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Grade</th>
+                  <th class="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Horizon</th>
+                  <th class="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Plans</th>
+                  <th class="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Source</th>
+                  <th class="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Created</th>
+                  <th class="py-3 px-4"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="strategy in displayedStrategies"
+                  :key="strategy.id"
+                  class="border-b border-[#2a2a2a] hover:bg-[#1a1a1a] transition-colors group cursor-pointer"
+                  @click="viewStrategyDetail(strategy)"
+                >
+                  <td class="py-4 px-4">
+                    <input type="checkbox" class="rounded border-gray-600 bg-[#1a1a1a]" @click.stop />
+                  </td>
+                  <td class="py-4 px-4">
+                    <div class="flex items-center gap-2">
+                      <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                      </svg>
+                      <span class="text-sm font-medium text-white">{{ strategy.symbol }}</span>
+                    </div>
+                  </td>
+                  <td class="py-4 px-4 text-sm text-gray-300">{{ strategy.stockName }}</td>
+                  <td class="py-4 px-4">
+                    <span :class="[
+                      'inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium',
+                      strategy.direction === 'LONG' 
+                        ? 'bg-green-500/10 text-green-400' 
+                        : 'bg-red-500/10 text-red-400'
+                    ]">
+                      <svg v-if="strategy.direction === 'LONG'" class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                      </svg>
+                      <svg v-else class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                      </svg>
+                      {{ strategy.direction === 'LONG' ? 'WAIT_LONG' : 'WAIT_SHORT' }}
+                    </span>
+                  </td>
+                  <td class="py-4 px-4">
+                    <span :class="[
+                      'px-2 py-1 rounded text-xs font-bold',
+                      strategy.grade === 'A' ? 'bg-green-500/20 text-green-400' :
+                      strategy.grade === 'B' ? 'bg-blue-500/20 text-blue-400' :
+                      'bg-yellow-500/20 text-yellow-400'
+                    ]">
+                      {{ strategy.grade }}
+                    </span>
+                  </td>
+                  <td class="py-4 px-4 text-sm text-gray-300">{{ strategy.horizon }}</td>
+                  <td class="py-4 px-4 text-sm text-gray-400">-</td>
+                  <td class="py-4 px-4">
+                    <span class="text-xs text-blue-400">{{ strategy.source }}</span>
+                  </td>
+                  <td class="py-4 px-4 text-sm text-gray-400">{{ formatDate(strategy.savedAt || strategy.generatedAt) }}</td>
+                  <td class="py-4 px-4">
+                    <button class="text-gray-400 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity" @click.stop="showStrategyMenu(strategy)">
+                      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Grid View (TODO) -->
+          <div v-else-if="strategyViewMode === 'grid'" class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div
+                v-for="strategy in displayedStrategies"
+                :key="strategy.id"
+                class="bg-[#1a1a1a] border border-[#404040] rounded-lg p-4 hover:border-blue-500/50 transition-colors cursor-pointer"
+                @click="viewStrategyDetail(strategy)"
+              >
+                <div class="flex items-start justify-between mb-3">
+                  <div>
+                    <div class="text-lg font-bold text-white mb-1">{{ strategy.symbol }}</div>
+                    <div class="text-sm text-gray-400">{{ strategy.stockName }}</div>
+                  </div>
+                  <span :class="[
+                    'px-2 py-1 rounded text-xs font-bold',
+                    strategy.grade === 'A' ? 'bg-green-500/20 text-green-400' :
+                    strategy.grade === 'B' ? 'bg-blue-500/20 text-blue-400' :
+                    'bg-yellow-500/20 text-yellow-400'
+                  ]">
+                    {{ strategy.grade }}
+                  </span>
+                </div>
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-center justify-between">
+                    <span class="text-gray-400">Direction:</span>
+                    <span :class="strategy.direction === 'LONG' ? 'text-green-400' : 'text-red-400'">
+                      {{ strategy.direction === 'LONG' ? 'WAIT_LONG' : 'WAIT_SHORT' }}
+                    </span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-gray-400">Horizon:</span>
+                    <span class="text-white">{{ strategy.horizon }}</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-gray-400">Source:</span>
+                    <span class="text-blue-400">{{ strategy.source }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- List View (TODO) -->
+          <div v-else class="p-6">
+            <div class="space-y-2">
+              <div
+                v-for="strategy in displayedStrategies"
+                :key="strategy.id"
+                class="bg-[#1a1a1a] border border-[#404040] rounded-lg p-4 hover:border-blue-500/50 transition-colors cursor-pointer"
+                @click="viewStrategyDetail(strategy)"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-[#2a2a2a] rounded-lg flex items-center justify-center">
+                      <span class="text-sm font-bold text-white">{{ strategy.symbol }}</span>
+                    </div>
+                    <div>
+                      <div class="text-sm font-medium text-white mb-1">{{ strategy.stockName }}</div>
+                      <div class="text-xs text-gray-400">{{ strategy.horizon }} • {{ strategy.source }}</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-4">
+                    <span :class="[
+                      'inline-flex items-center gap-1 px-3 py-1 rounded text-xs font-medium',
+                      strategy.direction === 'LONG' 
+                        ? 'bg-green-500/10 text-green-400' 
+                        : 'bg-red-500/10 text-red-400'
+                    ]">
+                      {{ strategy.direction === 'LONG' ? 'WAIT_LONG' : 'WAIT_SHORT' }}
+                    </span>
+                    <span :class="[
+                      'px-3 py-1 rounded text-xs font-bold',
+                      strategy.grade === 'A' ? 'bg-green-500/20 text-green-400' :
+                      strategy.grade === 'B' ? 'bg-blue-500/20 text-blue-400' :
+                      'bg-yellow-500/20 text-yellow-400'
+                    ]">
+                      {{ strategy.grade }}
+                    </span>
+                    <span class="text-xs text-gray-400">{{ formatDate(strategy.savedAt || strategy.generatedAt) }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1147,7 +1326,7 @@ const myHoldings = ref([])
 const stockSearchQuery = ref('')
 const showSearchResults = ref(false)
 
-// Step 3: Report Generation
+// Report Generation (Backend process)
 const isGeneratingReports = ref(false)
 const generatedReportsData = ref([])
 const selectedReportIds = ref([])
@@ -1158,6 +1337,14 @@ const selectedCompletedReportIds = ref([])
 
 // Step 4: Saved Reports Multi-Selection
 const selectedSavedReportIds = ref([])
+
+// MyStrategy Tab: State Variables
+const selectedCollection = ref('all')
+const strategySearchQuery = ref('')
+const strategyFilterOption = ref('all')
+const strategySortOption = ref('date-desc')
+const strategyViewMode = ref('table')
+const allSavedStrategies = ref([])
 
 // Right Sidebar: My Reports
 const isSidebarCollapsed = ref(true) // Default to collapsed state
@@ -1600,7 +1787,7 @@ const selectedReportsToSave = computed(() => {
   if (activeTab.value === 'queue') {
     return completedReports.value.filter(r => selectedCompletedReportIds.value.includes(r.id))
   }
-  // Generate Tab (Step 3): use generatedReports and selectedReportIds
+  // Generate Tab: use generatedReports and selectedReportIds
   return generatedReports.value.filter(r => selectedReportIds.value.includes(r.id))
 })
 
@@ -1963,7 +2150,10 @@ const toggleFramework = (frameworkValue) => {
 // Generate investment reports (merged from goToStep3)
 const generateReports = async () => {
   if (canGenerate.value) {
-    currentStep.value = 3
+    // 直接跳转到queue页面
+    router.push('/opportunity?tab=queue')
+    
+    // 后台生成报告（用户在queue页面可以看到进度）
     isGeneratingReports.value = true
     generatedReportsData.value = []
     selectedReportIds.value = []
@@ -2057,16 +2247,8 @@ const viewGeneratedReport = (report) => {
     generatedAt: report.generatedAt
   }
   
-  // Set the generated reports data
-  generatedReportsData.value = [formattedReport]
-  selectedReportIds.value = []
-  
-  // Jump to step 3
-  currentStep.value = 3
-  isGeneratingReports.value = false
-  
-  // Save state
-  savePageState()
+  // 直接导航到报告详情页面
+  router.push(`/opportunity/report/${formattedReport.id}`)
 }
 
 // Tab switching function
@@ -2282,6 +2464,13 @@ const handleSaveReports = (result) => {
   } else {
     selectedReportIds.value = []
   }
+  
+  // Reload strategies for mystrategy tab
+  loadSavedStrategies()
+  
+  // Auto-navigate to mystrategy tab
+  activeTab.value = 'mystrategy'
+  router.push({ query: { tab: 'mystrategy' } })
 }
 
 // Get stock name (mock data)
@@ -3090,11 +3279,429 @@ watch(isGeneratingReports, (newValue) => {
   }
 })
 
+// ===== MyStrategy Tab: Collections & Data =====
+
+// Strategy Collections (sidebar items)
+const strategyCollections = computed(() => {
+  const allCount = allSavedStrategies.value.length
+  const officialCount = allSavedStrategies.value.filter(s => s.source === 'Official').length
+  const myStrategiesCount = allSavedStrategies.value.filter(s => s.source === 'My Strategy').length
+  const withPlansCount = allSavedStrategies.value.filter(s => s.hasExecutionPlan === true).length
+  const watchlistCount = allSavedStrategies.value.filter(s => s.isWatchlist === true).length
+  const archivedCount = allSavedStrategies.value.filter(s => s.isArchived === true).length
+  
+  return [
+    {
+      id: 'all',
+      name: 'All Strategies',
+      count: allCount,
+      icon: 'svg'
+    },
+    {
+      id: 'official',
+      name: 'Official Reports',
+      count: officialCount,
+      icon: 'svg'
+    },
+    {
+      id: 'my-strategies',
+      name: 'My Strategies',
+      count: myStrategiesCount,
+      icon: 'svg'
+    },
+    {
+      id: 'with-plans',
+      name: 'With Execution Plans',
+      count: withPlansCount,
+      icon: 'svg'
+    },
+    {
+      id: 'watchlist',
+      name: 'Watchlist',
+      count: watchlistCount,
+      icon: 'svg'
+    },
+    {
+      id: 'archived',
+      name: 'Archived',
+      count: archivedCount,
+      icon: 'svg'
+    }
+  ]
+})
+
+// Current collection name
+const currentCollectionName = computed(() => {
+  const collection = strategyCollections.value.find(c => c.id === selectedCollection.value)
+  return collection ? collection.name : 'All Strategies'
+})
+
+// Filtered and sorted strategies
+const displayedStrategies = computed(() => {
+  let strategies = [...allSavedStrategies.value]
+  
+  // Filter by collection
+  if (selectedCollection.value === 'official') {
+    strategies = strategies.filter(s => s.source === 'Official')
+  } else if (selectedCollection.value === 'my-strategies') {
+    strategies = strategies.filter(s => s.source === 'My Strategy')
+  } else if (selectedCollection.value === 'with-plans') {
+    strategies = strategies.filter(s => s.hasExecutionPlan === true)
+  } else if (selectedCollection.value === 'watchlist') {
+    strategies = strategies.filter(s => s.isWatchlist === true)
+  } else if (selectedCollection.value === 'archived') {
+    strategies = strategies.filter(s => s.isArchived === true)
+  }
+  
+  // Filter by direction
+  if (strategyFilterOption.value === 'long') {
+    strategies = strategies.filter(s => s.direction === 'LONG')
+  } else if (strategyFilterOption.value === 'short') {
+    strategies = strategies.filter(s => s.direction !== 'LONG')
+  }
+  
+  // Search filter
+  if (strategySearchQuery.value.trim()) {
+    const query = strategySearchQuery.value.toLowerCase()
+    strategies = strategies.filter(s => 
+      s.symbol.toLowerCase().includes(query) ||
+      s.stockName.toLowerCase().includes(query)
+    )
+  }
+  
+  // Sort
+  if (strategySortOption.value === 'date-desc') {
+    strategies.sort((a, b) => new Date(b.savedAt || b.generatedAt) - new Date(a.savedAt || a.generatedAt))
+  } else if (strategySortOption.value === 'date-asc') {
+    strategies.sort((a, b) => new Date(a.savedAt || a.generatedAt) - new Date(b.savedAt || b.generatedAt))
+  } else if (strategySortOption.value === 'ticker') {
+    strategies.sort((a, b) => a.symbol.localeCompare(b.symbol))
+  }
+  
+  return strategies
+})
+
+// Load saved strategies from localStorage
+const loadSavedStrategies = () => {
+  try {
+    const saved = localStorage.getItem('opportunity_report_categories')
+    if (saved) {
+      const categories = JSON.parse(saved)
+      
+      // Flatten all reports from all categories
+      const allReports = []
+      categories.forEach(category => {
+        if (category.reports && Array.isArray(category.reports)) {
+          category.reports.forEach(report => {
+            allReports.push({
+              ...report,
+              categoryName: category.name,
+              categoryId: category.id,
+              // Add default fields for backward compatibility
+              hasExecutionPlan: report.hasExecutionPlan ?? false,
+              isWatchlist: report.isWatchlist ?? false,
+              isArchived: report.isArchived ?? false
+            })
+          })
+        }
+      })
+      
+      // If only old data without new fields, merge with demo data
+      if (allReports.length > 0 && allReports.every(r => !r.hasExecutionPlan && !r.isWatchlist && !r.isArchived)) {
+        // Merge old data with demo data
+        allSavedStrategies.value = [...allReports, ...generateDemoStrategies()]
+        console.log('Loaded saved strategies with demo data:', allSavedStrategies.value.length)
+      } else {
+        allSavedStrategies.value = allReports
+        console.log('Loaded saved strategies:', allReports.length)
+      }
+    } else {
+      // Add demo data if no saved strategies exist
+      allSavedStrategies.value = generateDemoStrategies()
+      console.log('Loaded demo strategies:', allSavedStrategies.value.length)
+    }
+  } catch (error) {
+    console.error('Failed to load saved strategies:', error)
+    allSavedStrategies.value = generateDemoStrategies()
+  }
+}
+
+// Generate demo strategy data for demonstration
+const generateDemoStrategies = () => {
+  const now = new Date()
+  
+  return [
+    // Official Reports (5 items)
+    {
+      id: 'demo-1',
+      symbol: 'AAPL',
+      stockName: 'Apple Inc.',
+      direction: 'LONG',
+      grade: 'A',
+      horizon: 'Short-term (1-3 months)',
+      source: 'Official',
+      hasExecutionPlan: true,
+      isWatchlist: false,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Tech Stocks',
+      categoryId: 'tech'
+    },
+    {
+      id: 'demo-2',
+      symbol: 'TSLA',
+      stockName: 'Tesla, Inc.',
+      direction: 'SHORT',
+      grade: 'B',
+      horizon: 'Medium-term (3-6 months)',
+      source: 'Official',
+      hasExecutionPlan: false,
+      isWatchlist: true,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 5 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 5 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'High Risk',
+      categoryId: 'high-risk'
+    },
+    {
+      id: 'demo-3',
+      symbol: 'MSFT',
+      stockName: 'Microsoft Corporation',
+      direction: 'LONG',
+      grade: 'A',
+      horizon: 'Long-term (6+ months)',
+      source: 'Official',
+      hasExecutionPlan: true,
+      isWatchlist: true,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Tech Stocks',
+      categoryId: 'tech'
+    },
+    {
+      id: 'demo-4',
+      symbol: 'NVDA',
+      stockName: 'NVIDIA Corporation',
+      direction: 'LONG',
+      grade: 'A',
+      horizon: 'Medium-term (3-6 months)',
+      source: 'Official',
+      hasExecutionPlan: true,
+      isWatchlist: false,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'AI & Semiconductors',
+      categoryId: 'ai'
+    },
+    {
+      id: 'demo-5',
+      symbol: 'GOOGL',
+      stockName: 'Alphabet Inc.',
+      direction: 'LONG',
+      grade: 'B',
+      horizon: 'Long-term (6+ months)',
+      source: 'Official',
+      hasExecutionPlan: false,
+      isWatchlist: false,
+      isArchived: true,
+      generatedAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Tech Stocks',
+      categoryId: 'tech'
+    },
+    
+    // My Strategies (5 items)
+    {
+      id: 'demo-6',
+      symbol: 'META',
+      stockName: 'Meta Platforms, Inc.',
+      direction: 'LONG',
+      grade: 'B',
+      horizon: 'Short-term (1-3 months)',
+      source: 'My Strategy',
+      hasExecutionPlan: true,
+      isWatchlist: true,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Social Media',
+      categoryId: 'social'
+    },
+    {
+      id: 'demo-7',
+      symbol: 'AMZN',
+      stockName: 'Amazon.com, Inc.',
+      direction: 'LONG',
+      grade: 'A',
+      horizon: 'Medium-term (3-6 months)',
+      source: 'My Strategy',
+      hasExecutionPlan: true,
+      isWatchlist: false,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'E-Commerce',
+      categoryId: 'ecommerce'
+    },
+    {
+      id: 'demo-8',
+      symbol: 'AMD',
+      stockName: 'Advanced Micro Devices',
+      direction: 'LONG',
+      grade: 'B',
+      horizon: 'Short-term (1-3 months)',
+      source: 'My Strategy',
+      hasExecutionPlan: false,
+      isWatchlist: true,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'AI & Semiconductors',
+      categoryId: 'ai'
+    },
+    {
+      id: 'demo-9',
+      symbol: 'NFLX',
+      stockName: 'Netflix, Inc.',
+      direction: 'SHORT',
+      grade: 'C',
+      horizon: 'Short-term (1-3 months)',
+      source: 'My Strategy',
+      hasExecutionPlan: false,
+      isWatchlist: false,
+      isArchived: true,
+      generatedAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Entertainment',
+      categoryId: 'entertainment'
+    },
+    {
+      id: 'demo-10',
+      symbol: 'BA',
+      stockName: 'Boeing Company',
+      direction: 'LONG',
+      grade: 'B',
+      horizon: 'Long-term (6+ months)',
+      source: 'My Strategy',
+      hasExecutionPlan: true,
+      isWatchlist: true,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Aerospace',
+      categoryId: 'aerospace'
+    },
+    
+    // Additional strategies for more variety
+    {
+      id: 'demo-11',
+      symbol: 'JPM',
+      stockName: 'JPMorgan Chase & Co.',
+      direction: 'LONG',
+      grade: 'A',
+      horizon: 'Medium-term (3-6 months)',
+      source: 'Official',
+      hasExecutionPlan: true,
+      isWatchlist: false,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 9 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 9 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Financials',
+      categoryId: 'finance'
+    },
+    {
+      id: 'demo-12',
+      symbol: 'V',
+      stockName: 'Visa Inc.',
+      direction: 'LONG',
+      grade: 'A',
+      horizon: 'Long-term (6+ months)',
+      source: 'My Strategy',
+      hasExecutionPlan: false,
+      isWatchlist: true,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Payments',
+      categoryId: 'payments'
+    },
+    {
+      id: 'demo-13',
+      symbol: 'DIS',
+      stockName: 'The Walt Disney Company',
+      direction: 'SHORT',
+      grade: 'C',
+      horizon: 'Short-term (1-3 months)',
+      source: 'Official',
+      hasExecutionPlan: false,
+      isWatchlist: false,
+      isArchived: true,
+      generatedAt: new Date(now.getTime() - 11 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 11 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Entertainment',
+      categoryId: 'entertainment'
+    },
+    {
+      id: 'demo-14',
+      symbol: 'COIN',
+      stockName: 'Coinbase Global, Inc.',
+      direction: 'LONG',
+      grade: 'B',
+      horizon: 'Medium-term (3-6 months)',
+      source: 'My Strategy',
+      hasExecutionPlan: true,
+      isWatchlist: true,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 12 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 12 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Crypto',
+      categoryId: 'crypto'
+    },
+    {
+      id: 'demo-15',
+      symbol: 'PFE',
+      stockName: 'Pfizer Inc.',
+      direction: 'LONG',
+      grade: 'B',
+      horizon: 'Long-term (6+ months)',
+      source: 'Official',
+      hasExecutionPlan: false,
+      isWatchlist: false,
+      isArchived: true,
+      generatedAt: new Date(now.getTime() - 13 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 13 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Healthcare',
+      categoryId: 'healthcare'
+    }
+  ]
+}
+
+// View strategy detail
+const viewStrategyDetail = (strategy) => {
+  console.log('View strategy detail:', strategy)
+  // Navigate to report detail page
+  router.push(`/opportunity/report/${strategy.id}`)
+}
+
+// Show strategy context menu
+const showStrategyMenu = (strategy) => {
+  console.log('Show strategy menu:', strategy)
+  // TODO: Implement context menu
+}
+
 // Initialize
 // Watch route query parameter changes
 watch(() => route.query.tab, (newTab) => {
   if (newTab && ['generate', 'queue', 'mystrategy'].includes(newTab)) {
     activeTab.value = newTab
+    
+    // Load strategies when switching to mystrategy tab
+    if (newTab === 'mystrategy') {
+      loadSavedStrategies()
+    }
   }
 })
 
@@ -3102,6 +3709,7 @@ onMounted(() => {
   loadMyHoldings()
   restorePageState()
   loadSavedReports()
+  loadSavedStrategies() // Load strategies for mystrategy tab
   // Initialize demo generating reports
   initializeDemoGeneratingReports()
   
