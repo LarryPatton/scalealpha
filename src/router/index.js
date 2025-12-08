@@ -44,6 +44,7 @@ import OpportunityReportDetail from '../pages/OpportunityReportDetail.vue'
 import PlanningPage from '../pages/PlanningPage.vue'
 import PlanningDetailPage from '../pages/PlanningDetailPage.vue'
 import CardDesignPage from '../pages/CardDesignPage.vue'
+import ThemeVizDesignPage from '../pages/ThemeVizDesignPage.vue'
 
 const routes = [
   // Root redirect - automatically redirect to Home page
@@ -75,6 +76,12 @@ const routes = [
     path: '/card-design',
     name: 'CardDesign',
     component: CardDesignPage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/theme-viz-design',
+    name: 'ThemeVizDesign',
+    component: ThemeVizDesignPage,
     meta: { layout: BlankLayout }
   },
   {

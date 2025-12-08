@@ -210,11 +210,31 @@
                 </button>
               </div>
               
-              <!-- Heat Bar -->
-              <div class="w-full h-1 bg-gray-700 rounded-full overflow-hidden mb-3">
-                <div class="h-full" 
-                  :class="theme.sentiment === 'Bullish' ? 'bg-green-500' : 'bg-red-500'"
-                  :style="{ width: theme.heat + '%' }"></div>
+              <!-- Macro Viz: Sentiment Bar & Heatmap Grid -->
+              <div class="mb-4 space-y-2">
+                <!-- Sentiment Bar -->
+                <div class="flex items-center gap-2 text-[10px] font-mono text-gray-500">
+                  <div class="flex-1 h-1.5 bg-[#333] rounded-full overflow-hidden flex">
+                    <div class="h-full bg-green-500" :style="{ width: theme.stats.upRatio + '%' }"></div>
+                    <div class="h-full bg-red-500" :style="{ width: theme.stats.downRatio + '%' }"></div>
+                  </div>
+                  <div class="flex gap-2 whitespace-nowrap">
+                    <span class="text-green-400">{{ theme.stats.upCount }}↑</span>
+                    <span class="text-red-400">{{ theme.stats.downCount }}↓</span>
+                  </div>
+                </div>
+
+                <!-- Heatmap Grid -->
+                <div class="flex flex-wrap gap-[1px] w-full h-4 rounded overflow-hidden bg-[#111]">
+                  <div 
+                    v-for="(stock, i) in theme.relatedStocks" 
+                    :key="i"
+                    class="flex-grow h-full min-w-[4px] opacity-80 hover:opacity-100 transition-opacity cursor-help"
+                    :class="getHeatmapColor(stock.change)"
+                    :style="{ flexBasis: (Math.abs(stock.change) * 5) + '%' }"
+                    :title="`${stock.symbol}: ${stock.change > 0 ? '+' : ''}${stock.change}%`"
+                  ></div>
+                </div>
               </div>
 
               <h3 class="text-lg font-bold text-white leading-tight mb-1">{{ theme.title }}</h3>
@@ -880,6 +900,20 @@ const generateMoreThemes = (count, startIndex) => {
     // Add some randomness to heat
     const heat = Math.floor(Math.random() * 40) + 50 // 50-90
     
+    // Generate related stocks for visualization
+    const relatedStocksCount = 12 + Math.floor(Math.random() * 8) // 12-20 stocks
+    const relatedStocks = Array.from({ length: relatedStocksCount }).map(() => ({
+      symbol: 'STK',
+      change: parseFloat(((Math.random() - 0.45) * 6).toFixed(2)) // -2.7 to +3.3
+    })).sort((a, b) => Math.abs(b.change) - Math.abs(a.change))
+
+    // Calculate stats for Sentiment Bar
+    const upCount = relatedStocks.filter(s => s.change > 0).length
+    const downCount = relatedStocks.filter(s => s.change < 0).length
+    const totalCount = relatedStocks.length
+    const upRatio = (upCount / totalCount) * 100
+    const downRatio = (downCount / totalCount) * 100
+
     return {
       id,
       title: `${template.title} ${Math.floor(id / themeTemplates.length) > 0 ? '#' + (Math.floor(id / themeTemplates.length) + 1) : ''}`,
@@ -892,9 +926,22 @@ const generateMoreThemes = (count, startIndex) => {
         ...item,
         // Randomize change slightly
         change: item.change ? parseFloat((item.change + (Math.random() - 0.5)).toFixed(2)) : null
-      }))
+      })),
+      // New fields for viz
+      relatedStocks,
+      stats: { upCount, downCount, upRatio, downRatio }
     }
   })
+}
+
+// Helper for Heatmap Color
+const getHeatmapColor = (change) => {
+  if (change >= 3) return 'bg-green-500'
+  if (change >= 1) return 'bg-green-600'
+  if (change > 0) return 'bg-green-700'
+  if (change <= -3) return 'bg-red-500'
+  if (change <= -1) return 'bg-red-600'
+  return 'bg-red-700'
 }
 
 // Initialize themes
