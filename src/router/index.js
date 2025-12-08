@@ -43,6 +43,7 @@ import OpportunityPage from '../pages/OpportunityPage.vue'
 import OpportunityReportDetail from '../pages/OpportunityReportDetail.vue'
 import PlanningPage from '../pages/PlanningPage.vue'
 import PlanningDetailPage from '../pages/PlanningDetailPage.vue'
+import CardDesignPage from '../pages/CardDesignPage.vue'
 
 const routes = [
   // Root redirect - automatically redirect to Home page
@@ -69,6 +70,12 @@ const routes = [
     name: 'RevenueB',
     component: RevenueBPage,
     meta: { layout: AppLayout }
+  },
+  {
+    path: '/card-design',
+    name: 'CardDesign',
+    component: CardDesignPage,
+    meta: { layout: BlankLayout }
   },
   {
     path: '/demo',

@@ -140,92 +140,38 @@
           :class="viewMode === 'card' ? 'grid gap-6' : 'flex flex-col space-y-4'"
           :style="viewMode === 'card' ? { gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))` } : {}"
         >
-          <!-- Cards -->
+          <!-- Cards (Dark Tech Style) -->
           <div 
             v-for="(opp, index) in filteredOpportunities" 
             :key="opp.id + '-' + index" 
-            class="group relative bg-[#1a1a1a] rounded-xl overflow-hidden border border-[#333] hover:border-blue-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-900/20 cursor-pointer"
-            :class="viewMode === 'card' ? 'flex flex-col h-[320px]' : 'flex flex-row h-40'"
+            class="bg-slate-900 rounded-xl shadow-lg p-6 text-center text-white border border-slate-800 hover:border-blue-500/50 transition-all duration-300 cursor-pointer group relative overflow-hidden"
           >
-            <!-- Image/Cover Area -->
-            <div 
-              class="bg-[#222] relative overflow-hidden flex-shrink-0"
-              :class="viewMode === 'card' ? 'h-40 w-full' : 'w-64 h-full'"
-            >
-              <!-- Placeholder Gradient -->
-              <div class="absolute inset-0 bg-gradient-to-br opacity-80 group-hover:scale-110 transition-transform duration-700" :class="getGradientClass(index)"></div>
-              
-              <!-- Symbol Badge -->
-              <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-white border border-white/10">
-                {{ opp.symbol }}
+            <!-- Background decoration -->
+            <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
+
+            <div class="relative z-10">
+              <div class="flex justify-center mb-4">
+                <span class="text-[10px] font-mono text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded uppercase tracking-wider">{{ opp.strategy }}</span>
               </div>
               
-              <!-- Score Badge -->
-              <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-green-400 border border-white/10 flex items-center gap-1">
-                <span>★</span> {{ opp.score }}
-              </div>
-
-              <!-- Type Badge (Bottom Left of Image) -->
-              <div class="absolute bottom-3 left-3 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider" :class="opp.type === 'Long' ? 'bg-green-500/90 text-black' : 'bg-red-500/90 text-white'">
-                {{ opp.type }}
-              </div>
-            </div>
-
-            <!-- Content Area -->
-            <div class="p-4 flex flex-col flex-grow justify-between relative z-10 bg-[#1a1a1a]">
-              <div>
-                <div class="flex justify-between items-start">
-                  <h3 class="text-white font-bold text-lg leading-tight mb-1 group-hover:text-blue-400 transition-colors line-clamp-2">{{ opp.title }}</h3>
-                  <!-- List View Extra Info -->
-                  <div v-if="viewMode === 'list'" class="flex gap-2">
-                     <span v-for="tag in opp.tags.slice(0, 2)" :key="tag" class="text-[10px] bg-[#333] text-gray-400 px-2 py-1 rounded border border-[#444]">{{ tag }}</span>
-                  </div>
-                </div>
-                <div class="text-xs text-gray-500 mb-3">{{ opp.strategy }}</div>
-                <p v-if="viewMode === 'list'" class="text-sm text-gray-400 line-clamp-2 mb-2">{{ opp.reason }}</p>
-              </div>
+              <h3 class="text-3xl font-bold mb-1 text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-400 group-hover:from-blue-400 group-hover:to-blue-200 transition-all">{{ opp.symbol }}</h3>
+              <p class="text-xs text-slate-400 mb-6 font-mono line-clamp-1">{{ opp.title }}</p>
               
-              <div class="flex items-end justify-between mt-auto">
-                <div class="flex items-center gap-6">
-                  <div>
-                    <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Return</div>
-                    <div class="text-xl font-bold text-green-400">+{{ opp.return }}%</div>
-                  </div>
-                  <div v-if="viewMode === 'list'">
-                    <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Risk</div>
-                    <div class="text-xs font-medium text-yellow-500">{{ opp.risk }}</div>
-                  </div>
+              <div class="grid grid-cols-2 gap-4 mb-6 border-y border-slate-800 py-4">
+                <div class="text-center border-r border-slate-800">
+                  <div class="text-2xl font-bold text-white">A+</div>
+                  <div class="text-[10px] text-slate-500 uppercase tracking-wider">Rating</div>
                 </div>
-                
-                <div v-if="viewMode === 'card'" class="text-right">
-                  <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Risk</div>
-                  <div class="text-xs font-medium text-yellow-500">{{ opp.risk }}</div>
+                <div class="text-center">
+                  <div class="text-2xl font-bold text-emerald-400">{{ opp.score }}%</div>
+                  <div class="text-[10px] text-slate-500 uppercase tracking-wider">Confidence</div>
                 </div>
-                
-                <button v-if="viewMode === 'list'" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-colors">
-                  View Strategy
-                </button>
               </div>
-            </div>
 
-            <!-- Hover Overlay (Details) - Only for Card View -->
-            <div v-if="viewMode === 'card'" class="absolute inset-0 bg-[#1a1a1a]/95 backdrop-blur-sm p-5 flex flex-col opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-none group-hover:pointer-events-auto">
-              <div class="flex justify-between items-start mb-4">
-                <span class="text-blue-400 text-xs font-bold uppercase tracking-wider">AI Analysis</span>
-                <button class="text-gray-400 hover:text-white">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
-                </button>
-              </div>
-              <p class="text-sm text-gray-300 leading-relaxed mb-4 line-clamp-6">
-                {{ opp.reason }}
-              </p>
-              <div class="mt-auto">
-                <div class="flex flex-wrap gap-2 mb-4">
-                  <span v-for="tag in opp.tags" :key="tag" class="text-[10px] bg-[#333] text-gray-400 px-2 py-1 rounded border border-[#444]">{{ tag }}</span>
-                </div>
-                <button class="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-lg transition-colors shadow-lg shadow-blue-900/20">
-                  View Strategy
-                </button>
+              <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                <span>1-10 DAYS</span>
+                <span>GEMINI</span>
+                <span :class="opp.risk === 'High' ? 'text-red-400' : (opp.risk === 'Med' ? 'text-yellow-400' : 'text-green-400')">{{ opp.risk.toUpperCase() }} RISK</span>
               </div>
             </div>
           </div>
@@ -367,24 +313,30 @@
                     <h4 class="text-sm font-bold text-white mb-1 leading-snug">{{ event.title }}</h4>
                     <p class="text-xs text-gray-400 mb-3 line-clamp-2 leading-relaxed">{{ event.desc }}</p>
                     
-                    <!-- Stock Data Block -->
-                    <div class="bg-[#111] rounded p-2 flex items-center gap-3 border border-[#333/50]">
-                      <!-- Logo Placeholder -->
-                      <div class="w-8 h-8 rounded bg-[#2a2a2a] flex items-center justify-center text-xs font-bold text-gray-300 border border-[#333]">
-                        {{ event.stock.symbol[0] }}
-                      </div>
-                      
-                      <!-- Info -->
-                      <div class="flex-1 min-w-0">
-                        <div class="flex justify-between items-baseline">
-                          <span class="text-sm font-bold text-white">{{ event.stock.symbol }}</span>
-                          <span class="text-xs font-mono font-medium" :class="event.stock.change >= 0 ? 'text-green-400' : 'text-red-400'">
-                            {{ event.stock.change >= 0 ? '+' : '' }}{{ event.stock.change }}%
-                          </span>
+                    <!-- Stock Data List -->
+                    <div class="space-y-2">
+                      <div v-for="(stock, sIndex) in event.stocks" :key="sIndex" class="bg-[#111] rounded p-2 flex items-center gap-3 border border-[#333/50] hover:border-gray-600 transition-colors">
+                        <!-- Logo Placeholder -->
+                        <div class="w-8 h-8 rounded bg-[#2a2a2a] flex items-center justify-center text-xs font-bold text-gray-300 border border-[#333]">
+                          {{ stock.symbol[0] }}
                         </div>
-                        <div class="flex justify-between items-center mt-0.5">
-                          <span class="text-[10px] text-gray-500 truncate">{{ event.stock.name }}</span>
-                          <span class="text-xs font-bold text-gray-300">{{ event.stock.price }}</span>
+                        
+                        <!-- Info -->
+                        <div class="flex-1 min-w-0">
+                          <div class="flex justify-between items-baseline">
+                            <span class="text-sm font-bold text-white">{{ stock.symbol }}</span>
+                            <span class="text-xs font-mono font-medium" :class="stock.change >= 0 ? 'text-green-400' : 'text-red-400'">
+                              {{ stock.change >= 0 ? '+' : '' }}{{ stock.change }}%
+                            </span>
+                          </div>
+                          <div class="flex justify-between items-center mt-0.5">
+                            <span class="text-[10px] text-gray-500 truncate max-w-[120px]">{{ stock.name }}</span>
+                            <span class="text-xs font-bold text-gray-300">{{ stock.price }}</span>
+                          </div>
+                          <!-- Reason (Optional) -->
+                          <div v-if="stock.reason" class="mt-1 pt-1 border-t border-[#333] text-[10px] text-gray-400 italic">
+                            {{ stock.reason }}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -632,20 +584,112 @@ const changeAttributionPage = (delta) => {
 const generateEvents = (marketId, count, startIndex) => {
   const templates = {
     'us': [
-      { title: 'NVDA Chip Delay', desc: '芯片发布推迟消息引发市场担忧，多家投行下调目标价。', stock: { symbol: 'NVDA', name: 'NVIDIA Corp', price: '$485.09', change: -3.45 }, tags: ['Chips', 'AI'], image: 'https://placehold.co/400x200/1a4d2e/white?text=NVDA+Chip' },
-      { title: 'Tesla Recall', desc: '自动驾驶软件问题宣布召回部分车辆，股价承压。', stock: { symbol: 'TSLA', name: 'Tesla Inc', price: '$235.45', change: 1.80 }, tags: ['EV', 'Auto'], image: 'https://placehold.co/400x200/4d1a1a/white?text=Tesla+Recall' },
-      { title: 'Apple Vision Pro', desc: '预售火爆超出预期，供应链传出增产消息。', stock: { symbol: 'AAPL', name: 'Apple Inc', price: '$192.50', change: 1.20 }, tags: ['Tech', 'VR'], image: 'https://placehold.co/400x200/222/white?text=Vision+Pro' },
-      { title: 'Fed Rate Decision', desc: '美联储暗示维持利率不变，市场解读为鸽派信号。', stock: { symbol: 'SPY', name: 'S&P 500 ETF', price: '$475.00', change: 0.85 }, tags: ['Macro', 'Fed'], image: 'https://placehold.co/400x200/333/white?text=Fed+Rate' }
+      { 
+        title: 'NVDA Chip Delay', 
+        desc: '芯片发布推迟消息引发市场担忧，多家投行下调目标价。', 
+        stocks: [
+          { symbol: 'NVDA', name: 'NVIDIA Corp', price: '$485.09', change: -3.45, reason: 'Dominant market share in AI training GPUs.' },
+          { symbol: 'AMD', name: 'Advanced Micro Devices', price: '$138.00', change: -1.20, reason: 'Competitor sentiment impact.' },
+          { symbol: 'TSM', name: 'Taiwan Semi', price: '$102.50', change: -0.80, reason: 'Supply chain concerns.' }
+        ], 
+        tags: ['Chips', 'AI'], 
+        image: 'https://placehold.co/400x200/1a4d2e/white?text=NVDA+Chip' 
+      },
+      { 
+        title: 'Tesla Recall', 
+        desc: '自动驾驶软件问题宣布召回部分车辆，股价承压。', 
+        stocks: [
+          { symbol: 'TSLA', name: 'Tesla Inc', price: '$235.45', change: 1.80, reason: 'Software update required for 2M vehicles.' },
+          { symbol: 'RIVN', name: 'Rivian', price: '$15.60', change: 0.50, reason: 'Sector sympathy move.' }
+        ], 
+        tags: ['EV', 'Auto'], 
+        image: 'https://placehold.co/400x200/4d1a1a/white?text=Tesla+Recall' 
+      },
+      { 
+        title: 'Apple Vision Pro', 
+        desc: '预售火爆超出预期，供应链传出增产消息。', 
+        stocks: [
+          { symbol: 'AAPL', name: 'Apple Inc', price: '$192.50', change: 1.20, reason: 'Strong pre-order numbers.' },
+          { symbol: 'SONY', name: 'Sony Group', price: '$95.00', change: 0.90, reason: 'Display supplier benefit.' }
+        ], 
+        tags: ['Tech', 'VR'], 
+        image: 'https://placehold.co/400x200/222/white?text=Vision+Pro' 
+      },
+      { 
+        title: 'Fed Rate Decision', 
+        desc: '美联储暗示维持利率不变，市场解读为鸽派信号。', 
+        stocks: [
+          { symbol: 'SPY', name: 'S&P 500 ETF', price: '$475.00', change: 0.85, reason: 'Broad market rally.' },
+          { symbol: 'QQQ', name: 'Nasdaq 100', price: '$408.00', change: 1.10, reason: 'Tech sector outperformance.' },
+          { symbol: 'TLT', name: '20+ Year Treasury', price: '$98.50', change: 1.50, reason: 'Yields falling.' }
+        ], 
+        tags: ['Macro', 'Fed'], 
+        image: 'https://placehold.co/400x200/333/white?text=Fed+Rate' 
+      }
     ],
     'hk': [
-      { title: 'Tencent Gaming', desc: '新批号发放，游戏板块集体反弹，腾讯领涨。', stock: { symbol: '0700.HK', name: 'Tencent', price: 'HK$320.00', change: 2.50 }, tags: ['Gaming', 'Tech'], image: 'https://placehold.co/400x200/1a4d2e/white?text=Tencent' },
-      { title: 'Alibaba Cloud', desc: '阿里云分拆计划重启传闻，管理层未予置评。', stock: { symbol: '9988.HK', name: 'Alibaba', price: 'HK$76.50', change: 1.10 }, tags: ['Cloud', 'E-com'], image: 'https://placehold.co/400x200/333/white?text=Alibaba' },
-      { title: 'EV Price War', desc: '比亚迪宣布新一轮降价，引发汽车股普跌。', stock: { symbol: '1211.HK', name: 'BYD Co', price: 'HK$205.00', change: -2.30 }, tags: ['EV', 'Auto'], image: 'https://placehold.co/400x200/4d1a1a/white?text=BYD' }
+      { 
+        title: 'Tencent Gaming', 
+        desc: '新批号发放，游戏板块集体反弹，腾讯领涨。', 
+        stocks: [
+          { symbol: '0700.HK', name: 'Tencent', price: 'HK$320.00', change: 2.50, reason: 'New game approvals.' },
+          { symbol: '9999.HK', name: 'NetEase', price: 'HK$145.00', change: 3.10, reason: 'Sector momentum.' }
+        ], 
+        tags: ['Gaming', 'Tech'], 
+        image: 'https://placehold.co/400x200/1a4d2e/white?text=Tencent' 
+      },
+      { 
+        title: 'Alibaba Cloud', 
+        desc: '阿里云分拆计划重启传闻，管理层未予置评。', 
+        stocks: [
+          { symbol: '9988.HK', name: 'Alibaba', price: 'HK$76.50', change: 1.10, reason: 'Restructuring speculation.' }
+        ], 
+        tags: ['Cloud', 'E-com'], 
+        image: 'https://placehold.co/400x200/333/white?text=Alibaba' 
+      },
+      { 
+        title: 'EV Price War', 
+        desc: '比亚迪宣布新一轮降价，引发汽车股普跌。', 
+        stocks: [
+          { symbol: '1211.HK', name: 'BYD Co', price: 'HK$205.00', change: -2.30, reason: 'Margin pressure concerns.' },
+          { symbol: '2015.HK', name: 'Li Auto', price: 'HK$110.00', change: -3.50, reason: 'Competition intensifying.' },
+          { symbol: '9868.HK', name: 'XPeng', price: 'HK$45.00', change: -4.10, reason: 'Price war impact.' }
+        ], 
+        tags: ['EV', 'Auto'], 
+        image: 'https://placehold.co/400x200/4d1a1a/white?text=BYD' 
+      }
     ],
     'cn': [
-      { title: 'Moutai Dividend', desc: '茅台董事会批准实施特别分红方案，股息率提升。', stock: { symbol: '600519', name: 'Kweichow Moutai', price: '¥1750.00', change: 1.50 }, tags: ['Consumer', 'Liquor'], image: 'https://placehold.co/400x200/1a4d2e/white?text=Moutai' },
-      { title: 'Solar Policy', desc: '光伏行业新规出台，限制低端产能扩张。', stock: { symbol: '601012', name: 'Longi Green', price: '¥22.50', change: -1.20 }, tags: ['Solar', 'Energy'], image: 'https://placehold.co/400x200/4d1a1a/white?text=Solar' },
-      { title: 'Bank Support', desc: '央行降准落地，银行板块流动性改善。', stock: { symbol: '600036', name: 'CM Bank', price: '¥30.20', change: 0.90 }, tags: ['Bank', 'Finance'], image: 'https://placehold.co/400x200/333/white?text=Bank' }
+      { 
+        title: 'Moutai Dividend', 
+        desc: '茅台董事会批准实施特别分红方案，股息率提升。', 
+        stocks: [
+          { symbol: '600519', name: 'Kweichow Moutai', price: '¥1750.00', change: 1.50, reason: 'Special dividend announcement.' },
+          { symbol: '000858', name: 'Wuliangye', price: '¥135.00', change: 0.80, reason: 'Sector sympathy.' }
+        ], 
+        tags: ['Consumer', 'Liquor'], 
+        image: 'https://placehold.co/400x200/1a4d2e/white?text=Moutai' 
+      },
+      { 
+        title: 'Solar Policy', 
+        desc: '光伏行业新规出台，限制低端产能扩张。', 
+        stocks: [
+          { symbol: '601012', name: 'Longi Green', price: '¥22.50', change: -1.20, reason: 'Capacity restriction impact.' },
+          { symbol: '300274', name: 'Sungrow', price: '¥75.00', change: -0.90, reason: 'Regulatory uncertainty.' }
+        ], 
+        tags: ['Solar', 'Energy'], 
+        image: 'https://placehold.co/400x200/4d1a1a/white?text=Solar' 
+      },
+      { 
+        title: 'Bank Support', 
+        desc: '央行降准落地，银行板块流动性改善。', 
+        stocks: [
+          { symbol: '600036', name: 'CM Bank', price: '¥30.20', change: 0.90, reason: 'Liquidity injection.' },
+          { symbol: '601398', name: 'ICBC', price: '¥4.80', change: 0.50, reason: 'Policy support.' }
+        ], 
+        tags: ['Bank', 'Finance'], 
+        image: 'https://placehold.co/400x200/333/white?text=Bank' 
+      }
     ]
   }
 
@@ -661,10 +705,10 @@ const generateEvents = (marketId, count, startIndex) => {
       id: `${marketId}-${startIndex + i}`,
       time: timeStr,
       ...template,
-      stock: {
-        ...template.stock,
-        change: parseFloat((template.stock.change + (Math.random() - 0.5)).toFixed(2))
-      }
+      stocks: template.stocks.map(s => ({
+        ...s,
+        change: parseFloat((s.change + (Math.random() - 0.5)).toFixed(2))
+      }))
     }
   })
 }
@@ -967,20 +1011,17 @@ watch(activeTab, (newTab) => {
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #555; 
+  background: #444; 
 }
-/* Vertical Scrollbar for Columns */
-.custom-scrollbar-y::-webkit-scrollbar {
-  width: 6px;
+
+/* Fade Transition */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
 }
-.custom-scrollbar-y::-webkit-scrollbar-track {
-  background: transparent; 
-}
-.custom-scrollbar-y::-webkit-scrollbar-thumb {
-  background: #333; 
-  border-radius: 3px;
-}
-.custom-scrollbar-y::-webkit-scrollbar-thumb:hover {
-  background: #555; 
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
