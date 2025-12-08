@@ -613,11 +613,11 @@
     </div>
 
     <!-- Strategy Detail Modal (Apple-inspired Minimalist Design) -->
-    <div v-if="showStrategyModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" @click.self="closeStrategyModal">
-      <div class="bg-[#1a1a1a] rounded-2xl border border-[#333] w-full max-w-6xl max-h-[90vh] overflow-hidden shadow-2xl">
+    <div v-if="showStrategyModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-300" @click.self="closeStrategyModal">
+      <div class="bg-[#1a1a1a] rounded-2xl border border-[#333] w-[95vw] h-[85vh] overflow-hidden shadow-2xl flex flex-col transform transition-all duration-300 scale-100 animate-modal-in">
         
         <!-- Modal Header (Sticky) -->
-        <div class="px-8 py-5 border-b border-[#2a2a2a] flex justify-between items-center sticky top-0 bg-[#1a1a1a]/95 backdrop-blur-xl z-10">
+        <div class="px-8 py-5 border-b border-[#2a2a2a] flex justify-between items-center bg-[#1a1a1a]/95 backdrop-blur-xl z-10 shrink-0">
           <div class="flex items-center gap-3">
             <!-- Grade Badge -->
             <div class="px-2.5 py-1 rounded-md text-xs font-semibold tracking-wide" 
@@ -654,68 +654,168 @@
         </div>
 
         <!-- Modal Body (Split Layout) -->
-        <div class="flex max-h-[calc(90vh-80px)]">
+        <div class="flex flex-1 overflow-hidden">
           
-          <!-- Left: Strategy Content (60%) -->
-          <div class="flex-1 w-3/5 overflow-y-auto px-8 py-6 scrollbar-thin scrollbar-thumb-[#333] scrollbar-track-transparent">
-            
-            <!-- Strategy Title -->
-            <div class="mb-6">
-              <div class="text-sm font-medium text-gray-500 mb-2">{{ selectedStrategy.symbol }}</div>
-              <h2 class="text-2xl font-semibold text-white leading-tight mb-4">{{ selectedStrategy.title }}</h2>
-              
-              <!-- Meta Info -->
-              <div class="flex items-center gap-4 text-sm text-gray-400">
-                <span class="flex items-center gap-1.5">
-                  <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
-                  {{ selectedStrategy.strategy }}
-                </span>
-                <span class="flex items-center gap-1.5">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  </svg>
-                  {{ selectedStrategy.duration }}
-                </span>
+        <!-- Left Area (Chat + Content) -->
+        <div class="flex-1 flex border-r border-[#2a2a2a] relative bg-[#0f0f0f]">
+          
+          <!-- Chat Sidebar (Left, 320px) -->
+          <div class="w-[320px] flex flex-col border-r border-[#2a2a2a] bg-[#111] shrink-0">
+            <!-- Chat Header -->
+            <div class="px-4 py-3 border-b border-[#2a2a2a] flex justify-between items-center bg-[#1a1a1a]">
+               <h3 class="text-sm font-medium text-gray-300 flex items-center gap-2">
+                 <i class="fas fa-robot text-green-500"></i> AI 策略助手
+               </h3>
+            </div>
+
+            <!-- Chat Messages Area -->
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin">
+               <!-- Welcome State -->
+               <div v-if="chatHistory.length === 0" class="flex flex-col h-full">
+                  <div class="flex-1 flex flex-col items-center justify-center text-center space-y-4 p-4">
+                    <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mb-2">
+                      <i class="fas fa-robot text-green-400 text-xl"></i>
+                    </div>
+                    <div>
+                      <h4 class="text-white font-medium mb-1">ScaleAlpha AI 助手</h4>
+                      <p class="text-xs text-gray-500">基于当前策略报告为您解答</p>
+                    </div>
+                  </div>
+                  
+                  <!-- Quick Prompts -->
+                  <div class="space-y-2 pb-4">
+                    <p class="text-xs text-gray-500 px-1 mb-2">您可以问我：</p>
+                    <button 
+                      v-for="(prompt, idx) in quickPrompts" 
+                      :key="idx"
+                      @click="useQuickPrompt(prompt)"
+                      class="w-full text-left px-3 py-2.5 bg-[#1a1a1a] hover:bg-[#222] hover:border-blue-500/30 border border-[#2a2a2a] rounded-lg text-xs text-gray-300 transition-all duration-200 flex items-center justify-between group hover:shadow-lg hover:shadow-blue-900/10"
+                    >
+                      <span class="group-hover:text-blue-400 transition-colors">{{ prompt }}</span>
+                      <i class="fas fa-arrow-right opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-blue-500 transition-all duration-300"></i>
+                    </button>
+                  </div>
+               </div>
+               
+               <!-- Chat History -->
+               <div v-else class="space-y-4">
+                 <div v-for="(msg, index) in chatHistory" :key="index" class="flex gap-3">
+                    <!-- Avatar -->
+                    <div class="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs"
+                      :class="msg.role === 'user' ? 'bg-blue-600' : 'bg-green-600'">
+                      <i class="fas" :class="msg.role === 'user' ? 'fa-user' : 'fa-robot'"></i>
+                    </div>
+                    <!-- Message Bubble -->
+                    <div class="flex-1">
+                      <div class="text-xs font-medium text-gray-400 mb-1">
+                        {{ msg.role === 'user' ? 'You' : 'ScaleAlpha AI' }}
+                      </div>
+                      <div class="text-sm text-gray-200 leading-relaxed whitespace-pre-wrap bg-[#222] p-3 rounded-lg border border-[#333]">{{ msg.content }}</div>
+                    </div>
+                 </div>
+
+                 <!-- Loading Indicator -->
+                 <div v-if="isChatLoading" class="flex gap-3">
+                    <div class="w-7 h-7 rounded-full bg-green-600 flex items-center justify-center shrink-0 text-xs">
+                      <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="flex-1">
+                       <div class="text-xs font-medium text-gray-400 mb-1">ScaleAlpha AI</div>
+                       <div class="bg-[#222] p-3 rounded-lg border border-[#333] w-16">
+                          <div class="flex gap-1 items-center h-4 justify-center">
+                            <div class="w-1.5 h-1.5 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+                            <div class="w-1.5 h-1.5 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+                            <div class="w-1.5 h-1.5 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+               </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="p-3 bg-[#1a1a1a] border-t border-[#2a2a2a]">
+              <div class="relative">
+                <input 
+                  v-model="chatInput"
+                  type="text" 
+                  placeholder="输入问题..." 
+                  class="w-full bg-[#0f0f0f] text-white rounded-lg pl-3 pr-10 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 border border-[#333]"
+                  @keyup.enter="sendChatMessage"
+                >
+                <button 
+                  @click="sendChatMessage"
+                  class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-blue-500 hover:text-blue-400 transition-colors"
+                  :disabled="!chatInput.trim() || isChatLoading"
+                >
+                  <i class="fas fa-paper-plane"></i>
+                </button>
               </div>
             </div>
-
-            <!-- Strategy Summary -->
-            <div class="bg-[#0f0f0f] rounded-xl p-5 mb-6 border border-[#2a2a2a]">
-              <div class="flex items-center gap-2 mb-3">
-                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-                <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Strategy Summary</span>
-              </div>
-              <p class="text-sm text-gray-300 leading-relaxed">{{ selectedStrategy.description }}</p>
-            </div>
-
-            <!-- Full Strategy Content -->
-            <div class="prose prose-invert prose-sm max-w-none markdown-content">
-              <div 
-                class="text-sm text-gray-300 leading-relaxed"
-                v-html="renderedStrategyContent"
-              >
-              </div>
-            </div>
-
-            <!-- CTA Button -->
-            <div class="mt-8 pt-6 border-t border-[#2a2a2a]">
-              <button 
-                @click="generatePlanForStrategy(selectedStrategy)"
-                class="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-medium rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/25 flex items-center justify-center gap-2"
-              >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                </svg>
-                <span>针对此策略生成我的计划</span>
-              </button>
-            </div>
-
           </div>
 
-          <!-- Right: Related Plans (40%) -->
-          <div class="w-2/5 border-l border-[#2a2a2a] bg-[#0f0f0f] overflow-y-auto px-6 py-6 scrollbar-thin scrollbar-thumb-[#333] scrollbar-track-transparent">
+          <!-- Strategy Content (Right, Flex-1) -->
+          <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Scrollable Content Area -->
+            <div class="flex-1 overflow-y-auto p-6 scrollbar-thin">
+              <!-- Strategy Title & Meta -->
+              <div class="mb-8">
+                <div class="flex items-center gap-3 mb-4">
+                  <span class="px-2 py-1 rounded text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
+                    GRADE {{ selectedStrategy.grade }}
+                  </span>
+                  <span class="px-2 py-1 rounded text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                    {{ selectedStrategy.term }}
+                  </span>
+                  <span class="text-gray-500 text-sm">{{ selectedStrategy.time }}</span>
+                </div>
+                
+                <h2 class="text-2xl font-bold text-white mb-2">{{ selectedStrategy.title }}</h2>
+                <div class="flex items-center gap-4 text-sm text-gray-400">
+                  <span class="flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                    {{ selectedStrategy.category }}
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <i class="fas fa-clock"></i>
+                    {{ selectedStrategy.duration }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Strategy Summary Box -->
+              <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-5 mb-8">
+                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <i class="fas fa-file-alt"></i>
+                  Strategy Summary
+                </h3>
+                <p class="text-gray-300 leading-relaxed text-sm">
+                  {{ selectedStrategy.summary }}
+                </p>
+              </div>
+
+              <!-- Main Content -->
+              <div class="markdown-content space-y-6 text-gray-300" v-html="renderedStrategyContent"></div>
+
+              <!-- Action Buttons -->
+              <div class="flex gap-4 mt-12 pt-8 border-t border-[#2a2a2a]">
+                <button 
+                  @click="generatePlanForStrategy(selectedStrategy)"
+                  class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                >
+                  <i class="fas fa-magic"></i>
+                  生成交易计划
+                </button>
+                <button class="px-4 py-3 bg-[#2a2a2a] hover:bg-[#333] text-white rounded-lg transition-colors">
+                  <i class="fas fa-share-alt"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+          <!-- Right: Related Plans (Fixed Width) -->
+          <div class="w-[350px] border-l border-[#2a2a2a] bg-[#0f0f0f] overflow-y-auto px-6 py-6 scrollbar-thin scrollbar-thumb-[#333] scrollbar-track-transparent shrink-0">
             
             <!-- Plans Header -->
             <div class="mb-5">
@@ -734,17 +834,18 @@
               <div 
                 v-for="plan in relatedPlans" 
                 :key="plan.id"
-                class="bg-[#1a1a1a] rounded-lg border border-[#2a2a2a] hover:border-[#404040] transition-all duration-200"
+                class="bg-[#1a1a1a] rounded-lg border border-[#2a2a2a] hover:border-gray-500 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/50 transition-all duration-300 group"
+                :class="{ 'ring-1 ring-blue-500/30 border-blue-500/30': plan.isExpanded }"
               >
                 <!-- Plan Header (Collapsible) -->
                 <button 
                   @click="togglePlanExpand(plan)"
-                  class="w-full px-4 py-3 flex items-center justify-between text-left"
+                  class="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-[#222] transition-colors"
                 >
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 mb-1">
                       <svg 
-                        class="w-3.5 h-3.5 text-gray-500 transition-transform duration-200" 
+                        class="w-3.5 h-3.5 text-gray-500 transition-transform duration-200 group-hover:text-blue-400" 
                         :class="{ 'rotate-90': plan.isExpanded }"
                         fill="none" 
                         stroke="currentColor" 
@@ -752,10 +853,10 @@
                       >
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                       </svg>
-                      <h4 class="text-sm font-medium text-white truncate">{{ plan.title }}</h4>
+                      <h4 class="text-sm font-medium text-white truncate group-hover:text-blue-400 transition-colors">{{ plan.title }}</h4>
                       <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-medium flex-shrink-0">
                         <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
-                          <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                          <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                         </svg>
                         官方生成
                       </span>
@@ -2787,6 +2888,62 @@ const generateMockPlans = (strategyId) => {
           { action: '已建仓', amount: '50%', price: '$176.50', note: '初始仓位' },
           { action: '待加仓', amount: '50%', price: '-', note: '等待信号' }
         ]
+      },
+      {
+        id: `plan-${strategyId}-002`,
+        title: `${symbol.value} 激进突破计划`,
+        strategyId: strategyId,
+        capital: 15000,
+        createdAt: '01/12',
+        targetReturn: '+25%',
+        riskLevel: 'high',
+        isExpanded: false,
+        status: 'active',
+        positions: [
+          { action: '突破买入', amount: '100%', price: '$185.00', note: '关键阻力位' }
+        ]
+      },
+      {
+        id: `plan-${strategyId}-003`,
+        title: `${symbol.value} 长期定投计划`,
+        strategyId: strategyId,
+        capital: 50000,
+        createdAt: '01/01',
+        targetReturn: '+15%/年',
+        riskLevel: 'low',
+        isExpanded: false,
+        status: 'active',
+        positions: [
+          { action: '定投', amount: '10%', price: '每月1日', note: '长期持有' }
+        ]
+      },
+      {
+        id: `plan-${strategyId}-004`,
+        title: `${symbol.value} 财报对冲计划`,
+        strategyId: strategyId,
+        capital: 10000,
+        createdAt: '01/20',
+        targetReturn: '保本',
+        riskLevel: 'low',
+        isExpanded: false,
+        status: 'active',
+        positions: [
+          { action: '买入Put', amount: '5%', price: '$160', note: '防守' }
+        ]
+      },
+      {
+        id: `plan-${strategyId}-005`,
+        title: `${symbol.value} 技术面回调计划`,
+        strategyId: strategyId,
+        capital: 25000,
+        createdAt: '01/15',
+        targetReturn: '+12%',
+        riskLevel: 'medium',
+        isExpanded: false,
+        status: 'active',
+        positions: [
+          { action: '挂单买入', amount: '50%', price: '$170.00', note: '支撑位' }
+        ]
       }
     ]
   }
@@ -2794,12 +2951,8 @@ const generateMockPlans = (strategyId) => {
   // 获取对应策略的计划，如果没有则返回默认计划
   const plans = strategyPlansMap[strategyId] || strategyPlansMap['default']
   
-  // 随机返回 1-3 个计划（70%概率显示计划）
-  const showPlans = Math.random() > 0.3
-  if (!showPlans) return []
-  
-  const randomCount = Math.floor(Math.random() * plans.length) + 1
-  return plans.slice(0, randomCount)
+  // 总是返回所有计划以展示滚动效果
+  return plans
 }
 
 const togglePlanExpand = (plan) => {
@@ -2838,6 +2991,51 @@ const navigateToGenerateStrategy = (stockSymbol) => {
   })
 }
 
+// --- Chat Logic ---
+const chatInput = ref('')
+const chatHistory = ref([])
+const isChatLoading = ref(false)
+
+const quickPrompts = [
+  '这个策略的主要风险是什么？',
+  '关键的买入信号有哪些？',
+  '如何设置止损位？',
+  '生成详细的交易计划'
+]
+
+const useQuickPrompt = (prompt) => {
+  chatInput.value = prompt
+  sendChatMessage()
+}
+
+const sendChatMessage = async () => {
+  if (!chatInput.value.trim()) return
+
+  const userMessage = chatInput.value
+  chatHistory.value.push({
+    role: 'user',
+    content: userMessage
+  })
+  chatInput.value = ''
+  isChatLoading.value = true
+
+  // Simulate AI response
+  setTimeout(() => {
+    chatHistory.value.push({
+      role: 'assistant',
+      content: `针对您的提问 "${userMessage}"，基于当前策略报告，我的分析如下：\n\n该策略的核心逻辑在于利用市场对短期波动和长期基本面之间的认知偏差。您提到的点确实是关键风险因素之一，建议密切关注后续财报数据验证。`
+    })
+    isChatLoading.value = false
+    // Scroll to bottom
+    nextTick(() => {
+      const chatContainer = document.getElementById('chat-messages')
+      if (chatContainer) {
+        chatContainer.scrollTop = chatContainer.scrollHeight
+      }
+    })
+  }, 1500)
+}
+
 onMounted(() => {
   // Handle Tab switching
   if (route.query.tab === 'strategies') {
@@ -2870,6 +3068,22 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* Modal Animation */
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-modal-in {
+  animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 /* Expand/Collapse Animation */
 .expand-enter-active,
 .expand-leave-active {

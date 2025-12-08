@@ -60,15 +60,41 @@
         </p>
       </div>
 
-      <!-- Attribution Header (Inside Main) -->
-      <div v-if="activeTab === 'attribution'" class="px-4 pb-6 flex-shrink-0 flex justify-between items-end">
-        <div>
-          <h1 class="text-2xl font-bold text-white mb-2">Global Market Attribution</h1>
-          <p class="text-gray-400 text-sm">Real-time event analysis across global markets.</p>
+      <!-- Universal Filter Bar -->
+      <div class="sticky top-16 z-40 bg-[#0f0f0f]/95 backdrop-blur border-b border-[#333] px-4 lg:px-8 py-3 mb-6 flex flex-wrap items-center justify-between gap-4 transition-all duration-300">
+        <!-- Left: Filter & Switcher -->
+        <div class="flex items-center gap-3">
+          <!-- Content Switcher -->
+          <div class="bg-[#1a1a1a] border border-[#333] rounded-lg p-1 flex items-center">
+            <button 
+              @click="contentFilter = 'recommended'"
+              class="px-3 py-1.5 rounded-md text-xs font-bold transition-all"
+              :class="contentFilter === 'recommended' ? 'bg-[#333] text-white shadow-sm' : 'text-gray-500 hover:text-gray-300'"
+            >
+              Recommended
+            </button>
+            <button 
+              @click="contentFilter = 'following'"
+              class="px-3 py-1.5 rounded-md text-xs font-bold transition-all"
+              :class="contentFilter === 'following' ? 'bg-white text-black shadow-sm' : 'text-gray-500 hover:text-gray-300'"
+            >
+              Following
+            </button>
+          </div>
+
+          <!-- Filter Button -->
+          <button 
+            @click="showFilterModal = true"
+            class="h-9 w-9 bg-[#1a1a1a] hover:bg-[#2a2a2a] border border-[#333] rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+          </button>
         </div>
-        <div class="flex items-center gap-4">
-          <!-- Pagination Controls -->
-          <div class="flex items-center bg-[#2a2a2a] rounded border border-[#333]">
+
+        <!-- Right: View Controls -->
+        <div class="flex items-center gap-3">
+          <!-- Pagination (Attribution Only) -->
+          <div v-if="activeTab === 'attribution'" class="flex items-center bg-[#1a1a1a] rounded-lg border border-[#333] overflow-hidden">
             <button 
               @click="changeAttributionPage(-1)" 
               class="p-2 text-gray-400 hover:text-white hover:bg-[#333] border-r border-[#333] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
@@ -76,7 +102,7 @@
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
             </button>
-            <span class="px-3 text-xs text-gray-500 font-mono">{{ currentAttributionPage + 1 }} / {{ totalAttributionPages }}</span>
+            <span class="px-3 text-xs text-gray-500 font-mono bg-[#222] h-full flex items-center">{{ currentAttributionPage + 1 }} / {{ totalAttributionPages }}</span>
             <button 
               @click="changeAttributionPage(1)" 
               class="p-2 text-gray-400 hover:text-white hover:bg-[#333] border-l border-[#333] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
@@ -85,27 +111,47 @@
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
             </button>
           </div>
-          
-          <div class="h-6 w-px bg-[#333]"></div>
 
-          <div class="flex gap-2">
-            <button class="px-3 py-1 text-xs bg-[#2a2a2a] text-white rounded border border-[#333] hover:border-gray-500">All Sectors</button>
-            <button class="px-3 py-1 text-xs bg-[#2a2a2a] text-white rounded border border-[#333] hover:border-gray-500">Newest First</button>
+          <!-- View Switcher (Opportunities & Attribution) -->
+          <div v-if="['opportunities', 'attribution'].includes(activeTab)" class="bg-[#1a1a1a] border border-[#333] rounded-lg p-1 flex items-center">
+            <button 
+              @click="viewMode = 'card'"
+              class="p-1.5 rounded-md transition-all"
+              :class="viewMode === 'card' ? 'bg-[#333] text-white shadow-sm' : 'text-gray-500 hover:text-gray-300'"
+              title="Card View"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+            </button>
+            <button 
+              @click="viewMode = 'list'"
+              class="p-1.5 rounded-md transition-all"
+              :class="viewMode === 'list' ? 'bg-[#333] text-white shadow-sm' : 'text-gray-500 hover:text-gray-300'"
+              title="List View"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
           </div>
         </div>
       </div>
 
       <!-- Tab: Opportunities (Waterfall) -->
       <div v-if="activeTab === 'opportunities'" class="w-full px-4 lg:px-8">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
+        <div 
+          :class="viewMode === 'card' ? 'grid gap-6' : 'flex flex-col space-y-4'"
+          :style="viewMode === 'card' ? { gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))` } : {}"
+        >
           <!-- Cards -->
           <div 
             v-for="(opp, index) in filteredOpportunities" 
             :key="opp.id + '-' + index" 
-            class="group relative bg-[#1a1a1a] rounded-xl overflow-hidden border border-[#333] hover:border-blue-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-900/20 cursor-pointer flex flex-col h-[320px]"
+            class="group relative bg-[#1a1a1a] rounded-xl overflow-hidden border border-[#333] hover:border-blue-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-900/20 cursor-pointer"
+            :class="viewMode === 'card' ? 'flex flex-col h-[320px]' : 'flex flex-row h-40'"
           >
             <!-- Image/Cover Area -->
-            <div class="h-40 bg-[#222] relative overflow-hidden">
+            <div 
+              class="bg-[#222] relative overflow-hidden flex-shrink-0"
+              :class="viewMode === 'card' ? 'h-40 w-full' : 'w-64 h-full'"
+            >
               <!-- Placeholder Gradient -->
               <div class="absolute inset-0 bg-gradient-to-br opacity-80 group-hover:scale-110 transition-transform duration-700" :class="getGradientClass(index)"></div>
               
@@ -128,24 +174,42 @@
             <!-- Content Area -->
             <div class="p-4 flex flex-col flex-grow justify-between relative z-10 bg-[#1a1a1a]">
               <div>
-                <h3 class="text-white font-bold text-lg leading-tight mb-1 group-hover:text-blue-400 transition-colors line-clamp-2">{{ opp.title }}</h3>
+                <div class="flex justify-between items-start">
+                  <h3 class="text-white font-bold text-lg leading-tight mb-1 group-hover:text-blue-400 transition-colors line-clamp-2">{{ opp.title }}</h3>
+                  <!-- List View Extra Info -->
+                  <div v-if="viewMode === 'list'" class="flex gap-2">
+                     <span v-for="tag in opp.tags.slice(0, 2)" :key="tag" class="text-[10px] bg-[#333] text-gray-400 px-2 py-1 rounded border border-[#444]">{{ tag }}</span>
+                  </div>
+                </div>
                 <div class="text-xs text-gray-500 mb-3">{{ opp.strategy }}</div>
+                <p v-if="viewMode === 'list'" class="text-sm text-gray-400 line-clamp-2 mb-2">{{ opp.reason }}</p>
               </div>
               
               <div class="flex items-end justify-between mt-auto">
-                <div>
-                  <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Return</div>
-                  <div class="text-xl font-bold text-green-400">+{{ opp.return }}%</div>
+                <div class="flex items-center gap-6">
+                  <div>
+                    <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Return</div>
+                    <div class="text-xl font-bold text-green-400">+{{ opp.return }}%</div>
+                  </div>
+                  <div v-if="viewMode === 'list'">
+                    <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Risk</div>
+                    <div class="text-xs font-medium text-yellow-500">{{ opp.risk }}</div>
+                  </div>
                 </div>
-                <div class="text-right">
+                
+                <div v-if="viewMode === 'card'" class="text-right">
                   <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Risk</div>
                   <div class="text-xs font-medium text-yellow-500">{{ opp.risk }}</div>
                 </div>
+                
+                <button v-if="viewMode === 'list'" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-colors">
+                  View Strategy
+                </button>
               </div>
             </div>
 
-            <!-- Hover Overlay (Details) -->
-            <div class="absolute inset-0 bg-[#1a1a1a]/95 backdrop-blur-sm p-5 flex flex-col opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-none group-hover:pointer-events-auto">
+            <!-- Hover Overlay (Details) - Only for Card View -->
+            <div v-if="viewMode === 'card'" class="absolute inset-0 bg-[#1a1a1a]/95 backdrop-blur-sm p-5 flex flex-col opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-none group-hover:pointer-events-auto">
               <div class="flex justify-between items-start mb-4">
                 <span class="text-blue-400 text-xs font-bold uppercase tracking-wider">AI Analysis</span>
                 <button class="text-gray-400 hover:text-white">
@@ -261,10 +325,13 @@
 
       <!-- Tab: Attribution (Kanban) -->
       <div v-else-if="activeTab === 'attribution'" class="px-4 pb-8">
-        <div class="grid grid-cols-4 gap-6 items-start">
+        <div 
+          class="gap-6 items-start"
+          :class="viewMode === 'card' ? 'grid grid-cols-4' : 'flex flex-col space-y-6'"
+        >
           
           <!-- Market Column -->
-          <div v-for="market in visibleMarkets" :key="market.id" class="flex flex-col bg-[#1a1a1a] rounded-xl border border-[#333] overflow-hidden">
+          <div v-for="market in visibleMarkets" :key="market.id" class="flex flex-col bg-[#1a1a1a] rounded-xl border border-[#333] overflow-hidden w-full">
             
             <!-- Column Header -->
             <div class="p-4 border-b border-[#333] bg-[#222] flex justify-between items-center">
@@ -367,39 +434,37 @@
       </div>
     </div>
 
-    <!-- 4. Filter Button & Content Switcher (Bottom Right) -->
-    <div class="fixed bottom-8 right-8 z-40 flex items-center gap-3">
-      <!-- Content Switcher (Following/Recommended) -->
-      <div class="bg-[#1a1a1a] border border-[#333] rounded-full p-1 flex items-center shadow-xl">
-        <button 
-          @click="contentFilter = 'recommended'"
-          class="px-4 py-2 rounded-full text-sm font-medium transition-all"
-          :class="contentFilter === 'recommended' ? 'bg-[#333] text-white' : 'text-gray-500 hover:text-gray-300'"
-        >
-          Recommended
-        </button>
-        <button 
-          @click="contentFilter = 'following'"
-          class="px-4 py-2 rounded-full text-sm font-medium transition-all"
-          :class="contentFilter === 'following' ? 'bg-white text-black' : 'text-gray-500 hover:text-gray-300'"
-        >
-          Following
-        </button>
+    <!-- (Removed Bottom Right Floating Buttons) -->
+
+    <!-- 5. Grid Control (Bottom Left) -->
+    <div v-if="activeTab === 'opportunities'" class="fixed bottom-8 left-8 z-50 flex items-center transition-all duration-300">
+      <!-- Expanded State -->
+      <div 
+        v-if="isGridControlExpanded"
+        class="bg-white text-black rounded-full h-12 px-1 flex items-center shadow-xl"
+      >
+        <button @click="adjustGrid(-1)" class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full text-xl font-bold transition-colors pb-1">−</button>
+        <div class="w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-100 rounded-full transition-colors" @click="isGridControlExpanded = false">
+           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+        </div>
+        <button @click="adjustGrid(1)" class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full text-xl font-bold transition-colors pb-1">+</button>
       </div>
 
-      <!-- Filter Button -->
+      <!-- Collapsed State -->
       <button 
-        @click="showFilterModal = true"
-        class="w-12 h-12 bg-[#1a1a1a] hover:bg-[#2a2a2a] border border-[#333] rounded-full flex items-center justify-center text-white shadow-xl transition-all hover:scale-110 group"
+        v-else
+        @click="isGridControlExpanded = true"
+        class="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform"
       >
-        <svg class="w-5 h-5 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
       </button>
     </div>
 
-    <!-- 5. Back to Top (Bottom Left) -->
+    <!-- 6. Back to Top (Moved up) -->
     <button 
+      v-if="showBackToTop"
       @click="scrollToTop"
-      class="fixed bottom-8 left-8 z-40 w-10 h-10 bg-white text-black rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
+      class="fixed bottom-24 left-9 z-40 w-10 h-10 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-white hover:text-black transition-all"
     >
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
     </button>
@@ -464,6 +529,19 @@ const router = useRouter()
 const showBackToTop = ref(false)
 const showFilterModal = ref(false)
 const contentFilter = ref('recommended') // 'recommended' or 'following'
+const viewMode = ref('card') // 'card' or 'list'
+
+// Grid Control State
+const gridCols = ref(5)
+const isGridControlExpanded = ref(false)
+const lastScrollTop = ref(0)
+
+const adjustGrid = (delta) => {
+  const newVal = gridCols.value + delta
+  if (newVal >= 1 && newVal <= 10) {
+    gridCols.value = newVal
+  }
+}
 
 // Computed property to filter content based on switch
 const filteredOpportunities = computed(() => {
@@ -492,11 +570,17 @@ watch(contentFilter, (newVal) => {
   }
 })
 
-// Scroll Handler for Back to Top
+// Scroll Handler for Back to Top & Grid Control
 const handleWindowScroll = () => {
   // Check both window scroll and document element scroll
   const scrollTop = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop
   showBackToTop.value = scrollTop > 300
+
+  // Auto collapse grid control on scroll down
+  if (scrollTop > lastScrollTop.value + 10 && isGridControlExpanded.value) {
+    isGridControlExpanded.value = false
+  }
+  lastScrollTop.value = scrollTop <= 0 ? 0 : scrollTop
 }
 
 const scrollToTop = () => {
@@ -838,9 +922,12 @@ onMounted(() => {
   if (loadSentinel.value) {
     observer.observe(loadSentinel.value)
   }
+  
+  window.addEventListener('scroll', handleWindowScroll)
 })
 
 onUnmounted(() => {
+  window.removeEventListener('scroll', handleWindowScroll)
   if (observer) observer.disconnect()
   Object.values(attributionObservers).forEach(obs => obs.disconnect())
 })

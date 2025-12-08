@@ -11,6 +11,7 @@ import BlankLayout from '../layouts/BlankLayout.vue'
 // Pages
 import HomePage from '../pages/HomePage.vue'
 import RevenuePage from '../pages/RevenuePage.vue'
+import RevenueBPage from '../pages/RevenueBPage.vue'
 import DemoPage from '../pages/DemoPage.vue'
 import InfoPage2 from '../pages/InfoPage2.vue'
 import AllOpportunitiesPage from '../pages/AllOpportunitiesPage.vue'
@@ -61,6 +62,12 @@ const routes = [
     path: '/revenue',
     name: 'Revenue',
     component: RevenuePage,
+    meta: { layout: AppLayout }
+  },
+  {
+    path: '/revenueB',
+    name: 'RevenueB',
+    component: RevenueBPage,
     meta: { layout: AppLayout }
   },
   {
