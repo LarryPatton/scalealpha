@@ -485,7 +485,7 @@
               <div v-show="expandedSections.completed">
                 <div v-if="completedReports.length > 0" class="space-y-2">
                   <div
-                    v-for="report in completedReports"
+                    v-for="report in filteredIndividualReports"
                     :key="'completed-' + report.symbol"
                     @click="viewGeneratedReport(report)"
                     class="bg-gradient-to-r from-green-500/10 to-transparent border border-green-500/30 rounded-lg p-3 cursor-pointer hover:border-green-500/60 hover:from-green-500/20 transition-all group"
@@ -582,6 +582,92 @@
     <!-- Tab 2: 生成队列 -->
     <div v-else-if="activeTab === 'queue'" class="min-h-[calc(100vh-240px)]">
       <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Sub-Tab Navigation -->
+        <div class="flex items-center justify-between mb-6">
+          <!-- Sub-Tabs -->
+          <div class="flex gap-1 bg-[#1a1a1a] rounded-lg p-1 border border-[#333]">
+            <button
+              @click="queueSubTab = 'pending'"
+              :class="[
+                'px-4 py-2 text-sm rounded-md transition-all font-medium',
+                queueSubTab === 'pending'
+                  ? 'bg-[#333] text-white shadow'
+                  : 'text-gray-400 hover:text-gray-300'
+              ]"
+            >
+              队列中
+              <span v-if="executionPlanBatches.filter(b => b.status === 'pending').length > 0" class="ml-2 px-2 py-0.5 rounded-full bg-gray-500/20 text-gray-400 text-xs font-bold">
+                {{ executionPlanBatches.filter(b => b.status === 'pending').length }}
+              </span>
+            </button>
+            <button
+              @click="queueSubTab = 'processing'"
+              :class="[
+                'px-4 py-2 text-sm rounded-md transition-all font-medium',
+                queueSubTab === 'processing'
+                  ? 'bg-[#333] text-white shadow'
+                  : 'text-gray-400 hover:text-gray-300'
+              ]"
+            >
+              正在生成
+              <span v-if="executionPlanBatches.filter(b => b.status === 'processing').length + inProgressReports.length > 0" class="ml-2 px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 text-xs font-bold">
+                {{ executionPlanBatches.filter(b => b.status === 'processing').length + inProgressReports.length }}
+              </span>
+            </button>
+            <button
+              @click="queueSubTab = 'completed'"
+              :class="[
+                'px-4 py-2 text-sm rounded-md transition-all font-medium',
+                queueSubTab === 'completed'
+                  ? 'bg-[#333] text-white shadow'
+                  : 'text-gray-400 hover:text-gray-300'
+              ]"
+            >
+              已生成
+              <span v-if="executionPlanBatches.filter(b => b.status === 'completed' || b.status === 'failed').length + completedReports.length > 0" class="ml-2 px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 text-xs font-bold">
+                {{ executionPlanBatches.filter(b => b.status === 'completed' || b.status === 'failed').length + completedReports.length }}
+              </span>
+            </button>
+          </div>
+
+          <!-- Type Filter Pills -->
+          <div class="flex gap-2">
+            <button
+              @click="setTypeFilter('all')"
+              :class="[
+                'px-4 py-1.5 rounded-full text-sm font-medium transition-all',
+                queueTypeFilter === 'all'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-[#1a1a1a] text-gray-400 hover:text-white border border-[#404040]'
+              ]"
+            >
+              全部
+            </button>
+            <button
+              @click="setTypeFilter('strategy')"
+              :class="[
+                'px-4 py-1.5 rounded-full text-sm font-medium transition-all',
+                queueTypeFilter === 'strategy'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-[#1a1a1a] text-gray-400 hover:text-white border border-[#404040]'
+              ]"
+            >
+              策略
+            </button>
+            <button
+              @click="setTypeFilter('plan')"
+              :class="[
+                'px-4 py-1.5 rounded-full text-sm font-medium transition-all',
+                queueTypeFilter === 'plan'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-[#1a1a1a] text-gray-400 hover:text-white border border-[#404040]'
+              ]"
+            >
+              计划
+            </button>
+          </div>
+        </div>
+
         <!-- 统计信息栏和全局控制 -->
         <div class="bg-[#2a2a2a] border border-[#404040] rounded-xl p-6 mb-8">
           <div class="flex items-center justify-between">
@@ -626,12 +712,153 @@
           </div>
         </div>
 
+        <!-- Execution Plan Batches Section -->
+        <div v-if="filteredBatches.length > 0" class="mb-8">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+            <h2 class="text-xl font-bold text-white">批量生成任务</h2>
+            <span class="text-sm text-gray-400">({{ filteredBatches.length }})</span>
+          </div>
+
+          <!-- Batch Cards -->
+          <div class="space-y-6">
+            <div
+              v-for="batch in filteredBatches"
+              :key="batch.batchId"
+              class="bg-[#0f0f0f] border border-[#404040] rounded-xl overflow-hidden hover:border-[#555] transition-colors"
+            >
+              <!-- Batch Header -->
+              <div class="px-6 py-4 bg-[#1a1a1a] border-b border-[#404040] flex items-center justify-between">
+                <div>
+                  <div class="flex items-center gap-3 mb-1">
+                    <h3 class="text-lg font-bold text-white">
+                      {{ batch.type === 'execution-plan' ? '执行计划生成' : '策略报告生成' }}
+                    </h3>
+                    <!-- Type Badge -->
+                    <span :class="[
+                      'px-2.5 py-0.5 rounded-md text-xs font-bold border',
+                      batch.type === 'execution-plan' 
+                        ? 'bg-purple-500/10 text-purple-400 border-purple-500/30' 
+                        : 'bg-orange-500/10 text-orange-400 border-orange-500/30'
+                    ]">
+                      {{ batch.type === 'execution-plan' ? '📋 计划' : '📊 策略' }}
+                    </span>
+                    <!-- Status Badge -->
+                    <span :class="[
+                      'px-2 py-0.5 rounded-full text-xs font-bold',
+                      batch.status === 'pending' ? 'bg-gray-500/20 text-gray-400' :
+                      batch.status === 'processing' ? 'bg-blue-500/20 text-blue-400' :
+                      batch.status === 'completed' ? 'bg-green-500/20 text-green-400' :
+                      'bg-red-500/20 text-red-400'
+                    ]">
+                      {{ 
+                        batch.status === 'pending' ? '等待中' :
+                        batch.status === 'processing' ? '生成中' :
+                        batch.status === 'completed' ? '已完成' :
+                        '失败'
+                      }}
+                    </span>
+                  </div>
+                  <p class="text-sm text-gray-400">
+                    共 {{ batch.totalCount }} 个项目 · {{ batch.completedCount }} 已完成
+                  </p>
+                </div>
+                <div v-if="batch.status === 'processing' || batch.status === 'pending'" class="text-right">
+                  <div class="text-sm text-gray-500 mb-1">预计剩余</div>
+                  <div class="text-xl font-bold text-blue-400">
+                    {{ Math.ceil((batch.totalCount - batch.completedCount) * 12) }}秒
+                  </div>
+                </div>
+              </div>
+
+              <!-- Overall Progress Bar -->
+              <div v-if="batch.status === 'processing' || batch.status === 'pending'" class="px-6 py-3 bg-[#0f0f0f]">
+                <div class="flex items-center justify-between text-sm mb-2">
+                  <span class="text-gray-400">整体进度</span>
+                  <span class="text-white font-medium">
+                    {{ Math.round((batch.completedCount / batch.totalCount) * 100) }}%
+                  </span>
+                </div>
+                <div class="w-full bg-[#1a1a1a] rounded-full h-2 overflow-hidden">
+                  <div
+                    class="h-full bg-gradient-to-r from-blue-500 to-blue-400 transition-all duration-500"
+                    :style="{ width: ((batch.completedCount / batch.totalCount) * 100) + '%' }"
+                  ></div>
+                </div>
+              </div>
+
+              <!-- Items List -->
+              <div class="px-6 py-4 space-y-3">
+                <div
+                  v-for="item in batch.items"
+                  :key="item.id"
+                  class="flex items-center gap-4 p-4 bg-[#1a1a1a] rounded-lg border border-[#2a2a2a] hover:border-[#404040] transition-colors"
+                >
+                  <!-- Status Icon -->
+                  <div class="flex-shrink-0">
+                    <div v-if="item.status === 'completed'" class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                      <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                      </svg>
+                    </div>
+                    <div v-else-if="item.status === 'processing'" class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                      <svg class="w-5 h-5 text-blue-400 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    </div>
+                    <div v-else-if="item.status === 'failed'" class="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center">
+                      <svg class="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                      </svg>
+                    </div>
+                    <div v-else class="w-8 h-8 rounded-full bg-gray-500/20 flex items-center justify-center">
+                      <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <!-- Item Info -->
+                  <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                      <h4 class="text-base font-bold text-white">{{ item.symbol }}</h4>
+                      <span v-if="item.grade" :class="[
+                        'px-2 py-0.5 rounded text-xs font-bold',
+                        item.grade === 'A' ? 'bg-green-500/20 text-green-400' :
+                        item.grade === 'B' ? 'bg-blue-500/20 text-blue-400' :
+                        'bg-yellow-500/20 text-yellow-400'
+                      ]">
+                        {{ item.grade }}
+                      </span>
+                    </div>
+                    <p class="text-sm text-gray-400">{{ item.currentStep || item.stockName }}</p>
+                  </div>
+
+                  <!-- Progress -->
+                  <div class="text-right">
+                    <div class="text-lg font-bold" :class="[
+                      item.status === 'completed' ? 'text-green-400' :
+                      item.status === 'processing' ? 'text-blue-400' :
+                      item.status === 'failed' ? 'text-red-400' :
+                      'text-gray-400'
+                    ]">
+                      {{ item.progress || 0 }}%
+                    </div>
+                    <div class="text-xs text-gray-500">{{ item.duration || 0 }}s</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- 正在生成的策略 (按配置分组) -->
-        <div v-if="inProgressReports.length > 0" class="mb-8">
+        <div v-if="queueSubTab === 'processing' && filteredIndividualReports.length > 0" class="mb-8">
           <div class="flex items-center gap-3 mb-6">
             <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
             <h2 class="text-xl font-bold text-white">正在生成的策略</h2>
-            <span class="text-sm text-gray-400">({{ inProgressReports.length }})</span>
+            <span class="text-sm text-gray-400">({{ filteredIndividualReports.length }})</span>
           </div>
 
           <!-- 按配置分组显示 -->
@@ -849,23 +1076,23 @@
         </div>
 
         <!-- 已完成的策略 -->
-        <div>
+        <div v-if="queueSubTab === 'completed' && filteredIndividualReports.length > 0">
           <div class="flex items-center justify-between mb-6">
             <div class="flex items-center gap-3">
               <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
               </svg>
               <h2 class="text-xl font-bold text-white">已完成的策略</h2>
-              <span class="text-sm text-gray-400">({{ completedReports.length }})</span>
+              <span class="text-sm text-gray-400">({{ filteredIndividualReports.length }})</span>
             </div>
 
             <!-- Selection Controls -->
-            <div v-if="completedReports.length > 0" class="flex items-center gap-4">
+            <div v-if="filteredIndividualReports.length > 0" class="flex items-center gap-4">
               <button
                 @click="toggleSelectAllCompleted"
                 class="text-sm text-blue-400 hover:text-blue-300 transition-colors"
               >
-                {{ selectedCompletedReportIds.length === completedReports.length ? '取消全选' : '全选' }}
+                {{ selectedCompletedReportIds.length === filteredIndividualReports.length ? '取消全选' : '全选' }}
               </button>
               <span class="text-sm text-gray-400">
                 {{ selectedCompletedReportIds.length > 0 ? `已选择 ${selectedCompletedReportIds.length} 份报告` : '点击报告卡片查看详细分析' }}
@@ -874,7 +1101,7 @@
           </div>
 
           <!-- 空状态 -->
-          <div v-if="completedReports.length === 0" class="text-center py-16">
+          <div v-if="filteredIndividualReports.length === 0" class="text-center py-16">
             <div class="inline-flex items-center justify-center w-24 h-24 bg-gray-800 rounded-full mb-6">
               <svg class="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -894,7 +1121,7 @@
           <div v-else>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <OpportunityReportCard
-                v-for="report in completedReports"
+                v-for="report in filteredIndividualReports"
                 :key="report.id"
                 :report="report"
                 :is-selected="selectedCompletedReportIds.includes(report.id)"
@@ -1314,6 +1541,19 @@ const {
 // Tab State Management
 const activeTab = ref('generate') // 'generate' | 'queue' | 'mystrategy'
 
+// Queue Tab: Sub-Tab and Filter States
+const queueSubTab = ref('pending') // 'pending' | 'processing' | 'completed'
+const queueTypeFilter = ref('all') // 'all' | 'strategy' | 'plan'
+
+// Helper function to set type filter with logging
+const setTypeFilter = (filterValue) => {
+  console.log('🎯 [User Action] Type filter changed:', {
+    from: queueTypeFilter.value,
+    to: filterValue
+  })
+  queueTypeFilter.value = filterValue
+}
+
 // Current Step
 const currentStep = ref(1)
 
@@ -1337,6 +1577,104 @@ const selectedCompletedReportIds = ref([])
 
 // Step 4: Saved Reports Multi-Selection
 const selectedSavedReportIds = ref([])
+
+// ===== Queue Tab: Execution Plan Batches Management =====
+
+// Load execution plan batches from localStorage
+const executionPlanBatches = ref([])
+
+const loadExecutionPlanBatches = () => {
+  try {
+    const stored = localStorage.getItem('execution_plan_batches')
+    if (stored) {
+      executionPlanBatches.value = JSON.parse(stored)
+      console.log('📦 [Data Load] Execution plan batches loaded:', {
+        totalCount: executionPlanBatches.value.length,
+        batches: executionPlanBatches.value.map(b => ({
+          id: b.batchId,
+          type: b.type,
+          status: b.status,
+          itemCount: b.totalCount
+        }))
+      })
+    } else {
+      console.log('📦 [Data Load] No batches found in localStorage')
+    }
+  } catch (error) {
+    console.error('Failed to load execution plan batches:', error)
+    executionPlanBatches.value = []
+  }
+}
+
+// Filter batches by status
+const generatingBatches = computed(() => {
+  return executionPlanBatches.value.filter(batch => 
+    batch.status === 'pending' || batch.status === 'processing'
+  )
+})
+
+const completedExecutionBatches = computed(() => {
+  return executionPlanBatches.value.filter(batch => 
+    batch.status === 'completed' || batch.status === 'failed'
+  )
+})
+
+// Filter batches by lifecycle status and type
+const filteredBatches = computed(() => {
+  let batches = []
+  
+  // Step 1: Filter by lifecycle status (sub-tab)
+  if (queueSubTab.value === 'pending') {
+    batches = executionPlanBatches.value.filter(b => b.status === 'pending')
+  } else if (queueSubTab.value === 'processing') {
+    batches = executionPlanBatches.value.filter(b => b.status === 'processing')
+  } else if (queueSubTab.value === 'completed') {
+    batches = executionPlanBatches.value.filter(b => b.status === 'completed' || b.status === 'failed')
+  }
+  
+  console.log('🔍 [Filter Debug] Step 1 - After status filter:', {
+    queueSubTab: queueSubTab.value,
+    totalBatches: executionPlanBatches.value.length,
+    filteredCount: batches.length,
+    batchTypes: batches.map(b => ({ id: b.batchId, type: b.type, status: b.status }))
+  })
+  
+  // Step 2: Apply type filter
+  if (queueTypeFilter.value === 'all') {
+    console.log('🔍 [Filter Debug] Step 2 - Type filter: ALL, returning all batches:', batches.length)
+    return batches
+  }
+  
+  const filtered = batches.filter(batch => {
+    if (queueTypeFilter.value === 'strategy') {
+      return batch.type === 'strategy-report'
+    } else if (queueTypeFilter.value === 'plan') {
+      return batch.type === 'execution-plan'
+    }
+    return true
+  })
+  
+  console.log('🔍 [Filter Debug] Step 2 - After type filter:', {
+    queueTypeFilter: queueTypeFilter.value,
+    beforeCount: batches.length,
+    afterCount: filtered.length,
+    filteredTypes: filtered.map(b => ({ id: b.batchId, type: b.type }))
+  })
+  
+  return filtered
+})
+
+// Separate computed for individual reports filtering
+const filteredIndividualReports = computed(() => {
+  if (queueSubTab.value === 'pending') {
+    return []
+  } else if (queueSubTab.value === 'processing') {
+    return inProgressReports.value
+  } else if (queueSubTab.value === 'completed') {
+    return completedReports.value
+  }
+  return []
+})
 
 // MyStrategy Tab: State Variables
 const selectedCollection = ref('all')
@@ -1811,8 +2149,10 @@ const groupedReports = computed(() => {
     riskPreference: '中'
   }
   
-  // Only group in-progress reports (not completed)
-  inProgressReports.value.forEach(report => {
+  // Group filtered individual reports
+  const reportsToGroup = queueSubTab.value === 'processing' ? filteredIndividualReports.value : inProgressReports.value
+  
+  reportsToGroup.forEach(report => {
     // Use report's config or default config
     const config = report.config || defaultConfig
     const key = `${config.framework}|${config.period}|${config.riskPreference}`
@@ -3705,11 +4045,273 @@ watch(() => route.query.tab, (newTab) => {
   }
 })
 
+// Initialize demo execution plan batches for testing
+const initializeDemoExecutionPlanBatches = () => {
+  // TEMPORARY: Force refresh demo data to include strategy-report types
+  // TODO: Implement version-based data migration
+  // const existing = localStorage.getItem('execution_plan_batches')
+  // if (existing) {
+  //   return // Don't override existing data
+  // }
+
+  // Create demo batches with BOTH execution-plan and strategy-report types
+  const demoBatches = [
+    // Execution Plan Batch 1 (processing)
+    {
+      batchId: 'batch-demo-1',
+      type: 'execution-plan',
+      status: 'processing',
+      totalCount: 5,
+      completedCount: 2,
+      createdAt: new Date().toISOString(),
+      items: [
+        {
+          id: 'item-1',
+          symbol: 'AAPL',
+          stockName: 'Apple Inc.',
+          grade: 'A',
+          status: 'completed',
+          progress: 100,
+          duration: 12,
+          currentStep: '已完成',
+          positionSize: 15,
+          costPrice: 175.50
+        },
+        {
+          id: 'item-2',
+          symbol: 'MSFT',
+          stockName: 'Microsoft Corporation',
+          grade: 'A',
+          status: 'completed',
+          progress: 100,
+          duration: 11,
+          currentStep: '已完成',
+          positionSize: 12,
+          costPrice: 380.20
+        },
+        {
+          id: 'item-3',
+          symbol: 'GOOGL',
+          stockName: 'Alphabet Inc.',
+          grade: 'B',
+          status: 'processing',
+          progress: 65,
+          duration: 8,
+          currentStep: '分析技术指标...',
+          positionSize: 10,
+          costPrice: 140.50
+        },
+        {
+          id: 'item-4',
+          symbol: 'AMZN',
+          stockName: 'Amazon.com Inc.',
+          grade: 'A',
+          status: 'pending',
+          progress: 0,
+          duration: 0,
+          currentStep: '等待开始...',
+          positionSize: 8,
+          costPrice: 145.30
+        },
+        {
+          id: 'item-5',
+          symbol: 'NVDA',
+          stockName: 'NVIDIA Corporation',
+          grade: 'B',
+          status: 'pending',
+          progress: 0,
+          duration: 0,
+          currentStep: '等待开始...',
+          positionSize: 20,
+          costPrice: 480.00
+        }
+      ]
+    },
+    // Strategy Report Batch (processing) - NEW!
+    {
+      batchId: 'batch-demo-strategy-1',
+      type: 'strategy-report',
+      status: 'processing',
+      totalCount: 4,
+      completedCount: 1,
+      createdAt: new Date().toISOString(),
+      items: [
+        {
+          id: 'item-s1',
+          symbol: '600519',
+          stockName: '贵州茅台',
+          grade: 'A',
+          status: 'completed',
+          progress: 100,
+          duration: 15,
+          currentStep: '已完成'
+        },
+        {
+          id: 'item-s2',
+          symbol: '000858',
+          stockName: '五粮液',
+          grade: 'B',
+          status: 'processing',
+          progress: 72,
+          duration: 11,
+          currentStep: '生成投资建议...'
+        },
+        {
+          id: 'item-s3',
+          symbol: '600036',
+          stockName: '招商银行',
+          grade: 'A',
+          status: 'pending',
+          progress: 0,
+          duration: 0,
+          currentStep: '等待开始...'
+        },
+        {
+          id: 'item-s4',
+          symbol: '601318',
+          stockName: '中国平安',
+          grade: 'B',
+          status: 'pending',
+          progress: 0,
+          duration: 0,
+          currentStep: '等待开始...'
+        }
+      ]
+    },
+    // Strategy Report Batch (pending) - NEW!
+    {
+      batchId: 'batch-demo-strategy-2',
+      type: 'strategy-report',
+      status: 'pending',
+      totalCount: 3,
+      completedCount: 0,
+      createdAt: new Date().toISOString(),
+      items: [
+        {
+          id: 'item-s5',
+          symbol: '002594',
+          stockName: '比亚迪',
+          grade: 'A',
+          status: 'pending',
+          progress: 0,
+          duration: 0,
+          currentStep: '等待开始...'
+        },
+        {
+          id: 'item-s6',
+          symbol: '300750',
+          stockName: '宁德时代',
+          grade: 'A',
+          status: 'pending',
+          progress: 0,
+          duration: 0,
+          currentStep: '等待开始...'
+        },
+        {
+          id: 'item-s7',
+          symbol: '600276',
+          stockName: '恒瑞医药',
+          grade: 'B',
+          status: 'pending',
+          progress: 0,
+          duration: 0,
+          currentStep: '等待开始...'
+        }
+      ]
+    },
+    // Execution Plan Batch 2 (completed)
+    {
+      batchId: 'batch-demo-2',
+      type: 'execution-plan',
+      status: 'completed',
+      totalCount: 3,
+      completedCount: 3,
+      createdAt: new Date(Date.now() - 3600000).toISOString(),
+      completedAt: new Date(Date.now() - 1800000).toISOString(),
+      items: [
+        {
+          id: 'item-6',
+          symbol: 'TSLA',
+          stockName: 'Tesla Inc.',
+          grade: 'B',
+          status: 'completed',
+          progress: 100,
+          duration: 13,
+          currentStep: '已完成',
+          positionSize: 5,
+          costPrice: 245.00
+        },
+        {
+          id: 'item-7',
+          symbol: 'META',
+          stockName: 'Meta Platforms Inc.',
+          grade: 'A',
+          status: 'completed',
+          progress: 100,
+          duration: 11,
+          currentStep: '已完成',
+          positionSize: 10,
+          costPrice: 360.80
+        },
+        {
+          id: 'item-8',
+          symbol: 'NFLX',
+          stockName: 'Netflix Inc.',
+          grade: 'C',
+          status: 'completed',
+          progress: 100,
+          duration: 12,
+          currentStep: '已完成',
+          positionSize: 7,
+          costPrice: 420.50
+        }
+      ]
+    },
+    // Strategy Report Batch 3 (completed) - NEW!
+    {
+      batchId: 'batch-demo-strategy-3',
+      type: 'strategy-report',
+      status: 'completed',
+      totalCount: 2,
+      completedCount: 2,
+      createdAt: new Date(Date.now() - 7200000).toISOString(),
+      completedAt: new Date(Date.now() - 5400000).toISOString(),
+      items: [
+        {
+          id: 'item-s8',
+          symbol: '600887',
+          stockName: '伊利股份',
+          grade: 'A',
+          status: 'completed',
+          progress: 100,
+          duration: 14,
+          currentStep: '已完成'
+        },
+        {
+          id: 'item-s9',
+          symbol: '000333',
+          stockName: '美的集团',
+          grade: 'B',
+          status: 'completed',
+          progress: 100,
+          duration: 13,
+          currentStep: '已完成'
+        }
+      ]
+    }
+  ]
+
+  localStorage.setItem('execution_plan_batches', JSON.stringify(demoBatches))
+}
+
 onMounted(() => {
   loadMyHoldings()
   restorePageState()
   loadSavedReports()
   loadSavedStrategies() // Load strategies for mystrategy tab
+  // Initialize demo execution plan batches (only if none exist)
+  initializeDemoExecutionPlanBatches()
+  loadExecutionPlanBatches() // Load execution plan batches
   // Initialize demo generating reports
   initializeDemoGeneratingReports()
   
