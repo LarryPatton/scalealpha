@@ -6,6 +6,7 @@ import { useSavedReports } from '../composables/useSavedReports'
 import MarketingLayout from '../layouts/MarketingLayout.vue'
 import AuthLayout from '../layouts/AuthLayout.vue'
 import AppLayout from '../layouts/AppLayout.vue'
+import BlankLayout from '../layouts/BlankLayout.vue'
 
 // Pages
 import HomePage from '../pages/HomePage.vue'
@@ -18,6 +19,10 @@ import AllStockAttributionPage from '../pages/AllStockAttributionPage.vue'
 import StockAttributionDetailPage from '../pages/StockAttributionDetailPage.vue'
 import LoginPage from '../pages/LoginPage.vue'
 import InfoPage from '../pages/InfoPage.vue'
+import InfoPageB from '../pages/InfoPageB.vue'
+import InfoPageWaterfall from '../pages/InfoPageWaterfall.vue'
+import InfoPageKanban from '../pages/InfoPageKanban.vue'
+import InfoPageAttribution from '../pages/InfoPageAttribution.vue'
 import StockDetail from '../pages/StockDetail.vue'
 import CommunityDetail from '../pages/CommunityDetail.vue'
 import NotFound from '../pages/NotFound.vue'
@@ -109,6 +114,30 @@ const routes = [
     name: 'Info',
     component: InfoPage2,
     meta: { layout: AppLayout }
+  },
+  {
+    path: '/infoB',
+    name: 'InfoB',
+    component: InfoPageB,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/info/waterfall',
+    name: 'InfoWaterfall',
+    component: InfoPageWaterfall,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/info/kanban',
+    name: 'InfoKanban',
+    component: InfoPageKanban,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/info/attribution',
+    name: 'InfoAttribution',
+    component: InfoPageAttribution,
+    meta: { layout: BlankLayout }
   },
   {
     path: '/info/market/:id?',
