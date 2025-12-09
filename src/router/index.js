@@ -46,6 +46,7 @@ import PlanningDetailPage from '../pages/PlanningDetailPage.vue'
 import CardDesignPage from '../pages/CardDesignPage.vue'
 import ThemeVizDesignPage from '../pages/ThemeVizDesignPage.vue'
 import TimelineDesignPage from '../pages/TimelineDesignPage.vue'
+import AnalysisDesignPage from '../pages/AnalysisDesignPage.vue'
 
 const routes = [
   // Root redirect - automatically redirect to Home page
@@ -89,6 +90,12 @@ const routes = [
     path: '/timeline-design',
     name: 'TimelineDesign',
     component: TimelineDesignPage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/analysis-design',
+    name: 'AnalysisDesign',
+    component: AnalysisDesignPage,
     meta: { layout: BlankLayout }
   },
   {

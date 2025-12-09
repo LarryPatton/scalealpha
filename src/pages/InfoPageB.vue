@@ -275,10 +275,13 @@
                   </div>
                 </div>
 
-                <!-- Content (Middle) -->
-                <div class="flex-1 p-6 flex flex-col justify-center">
+                <!-- Content (Middle) - Clickable -->
+                <div 
+                  @click="openEventModal(event)"
+                  class="flex-1 p-6 flex flex-col justify-center cursor-pointer hover:bg-[#1a1a1a] transition-colors group/content"
+                >
                   <div class="flex items-center gap-4 mb-3">
-                    <h3 class="text-2xl font-bold text-white leading-tight">{{ event.title }}</h3>
+                    <h3 class="text-2xl font-bold text-white leading-tight group-hover/content:text-blue-400 transition-colors">{{ event.title }}</h3>
                     <span 
                       class="text-xs font-bold px-2.5 py-1 rounded border uppercase tracking-wider"
                       :class="event.stocks[0].change >= 0 ? 'bg-green-900/30 text-green-400 border-green-800' : 'bg-red-900/30 text-red-400 border-red-800'"
@@ -287,21 +290,31 @@
                     </span>
                   </div>
                   
-                  <p class="text-base text-gray-400 leading-relaxed line-clamp-3 max-w-4xl">{{ event.desc }}</p>
+                  <p class="text-base text-gray-400 leading-relaxed line-clamp-3 max-w-4xl group-hover/content:text-gray-300">{{ event.desc }}</p>
+                  
+                  <div class="mt-4 flex items-center gap-2 text-xs text-blue-500 opacity-0 group-hover/content:opacity-100 transition-opacity">
+                    <span>查看深度分析报告</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                  </div>
                 </div>
 
                 <!-- Stocks List (Right) -->
                 <div class="w-80 bg-[#0a0a0a] border-l border-[#333] flex flex-col shrink-0 relative">
                   <div class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2" style="max-height: 200px;">
-                    <div v-for="stock in event.stocks" :key="stock.symbol" class="bg-[#1a1a1a] border border-[#333] rounded p-2 flex items-center gap-3 hover:border-gray-500 transition-colors group/stock">
+                    <div 
+                      v-for="stock in event.stocks" 
+                      :key="stock.symbol" 
+                      @click.stop="goToStockDetail(stock.symbol, event.id)"
+                      class="bg-[#1a1a1a] border border-[#333] rounded p-2 flex items-center gap-3 hover:border-blue-500/50 hover:bg-[#222] transition-all cursor-pointer group/stock"
+                    >
                       <!-- Icon -->
-                      <div class="w-8 h-8 rounded bg-[#252525] flex items-center justify-center text-xs font-bold text-gray-400 border border-[#333] group-hover/stock:text-white group-hover/stock:border-gray-500 transition-colors shrink-0">
+                      <div class="w-8 h-8 rounded bg-[#252525] flex items-center justify-center text-xs font-bold text-gray-400 border border-[#333] group-hover/stock:text-white group-hover/stock:border-blue-500 transition-colors shrink-0">
                         {{ stock.symbol[0] }}
                       </div>
                       
                       <!-- Info -->
                       <div class="flex-1 min-w-0">
-                        <div class="text-sm font-bold text-white leading-none mb-1 truncate">{{ stock.symbol }}</div>
+                        <div class="text-sm font-bold text-white leading-none mb-1 truncate group-hover/stock:text-blue-400 transition-colors">{{ stock.symbol }}</div>
                         <div class="text-[10px] text-gray-500 truncate">{{ stock.name }}</div>
                       </div>
                       
@@ -530,6 +543,24 @@
                   </button>
                 </div>
               </div>
+
+              <!-- 3. Event Sentiment -->
+              <div>
+                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">事件情绪 (多选)</h4>
+                <div class="flex flex-wrap gap-2">
+                  <button 
+                    v-for="sentiment in ['Bullish', 'Bearish', 'Neutral']" 
+                    :key="sentiment"
+                    @click="toggleAttributionSentiment(sentiment)"
+                    class="px-3 py-2 rounded-lg text-xs font-medium border transition-all flex items-center gap-2"
+                    :class="attributionFilters.sentiments.includes(sentiment) 
+                      ? (sentiment === 'Bullish' ? 'bg-green-900/50 border-green-500 text-green-400' : (sentiment === 'Bearish' ? 'bg-red-900/50 border-red-500 text-red-400' : 'bg-gray-700 border-gray-500 text-gray-300'))
+                      : 'bg-[#222] border-[#333] text-gray-400 hover:border-gray-500 hover:text-gray-200'"
+                  >
+                    {{ sentiment }}
+                  </button>
+                </div>
+              </div>
             </template>
 
           </div>
@@ -543,6 +574,187 @@
         </div>
       </div>
     </transition>
+
+    <!-- Event Detail Modal (Attribution) -->
+    <div v-if="showEventModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-300" @click.self="closeEventModal">
+      <div class="bg-[#1a1a1a] rounded-2xl border border-[#333] w-[95vw] h-[85vh] overflow-hidden shadow-2xl flex flex-col transform transition-all duration-300 scale-100 animate-modal-in">
+        
+        <!-- Modal Header -->
+        <div class="px-8 py-5 border-b border-[#2a2a2a] flex justify-between items-center bg-[#1a1a1a]/95 backdrop-blur-xl z-10 shrink-0">
+          <div class="flex items-center gap-4">
+            <h2 class="text-xl font-bold text-white">{{ selectedEvent.title }}</h2>
+            <span 
+              class="text-xs font-bold px-2.5 py-1 rounded border uppercase tracking-wider"
+              :class="selectedEvent.stocks[0].change >= 0 ? 'bg-green-900/30 text-green-400 border-green-800' : 'bg-red-900/30 text-red-400 border-red-800'"
+            >
+              {{ selectedEvent.stocks[0].change >= 0 ? 'Bullish' : 'Bearish' }}
+            </span>
+            <span class="text-xs text-gray-500 font-mono">{{ selectedEvent.time }}</span>
+          </div>
+          <button @click="closeEventModal" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/5 transition-all">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="flex flex-1 overflow-hidden">
+          <!-- Left: AI Chat (320px) -->
+          <div class="w-[320px] flex flex-col border-r border-[#2a2a2a] bg-[#111] shrink-0 hidden lg:flex">
+            <div class="px-4 py-3 border-b border-[#2a2a2a] bg-[#1a1a1a]">
+               <h3 class="text-sm font-medium text-gray-300 flex items-center gap-2"><i class="fas fa-robot text-blue-500"></i> 事件分析助手</h3>
+            </div>
+            <div class="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin">
+               <!-- Welcome State -->
+               <div class="flex flex-col h-full">
+                  <div class="flex-1 flex flex-col items-center justify-center text-center space-y-4 p-4">
+                    <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center mb-2 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
+                      <i class="fas fa-bolt text-blue-400 text-xl"></i>
+                    </div>
+                    <div>
+                      <h4 class="text-white font-medium mb-1">ScaleAlpha Event AI</h4>
+                      <p class="text-xs text-gray-500 leading-relaxed px-2">
+                        我是您的专属事件分析助手。<br>
+                        已为您深度解析 <span class="text-blue-400">{{ selectedEvent.title }}</span> 的市场影响。
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <!-- Quick Prompts -->
+                  <div class="space-y-2 pb-4">
+                    <p class="text-xs text-gray-500 px-1 mb-2">您可以问我：</p>
+                    <button class="w-full text-left px-3 py-2.5 bg-[#1a1a1a] hover:bg-[#222] hover:border-blue-500/30 border border-[#2a2a2a] rounded-lg text-xs text-gray-300 transition-all duration-200 flex items-center justify-between group hover:shadow-lg hover:shadow-blue-900/10">
+                      <span class="group-hover:text-blue-400 transition-colors">该事件对同板块其他股票有何影响？</span>
+                      <i class="fas fa-arrow-right opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-blue-500 transition-all duration-300"></i>
+                    </button>
+                    <button class="w-full text-left px-3 py-2.5 bg-[#1a1a1a] hover:bg-[#222] hover:border-blue-500/30 border border-[#2a2a2a] rounded-lg text-xs text-gray-300 transition-all duration-200 flex items-center justify-between group hover:shadow-lg hover:shadow-blue-900/10">
+                      <span class="group-hover:text-blue-400 transition-colors">历史上有哪些相似事件？</span>
+                      <i class="fas fa-arrow-right opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-blue-500 transition-all duration-300"></i>
+                    </button>
+                    <button class="w-full text-left px-3 py-2.5 bg-[#1a1a1a] hover:bg-[#222] hover:border-blue-500/30 border border-[#2a2a2a] rounded-lg text-xs text-gray-300 transition-all duration-200 flex items-center justify-between group hover:shadow-lg hover:shadow-blue-900/10">
+                      <span class="group-hover:text-blue-400 transition-colors">机构对此事件的最新评级变化？</span>
+                      <i class="fas fa-arrow-right opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-blue-500 transition-all duration-300"></i>
+                    </button>
+                  </div>
+               </div>
+            </div>
+            <div class="p-3 bg-[#1a1a1a] border-t border-[#2a2a2a]">
+              <div class="relative">
+                <input type="text" placeholder="输入问题..." class="w-full bg-[#0f0f0f] text-white rounded-lg pl-3 pr-10 py-2.5 text-sm border border-[#333] focus:outline-none focus:border-blue-500">
+                <button class="absolute right-2 top-1/2 -translate-y-1/2 text-blue-500"><i class="fas fa-paper-plane"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Middle: Analysis Content (Flex-1) -->
+          <div class="flex-1 overflow-y-auto p-10 scrollbar-thin bg-[#0f0f0f] border-r border-[#2a2a2a]">
+            <div class="max-w-5xl mx-auto space-y-12">
+              
+              <!-- Impact Analysis -->
+              <div>
+                <h3 class="text-2xl font-bold text-white mb-6">对公司的事件影响分析</h3>
+                <div class="text-gray-300 space-y-6 text-base leading-relaxed font-light">
+                  <p>
+                    该事件对 <span class="text-white font-medium border-b border-white/20 pb-0.5">{{ selectedEvent.stocks[0].symbol }}</span> 构成<span class="text-red-400 font-medium">负面影响</span>。核心在于宏观数据真空导致风险溢价上升。
+                  </p>
+                  <div class="pl-4 border-l border-[#333]">
+                    <h4 class="text-white font-bold mb-2 text-sm uppercase tracking-wider">作用机制</h4>
+                    <p>作为高贝塔值的成长型资产，{{ selectedEvent.stocks[0].symbol }} (当前市盈率35.2x) 对利率预期极度敏感。数据的缺失创造了“黑箱效应”，迫使投资者在美联储12月会议前进行防御性定价。</p>
+                  </div>
+                  <div class="pl-4 border-l border-[#333]">
+                    <h4 class="text-white font-bold mb-2 text-sm uppercase tracking-wider">财务路径</h4>
+                    <p>虽然不直接影响成分股营收，但信息不确定性增加了隐含的资本成本。期权市场IV期限结构呈现“倒挂”(Backwardation)，表明短期市场压力剧增。</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="h-px bg-[#222] w-full"></div>
+
+              <!-- Prediction Analysis -->
+              <div>
+                <h3 class="text-2xl font-bold text-white mb-6">事件影响预期分析</h3>
+                <div class="grid grid-cols-3 gap-8">
+                  <div>
+                    <div class="text-xs text-gray-500 font-mono mb-2">SHORT TERM</div>
+                    <div class="text-red-400 text-lg font-bold mb-2">波动加剧</div>
+                    <p class="text-sm text-gray-400 leading-relaxed">预计波动加剧且偏向防御。技术面显示TD序列出现完美的“卖出9”信号。</p>
+                  </div>
+                  <div>
+                    <div class="text-xs text-gray-500 font-mono mb-2">MEDIUM TERM</div>
+                    <div class="text-white text-lg font-bold mb-2">回归基本面</div>
+                    <p class="text-sm text-gray-400 leading-relaxed">随着2026年1月数据流恢复正常，市场将重新校准利率预期。</p>
+                  </div>
+                  <div>
+                    <div class="text-xs text-gray-500 font-mono mb-2">LONG TERM</div>
+                    <div class="text-green-400 text-lg font-bold mb-2">趋势看涨</div>
+                    <p class="text-sm text-gray-400 leading-relaxed">历史趋势仍看涨，但需度过当前的政策迷雾期。</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="h-px bg-[#222] w-full"></div>
+
+              <!-- Backtest -->
+              <div>
+                <h3 class="text-2xl font-bold text-white mb-6">历史回测与概率</h3>
+                <div class="text-gray-300 text-base leading-relaxed font-light">
+                  <p class="mb-4">
+                    尽管短期技术面承压，历史数据展示了 {{ selectedEvent.stocks[0].symbol }} 的韧性。在类似下跌后：
+                  </p>
+                  <div class="grid grid-cols-2 gap-6">
+                    <div class="bg-[#151515] p-4 rounded border border-[#222]">
+                      <div class="text-xs text-gray-500 uppercase mb-1">5天上涨概率</div>
+                      <div class="text-2xl font-bold text-green-400">62%</div>
+                      <div class="text-xs text-gray-400 mt-1">平均回报 +0.6%</div>
+                    </div>
+                    <div class="bg-[#151515] p-4 rounded border border-[#222]">
+                      <div class="text-xs text-gray-500 uppercase mb-1">21天上涨概率</div>
+                      <div class="text-2xl font-bold text-green-400">65%</div>
+                      <div class="text-xs text-gray-400 mt-1">平均回报 +1.9%</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Right: Original Event (350px) -->
+          <div class="w-[350px] overflow-y-auto p-8 scrollbar-thin bg-[#0f0f0f] shrink-0 hidden xl:block">
+            <div class="space-y-8">
+              <!-- Image -->
+              <div class="rounded-lg overflow-hidden relative group shadow-lg">
+                <img :src="selectedEvent.image" class="w-full h-48 object-cover opacity-90 group-hover:opacity-100 transition-opacity" />
+              </div>
+
+              <!-- Title & Meta -->
+              <div>
+                <div class="flex flex-wrap gap-2 mb-4">
+                  <span v-for="tag in selectedEvent.tags" :key="tag" class="text-[10px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-700 pb-0.5">{{ tag }}</span>
+                </div>
+                <h3 class="text-2xl font-bold text-white leading-tight mb-3">{{ selectedEvent.title }}</h3>
+                <div class="text-xs text-gray-500 font-mono flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                  {{ selectedEvent.time }}
+                </div>
+              </div>
+
+              <div class="h-px bg-[#222] w-full"></div>
+
+              <!-- Original Text -->
+              <div>
+                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">
+                  Original Source
+                </h4>
+                <p class="text-gray-300 text-sm leading-loose font-light">
+                  {{ selectedEvent.desc }} 美国劳工统计局 (BLS) 宣布取消2025年10月的PPI报告及进出口价格指数，并将11月数据推迟至2026年1月中旬发布。此前，10月CPI已被取消，11月CPI推迟至12月18日。这一系列因政府停摆导致的数据缺失，在美联储12月政策会议前制造了罕见的“历史性盲区”，严重干扰了市场对通胀路径和利率政策的判断能力。
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
 
     <!-- Strategy Detail Modal (Apple-inspired Minimalist Design) -->
     <div v-if="showStrategyModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-300" @click.self="closeStrategyModal">
@@ -891,9 +1103,19 @@ const filters = ref({
 // Attribution Specific Filters
 const attributionFilters = ref({
   stocks: [],
-  timeRange: 'Last 24h'
+  timeRange: 'Last 24h',
+  sentiments: []
 })
 const attributionStockInput = ref('')
+
+const toggleAttributionSentiment = (sentiment) => {
+  const index = attributionFilters.value.sentiments.indexOf(sentiment)
+  if (index === -1) {
+    attributionFilters.value.sentiments.push(sentiment)
+  } else {
+    attributionFilters.value.sentiments.splice(index, 1)
+  }
+}
 
 const addAttributionStock = () => {
   const val = attributionStockInput.value.trim().toUpperCase()
@@ -1505,15 +1727,31 @@ const generatePlanForStrategy = (strategy) => {
   alert(`Generating plan for ${strategy.symbol}...`)
 }
 
-const goToStockDetail = (symbol, themeId) => {
-  console.log('Navigating to stock detail:', symbol, themeId)
+const goToStockDetail = (symbol, sourceId) => {
+  console.log('Navigating to stock detail:', symbol, sourceId)
+  // Determine if sourceId is a theme ID or event ID
+  const isTheme = typeof sourceId === 'number'
+  
   router.push({
     path: `/stock-attribution/${symbol}`,
     query: {
-      tab: 'themes',
-      highlightThemeId: themeId
+      tab: isTheme ? 'themes' : 'strategies',
+      [isTheme ? 'highlightThemeId' : 'strategyId']: sourceId || '1' // Default to strategyId=1 for events if no ID
     }
   })
+}
+
+// --- Event Detail Modal Logic ---
+const showEventModal = ref(false)
+const selectedEvent = ref({ stocks: [{ symbol: '', change: 0 }] }) // Init with safe default
+
+const openEventModal = (event) => {
+  selectedEvent.value = event
+  showEventModal.value = true
+}
+
+const closeEventModal = () => {
+  showEventModal.value = false
 }
 
 const renderedStrategyContent = computed(() => selectedStrategy.value.content || '')
