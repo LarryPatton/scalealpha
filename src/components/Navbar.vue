@@ -45,6 +45,11 @@
             Price
           </router-link>
 
+          <!-- Watchlist Link (If Logged In) -->
+          <router-link v-if="userEmail" to="/opportunities?tab=events" class="text-sm font-medium text-gray-300 hover:text-white transition-colors hidden sm:block">
+            我的关注
+          </router-link>
+
           <!-- User Avatar & Menu (If Logged In) -->
           <div v-if="userEmail" class="relative">
             <button 
@@ -62,9 +67,6 @@
               </div>
               <button @click="handleMyInfo" class="w-full text-left px-4 py-2 text-sm text-blue-400 hover:text-blue-300 hover:bg-[#3a3a3a]">
                 我的信息
-              </button>
-              <button @click="handleMyWatchlist" class="w-full text-left px-4 py-2 text-sm text-green-400 hover:text-green-300 hover:bg-[#3a3a3a]">
-                我的关注
               </button>
               <button @click="handleResetProgress" class="w-full text-left px-4 py-2 text-sm text-orange-400 hover:text-orange-300 hover:bg-[#3a3a3a]">
                 查看进度

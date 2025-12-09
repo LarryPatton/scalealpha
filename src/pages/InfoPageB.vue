@@ -49,27 +49,8 @@
 
         <!-- Right: View Controls -->
         <div class="flex items-center gap-3">
-          <!-- Pagination (Attribution Only) -->
-          <div v-if="activeTab === 'attribution'" class="flex items-center bg-[#1a1a1a] rounded-lg border border-[#333] overflow-hidden mr-4">
-            <button 
-              @click="changeAttributionPage(-1)" 
-              class="p-2 text-gray-400 hover:text-white hover:bg-[#333] border-r border-[#333] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              :disabled="currentAttributionPage === 0"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-            </button>
-            <span class="px-3 text-xs text-gray-500 font-mono bg-[#222] h-full flex items-center">{{ currentAttributionPage + 1 }} / {{ totalAttributionPages }}</span>
-            <button 
-              @click="changeAttributionPage(1)" 
-              class="p-2 text-gray-400 hover:text-white hover:bg-[#333] border-l border-[#333] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              :disabled="currentAttributionPage >= totalAttributionPages - 1"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-            </button>
-          </div>
-
-          <!-- View Switcher (Opportunities, Attribution & Themes) -->
-          <div v-if="['opportunities', 'attribution', 'themes'].includes(activeTab)" class="bg-[#1a1a1a] border border-[#333] rounded-lg p-1 flex items-center">
+          <!-- View Switcher (Opportunities & Themes only) -->
+          <div v-if="['opportunities', 'themes'].includes(activeTab)" class="bg-[#1a1a1a] border border-[#333] rounded-lg p-1 flex items-center">
             <button 
               @click="viewMode = 'card'"
               class="p-1.5 rounded-md transition-all"
@@ -120,8 +101,8 @@
                   <div class="text-[10px] text-slate-500 uppercase tracking-wider">Rating</div>
                 </div>
                 <div class="text-center">
-                  <div class="text-2xl font-bold text-emerald-400">{{ opp.score }}%</div>
-                  <div class="text-[10px] text-slate-500 uppercase tracking-wider">Confidence</div>
+                  <div class="text-2xl font-bold" :class="opp.type === 'Long' ? 'text-emerald-400' : 'text-red-400'">{{ opp.type.toUpperCase() }}</div>
+                  <div class="text-[10px] text-slate-500 uppercase tracking-wider">Direction</div>
                 </div>
               </div>
 
@@ -210,7 +191,12 @@
 
             <!-- List Items -->
             <div class="divide-y divide-[#333]">
-              <div v-for="item in theme.items" :key="item.id" class="p-3 flex gap-3 hover:bg-[#2a2a2a] transition-colors cursor-pointer group/item">
+              <div 
+                v-for="item in theme.items" 
+                :key="item.id" 
+                @click="goToStockDetail(item.title.split(' ')[0], theme.id)"
+                class="p-3 flex gap-3 hover:bg-[#2a2a2a] transition-colors cursor-pointer group/item"
+              >
                 <!-- Left Content -->
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center justify-between mb-1">
@@ -256,99 +242,94 @@
         </div>
       </div>
 
-      <!-- Tab: Attribution (Kanban) -->
-      <div v-else-if="activeTab === 'attribution'" class="px-4 pb-8">
-        <div 
-          class="gap-6 items-start"
-          :class="viewMode === 'card' ? 'grid' : 'flex flex-col space-y-6'"
-          :style="viewMode === 'card' ? { gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))` } : {}"
-        >
-          
-          <!-- Sector Column -->
-          <div v-for="sector in visibleSectors" :key="sector.id" class="flex flex-col bg-[#1a1a1a] rounded-xl border border-[#333] overflow-hidden w-full">
-            
-            <!-- Column Header -->
-            <div class="p-4 border-b border-[#333] bg-[#222] flex justify-between items-center">
-              <div class="flex items-center gap-2">
-                <h3 class="font-bold text-white">{{ sector.name }}</h3>
-              </div>
+      <!-- Tab: Attribution (Cyberpunk HUD) -->
+      <div v-else-if="activeTab === 'attribution'" class="w-full px-8 pb-8">
+        <div class="space-y-6">
+          <div v-for="event in allAttributionEvents" :key="event.id" class="flex gap-6 items-stretch group">
+            <!-- Time Column -->
+            <div class="w-24 text-right pt-6 shrink-0">
+              <div class="text-2xl font-bold text-white font-mono">{{ event.time.split(' ')[0] }}</div>
+              <div class="text-sm text-gray-500 font-mono uppercase">{{ event.time.split(' ')[1] || 'AM' }}</div>
             </div>
+            
+            <!-- Decoration Line -->
+            <div class="w-px bg-[#333] relative group-hover:bg-cyan-500 transition-colors duration-300">
+              <div class="absolute top-8 -left-[3px] w-1.5 h-1.5 bg-[#111] border border-cyan-500 rounded-full hidden group-hover:block shadow-[0_0_8px_rgba(6,182,212,0.8)]"></div>
+            </div>
+            
+            <!-- Card -->
+            <div class="flex-1 bg-[#151515] border border-[#333] p-1 group-hover:border-cyan-500/50 transition-all relative overflow-hidden shadow-lg">
+              <!-- Corner Accents -->
+              <div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-gray-500 group-hover:border-cyan-500"></div>
+              <div class="absolute top-0 right-0 w-2 h-2 border-t border-r border-gray-500 group-hover:border-cyan-500"></div>
+              <div class="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-gray-500 group-hover:border-cyan-500"></div>
+              <div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-gray-500 group-hover:border-cyan-500"></div>
 
-            <!-- Events List (Natural Height) -->
-            <div class="p-4 space-y-4">
-              <div v-for="event in sector.events" :key="event.id" class="relative pl-4 border-l-2 border-[#333] hover:border-blue-500/50 transition-colors group">
-                <!-- Timeline Dot -->
-                <div class="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full bg-[#333] group-hover:bg-blue-500 transition-colors border border-[#1a1a1a]"></div>
-                
-                <!-- Time Label -->
-                <div class="text-xs text-gray-500 mb-1 font-mono">{{ event.time }}</div>
-
-                <!-- Event Card -->
-                <div class="bg-[#222] rounded-lg border border-[#333] overflow-hidden hover:border-gray-500 transition-all cursor-pointer shadow-sm hover:shadow-md flex flex-col">
-                  
-                  <!-- Image Area -->
-                  <div class="h-32 w-full bg-[#111] relative overflow-hidden">
-                    <img :src="event.image" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Event Image" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#222] to-transparent opacity-60"></div>
-                  </div>
-
-                  <div class="p-3">
-                    <h4 class="text-sm font-bold text-white mb-1 leading-snug">{{ event.title }}</h4>
-                    <p class="text-xs text-gray-400 mb-3 line-clamp-2 leading-relaxed">{{ event.desc }}</p>
-                    
-                    <!-- Stock Data List -->
-                    <div class="space-y-2">
-                      <div v-for="(stock, sIndex) in event.stocks" :key="sIndex" class="bg-[#111] rounded p-2 flex items-center gap-3 border border-[#333/50] hover:border-gray-600 transition-colors">
-                        <!-- Logo Placeholder -->
-                        <div class="w-8 h-8 rounded bg-[#2a2a2a] flex items-center justify-center text-xs font-bold text-gray-300 border border-[#333]">
-                          {{ stock.symbol[0] }}
-                        </div>
-                        
-                        <!-- Info -->
-                        <div class="flex-1 min-w-0">
-                          <div class="flex justify-between items-baseline">
-                            <span class="text-sm font-bold text-white">{{ stock.symbol }}</span>
-                            <span class="text-xs font-mono font-medium" :class="stock.change >= 0 ? 'text-green-400' : 'text-red-400'">
-                              {{ stock.change >= 0 ? '+' : '' }}{{ stock.change }}%
-                            </span>
-                          </div>
-                          <div class="flex justify-between items-center mt-0.5">
-                            <span class="text-[10px] text-gray-500 truncate max-w-[120px]">{{ stock.name }}</span>
-                            <span class="text-xs font-bold text-gray-300">{{ stock.price }}</span>
-                          </div>
-                          <!-- Reason (Optional) -->
-                          <div v-if="stock.reason" class="mt-1 pt-1 border-t border-[#333] text-[10px] text-gray-400 italic">
-                            {{ stock.reason }}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Tags -->
-                    <div class="mt-2 flex flex-wrap gap-1.5">
-                      <span v-for="tag in event.tags" :key="tag" class="text-[10px] px-1.5 py-0.5 bg-[#2a2a2a] text-gray-500 rounded border border-[#333]">{{ tag }}</span>
-                    </div>
+              <div class="flex h-full">
+                <!-- Image (Left) -->
+                <div class="w-64 relative overflow-hidden border-r border-[#333] shrink-0">
+                  <img :src="event.image" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div class="absolute inset-0 bg-cyan-900/10 mix-blend-overlay"></div>
+                  <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent">
+                    <h3 class="font-bold text-white text-xl leading-tight">{{ event.title }}</h3>
                   </div>
                 </div>
-              </div>
 
-              <!-- Loading Indicator per column -->
-              <div v-if="sector.isLoading" class="py-4 flex flex-col items-center gap-2">
-                <div class="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                <span class="text-xs text-gray-500">Loading history...</span>
+                <!-- Content (Middle) -->
+                <div class="flex-1 p-6 flex flex-col justify-center">
+                  <div class="flex items-center gap-4 mb-3">
+                    <h3 class="text-2xl font-bold text-white leading-tight">{{ event.title }}</h3>
+                    <span 
+                      class="text-xs font-bold px-2.5 py-1 rounded border uppercase tracking-wider"
+                      :class="event.stocks[0].change >= 0 ? 'bg-green-900/30 text-green-400 border-green-800' : 'bg-red-900/30 text-red-400 border-red-800'"
+                    >
+                      {{ event.stocks[0].change >= 0 ? 'Bullish' : 'Bearish' }}
+                    </span>
+                  </div>
+                  
+                  <p class="text-base text-gray-400 leading-relaxed line-clamp-3 max-w-4xl">{{ event.desc }}</p>
+                </div>
+
+                <!-- Stocks List (Right) -->
+                <div class="w-80 bg-[#0a0a0a] border-l border-[#333] flex flex-col shrink-0 relative">
+                  <div class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2" style="max-height: 200px;">
+                    <div v-for="stock in event.stocks" :key="stock.symbol" class="bg-[#1a1a1a] border border-[#333] rounded p-2 flex items-center gap-3 hover:border-gray-500 transition-colors group/stock">
+                      <!-- Icon -->
+                      <div class="w-8 h-8 rounded bg-[#252525] flex items-center justify-center text-xs font-bold text-gray-400 border border-[#333] group-hover/stock:text-white group-hover/stock:border-gray-500 transition-colors shrink-0">
+                        {{ stock.symbol[0] }}
+                      </div>
+                      
+                      <!-- Info -->
+                      <div class="flex-1 min-w-0">
+                        <div class="text-sm font-bold text-white leading-none mb-1 truncate">{{ stock.symbol }}</div>
+                        <div class="text-[10px] text-gray-500 truncate">{{ stock.name }}</div>
+                      </div>
+                      
+                      <!-- Price -->
+                      <div class="text-right shrink-0">
+                        <div class="text-xs font-mono font-bold" :class="stock.change >= 0 ? 'text-green-400' : 'text-red-400'">
+                          {{ stock.change >= 0 ? '+' : '' }}{{ stock.change }}%
+                        </div>
+                        <div class="text-[10px] text-gray-400 font-mono">{{ stock.price }}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Scroll Hint Gradient -->
+                  <div class="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-[#0a0a0a] to-transparent pointer-events-none"></div>
+                </div>
               </div>
-              
-              <!-- End of History -->
-              <div v-if="!sector.isLoading && sector.events.length > 50" class="py-4 text-center">
-                <span class="text-xs text-gray-600">No more events</span>
-              </div>
-              
-              <!-- Sentinel for Intersection Observer -->
-              <div :ref="el => setAttributionSentinel(el, sector.id)" class="h-4 w-full"></div>
             </div>
-
           </div>
-
+        </div>
+        
+        <!-- Loading Sentinel -->
+        <div ref="loadSentinel" class="h-20 flex items-center justify-center mt-8">
+          <div v-if="isLoading" class="flex items-center gap-2 text-gray-500">
+            <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+            <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce delay-100"></div>
+            <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce delay-200"></div>
+            <span class="text-sm ml-2">Loading more events...</span>
+          </div>
         </div>
       </div>
     </main>
@@ -372,7 +353,7 @@
     <!-- (Removed Bottom Right Floating Buttons) -->
 
     <!-- 5. Grid Control (Bottom Left) -->
-    <div v-if="['opportunities', 'themes', 'attribution'].includes(activeTab)" class="fixed bottom-8 left-8 z-50 flex items-center transition-all duration-300">
+    <div v-if="['opportunities', 'themes'].includes(activeTab)" class="fixed bottom-8 left-8 z-50 flex items-center transition-all duration-300">
       <!-- Expanded State -->
       <div 
         v-if="isGridControlExpanded"
@@ -423,78 +404,133 @@
           <!-- Content -->
           <div class="flex-grow p-6 overflow-y-auto space-y-8">
             
-            <!-- 1. Sources (Multi-select) -->
-            <div>
-              <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">策略生成来源 (多选)</h4>
-              <div class="flex flex-wrap gap-2">
-                <button 
-                  v-for="opt in filterOptions.sources" 
-                  :key="opt.id"
-                  @click="toggleFilterSource(opt.id)"
-                  class="px-3 py-2 rounded-lg text-xs font-medium border transition-all flex items-center gap-2"
-                  :class="filters.sources.includes(opt.id) 
-                    ? 'bg-blue-600 border-blue-500 text-white' 
-                    : 'bg-[#222] border-[#333] text-gray-400 hover:border-gray-500 hover:text-gray-200'"
-                >
-                  <span>{{ opt.icon }}</span>
-                  {{ opt.label }}
-                </button>
+            <!-- Default Filters (Opportunities & Themes) -->
+            <template v-if="activeTab !== 'attribution'">
+              <!-- 1. Sources (Multi-select) -->
+              <div>
+                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">策略生成来源 (多选)</h4>
+                <div class="flex flex-wrap gap-2">
+                  <button 
+                    v-for="opt in filterOptions.sources" 
+                    :key="opt.id"
+                    @click="toggleFilterSource(opt.id)"
+                    class="px-3 py-2 rounded-lg text-xs font-medium border transition-all flex items-center gap-2"
+                    :class="filters.sources.includes(opt.id) 
+                      ? 'bg-blue-600 border-blue-500 text-white' 
+                      : 'bg-[#222] border-[#333] text-gray-400 hover:border-gray-500 hover:text-gray-200'"
+                  >
+                    <span>{{ opt.icon }}</span>
+                    {{ opt.label }}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <!-- 2. Direction -->
-            <div>
-              <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">策略方向</h4>
-              <div class="grid grid-cols-3 gap-2">
-                <button 
-                  v-for="dir in filterOptions.directions" 
-                  :key="dir"
-                  @click="filters.direction = filters.direction === dir ? '' : dir"
-                  class="py-2 rounded-lg text-xs font-bold border transition-all text-center"
-                  :class="filters.direction === dir 
-                    ? 'bg-blue-600 border-blue-500 text-white' 
-                    : 'bg-[#222] border-[#333] text-gray-400 hover:border-gray-500 hover:text-gray-200'"
-                >
-                  {{ dir }}
-                </button>
+              <!-- 2. Direction -->
+              <div>
+                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">策略方向</h4>
+                <div class="grid grid-cols-3 gap-2">
+                  <button 
+                    v-for="dir in filterOptions.directions" 
+                    :key="dir"
+                    @click="filters.direction = filters.direction === dir ? '' : dir"
+                    class="py-2 rounded-lg text-xs font-bold border transition-all text-center"
+                    :class="filters.direction === dir 
+                      ? 'bg-blue-600 border-blue-500 text-white' 
+                      : 'bg-[#222] border-[#333] text-gray-400 hover:border-gray-500 hover:text-gray-200'"
+                  >
+                    {{ dir }}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <!-- 3. Duration -->
-            <div>
-              <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">持续时间</h4>
-              <div class="grid grid-cols-3 gap-2">
-                <button 
-                  v-for="dur in filterOptions.durations" 
-                  :key="dur"
-                  @click="filters.duration = filters.duration === dur ? '' : dur"
-                  class="py-2 rounded-lg text-xs font-medium border transition-all text-center"
-                  :class="filters.duration === dur 
-                    ? 'bg-blue-600 border-blue-500 text-white' 
-                    : 'bg-[#222] border-[#333] text-gray-400 hover:border-gray-500 hover:text-gray-200'"
-                >
-                  {{ dur }}
-                </button>
+              <!-- 3. Duration -->
+              <div>
+                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">持续时间</h4>
+                <div class="grid grid-cols-3 gap-2">
+                  <button 
+                    v-for="dur in filterOptions.durations" 
+                    :key="dur"
+                    @click="filters.duration = filters.duration === dur ? '' : dur"
+                    class="py-2 rounded-lg text-xs font-medium border transition-all text-center"
+                    :class="filters.duration === dur 
+                      ? 'bg-blue-600 border-blue-500 text-white' 
+                      : 'bg-[#222] border-[#333] text-gray-400 hover:border-gray-500 hover:text-gray-200'"
+                  >
+                    {{ dur }}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <!-- 4. Grade -->
-            <div>
-              <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">策略评级</h4>
-              <div class="flex flex-wrap gap-2">
-                <button 
-                  v-for="grade in filterOptions.grades" 
-                  :key="grade"
-                  @click="filters.grade = filters.grade === grade ? '' : grade"
-                  class="w-10 h-10 rounded-lg text-xs font-bold border transition-all flex items-center justify-center"
-                  :class="filters.grade === grade 
-                    ? 'bg-blue-600 border-blue-500 text-white' 
-                    : 'bg-[#222] border-[#333] text-gray-400 hover:border-gray-500 hover:text-gray-200'"
-                >
-                  {{ grade }}
-                </button>
+              <!-- 4. Grade -->
+              <div>
+                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">策略评级</h4>
+                <div class="flex flex-wrap gap-2">
+                  <button 
+                    v-for="grade in filterOptions.grades" 
+                    :key="grade"
+                    @click="filters.grade = filters.grade === grade ? '' : grade"
+                    class="w-10 h-10 rounded-lg text-xs font-bold border transition-all flex items-center justify-center"
+                    :class="filters.grade === grade 
+                      ? 'bg-blue-600 border-blue-500 text-white' 
+                      : 'bg-[#222] border-[#333] text-gray-400 hover:border-gray-500 hover:text-gray-200'"
+                  >
+                    {{ grade }}
+                  </button>
+                </div>
               </div>
-            </div>
+            </template>
+
+            <!-- Attribution Filters -->
+            <template v-else>
+              <!-- 1. Stock Input (Multi-select) -->
+              <div>
+                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">输入股票 (多选)</h4>
+                <div class="flex flex-wrap gap-2 mb-3" v-if="attributionFilters.stocks.length > 0">
+                  <span 
+                    v-for="(stock, idx) in attributionFilters.stocks" 
+                    :key="idx"
+                    class="px-2 py-1 rounded bg-blue-900/30 border border-blue-500/50 text-blue-400 text-xs flex items-center gap-2"
+                  >
+                    {{ stock }}
+                    <button @click="removeAttributionStock(idx)" class="hover:text-white">×</button>
+                  </span>
+                </div>
+                <div class="relative">
+                  <input 
+                    v-model="attributionStockInput"
+                    @keyup.enter="addAttributionStock"
+                    type="text" 
+                    placeholder="输入代码并回车 (e.g. NVDA)" 
+                    class="w-full bg-[#222] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
+                  />
+                  <button 
+                    @click="addAttributionStock"
+                    class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white"
+                    :disabled="!attributionStockInput"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- 2. Event Time Range -->
+              <div>
+                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">事件时间范围</h4>
+                <div class="grid grid-cols-2 gap-2">
+                  <button 
+                    v-for="range in ['Last 24h', 'Last 3 Days', 'Last Week', 'Last Month']" 
+                    :key="range"
+                    @click="attributionFilters.timeRange = range"
+                    class="py-2 rounded-lg text-xs font-medium border transition-all text-center"
+                    :class="attributionFilters.timeRange === range 
+                      ? 'bg-blue-600 border-blue-500 text-white' 
+                      : 'bg-[#222] border-[#333] text-gray-400 hover:border-gray-500 hover:text-gray-200'"
+                  >
+                    {{ range }}
+                  </button>
+                </div>
+              </div>
+            </template>
 
           </div>
           
@@ -852,6 +888,25 @@ const filters = ref({
   grade: ''
 })
 
+// Attribution Specific Filters
+const attributionFilters = ref({
+  stocks: [],
+  timeRange: 'Last 24h'
+})
+const attributionStockInput = ref('')
+
+const addAttributionStock = () => {
+  const val = attributionStockInput.value.trim().toUpperCase()
+  if (val && !attributionFilters.value.stocks.includes(val)) {
+    attributionFilters.value.stocks.push(val)
+  }
+  attributionStockInput.value = ''
+}
+
+const removeAttributionStock = (index) => {
+  attributionFilters.value.stocks.splice(index, 1)
+}
+
 const filterOptions = {
   sources: [
     { id: 'openai', label: 'OpenAI', icon: '●' },
@@ -945,41 +1000,7 @@ const loadSentinel = ref(null)
 let observer = null
 
 // --- Attribution Logic ---
-const sectors = ref([
-  { id: 'tech', name: 'Technology', events: [], isLoading: false },
-  { id: 'energy', name: 'Energy', events: [], isLoading: false },
-  { id: 'finance', name: 'Financials', events: [], isLoading: false },
-  { id: 'healthcare', name: 'Healthcare', events: [], isLoading: false },
-  { id: 'consumer', name: 'Consumer Discretionary', events: [], isLoading: false },
-  { id: 'industrial', name: 'Industrials', events: [], isLoading: false },
-  { id: 'materials', name: 'Materials', events: [], isLoading: false },
-  { id: 'utilities', name: 'Utilities', events: [], isLoading: false },
-  { id: 'realestate', name: 'Real Estate', events: [], isLoading: false },
-  { id: 'comm', name: 'Communication Services', events: [], isLoading: false }
-])
-
-const currentAttributionPage = ref(0)
-const itemsPerAttributionPage = computed(() => gridCols.value)
-const totalAttributionPages = computed(() => Math.ceil(sectors.value.length / itemsPerAttributionPage.value))
-
-const visibleSectors = computed(() => {
-  const start = currentAttributionPage.value * itemsPerAttributionPage.value
-  return sectors.value.slice(start, start + itemsPerAttributionPage.value)
-})
-
-const changeAttributionPage = (delta) => {
-  const newPage = currentAttributionPage.value + delta
-  if (newPage >= 0 && newPage < totalAttributionPages.value) {
-    currentAttributionPage.value = newPage
-  }
-}
-
-// Watch gridCols to reset page if needed
-watch(gridCols, () => {
-  if (currentAttributionPage.value >= totalAttributionPages.value) {
-    currentAttributionPage.value = Math.max(0, totalAttributionPages.value - 1)
-  }
-})
+const allAttributionEvents = ref([])
 
 // Mock Data Generator for Events
 const generateEvents = (marketId, count, startIndex) => {
@@ -1114,55 +1135,22 @@ const generateEvents = (marketId, count, startIndex) => {
   })
 }
 
-// Initialize Attribution Data
-sectors.value.forEach(sector => {
-  sector.events = generateEvents(sector.id, 20, 0)
-})
-
-// Attribution Infinite Scroll
-const attributionSentinels = ref({})
-let attributionObservers = {}
-
-const setAttributionSentinel = (el, sectorId) => {
-  if (el) {
-    attributionSentinels.value[sectorId] = el
-    setupAttributionObserver(sectorId, el)
+// Initialize Attribution Data (Flattened)
+const initAttributionData = () => {
+  const marketIds = ['us', 'hk', 'cn']
+  let events = []
+  // Generate a mix of events
+  for (let i = 0; i < 15; i++) {
+    const marketId = marketIds[i % marketIds.length]
+    events = events.concat(generateEvents(marketId, 1, i))
   }
+  allAttributionEvents.value = events
 }
 
-const setupAttributionObserver = (sectorId, el) => {
-  if (attributionObservers[sectorId]) attributionObservers[sectorId].disconnect()
+initAttributionData()
+// (Removed duplicate generateEvents)
 
-  attributionObservers[sectorId] = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting) {
-      loadMoreAttributionEvents(sectorId)
-    }
-  }, { rootMargin: '200px' })
-
-  attributionObservers[sectorId].observe(el)
-}
-
-const loadMoreAttributionEvents = async (sectorId) => {
-  const sector = sectors.value.find(s => s.id === sectorId)
-  if (!sector || sector.isLoading || sector.events.length > 50) return
-
-  sector.isLoading = true
-  await new Promise(resolve => setTimeout(resolve, 800))
-  
-  const newEvents = generateEvents(sector.id, 5, sector.events.length)
-  sector.events.push(...newEvents)
-  
-  sector.isLoading = false
-}
-
-const handleAttributionScroll = (event, marketId) => {
-  // Fallback scroll handler
-  const { scrollTop, clientHeight, scrollHeight } = event.target
-  const market = markets.value.find(m => m.id === marketId)
-  if (scrollHeight - scrollTop - clientHeight < 50) {
-    loadMoreAttributionEvents(marketId)
-  }
-}
+// (Removed old attribution logic)
 
 // Mock Data Generator
 const generateMockOpportunities = (count, startIndex) => {
@@ -1370,6 +1358,12 @@ const loadMore = async () => {
   } else if (activeTab.value === 'themes') {
     const newItems = generateMoreThemes(10, themes.value.length)
     themes.value.push(...newItems)
+  } else if (activeTab.value === 'attribution') {
+    // Load more attribution events
+    const marketIds = ['us', 'hk', 'cn']
+    const marketId = marketIds[Math.floor(Math.random() * marketIds.length)]
+    const newEvents = generateEvents(marketId, 5, allAttributionEvents.value.length)
+    allAttributionEvents.value.push(...newEvents)
   }
   
   isLoading.value = false
@@ -1383,7 +1377,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (observer) observer.disconnect()
-  Object.values(attributionObservers).forEach(obs => obs.disconnect())
   window.removeEventListener('scroll', handleWindowScroll)
 })
 
@@ -1513,7 +1506,14 @@ const generatePlanForStrategy = (strategy) => {
 }
 
 const goToStockDetail = (symbol, themeId) => {
-  router.push(`/stock-attribution/${symbol}?tab=themes&highlightThemeId=${themeId}`)
+  console.log('Navigating to stock detail:', symbol, themeId)
+  router.push({
+    path: `/stock-attribution/${symbol}`,
+    query: {
+      tab: 'themes',
+      highlightThemeId: themeId
+    }
+  })
 }
 
 const renderedStrategyContent = computed(() => selectedStrategy.value.content || '')
