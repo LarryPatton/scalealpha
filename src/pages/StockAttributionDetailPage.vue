@@ -120,7 +120,7 @@
       </div>
 
       <!-- Tabs -->
-      <div class="grid grid-cols-5 border-b border-[#333] mb-8">
+      <div class="grid grid-cols-4 border-b border-[#333] mb-8">
         <button 
           @click="activeTab = 'price'"
           class="px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap text-center"
@@ -149,13 +149,6 @@
         >
           个股相关策略 (Strategies)
         </button>
-        <button 
-          @click="activeTab = 'plan'"
-          class="px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap text-center"
-          :class="activeTab === 'plan' ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-300'"
-        >
-          计划制定 (Plan Formulation)
-        </button>
       </div>
 
       <!-- Related Themes Tab -->
@@ -175,8 +168,12 @@
           <div 
             v-for="theme in relatedThemes" 
             :key="theme.id" 
+            :id="`theme-${theme.id}`"
             @click="toggleThemeExpand(theme)"
-            class="bg-[#1a1a1a] rounded-xl border border-[#333] p-5 hover:border-gray-500 transition-colors group relative cursor-pointer"
+            class="bg-[#1a1a1a] rounded-xl border p-5 transition-all group relative cursor-pointer"
+            :class="[
+              theme.id === highlightedThemeId ? 'border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'border-[#333] hover:border-gray-500'
+            ]"
           >
             <div class="flex flex-col md:flex-row gap-6">
               <!-- Left: Sentiment & Confidence -->
@@ -3036,12 +3033,18 @@ const sendChatMessage = async () => {
   }, 1500)
 }
 
+const highlightedThemeId = ref(null)
+
 onMounted(() => {
   // Handle Tab switching
+  if (route.query.tab) {
+    activeTab.value = route.query.tab
+  } else {
+    activeTab.value = 'attribution'
+  }
+
+  // Handle Strategies Tab
   if (route.query.tab === 'strategies') {
-    activeTab.value = 'strategies'
-    
-    // Highlight strategy if strategyId is provided (NO auto-open modal)
     const strategyId = route.query.strategyId
     if (strategyId) {
       highlightedStrategyId.value = parseInt(strategyId)
@@ -3056,10 +3059,19 @@ onMounted(() => {
         }
       }, 500)
     }
-  } else if (route.query.tab === 'price') {
-    activeTab.value = 'price'
-  } else {
-    activeTab.value = 'attribution'
+  }
+
+  // Handle Themes Tab
+  if (route.query.tab === 'themes' && route.query.highlightThemeId) {
+    highlightedThemeId.value = parseInt(route.query.highlightThemeId)
+    const theme = relatedThemes.value.find(t => t.id === highlightedThemeId.value)
+    if (theme) {
+      theme.isExpanded = true
+      nextTick(() => {
+        const el = document.getElementById(`theme-${theme.id}`)
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      })
+    }
   }
 
   // In a real app, fetch data based on route.params.id

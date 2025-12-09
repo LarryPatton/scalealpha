@@ -25,7 +25,7 @@
           </p>
           
           <!-- CTA Button -->
-          <router-link to="/revenue" class="inline-block px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg rounded-full transition shadow-lg hover:shadow-blue-500/50 transform hover:-translate-y-1">
+          <router-link to="/revenueB" class="inline-block px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg rounded-full transition shadow-lg hover:shadow-blue-500/50 transform hover:-translate-y-1">
             查看更多信息 →
           </router-link>
         </div>

@@ -1,51 +1,7 @@
 <template>
   <div class="bg-[#0f0f0f] min-h-screen flex flex-col pb-24">
-    <!-- 1. Custom Navbar -->
-    <nav class="sticky top-0 z-50 bg-[#1a1a1a]/90 backdrop-blur-md border-b border-[#333] px-4 lg:px-8 h-16 flex items-center justify-between">
-      <!-- Left: Logo & Links -->
-      <div class="flex items-center gap-8">
-        <router-link to="/" class="flex items-center gap-2">
-          <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
-            <span class="text-white font-bold">Ⓐ</span>
-          </div>
-        </router-link>
-        
-        <div class="hidden md:flex items-center gap-6">
-          <router-link to="/info" class="text-white font-bold border-b-2 border-blue-500 pb-0.5">Info</router-link>
-          <router-link to="/infoB" class="text-gray-400 hover:text-white font-medium transition-colors">机会发现</router-link>
-        </div>
-      </div>
-
-      <!-- Center: Search Bar -->
-      <div class="flex-1 max-w-2xl mx-4 lg:mx-12">
-        <div class="relative group">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg class="h-5 w-5 text-gray-500 group-focus-within:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <input 
-            type="text" 
-            class="block w-full pl-10 pr-3 py-2 border border-[#333] rounded-full leading-5 bg-[#0f0f0f] text-gray-300 placeholder-gray-500 focus:outline-none focus:bg-[#1a1a1a] focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm transition-all duration-300" 
-            placeholder="搜索股票 / 策略 / 主题..." 
-          />
-          <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-            <span class="text-gray-600 text-xs border border-gray-700 rounded px-1.5 py-0.5">Ctrl K</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right: User Profile -->
-      <div class="flex items-center gap-4">
-        <button class="p-2 text-gray-400 hover:text-white transition-colors relative">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-          <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-[#1a1a1a]"></span>
-        </button>
-        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm border border-[#444] cursor-pointer hover:border-white transition-colors">
-          U
-        </div>
-      </div>
-    </nav>
+    <!-- 1. Global Navbar -->
+    <Navbar />
 
     <!-- 2. Main Content Area -->
     <main class="flex-grow flex flex-col p-4 lg:p-6 relative">
@@ -94,7 +50,7 @@
         <!-- Right: View Controls -->
         <div class="flex items-center gap-3">
           <!-- Pagination (Attribution Only) -->
-          <div v-if="activeTab === 'attribution'" class="flex items-center bg-[#1a1a1a] rounded-lg border border-[#333] overflow-hidden">
+          <div v-if="activeTab === 'attribution'" class="flex items-center bg-[#1a1a1a] rounded-lg border border-[#333] overflow-hidden mr-4">
             <button 
               @click="changeAttributionPage(-1)" 
               class="p-2 text-gray-400 hover:text-white hover:bg-[#333] border-r border-[#333] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
@@ -112,8 +68,8 @@
             </button>
           </div>
 
-          <!-- View Switcher (Opportunities & Attribution) -->
-          <div v-if="['opportunities', 'attribution'].includes(activeTab)" class="bg-[#1a1a1a] border border-[#333] rounded-lg p-1 flex items-center">
+          <!-- View Switcher (Opportunities, Attribution & Themes) -->
+          <div v-if="['opportunities', 'attribution', 'themes'].includes(activeTab)" class="bg-[#1a1a1a] border border-[#333] rounded-lg p-1 flex items-center">
             <button 
               @click="viewMode = 'card'"
               class="p-1.5 rounded-md transition-all"
@@ -144,6 +100,7 @@
           <div 
             v-for="(opp, index) in filteredOpportunities" 
             :key="opp.id + '-' + index" 
+            @click="openStrategyModal(opp)"
             class="bg-slate-900 rounded-xl shadow-lg p-6 text-center text-white border border-slate-800 hover:border-blue-500/50 transition-all duration-300 cursor-pointer group relative overflow-hidden"
           >
             <!-- Background decoration -->
@@ -190,10 +147,13 @@
       
       <!-- Tab: Themes (Waterfall) -->
       <div v-else-if="activeTab === 'themes'" class="max-w-[1920px] mx-auto">
-        <div class="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
+        <div 
+          :class="viewMode === 'card' ? 'grid gap-6' : 'flex flex-col space-y-4'"
+          :style="viewMode === 'card' ? { gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))` } : {}"
+        >
           
           <!-- Theme Card -->
-          <div v-for="theme in themes" :key="theme.id" class="break-inside-avoid bg-[#1a1a1a] rounded-xl border border-[#333] overflow-hidden hover:border-gray-500 transition-colors group">
+          <div v-for="theme in themes" :key="theme.id" class="bg-[#1a1a1a] rounded-xl border border-[#333] overflow-hidden hover:border-gray-500 transition-colors group">
             
             <!-- Header -->
             <div class="p-4 border-b border-[#333] bg-[#222]">
@@ -225,16 +185,23 @@
                 </div>
 
                 <!-- Heatmap Grid -->
-                <div class="flex flex-wrap gap-[1px] w-full h-4 rounded overflow-hidden bg-[#111]">
+                <div class="grid grid-cols-[repeat(auto-fill,minmax(40px,1fr))] gap-0.5 w-full rounded overflow-hidden bg-[#111] p-0.5">
                   <div 
                     v-for="(stock, i) in theme.relatedStocks" 
                     :key="i"
-                    class="flex-grow h-full min-w-[4px] opacity-80 hover:opacity-100 transition-opacity cursor-help"
+                    @click.stop="goToStockDetail(stock.symbol, theme.id)"
+                    class="h-6 flex items-center justify-center text-[9px] font-bold text-white/90 opacity-90 hover:opacity-100 transition-all cursor-pointer rounded-[1px]"
                     :class="getHeatmapColor(stock.change)"
-                    :style="{ flexBasis: (Math.abs(stock.change) * 5) + '%' }"
                     :title="`${stock.symbol}: ${stock.change > 0 ? '+' : ''}${stock.change}%`"
-                  ></div>
+                  >
+                    {{ stock.symbol }}
+                  </div>
                 </div>
+              </div>
+
+              <!-- Theme Image -->
+              <div class="w-full h-32 bg-[#111] rounded-lg overflow-hidden mb-4 relative group/image">
+                <img :src="theme.image" class="w-full h-full object-cover opacity-80 group-hover/image:opacity-100 transition-opacity" alt="Theme Image" />
               </div>
 
               <h3 class="text-lg font-bold text-white leading-tight mb-1">{{ theme.title }}</h3>
@@ -293,27 +260,23 @@
       <div v-else-if="activeTab === 'attribution'" class="px-4 pb-8">
         <div 
           class="gap-6 items-start"
-          :class="viewMode === 'card' ? 'grid grid-cols-4' : 'flex flex-col space-y-6'"
+          :class="viewMode === 'card' ? 'grid' : 'flex flex-col space-y-6'"
+          :style="viewMode === 'card' ? { gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))` } : {}"
         >
           
-          <!-- Market Column -->
-          <div v-for="market in visibleMarkets" :key="market.id" class="flex flex-col bg-[#1a1a1a] rounded-xl border border-[#333] overflow-hidden w-full">
+          <!-- Sector Column -->
+          <div v-for="sector in visibleSectors" :key="sector.id" class="flex flex-col bg-[#1a1a1a] rounded-xl border border-[#333] overflow-hidden w-full">
             
             <!-- Column Header -->
             <div class="p-4 border-b border-[#333] bg-[#222] flex justify-between items-center">
               <div class="flex items-center gap-2">
-                <span class="text-xl">{{ market.flag }}</span>
-                <h3 class="font-bold text-white">{{ market.name }}</h3>
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full" :class="market.isOpen ? 'bg-green-500 animate-pulse' : 'bg-gray-500'"></span>
-                <span class="text-xs text-gray-400 uppercase">{{ market.isOpen ? 'Open' : 'Closed' }}</span>
+                <h3 class="font-bold text-white">{{ sector.name }}</h3>
               </div>
             </div>
 
             <!-- Events List (Natural Height) -->
             <div class="p-4 space-y-4">
-              <div v-for="event in market.events" :key="event.id" class="relative pl-4 border-l-2 border-[#333] hover:border-blue-500/50 transition-colors group">
+              <div v-for="event in sector.events" :key="event.id" class="relative pl-4 border-l-2 border-[#333] hover:border-blue-500/50 transition-colors group">
                 <!-- Timeline Dot -->
                 <div class="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full bg-[#333] group-hover:bg-blue-500 transition-colors border border-[#1a1a1a]"></div>
                 
@@ -370,18 +333,18 @@
               </div>
 
               <!-- Loading Indicator per column -->
-              <div v-if="market.isLoading" class="py-4 flex flex-col items-center gap-2">
+              <div v-if="sector.isLoading" class="py-4 flex flex-col items-center gap-2">
                 <div class="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                 <span class="text-xs text-gray-500">Loading history...</span>
               </div>
               
               <!-- End of History -->
-              <div v-if="!market.isLoading && market.events.length > 50" class="py-4 text-center">
+              <div v-if="!sector.isLoading && sector.events.length > 50" class="py-4 text-center">
                 <span class="text-xs text-gray-600">No more events</span>
               </div>
               
               <!-- Sentinel for Intersection Observer -->
-              <div :ref="el => setAttributionSentinel(el, market.id)" class="h-4 w-full"></div>
+              <div :ref="el => setAttributionSentinel(el, sector.id)" class="h-4 w-full"></div>
             </div>
 
           </div>
@@ -409,7 +372,7 @@
     <!-- (Removed Bottom Right Floating Buttons) -->
 
     <!-- 5. Grid Control (Bottom Left) -->
-    <div v-if="activeTab === 'opportunities'" class="fixed bottom-8 left-8 z-50 flex items-center transition-all duration-300">
+    <div v-if="['opportunities', 'themes', 'attribution'].includes(activeTab)" class="fixed bottom-8 left-8 z-50 flex items-center transition-all duration-300">
       <!-- Expanded State -->
       <div 
         v-if="isGridControlExpanded"
@@ -448,7 +411,7 @@
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showFilterModal = false"></div>
         
         <!-- Sidebar Panel -->
-        <div class="relative w-80 h-full bg-[#1a1a1a] border-l border-[#333] shadow-2xl transform transition-transform duration-300 flex flex-col">
+        <div class="relative w-96 h-full bg-[#1a1a1a] border-l border-[#333] shadow-2xl transform transition-transform duration-300 flex flex-col">
           <!-- Header -->
           <div class="p-6 border-b border-[#333] flex justify-between items-center">
             <h3 class="text-lg font-bold text-white">Filters</h3>
@@ -457,25 +420,82 @@
             </button>
           </div>
           
-          <!-- Content (Empty Container) -->
-          <div class="flex-grow p-6 overflow-y-auto">
-            <!-- Placeholder for filter options -->
-            <div class="space-y-6">
-              <div class="h-4 bg-[#333] rounded w-1/3"></div>
-              <div class="space-y-3">
-                <div class="h-8 bg-[#2a2a2a] rounded border border-[#333]"></div>
-                <div class="h-8 bg-[#2a2a2a] rounded border border-[#333]"></div>
-                <div class="h-8 bg-[#2a2a2a] rounded border border-[#333]"></div>
-              </div>
-              
-              <div class="h-px bg-[#333] my-4"></div>
-              
-              <div class="h-4 bg-[#333] rounded w-1/2"></div>
-              <div class="space-y-3">
-                <div class="h-8 bg-[#2a2a2a] rounded border border-[#333]"></div>
-                <div class="h-8 bg-[#2a2a2a] rounded border border-[#333]"></div>
+          <!-- Content -->
+          <div class="flex-grow p-6 overflow-y-auto space-y-8">
+            
+            <!-- 1. Sources (Multi-select) -->
+            <div>
+              <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">策略生成来源 (多选)</h4>
+              <div class="flex flex-wrap gap-2">
+                <button 
+                  v-for="opt in filterOptions.sources" 
+                  :key="opt.id"
+                  @click="toggleFilterSource(opt.id)"
+                  class="px-3 py-2 rounded-lg text-xs font-medium border transition-all flex items-center gap-2"
+                  :class="filters.sources.includes(opt.id) 
+                    ? 'bg-blue-600 border-blue-500 text-white' 
+                    : 'bg-[#222] border-[#333] text-gray-400 hover:border-gray-500 hover:text-gray-200'"
+                >
+                  <span>{{ opt.icon }}</span>
+                  {{ opt.label }}
+                </button>
               </div>
             </div>
+
+            <!-- 2. Direction -->
+            <div>
+              <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">策略方向</h4>
+              <div class="grid grid-cols-3 gap-2">
+                <button 
+                  v-for="dir in filterOptions.directions" 
+                  :key="dir"
+                  @click="filters.direction = filters.direction === dir ? '' : dir"
+                  class="py-2 rounded-lg text-xs font-bold border transition-all text-center"
+                  :class="filters.direction === dir 
+                    ? 'bg-blue-600 border-blue-500 text-white' 
+                    : 'bg-[#222] border-[#333] text-gray-400 hover:border-gray-500 hover:text-gray-200'"
+                >
+                  {{ dir }}
+                </button>
+              </div>
+            </div>
+
+            <!-- 3. Duration -->
+            <div>
+              <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">持续时间</h4>
+              <div class="grid grid-cols-3 gap-2">
+                <button 
+                  v-for="dur in filterOptions.durations" 
+                  :key="dur"
+                  @click="filters.duration = filters.duration === dur ? '' : dur"
+                  class="py-2 rounded-lg text-xs font-medium border transition-all text-center"
+                  :class="filters.duration === dur 
+                    ? 'bg-blue-600 border-blue-500 text-white' 
+                    : 'bg-[#222] border-[#333] text-gray-400 hover:border-gray-500 hover:text-gray-200'"
+                >
+                  {{ dur }}
+                </button>
+              </div>
+            </div>
+
+            <!-- 4. Grade -->
+            <div>
+              <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">策略评级</h4>
+              <div class="flex flex-wrap gap-2">
+                <button 
+                  v-for="grade in filterOptions.grades" 
+                  :key="grade"
+                  @click="filters.grade = filters.grade === grade ? '' : grade"
+                  class="w-10 h-10 rounded-lg text-xs font-bold border transition-all flex items-center justify-center"
+                  :class="filters.grade === grade 
+                    ? 'bg-blue-600 border-blue-500 text-white' 
+                    : 'bg-[#222] border-[#333] text-gray-400 hover:border-gray-500 hover:text-gray-200'"
+                >
+                  {{ grade }}
+                </button>
+              </div>
+            </div>
+
           </div>
           
           <!-- Footer -->
@@ -487,12 +507,333 @@
         </div>
       </div>
     </transition>
+
+    <!-- Strategy Detail Modal (Apple-inspired Minimalist Design) -->
+    <div v-if="showStrategyModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-300" @click.self="closeStrategyModal">
+      <div class="bg-[#1a1a1a] rounded-2xl border border-[#333] w-[95vw] h-[85vh] overflow-hidden shadow-2xl flex flex-col transform transition-all duration-300 scale-100 animate-modal-in">
+        
+        <!-- Modal Header (Sticky) -->
+        <div class="px-8 py-5 border-b border-[#2a2a2a] flex justify-between items-center bg-[#1a1a1a]/95 backdrop-blur-xl z-10 shrink-0">
+          <div class="flex items-center gap-3">
+            <!-- Grade Badge -->
+            <div class="px-2.5 py-1 rounded-md text-xs font-semibold tracking-wide" 
+              :class="{
+                'bg-green-500/10 text-green-400': selectedStrategy.grade === 'A' || selectedStrategy.grade === 'A+',
+                'bg-blue-500/10 text-blue-400': selectedStrategy.grade === 'B',
+                'bg-yellow-500/10 text-yellow-400': selectedStrategy.grade === 'C'
+              }">
+              GRADE {{ selectedStrategy.grade }}
+            </div>
+            <!-- Direction Badge -->
+            <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold"
+              :class="{
+                'bg-green-500/10 text-green-400': selectedStrategy.direction === 'LONG',
+                'bg-red-500/10 text-red-400': selectedStrategy.direction === 'SHORT',
+                'bg-gray-500/10 text-gray-400': selectedStrategy.direction === 'WAIT'
+              }">
+              <span v-if="selectedStrategy.direction === 'LONG'">↑</span>
+              <span v-if="selectedStrategy.direction === 'SHORT'">↓</span>
+              {{ selectedStrategy.direction }}
+            </div>
+            <div class="h-4 w-px bg-[#333] mx-1"></div>
+            <span class="text-xs text-gray-500">{{ selectedStrategy.timeAgo }}</span>
+          </div>
+          <!-- Close Button -->
+          <button 
+            @click="closeStrategyModal" 
+            class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/5 transition-all duration-200"
+          >
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Modal Body (Split Layout) -->
+        <div class="flex flex-1 overflow-hidden">
+          
+        <!-- Left Area (Chat + Content) -->
+        <div class="flex-1 flex border-r border-[#2a2a2a] relative bg-[#0f0f0f]">
+          
+          <!-- Chat Sidebar (Left, 320px) -->
+          <div class="w-[320px] flex flex-col border-r border-[#2a2a2a] bg-[#111] shrink-0 hidden lg:flex">
+            <!-- Chat Header -->
+            <div class="px-4 py-3 border-b border-[#2a2a2a] flex justify-between items-center bg-[#1a1a1a]">
+               <h3 class="text-sm font-medium text-gray-300 flex items-center gap-2">
+                 <i class="fas fa-robot text-green-500"></i> AI 策略助手
+               </h3>
+            </div>
+
+            <!-- Chat Messages Area -->
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin">
+               <!-- Welcome State -->
+               <div v-if="chatHistory.length === 0" class="flex flex-col h-full">
+                  <div class="flex-1 flex flex-col items-center justify-center text-center space-y-4 p-4">
+                    <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mb-2">
+                      <i class="fas fa-robot text-green-400 text-xl"></i>
+                    </div>
+                    <div>
+                      <h4 class="text-white font-medium mb-1">ScaleAlpha AI 助手</h4>
+                      <p class="text-xs text-gray-500">基于当前策略报告为您解答</p>
+                    </div>
+                  </div>
+                  
+                  <!-- Quick Prompts -->
+                  <div class="space-y-2 pb-4">
+                    <p class="text-xs text-gray-500 px-1 mb-2">您可以问我：</p>
+                    <button 
+                      v-for="(prompt, idx) in quickPrompts" 
+                      :key="idx"
+                      @click="useQuickPrompt(prompt)"
+                      class="w-full text-left px-3 py-2.5 bg-[#1a1a1a] hover:bg-[#222] hover:border-blue-500/30 border border-[#2a2a2a] rounded-lg text-xs text-gray-300 transition-all duration-200 flex items-center justify-between group hover:shadow-lg hover:shadow-blue-900/10"
+                    >
+                      <span class="group-hover:text-blue-400 transition-colors">{{ prompt }}</span>
+                      <i class="fas fa-arrow-right opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-blue-500 transition-all duration-300"></i>
+                    </button>
+                  </div>
+               </div>
+               
+               <!-- Chat History -->
+               <div v-else class="space-y-4">
+                 <div v-for="(msg, index) in chatHistory" :key="index" class="flex gap-3">
+                    <!-- Avatar -->
+                    <div class="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs"
+                      :class="msg.role === 'user' ? 'bg-blue-600' : 'bg-green-600'">
+                      <i class="fas" :class="msg.role === 'user' ? 'fa-user' : 'fa-robot'"></i>
+                    </div>
+                    <!-- Message Bubble -->
+                    <div class="flex-1">
+                      <div class="text-xs font-medium text-gray-400 mb-1">
+                        {{ msg.role === 'user' ? 'You' : 'ScaleAlpha AI' }}
+                      </div>
+                      <div class="text-sm text-gray-200 leading-relaxed whitespace-pre-wrap bg-[#222] p-3 rounded-lg border border-[#333]">{{ msg.content }}</div>
+                    </div>
+                 </div>
+
+                 <!-- Loading Indicator -->
+                 <div v-if="isChatLoading" class="flex gap-3">
+                    <div class="w-7 h-7 rounded-full bg-green-600 flex items-center justify-center shrink-0 text-xs">
+                      <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="flex-1">
+                       <div class="text-xs font-medium text-gray-400 mb-1">ScaleAlpha AI</div>
+                       <div class="bg-[#222] p-3 rounded-lg border border-[#333] w-16">
+                          <div class="flex gap-1 items-center h-4 justify-center">
+                            <div class="w-1.5 h-1.5 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+                            <div class="w-1.5 h-1.5 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+                            <div class="w-1.5 h-1.5 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+               </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="p-3 bg-[#1a1a1a] border-t border-[#2a2a2a]">
+              <div class="relative">
+                <input 
+                  v-model="chatInput"
+                  type="text" 
+                  placeholder="输入问题..." 
+                  class="w-full bg-[#0f0f0f] text-white rounded-lg pl-3 pr-10 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 border border-[#333]"
+                  @keyup.enter="sendChatMessage"
+                >
+                <button 
+                  @click="sendChatMessage"
+                  class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-blue-500 hover:text-blue-400 transition-colors"
+                  :disabled="!chatInput.trim() || isChatLoading"
+                >
+                  <i class="fas fa-paper-plane"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Strategy Content (Right, Flex-1) -->
+          <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Scrollable Content Area -->
+            <div class="flex-1 overflow-y-auto p-6 scrollbar-thin">
+              <!-- Strategy Title & Meta -->
+              <div class="mb-8">
+                <div class="flex items-center gap-3 mb-4">
+                  <span class="px-2 py-1 rounded text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
+                    GRADE {{ selectedStrategy.grade }}
+                  </span>
+                  <span class="px-2 py-1 rounded text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                    {{ selectedStrategy.term }}
+                  </span>
+                  <span class="text-gray-500 text-sm">{{ selectedStrategy.time }}</span>
+                </div>
+                
+                <h2 class="text-2xl font-bold text-white mb-2">{{ selectedStrategy.title }}</h2>
+                <div class="flex items-center gap-4 text-sm text-gray-400">
+                  <span class="flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                    {{ selectedStrategy.category }}
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <i class="fas fa-clock"></i>
+                    {{ selectedStrategy.duration }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Strategy Summary Box -->
+              <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-5 mb-8">
+                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <i class="fas fa-file-alt"></i>
+                  Strategy Summary
+                </h3>
+                <p class="text-gray-300 leading-relaxed text-sm">
+                  {{ selectedStrategy.summary }}
+                </p>
+              </div>
+
+              <!-- Main Content -->
+              <div class="markdown-content space-y-6 text-gray-300" v-html="renderedStrategyContent"></div>
+
+              <!-- Action Buttons -->
+              <div class="flex gap-4 mt-12 pt-8 border-t border-[#2a2a2a]">
+                <button 
+                  @click="generatePlanForStrategy(selectedStrategy)"
+                  class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                >
+                  <i class="fas fa-magic"></i>
+                  生成交易计划
+                </button>
+                <button class="px-4 py-3 bg-[#2a2a2a] hover:bg-[#333] text-white rounded-lg transition-colors">
+                  <i class="fas fa-share-alt"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+          <!-- Right: Related Plans (Fixed Width) -->
+          <div class="w-[350px] border-l border-[#2a2a2a] bg-[#0f0f0f] overflow-y-auto px-6 py-6 scrollbar-thin scrollbar-thumb-[#333] scrollbar-track-transparent shrink-0 hidden xl:block">
+            
+            <!-- Plans Header -->
+            <div class="mb-5">
+              <div class="flex items-center gap-2 mb-2">
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                </svg>
+                <h3 class="text-sm font-semibold text-white">基于此策略的计划</h3>
+                <span class="text-xs text-gray-500">({{ relatedPlans.length }})</span>
+              </div>
+              <p class="text-xs text-gray-500">已有 {{ relatedPlans.length }} 个计划使用此策略</p>
+            </div>
+
+            <!-- Plans List -->
+            <div v-if="relatedPlans.length > 0" class="space-y-3">
+              <div 
+                v-for="plan in relatedPlans" 
+                :key="plan.id"
+                class="bg-[#1a1a1a] rounded-lg border border-[#2a2a2a] hover:border-gray-500 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/50 transition-all duration-300 group"
+                :class="{ 'ring-1 ring-blue-500/30 border-blue-500/30': plan.isExpanded }"
+              >
+                <!-- Plan Header (Collapsible) -->
+                <button 
+                  @click="togglePlanExpand(plan)"
+                  class="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-[#222] transition-colors"
+                >
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <svg 
+                        class="w-3.5 h-3.5 text-gray-500 transition-transform duration-200 group-hover:text-blue-400" 
+                        :class="{ 'rotate-90': plan.isExpanded }"
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                      </svg>
+                      <h4 class="text-sm font-medium text-white truncate group-hover:text-blue-400 transition-colors">{{ plan.title }}</h4>
+                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-medium flex-shrink-0">
+                        <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        官方生成
+                      </span>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs text-gray-500 ml-5">
+                      <span class="flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        ${{ (plan.capital / 1000).toFixed(0) }}K
+                      </span>
+                      <span class="flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        {{ plan.createdAt }}
+                      </span>
+                    </div>
+                  </div>
+                </button>
+
+                <!-- Plan Details (Expanded) -->
+                <transition name="expand">
+                  <div v-if="plan.isExpanded" class="px-4 pb-4 border-t border-[#2a2a2a] pt-3 space-y-3">
+                    <!-- Plan Metrics -->
+                    <div class="grid grid-cols-2 gap-3">
+                      <div class="bg-[#0f0f0f] rounded-lg p-2.5">
+                        <div class="text-xs text-gray-500 mb-0.5">目标收益</div>
+                        <div class="text-sm font-semibold text-green-400">{{ plan.targetReturn }}</div>
+                      </div>
+                      <div class="bg-[#0f0f0f] rounded-lg p-2.5">
+                        <div class="text-xs text-gray-500 mb-0.5">风险等级</div>
+                        <div class="text-sm font-semibold" :class="{
+                          'text-green-400': plan.riskLevel === 'low',
+                          'text-yellow-400': plan.riskLevel === 'medium',
+                          'text-red-400': plan.riskLevel === 'high'
+                        }">{{ plan.riskLevel === 'low' ? '低' : plan.riskLevel === 'medium' ? '中' : '高' }}</div>
+                      </div>
+                    </div>
+
+                    <!-- Positions -->
+                    <div v-if="plan.positions && plan.positions.length > 0">
+                      <div class="text-xs text-gray-500 mb-2">操作记录</div>
+                      <div class="space-y-2">
+                        <div 
+                          v-for="(position, idx) in plan.positions" 
+                          :key="idx"
+                          class="text-xs"
+                        >
+                          <div class="flex items-start gap-2 text-gray-300">
+                            <span class="text-blue-400 font-medium whitespace-nowrap">{{ position.type }}</span>
+                            <span>{{ position.symbol }} {{ position.strike }} {{ position.expiry }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Action Button -->
+                    <button class="w-full py-2 bg-[#222] hover:bg-[#333] text-xs text-gray-300 rounded border border-[#333] transition-colors mt-2">
+                      查看详情
+                    </button>
+                  </div>
+                </transition>
+              </div>
+            </div>
+            
+            <!-- Empty State -->
+            <div v-else class="text-center py-8 text-gray-500 text-sm">
+              暂无相关计划
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch, onUnmounted, computed, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import Navbar from '../components/Navbar.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -502,6 +843,38 @@ const showBackToTop = ref(false)
 const showFilterModal = ref(false)
 const contentFilter = ref('recommended') // 'recommended' or 'following'
 const viewMode = ref('card') // 'card' or 'list'
+
+// Filter State
+const filters = ref({
+  sources: [],
+  direction: '',
+  duration: '',
+  grade: ''
+})
+
+const filterOptions = {
+  sources: [
+    { id: 'openai', label: 'OpenAI', icon: '●' },
+    { id: 'claude', label: 'Claude', icon: '✦' },
+    { id: 'grok', label: 'Grok', icon: '✓' },
+    { id: 'deepseek', label: 'DeepSeek', icon: '◆' },
+    { id: 'qwen', label: 'Qwen', icon: '◎' },
+    { id: 'kimi', label: 'Kimi', icon: '▪' },
+    { id: 'gemini', label: 'Gemini', icon: '✧' }
+  ],
+  directions: ['LONG', 'SHORT', 'WAIT'],
+  durations: ['Short', 'Medium', 'Long'],
+  grades: ['A+', 'A', 'A-', 'B+', 'B', 'C']
+}
+
+const toggleFilterSource = (id) => {
+  const index = filters.value.sources.indexOf(id)
+  if (index === -1) {
+    filters.value.sources.push(id)
+  } else {
+    filters.value.sources.splice(index, 1)
+  }
+}
 
 // Grid Control State
 const gridCols = ref(5)
@@ -566,31 +939,32 @@ const tabs = [
   { id: 'attribution', label: '事件分析' }
 ]
 
-const activeTab = ref('opportunities')
+const activeTab = ref(route.query.tab || 'opportunities')
 const isLoading = ref(false)
 const loadSentinel = ref(null)
 let observer = null
 
 // --- Attribution Logic ---
-const currentAttributionPage = ref(0)
-const itemsPerAttributionPage = 4
-
-const markets = ref([
-  { id: 'us', name: 'US Market', flag: '🇺🇸', isOpen: true, events: [], isLoading: false },
-  { id: 'hk', name: 'HK Market', flag: '🇭🇰', isOpen: false, events: [], isLoading: false },
-  { id: 'cn', name: 'CN Market', flag: '🇨🇳', isOpen: false, events: [], isLoading: false },
-  { id: 'jp', name: 'JP Market', flag: '🇯🇵', isOpen: true, events: [], isLoading: false },
-  { id: 'eu', name: 'EU Market', flag: '🇪🇺', isOpen: true, events: [], isLoading: false },
-  { id: 'uk', name: 'UK Market', flag: '🇬🇧', isOpen: true, events: [], isLoading: false },
-  { id: 'in', name: 'IN Market', flag: '🇮🇳', isOpen: true, events: [], isLoading: false },
-  { id: 'au', name: 'AU Market', flag: '🇦🇺', isOpen: false, events: [], isLoading: false }
+const sectors = ref([
+  { id: 'tech', name: 'Technology', events: [], isLoading: false },
+  { id: 'energy', name: 'Energy', events: [], isLoading: false },
+  { id: 'finance', name: 'Financials', events: [], isLoading: false },
+  { id: 'healthcare', name: 'Healthcare', events: [], isLoading: false },
+  { id: 'consumer', name: 'Consumer Discretionary', events: [], isLoading: false },
+  { id: 'industrial', name: 'Industrials', events: [], isLoading: false },
+  { id: 'materials', name: 'Materials', events: [], isLoading: false },
+  { id: 'utilities', name: 'Utilities', events: [], isLoading: false },
+  { id: 'realestate', name: 'Real Estate', events: [], isLoading: false },
+  { id: 'comm', name: 'Communication Services', events: [], isLoading: false }
 ])
 
-const totalAttributionPages = computed(() => Math.ceil(markets.value.length / itemsPerAttributionPage))
+const currentAttributionPage = ref(0)
+const itemsPerAttributionPage = computed(() => gridCols.value)
+const totalAttributionPages = computed(() => Math.ceil(sectors.value.length / itemsPerAttributionPage.value))
 
-const visibleMarkets = computed(() => {
-  const start = currentAttributionPage.value * itemsPerAttributionPage
-  return markets.value.slice(start, start + itemsPerAttributionPage)
+const visibleSectors = computed(() => {
+  const start = currentAttributionPage.value * itemsPerAttributionPage.value
+  return sectors.value.slice(start, start + itemsPerAttributionPage.value)
 })
 
 const changeAttributionPage = (delta) => {
@@ -599,6 +973,13 @@ const changeAttributionPage = (delta) => {
     currentAttributionPage.value = newPage
   }
 }
+
+// Watch gridCols to reset page if needed
+watch(gridCols, () => {
+  if (currentAttributionPage.value >= totalAttributionPages.value) {
+    currentAttributionPage.value = Math.max(0, totalAttributionPages.value - 1)
+  }
+})
 
 // Mock Data Generator for Events
 const generateEvents = (marketId, count, startIndex) => {
@@ -734,46 +1115,44 @@ const generateEvents = (marketId, count, startIndex) => {
 }
 
 // Initialize Attribution Data
-markets.value.forEach(market => {
-  const templateId = ['us', 'hk', 'cn'].includes(market.id) ? market.id : 'us'
-  market.events = generateEvents(templateId, 20, 0)
+sectors.value.forEach(sector => {
+  sector.events = generateEvents(sector.id, 20, 0)
 })
 
 // Attribution Infinite Scroll
 const attributionSentinels = ref({})
 let attributionObservers = {}
 
-const setAttributionSentinel = (el, marketId) => {
+const setAttributionSentinel = (el, sectorId) => {
   if (el) {
-    attributionSentinels.value[marketId] = el
-    setupAttributionObserver(marketId, el)
+    attributionSentinels.value[sectorId] = el
+    setupAttributionObserver(sectorId, el)
   }
 }
 
-const setupAttributionObserver = (marketId, el) => {
-  if (attributionObservers[marketId]) attributionObservers[marketId].disconnect()
+const setupAttributionObserver = (sectorId, el) => {
+  if (attributionObservers[sectorId]) attributionObservers[sectorId].disconnect()
 
-  attributionObservers[marketId] = new IntersectionObserver((entries) => {
+  attributionObservers[sectorId] = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting) {
-      loadMoreAttributionEvents(marketId)
+      loadMoreAttributionEvents(sectorId)
     }
   }, { rootMargin: '200px' })
 
-  attributionObservers[marketId].observe(el)
+  attributionObservers[sectorId].observe(el)
 }
 
-const loadMoreAttributionEvents = async (marketId) => {
-  const market = markets.value.find(m => m.id === marketId)
-  if (!market || market.isLoading || market.events.length > 50) return
+const loadMoreAttributionEvents = async (sectorId) => {
+  const sector = sectors.value.find(s => s.id === sectorId)
+  if (!sector || sector.isLoading || sector.events.length > 50) return
 
-  market.isLoading = true
+  sector.isLoading = true
   await new Promise(resolve => setTimeout(resolve, 800))
   
-  const templateId = ['us', 'hk', 'cn'].includes(market.id) ? market.id : 'us'
-  const newEvents = generateEvents(templateId, 5, market.events.length)
-  market.events.push(...newEvents)
+  const newEvents = generateEvents(sector.id, 5, sector.events.length)
+  sector.events.push(...newEvents)
   
-  market.isLoading = false
+  sector.isLoading = false
 }
 
 const handleAttributionScroll = (event, marketId) => {
@@ -920,6 +1299,8 @@ const generateMoreThemes = (count, startIndex) => {
       sentiment: template.sentiment,
       heat,
       desc: template.desc,
+      // Add Theme Image
+      image: `https://placehold.co/600x300/1a1a1a/666?text=${encodeURIComponent(template.title.split(' ')[0])}`,
       totalItems: template.items.length + Math.floor(Math.random() * 5),
       items: template.items.map((item, idx) => ({
         id: id * 100 + idx,
@@ -949,109 +1330,203 @@ themes.value = generateMoreThemes(20, 0)
 
 // Gradient Helper
 const gradients = [
-  'from-blue-600 to-purple-600',
-  'from-emerald-600 to-teal-600',
-  'from-orange-600 to-red-600',
-  'from-pink-600 to-rose-600',
-  'from-indigo-600 to-blue-600',
-  'from-cyan-600 to-blue-600',
-  'from-fuchsia-600 to-purple-600',
-  'from-amber-600 to-orange-600'
+  'from-blue-500/20 to-purple-500/20',
+  'from-emerald-500/20 to-teal-500/20',
+  'from-orange-500/20 to-red-500/20',
+  'from-pink-500/20 to-rose-500/20',
+  'from-cyan-500/20 to-blue-500/20',
+  'from-violet-500/20 to-fuchsia-500/20'
 ]
 
 const getGradientClass = (index) => {
   return gradients[index % gradients.length]
 }
 
-// Tab Switching Logic
-const switchTab = (tabId) => {
-  activeTab.value = tabId
-  // Update URL without reloading
-  router.replace({ query: { ...route.query, tab: tabId } })
+// Infinite Scroll Logic
+const setupObserver = () => {
+  if (observer) observer.disconnect()
+
+  observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      loadMore()
+    }
+  }, { rootMargin: '200px' })
+
+  if (loadSentinel.value) {
+    observer.observe(loadSentinel.value)
+  }
 }
 
-// Infinite Scroll Logic
 const loadMore = async () => {
   if (isLoading.value) return
-  
   isLoading.value = true
   
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 800))
+  
   if (activeTab.value === 'opportunities') {
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 800))
-    
     const newItems = generateMockOpportunities(10, opportunities.value.length)
     opportunities.value.push(...newItems)
   } else if (activeTab.value === 'themes') {
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 600))
-    
-    const newThemes = generateMoreThemes(12, themes.value.length)
-    themes.value.push(...newThemes)
+    const newItems = generateMoreThemes(10, themes.value.length)
+    themes.value.push(...newItems)
   }
   
   isLoading.value = false
 }
 
-// Lifecycle Hooks
+// Lifecycle
 onMounted(() => {
-  // Initialize tab from URL
-  if (route.query.tab && tabs.some(t => t.id === route.query.tab)) {
-    activeTab.value = route.query.tab
-  } else {
-    // Default to opportunities and set URL
-    switchTab('opportunities')
-  }
-
-  // Setup Intersection Observer for Infinite Scroll
-  observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting) {
-      loadMore()
-    }
-  }, { rootMargin: '400px' })
-
-  if (loadSentinel.value) {
-    observer.observe(loadSentinel.value)
-  }
-  
+  setupObserver()
   window.addEventListener('scroll', handleWindowScroll)
 })
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', handleWindowScroll)
   if (observer) observer.disconnect()
   Object.values(attributionObservers).forEach(obs => obs.disconnect())
+  window.removeEventListener('scroll', handleWindowScroll)
 })
 
-// Watch for tab changes to re-attach observer if needed
-watch(activeTab, (newTab) => {
-  if (newTab === 'opportunities' || newTab === 'themes') {
-    // Wait for DOM update
-    setTimeout(() => {
-      if (loadSentinel.value && observer) {
-        observer.disconnect()
-        observer.observe(loadSentinel.value)
-      }
-    }, 100)
-  } else if (newTab === 'attribution') {
-    // Re-setup attribution observers if needed
-    nextTick(() => {
-      visibleMarkets.value.forEach(market => {
-        const el = attributionSentinels.value[market.id]
-        if (el) setupAttributionObserver(market.id, el)
-      })
-    })
-  }
+// Watch tab change to reset observer and update URL
+watch(activeTab, async (newTab) => {
+  isLoading.value = false
+  
+  // Update URL query param
+  router.replace({ query: { ...route.query, tab: newTab } })
+
+  await nextTick()
+  setupObserver()
 })
+
+// Switch Tab Helper
+const switchTab = (tabId) => {
+  activeTab.value = tabId
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+// --- Strategy Modal Logic ---
+const showStrategyModal = ref(false)
+const selectedStrategy = ref({})
+const chatInput = ref('')
+const chatHistory = ref([])
+const isChatLoading = ref(false)
+const relatedPlans = ref([])
+
+const quickPrompts = [
+  "这个策略的主要风险是什么？",
+  "基于此策略生成的计划有哪些？",
+  "如何对冲此策略的下行风险？"
+]
+
+const openStrategyModal = (opp) => {
+  selectedStrategy.value = {
+    ...opp,
+    grade: 'A+', // Mock data
+    direction: opp.type === 'Long' ? 'LONG' : 'SHORT',
+    term: 'Short Term',
+    timeAgo: '2h ago',
+    time: 'Today, 10:30 AM',
+    category: opp.strategy,
+    duration: '1-2 Weeks',
+    summary: opp.reason,
+    content: `
+      <h3 class="text-lg font-bold text-white mb-2">Investment Thesis</h3>
+      <p class="mb-4">The company is showing strong momentum in its core business segments, driven by increasing demand for AI-related hardware and software solutions. Recent earnings reports have exceeded analyst expectations, indicating robust operational efficiency.</p>
+      
+      <h3 class="text-lg font-bold text-white mb-2">Technical Analysis</h3>
+      <p class="mb-4">Price action suggests a breakout from the current consolidation pattern. The stock is trading above its 50-day and 200-day moving averages, confirming a bullish trend. RSI indicators are in neutral territory, suggesting room for further upside.</p>
+      
+      <h3 class="text-lg font-bold text-white mb-2">Risk Factors</h3>
+      <ul class="list-disc list-inside mb-4">
+        <li>Macroeconomic headwinds affecting consumer spending.</li>
+        <li>Supply chain disruptions potentially impacting delivery timelines.</li>
+        <li>Regulatory changes in key markets.</li>
+      </ul>
+    `
+  }
+  
+  // Mock related plans
+  relatedPlans.value = [
+    {
+      id: 1,
+      title: `${opp.symbol} Aggressive Growth`,
+      capital: 50000,
+      createdAt: '2023-10-25',
+      targetReturn: '+15%',
+      riskLevel: 'high',
+      isExpanded: false,
+      positions: [
+        { type: 'Buy Call', symbol: opp.symbol, strike: 'ATM', expiry: '1 Month' }
+      ]
+    },
+    {
+      id: 2,
+      title: `${opp.symbol} Conservative Income`,
+      capital: 100000,
+      createdAt: '2023-10-26',
+      targetReturn: '+5%',
+      riskLevel: 'low',
+      isExpanded: false,
+      positions: [
+        { type: 'Sell Put', symbol: opp.symbol, strike: 'OTM', expiry: '1 Month' }
+      ]
+    }
+  ]
+  
+  showStrategyModal.value = true
+}
+
+const closeStrategyModal = () => {
+  showStrategyModal.value = false
+  chatHistory.value = []
+}
+
+const sendChatMessage = async () => {
+  if (!chatInput.value.trim() || isChatLoading.value) return
+  
+  const userMsg = chatInput.value
+  chatHistory.value.push({ role: 'user', content: userMsg })
+  chatInput.value = ''
+  isChatLoading.value = true
+  
+  // Simulate AI response
+  await new Promise(resolve => setTimeout(resolve, 1000))
+  
+  chatHistory.value.push({
+    role: 'assistant',
+    content: `基于 ${selectedStrategy.value.symbol} 的策略分析，这是一个很好的问题。通常来说，考虑到当前的市场环境和 ${selectedStrategy.value.symbol} 的基本面情况，我们需要关注...`
+  })
+  isChatLoading.value = false
+}
+
+const useQuickPrompt = (prompt) => {
+  chatInput.value = prompt
+  sendChatMessage()
+}
+
+const togglePlanExpand = (plan) => {
+  plan.isExpanded = !plan.isExpanded
+}
+
+const generatePlanForStrategy = (strategy) => {
+  alert(`Generating plan for ${strategy.symbol}...`)
+}
+
+const goToStockDetail = (symbol, themeId) => {
+  router.push(`/stock-attribution/${symbol}?tab=themes&highlightThemeId=${themeId}`)
+}
+
+const renderedStrategyContent = computed(() => selectedStrategy.value.content || '')
 </script>
 
 <style scoped>
-/* Custom Scrollbar */
+/* Custom Scrollbar for horizontal lists */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #0f0f0f; 
+  background: #1a1a1a; 
 }
 ::-webkit-scrollbar-thumb {
   background: #333; 

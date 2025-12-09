@@ -123,19 +123,19 @@ const handleLogin = () => {
     showOnboarding.value = true
   } else {
     // 非首次登录，直接跳转
-    router.push('/info')
+    router.push('/infoB')
   }
 }
 
 const handleOnboardingClose = () => {
   showOnboarding.value = false
   // 跳过引导后也进入网站
-  router.push('/info')
+  router.push('/infoB')
 }
 
 const handleOnboardingComplete = () => {
   showOnboarding.value = false
   // 完成引导后进入网站
-  router.push('/info')
+  router.push('/infoB')
 }
 </script>

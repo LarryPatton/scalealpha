@@ -1,37 +1,55 @@
 <template>
-  <nav class="bg-[#2a2a2a] border-b border-[#404040] sticky top-0 z-50">
-    <div class="w-full px-6 lg:px-12">
+  <nav class="bg-[#1a1a1a]/90 backdrop-blur-md border-b border-[#333] sticky top-0 z-50">
+    <div class="w-full px-4 lg:px-8">
       <div class="flex justify-between items-center h-16">
-        <!-- Logo -->
-        <router-link to="/" class="flex items-center gap-2 cursor-pointer">
-          <div class="w-8 h-8 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-lg flex items-center justify-center">
-            <span class="text-white font-bold">Ⓐ</span>
-          </div>
-          <span class="text-xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-            ScaleAlpha.ai
-          </span>
-        </router-link>
-
-        <!-- Menu Items - Full Width -->
-        <div class="flex-1 flex items-center justify-center gap-8 mx-8 overflow-x-auto no-scrollbar">
-          <router-link 
-            v-for="item in navItems"
-            :key="item.path"
-            :to="item.path"
-            active-class="text-blue-400 font-semibold"
-            class="text-sm transition whitespace-nowrap text-gray-300 hover:text-white"
-          >
-            {{ item.name }}
+        <!-- Left: Logo & Links -->
+        <div class="flex items-center gap-8">
+          <router-link to="/" class="flex items-center gap-2 cursor-pointer">
+            <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
+              <span class="text-white font-bold">Ⓐ</span>
+            </div>
           </router-link>
+          
+          <!-- Links (Only if logged in) -->
+          <div v-if="userEmail" class="hidden md:flex items-center gap-6">
+            <router-link to="/infoB" active-class="text-white font-bold border-b-2 border-blue-500 pb-0.5" class="text-gray-400 hover:text-white font-medium transition-colors">Info</router-link>
+            <router-link to="/opportunity" active-class="text-white font-bold border-b-2 border-blue-500 pb-0.5" class="text-gray-400 hover:text-white font-medium transition-colors">机会发现</router-link>
+          </div>
         </div>
 
-        <!-- Right Icons -->
+        <!-- Center: Search Bar (Only if logged in) -->
+        <div v-if="userEmail" class="flex-1 max-w-2xl mx-4 lg:mx-12 hidden md:block">
+          <div class="relative group">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-500 group-focus-within:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input 
+              type="text" 
+              class="block w-full pl-10 pr-3 py-2 border border-[#333] rounded-full leading-5 bg-[#0f0f0f] text-gray-300 placeholder-gray-500 focus:outline-none focus:bg-[#1a1a1a] focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm transition-all duration-300" 
+              placeholder="搜索股票 / 策略 / 主题..." 
+            />
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+              <span class="text-gray-600 text-xs border border-gray-700 rounded px-1.5 py-0.5">Ctrl K</span>
+            </div>
+          </div>
+        </div>
+        <!-- Spacer if not logged in to keep right alignment -->
+        <div v-else class="flex-1"></div>
+
+        <!-- Right: User Profile or Login/Register -->
         <div class="flex items-center gap-4">
-          <!-- User Avatar -->
-          <div class="relative">
+          <!-- Price Button (Always Visible) -->
+          <router-link to="/pricing" class="text-sm font-medium text-gray-300 hover:text-white transition-colors hidden sm:block">
+            Price
+          </router-link>
+
+          <!-- User Avatar & Menu (If Logged In) -->
+          <div v-if="userEmail" class="relative">
             <button 
               @click="toggleAccountMenu"
-              class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 flex items-center justify-center text-white font-bold text-sm hover:shadow-lg transition border border-yellow-300"
+              class="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm border border-[#444] cursor-pointer hover:border-white transition-colors"
             >
               U
             </button>
@@ -45,6 +63,9 @@
               <button @click="handleMyInfo" class="w-full text-left px-4 py-2 text-sm text-blue-400 hover:text-blue-300 hover:bg-[#3a3a3a]">
                 我的信息
               </button>
+              <button @click="handleMyWatchlist" class="w-full text-left px-4 py-2 text-sm text-green-400 hover:text-green-300 hover:bg-[#3a3a3a]">
+                我的关注
+              </button>
               <button @click="handleResetProgress" class="w-full text-left px-4 py-2 text-sm text-orange-400 hover:text-orange-300 hover:bg-[#3a3a3a]">
                 查看进度
               </button>
@@ -53,6 +74,13 @@
               </button>
             </div>
           </div>
+
+          <!-- Login/Register Button (If Not Logged In) -->
+          <div v-else>
+            <router-link to="/login" class="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-lg transition-colors shadow-lg shadow-blue-900/20">
+              登录 / 注册
+            </router-link>
+          </div>
         </div>
       </div>
     </div>
@@ -60,19 +88,18 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useUserProfile } from '../composables/useUserProfile'
 import { useSavedReports } from '../composables/useSavedReports'
 
 const router = useRouter()
-const route = useRoute()
 const userEmail = ref('')
 const emit = defineEmits(['logout'])
 
 // 导入状态管理
-const { isUserInfoCompleted, resetUserProfile } = useUserProfile()
-const { hasSavedReports, clearSavedReports } = useSavedReports()
+const { resetUserProfile } = useUserProfile()
+const { clearSavedReports } = useSavedReports()
 
 // 账户菜单状态
 const showAccountMenu = ref(false)
@@ -101,10 +128,15 @@ const handleMyInfo = () => {
   router.push('/portfolio-input')
 }
 
+// 跳转到我的关注页面
+const handleMyWatchlist = () => {
+  closeAccountMenu()
+  router.push('/opportunities?tab=events')
+}
+
 // 重置进度
 const handleResetProgress = () => {
   if (confirm('确定要重置所有进度吗？这将清除所有学习进度、自选组和设置数据，且无法恢复。')) {
-    // 清除localStorage中的所有数据
     const keysToRemove = [
       'scaleAlpha_userProfile',
       'scaleAlpha_savedReports',
@@ -117,32 +149,21 @@ const handleResetProgress = () => {
       'riskAssessmentResult',
       'opportunity_report_categories',
       'userEmail',
-      'portfolio_info_submitted',  // PortfolioInput 提交状态
-      'portfolio_input_data',       // PortfolioInput 数据
-      'portfolio_last_saved'        // PortfolioInput 草稿保存时间
+      'portfolio_info_submitted',
+      'portfolio_input_data',
+      'portfolio_last_saved'
     ]
     
-    // 先清除所有 localStorage
     keysToRemove.forEach(key => {
       localStorage.removeItem(key)
     })
     
-    // 确保 localStorage 同步完成后再更新状态
     setTimeout(() => {
-      // 重置状态管理
       resetUserProfile()
       clearSavedReports()
-      
-      // 关闭菜单
       closeAccountMenu()
-      
-      // 重定向到首页或Info页面
       router.push('/info')
-      
-      // 显示成功提示
       alert('进度已重置！请重新开始。')
-      
-      // 延迟刷新，确保状态已完全更新
       setTimeout(() => {
         window.location.reload()
       }, 100)
@@ -155,61 +176,25 @@ onMounted(() => {
   if (savedEmail) {
     userEmail.value = savedEmail
   }
-  
-  // 添加全局点击监听
   document.addEventListener('click', handleClickOutside)
 })
 
 onUnmounted(() => {
-  // 移除全局点击监听
   document.removeEventListener('click', handleClickOutside)
 })
 
 const handleLogout = () => {
   closeAccountMenu()
-  emit('logout')
+  
+  // Clear user data
+  localStorage.removeItem('userEmail')
+  userEmail.value = '' // Clear reactive state
+  resetUserProfile()
+  clearSavedReports()
+  
+  // Redirect to home
+  router.push('/')
 }
-
-// 定义导航项配置
-const navItems = [
-  {
-    name: 'Info 信息中心',
-    path: '/info'
-  },
-  {
-    name: '交易分析',
-    path: '/trading'
-  },
-  {
-    name: '计划制定',
-    path: '/planning'
-  },
-  {
-    name: '盯盘提醒',
-    path: '/alerts'
-  },
-  {
-    name: '投资组合',
-    path: '/portfolio'
-  },
-  {
-    name: '事件分析',
-    path: '/event'
-  },
-  {
-    name: '历史模式',
-    path: '/history'
-  },
-  {
-    name: '实盘测试',
-    path: '/backtest'
-  },
-  {
-    name: '官方博客',
-    path: '/blog'
-  }
-]
-
 </script>
 
 <style scoped>

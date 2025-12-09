@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-[#1a1a1a] text-white flex flex-col">
-    <!-- Navbar will be injected here via slot or component -->
-    <slot name="navbar"></slot>
+    <!-- Global Navbar -->
+    <Navbar />
 
     <!-- Main Content -->
     <main class="flex-grow">
@@ -14,3 +14,7 @@
     </footer>
   </div>
 </template>
+
+<script setup>
+import Navbar from '../components/Navbar.vue'
+</script>
