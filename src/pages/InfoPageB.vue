@@ -77,42 +77,96 @@
           :class="viewMode === 'card' ? 'grid gap-6' : 'flex flex-col space-y-4'"
           :style="viewMode === 'card' ? { gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))` } : {}"
         >
-          <!-- Cards (Dark Tech Style) -->
-          <div 
-            v-for="(opp, index) in filteredOpportunities" 
-            :key="opp.id + '-' + index" 
-            @click="openStrategyModal(opp)"
-            class="bg-slate-900 rounded-xl shadow-lg p-6 text-center text-white border border-slate-800 hover:border-blue-500/50 transition-all duration-300 cursor-pointer group relative overflow-hidden"
-          >
-            <!-- Background decoration -->
-            <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
+          <!-- Cards (Dark Tech Style) - Only for Card View -->
+          <template v-if="viewMode === 'card'">
+            <div 
+              v-for="(opp, index) in filteredOpportunities" 
+              :key="opp.id + '-' + index" 
+              @click="openStrategyModal(opp)"
+              class="bg-slate-900 rounded-xl shadow-lg p-6 text-center text-white border border-slate-800 hover:border-blue-500/50 transition-all duration-300 cursor-pointer group relative overflow-hidden"
+            >
+              <!-- Background decoration -->
+              <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
 
-            <div class="relative z-10">
-              <div class="flex justify-center mb-4">
-                <span class="text-[10px] font-mono text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded uppercase tracking-wider">{{ opp.strategy }}</span>
-              </div>
-              
-              <h3 class="text-3xl font-bold mb-1 text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-400 group-hover:from-blue-400 group-hover:to-blue-200 transition-all">{{ opp.symbol }}</h3>
-              <p class="text-xs text-slate-400 mb-6 font-mono line-clamp-1">{{ opp.title }}</p>
-              
-              <div class="grid grid-cols-2 gap-4 mb-6 border-y border-slate-800 py-4">
-                <div class="text-center border-r border-slate-800">
-                  <div class="text-2xl font-bold text-white">A+</div>
-                  <div class="text-[10px] text-slate-500 uppercase tracking-wider">Rating</div>
+              <div class="relative z-10">
+                <div class="flex justify-center mb-4">
+                  <span class="text-[10px] font-mono text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded uppercase tracking-wider">{{ opp.strategy }}</span>
                 </div>
-                <div class="text-center">
-                  <div class="text-2xl font-bold" :class="opp.type === 'Long' ? 'text-emerald-400' : 'text-red-400'">{{ opp.type.toUpperCase() }}</div>
-                  <div class="text-[10px] text-slate-500 uppercase tracking-wider">Direction</div>
+                
+                <h3 class="text-3xl font-bold mb-1 text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-400 group-hover:from-blue-400 group-hover:to-blue-200 transition-all">{{ opp.symbol }}</h3>
+                <p class="text-xs text-slate-400 mb-6 font-mono line-clamp-1">{{ opp.title }}</p>
+                
+                <div class="grid grid-cols-2 gap-4 mb-6 border-y border-slate-800 py-4">
+                  <div class="text-center border-r border-slate-800">
+                    <div class="text-2xl font-bold text-white">A+</div>
+                    <div class="text-[10px] text-slate-500 uppercase tracking-wider">Rating</div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-2xl font-bold" :class="opp.type === 'Long' ? 'text-emerald-400' : 'text-red-400'">{{ opp.type.toUpperCase() }}</div>
+                    <div class="text-[10px] text-slate-500 uppercase tracking-wider">Direction</div>
+                  </div>
                 </div>
-              </div>
 
-              <div class="flex justify-between text-[10px] text-slate-400 font-mono">
-                <span>1-10 DAYS</span>
-                <span>GEMINI</span>
-                <span :class="opp.risk === 'High' ? 'text-red-400' : (opp.risk === 'Med' ? 'text-yellow-400' : 'text-green-400')">{{ opp.risk.toUpperCase() }} RISK</span>
+                <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                  <span>1-10 DAYS</span>
+                  <span>GEMINI</span>
+                  <span :class="opp.risk === 'High' ? 'text-red-400' : (opp.risk === 'Med' ? 'text-yellow-400' : 'text-green-400')">{{ opp.risk.toUpperCase() }} RISK</span>
+                </div>
               </div>
             </div>
-          </div>
+          </template>
+
+          <!-- List View (Compact Data Row - Dark Mode Adapted) -->
+          <template v-else>
+            <div 
+              v-for="(opp, index) in filteredOpportunities" 
+              :key="opp.id + '-' + index" 
+              @click="openStrategyModal(opp)"
+              class="bg-[#1a1a1a] rounded-lg border border-[#333] p-4 flex items-center gap-4 hover:border-blue-500 transition-colors cursor-pointer group"
+            >
+              <!-- Status Bar -->
+              <div class="w-1 h-10 rounded-full" :class="opp.type === 'Long' ? 'bg-emerald-500' : 'bg-red-500'"></div>
+              
+              <!-- Symbol -->
+              <div class="w-16 flex-shrink-0">
+                <div class="font-bold text-white">{{ opp.symbol }}</div>
+                <div class="text-[10px] text-gray-500">US Stock</div>
+              </div>
+
+              <!-- Main Info -->
+              <div class="flex-1 min-w-0 grid grid-cols-12 gap-4 items-center">
+                <div class="col-span-5">
+                  <div class="font-medium text-gray-200 truncate text-sm group-hover:text-blue-400 transition-colors">{{ opp.title }}</div>
+                  <div class="flex items-center gap-2 mt-0.5">
+                    <span class="text-[10px] bg-[#333] text-gray-400 px-1.5 rounded">{{ opp.strategy }}</span>
+                    <span class="text-[10px] text-gray-500 truncate">{{ opp.tags.join(', ') }}</span>
+                  </div>
+                </div>
+                
+                <div class="col-span-2 text-center">
+                  <div class="text-[10px] text-gray-500 uppercase">Rating</div>
+                  <div class="font-bold text-gray-300">A+</div>
+                </div>
+                
+                <!-- Duration (Replaces Return) -->
+                <div class="col-span-2 text-center">
+                  <div class="text-[10px] text-gray-500 uppercase">Duration</div>
+                  <div class="font-bold text-gray-300">1-10 DAYS</div>
+                </div>
+
+                <div class="col-span-3 flex justify-end items-center gap-3">
+                   <!-- Model (Replaces Score) -->
+                   <div class="text-right">
+                      <div class="text-[10px] text-gray-500 uppercase">Model</div>
+                      <div class="font-bold text-blue-400">GEMINI</div>
+                   </div>
+                   <div class="w-8 h-8 rounded-full bg-[#222] flex items-center justify-center text-gray-500 group-hover:bg-blue-900/30 group-hover:text-blue-400 transition-colors">
+                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                   </div>
+                </div>
+              </div>
+            </div>
+          </template>
         </div>
 
         <!-- Loading Sentinel -->
@@ -275,27 +329,13 @@
                   </div>
                 </div>
 
-                <!-- Content (Middle) - Clickable -->
-                <div 
-                  @click="openEventModal(event)"
-                  class="flex-1 p-6 flex flex-col justify-center cursor-pointer hover:bg-[#1a1a1a] transition-colors group/content"
-                >
+                <!-- Content (Middle) - Static -->
+                <div class="flex-1 p-6 flex flex-col justify-center">
                   <div class="flex items-center gap-4 mb-3">
-                    <h3 class="text-2xl font-bold text-white leading-tight group-hover/content:text-blue-400 transition-colors">{{ event.title }}</h3>
-                    <span 
-                      class="text-xs font-bold px-2.5 py-1 rounded border uppercase tracking-wider"
-                      :class="event.stocks[0].change >= 0 ? 'bg-green-900/30 text-green-400 border-green-800' : 'bg-red-900/30 text-red-400 border-red-800'"
-                    >
-                      {{ event.stocks[0].change >= 0 ? 'Bullish' : 'Bearish' }}
-                    </span>
+                    <h3 class="text-2xl font-bold text-white leading-tight">{{ event.title }}</h3>
                   </div>
                   
-                  <p class="text-base text-gray-400 leading-relaxed line-clamp-3 max-w-4xl group-hover/content:text-gray-300">{{ event.desc }}</p>
-                  
-                  <div class="mt-4 flex items-center gap-2 text-xs text-blue-500 opacity-0 group-hover/content:opacity-100 transition-opacity">
-                    <span>查看深度分析报告</span>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                  </div>
+                  <p class="text-base text-gray-400 leading-relaxed line-clamp-3 max-w-4xl">{{ event.desc }}</p>
                 </div>
 
                 <!-- Stocks List (Right) -->
@@ -304,7 +344,7 @@
                     <div 
                       v-for="stock in event.stocks" 
                       :key="stock.symbol" 
-                      @click.stop="goToStockDetail(stock.symbol, event.id)"
+                      @click.stop="openEventModal(event)"
                       class="bg-[#1a1a1a] border border-[#333] rounded p-2 flex items-center gap-3 hover:border-blue-500/50 hover:bg-[#222] transition-all cursor-pointer group/stock"
                     >
                       <!-- Icon -->
@@ -318,12 +358,14 @@
                         <div class="text-[10px] text-gray-500 truncate">{{ stock.name }}</div>
                       </div>
                       
-                      <!-- Price -->
-                      <div class="text-right shrink-0">
-                        <div class="text-xs font-mono font-bold" :class="stock.change >= 0 ? 'text-green-400' : 'text-red-400'">
-                          {{ stock.change >= 0 ? '+' : '' }}{{ stock.change }}%
-                        </div>
-                        <div class="text-[10px] text-gray-400 font-mono">{{ stock.price }}</div>
+                      <!-- Sentiment Label -->
+                      <div class="text-right shrink-0 flex flex-col items-end gap-1">
+                        <span 
+                          class="text-[10px] font-bold px-1.5 py-0.5 rounded border uppercase tracking-wider"
+                          :class="stock.change > 0 ? 'bg-green-900/30 text-green-400 border-green-800' : (stock.change < 0 ? 'bg-red-900/30 text-red-400 border-red-800' : 'bg-gray-800 text-gray-400 border-gray-700')"
+                        >
+                          {{ stock.change > 0 ? '利好' : (stock.change < 0 ? '利空' : '中性') }}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -1234,7 +1276,10 @@ const generateEvents = (marketId, count, startIndex) => {
         stocks: [
           { symbol: 'NVDA', name: 'NVIDIA Corp', price: '$485.09', change: -3.45, reason: 'Dominant market share in AI training GPUs.' },
           { symbol: 'AMD', name: 'Advanced Micro Devices', price: '$138.00', change: -1.20, reason: 'Competitor sentiment impact.' },
-          { symbol: 'TSM', name: 'Taiwan Semi', price: '$102.50', change: -0.80, reason: 'Supply chain concerns.' }
+          { symbol: 'TSM', name: 'Taiwan Semi', price: '$102.50', change: -0.80, reason: 'Supply chain concerns.' },
+          { symbol: 'INTC', name: 'Intel Corp', price: '$42.15', change: -0.50, reason: 'Sector sympathy.' },
+          { symbol: 'QCOM', name: 'Qualcomm', price: '$128.40', change: -0.30, reason: 'Mobile chip sentiment.' },
+          { symbol: 'AVGO', name: 'Broadcom', price: '$980.00', change: -1.10, reason: 'AI infrastructure impact.' }
         ], 
         tags: ['Chips', 'AI'], 
         image: 'https://placehold.co/400x200/1a4d2e/white?text=NVDA+Chip' 
@@ -1265,7 +1310,10 @@ const generateEvents = (marketId, count, startIndex) => {
         stocks: [
           { symbol: 'SPY', name: 'S&P 500 ETF', price: '$475.00', change: 0.85, reason: 'Broad market rally.' },
           { symbol: 'QQQ', name: 'Nasdaq 100', price: '$408.00', change: 1.10, reason: 'Tech sector outperformance.' },
-          { symbol: 'TLT', name: '20+ Year Treasury', price: '$98.50', change: 1.50, reason: 'Yields falling.' }
+          { symbol: 'TLT', name: '20+ Year Treasury', price: '$98.50', change: 1.50, reason: 'Yields falling.' },
+          { symbol: 'IWM', name: 'Russell 2000', price: '$195.20', change: 2.10, reason: 'Small caps benefit from rate pause.' },
+          { symbol: 'GLD', name: 'SPDR Gold Shares', price: '$192.00', change: 0.60, reason: 'Dollar weakness.' },
+          { symbol: 'DXY', name: 'US Dollar Index', price: '$102.50', change: -0.40, reason: 'Rate expectations.' }
         ], 
         tags: ['Macro', 'Fed'], 
         image: 'https://placehold.co/400x200/333/white?text=Fed+Rate' 

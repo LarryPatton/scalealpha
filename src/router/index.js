@@ -49,6 +49,7 @@ import ThemeVizDesignPage from '../pages/ThemeVizDesignPage.vue'
 import TimelineDesignPage from '../pages/TimelineDesignPage.vue'
 import AnalysisDesignPage from '../pages/AnalysisDesignPage.vue'
 import ThemeCardVariationsPage from '../pages/ThemeCardVariationsPage.vue'
+import OpportunityCardDesignPage from '../pages/OpportunityCardDesignPage.vue';
 
 const routes = [
   // Root redirect - automatically redirect to Home page
@@ -104,6 +105,12 @@ const routes = [
     path: '/theme-card-variations',
     name: 'ThemeCardVariations',
     component: ThemeCardVariationsPage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/opportunity-card-design',
+    name: 'OpportunityCardDesign',
+    component: OpportunityCardDesignPage,
     meta: { layout: BlankLayout }
   },
   {

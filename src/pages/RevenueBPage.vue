@@ -4,98 +4,53 @@
     <div class="flex-1 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
       
       <!-- 1. Metrics & Controls Row -->
-      <div class="flex border-b border-slate-200 bg-white shrink-0 transition-all duration-300" :class="isAllModelsView ? 'h-48' : 'h-24'">
-        <!-- Key Metrics Group (Unified) -->
-        <div class="flex-1 p-4 flex justify-around" :class="isAllModelsView ? 'items-stretch' : 'items-center'">
+      <div class="flex border-b border-slate-200 bg-white shrink-0 transition-all duration-300" :class="isAllModelsView ? 'h-16' : 'h-24'">
+        <!-- Key Metrics Group (Unified) - Hidden in Global View -->
+        <div v-if="!isAllModelsView" class="flex-1 p-4 flex justify-around items-center">
           
           <!-- Metric 1: Profit -->
-          <div class="flex-1 flex flex-col" :class="!isAllModelsView ? 'items-center justify-center' : ''">
-            <div class="text-xs text-slate-400 mb-1 font-medium uppercase tracking-wider text-center">总盈亏{{ isAllModelsView ? '排行' : '' }}</div>
-            
-            <!-- Single View -->
-            <div v-if="!isAllModelsView" class="text-3xl font-bold tracking-tight" :class="displayMetrics.profitAmount >= 0 ? 'text-emerald-600' : 'text-red-600'">
+          <div class="flex-1 flex flex-col items-center justify-center">
+            <div class="text-xs text-slate-400 mb-1 font-medium uppercase tracking-wider text-center">总盈亏</div>
+            <div class="text-3xl font-bold tracking-tight" :class="displayMetrics.profitAmount >= 0 ? 'text-emerald-600' : 'text-red-600'">
               {{ displayMetrics.profitAmount > 0 ? '+' : '' }}${{ Math.abs(displayMetrics.profitAmount).toLocaleString() }}
             </div>
-
-            <!-- All View (List) -->
-            <div v-else class="flex-1 overflow-y-auto custom-scrollbar px-2 w-full">
-              <div v-for="(item, idx) in modelsSortedByProfit" :key="item.name" class="flex items-center justify-between text-xs py-1.5 border-b border-slate-50 last:border-0 hover:bg-slate-50 rounded px-1 transition-colors">
-                <div class="flex items-center gap-2 min-w-0 flex-1">
-                  <span class="text-slate-300 font-mono w-3 text-[10px]">{{ idx + 1 }}</span>
-                  <div class="w-1.5 h-1.5 rounded-full shrink-0" :style="{ backgroundColor: item.color }"></div>
-                  <span class="truncate text-slate-600 font-medium" :title="item.name">{{ item.name }}</span>
-                </div>
-                <span class="font-bold ml-2 text-right" :class="item.profitAmount >= 0 ? 'text-emerald-600' : 'text-red-600'">
-                  {{ item.profitAmount > 0 ? '+' : '' }}${{ Math.abs(item.profitAmount).toLocaleString() }}
-                </span>
-              </div>
-            </div>
           </div>
 
           <!-- Divider -->
-          <div class="w-px bg-slate-100 mx-4" :class="isAllModelsView ? 'h-full' : 'h-10'"></div>
+          <div class="w-px bg-slate-100 mx-4 h-10"></div>
 
           <!-- Metric 2: Return -->
-          <div class="flex-1 flex flex-col" :class="!isAllModelsView ? 'items-center justify-center' : ''">
-            <div class="text-xs text-slate-400 mb-1 font-medium uppercase tracking-wider text-center">收益率{{ isAllModelsView ? '排行' : '' }}</div>
-            
-            <!-- Single View -->
-            <div v-if="!isAllModelsView" class="text-3xl font-bold tracking-tight" :class="displayMetrics.return >= 0 ? 'text-emerald-600' : 'text-red-600'">
+          <div class="flex-1 flex flex-col items-center justify-center">
+            <div class="text-xs text-slate-400 mb-1 font-medium uppercase tracking-wider text-center">收益率</div>
+            <div class="text-3xl font-bold tracking-tight" :class="displayMetrics.return >= 0 ? 'text-emerald-600' : 'text-red-600'">
               {{ displayMetrics.return > 0 ? '+' : '' }}{{ displayMetrics.return.toFixed(1) }}%
-            </div>
-
-            <!-- All View (List) -->
-            <div v-else class="flex-1 overflow-y-auto custom-scrollbar px-2 w-full">
-              <div v-for="(item, idx) in modelsSortedByReturn" :key="item.name" class="flex items-center justify-between text-xs py-1.5 border-b border-slate-50 last:border-0 hover:bg-slate-50 rounded px-1 transition-colors">
-                <div class="flex items-center gap-2 min-w-0 flex-1">
-                  <span class="text-slate-300 font-mono w-3 text-[10px]">{{ idx + 1 }}</span>
-                  <div class="w-1.5 h-1.5 rounded-full shrink-0" :style="{ backgroundColor: item.color }"></div>
-                  <span class="truncate text-slate-600 font-medium" :title="item.name">{{ item.name }}</span>
-                </div>
-                <span class="font-bold ml-2 text-right" :class="item.return >= 0 ? 'text-emerald-600' : 'text-red-600'">
-                  {{ item.return > 0 ? '+' : '' }}{{ item.return.toFixed(1) }}%
-                </span>
-              </div>
             </div>
           </div>
 
           <!-- Divider -->
-          <div class="w-px bg-slate-100 mx-4" :class="isAllModelsView ? 'h-full' : 'h-10'"></div>
+          <div class="w-px bg-slate-100 mx-4 h-10"></div>
 
           <!-- Metric 3: Max Drawdown -->
-          <div class="flex-1 flex flex-col" :class="!isAllModelsView ? 'items-center justify-center' : ''">
-            <div class="text-xs text-slate-400 mb-1 font-medium uppercase tracking-wider text-center">最大回撤{{ isAllModelsView ? '排行' : '' }}</div>
-            
-            <!-- Single View -->
-            <div v-if="!isAllModelsView" class="text-3xl font-bold tracking-tight text-slate-700">
+          <div class="flex-1 flex flex-col items-center justify-center">
+            <div class="text-xs text-slate-400 mb-1 font-medium uppercase tracking-wider text-center">最大回撤</div>
+            <div class="text-3xl font-bold tracking-tight text-slate-700">
               {{ displayMetrics.maxDrawdown.toFixed(1) }}%
-            </div>
-
-            <!-- All View (List) -->
-            <div v-else class="flex-1 overflow-y-auto custom-scrollbar px-2 w-full">
-              <div v-for="(item, idx) in modelsSortedByDrawdown" :key="item.name" class="flex items-center justify-between text-xs py-1.5 border-b border-slate-50 last:border-0 hover:bg-slate-50 rounded px-1 transition-colors">
-                <div class="flex items-center gap-2 min-w-0 flex-1">
-                  <span class="text-slate-300 font-mono w-3 text-[10px]">{{ idx + 1 }}</span>
-                  <div class="w-1.5 h-1.5 rounded-full shrink-0" :style="{ backgroundColor: item.color }"></div>
-                  <span class="truncate text-slate-600 font-medium" :title="item.name">{{ item.name }}</span>
-                </div>
-                <span class="font-bold ml-2 text-right text-slate-700">
-                  {{ item.maxDrawdown.toFixed(1) }}%
-                </span>
-              </div>
             </div>
           </div>
         </div>
 
         <!-- View Control Panel -->
-        <div class="w-[360px] border-l border-slate-200 bg-slate-50/50 flex flex-col transition-all duration-300">
-          <!-- Header Label (Only visible in large view) -->
-          <div v-if="isAllModelsView" class="px-4 py-2 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider flex justify-between items-center">
+        <div 
+          class="flex flex-col transition-all duration-300"
+          :class="isAllModelsView ? 'flex-1 bg-white' : 'w-[360px] border-l border-slate-200 bg-slate-50/50'"
+        >
+          <!-- Header Label (Only visible in large view AND not global view, or maybe just hide in global view to save space?) -->
+          <!-- In Global View, we want a clean bar. Let's hide this header in Global View to keep it single row -->
+          <div v-if="!isAllModelsView" class="px-4 py-2 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider flex justify-between items-center">
             <span>视图模式 / View Mode</span>
-            <span class="text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">Global Overview</span>
           </div>
 
-          <div class="flex-1 p-3 flex gap-3 transition-all duration-300" :class="isAllModelsView ? 'flex-col justify-center' : 'flex-row items-center'">
+          <div class="flex-1 p-3 flex gap-3 transition-all duration-300" :class="isAllModelsView ? 'flex-row items-center justify-center' : 'flex-row items-center'">
             
             <!-- Mode 1: Global Overview Button -->
             <button 
@@ -103,25 +58,20 @@
               class="group relative overflow-hidden rounded-lg border transition-all duration-300 flex items-center justify-center"
               :class="[
                 isAllModelsView 
-                  ? 'w-full px-4 py-3 bg-blue-600 border-blue-600 text-white shadow-md scale-[1.02]' 
+                  ? 'w-48 px-4 py-2 bg-blue-600 border-blue-600 text-white shadow-md' 
                   : 'w-10 h-full bg-white border-slate-200 text-slate-500 hover:border-blue-300 hover:text-blue-600 hover:shadow-sm px-0'
               ]"
               :title="!isAllModelsView ? '返回全局概览' : ''"
             >
               <div class="flex items-center justify-center z-10">
                 <!-- Icon -->
-                <div class="transition-colors flex items-center justify-center" :class="isAllModelsView ? 'p-1.5 rounded bg-white/20 mr-3' : ''">
+                <div class="transition-colors flex items-center justify-center" :class="isAllModelsView ? 'p-1 rounded bg-white/20 mr-2' : ''">
                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
                 </div>
                 <!-- Text (Only in All View) -->
                 <div v-if="isAllModelsView" class="text-left">
                   <div class="text-sm font-bold">全局概览</div>
-                  <div class="text-[10px] opacity-80">所有模型数据对比</div>
                 </div>
-              </div>
-              <!-- Checkmark (Only in All View) -->
-              <div v-if="isAllModelsView" class="z-10 ml-auto">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
               </div>
             </button>
 
@@ -131,7 +81,7 @@
               :class="[
                 !isAllModelsView 
                   ? 'flex-1 h-full border-blue-500 ring-1 ring-blue-500/20 z-10' 
-                  : 'w-full h-12 border-slate-200 opacity-70 hover:opacity-100 hover:border-blue-300 hover:shadow-md cursor-pointer'
+                  : 'w-64 h-10 border-slate-200 opacity-70 hover:opacity-100 hover:border-blue-300 hover:shadow-md cursor-pointer'
               ]"
               @click="isAllModelsView ? switchToSingleModel() : null"
             >
@@ -139,15 +89,15 @@
               <button
                 @click.stop="prevModel"
                 class="h-full flex items-center justify-center hover:bg-slate-50 text-slate-400 hover:text-blue-600 transition-colors border-r border-slate-100"
-                :class="isAllModelsView ? 'w-10' : 'w-8'"
+                :class="isAllModelsView ? 'w-8' : 'w-8'"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
               </button>
               
               <!-- Center Info -->
               <div class="flex-1 text-center px-2 overflow-hidden flex flex-col justify-center h-full">
-                <div class="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5 transition-all">
-                  {{ !isAllModelsView ? '当前模型 / Current' : '点击切换单模型' }}
+                <div v-if="!isAllModelsView" class="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5 transition-all">
+                  当前模型 / Current
                 </div>
                 <div class="font-bold text-slate-800 truncate flex items-center justify-center gap-2 transition-all" :class="isAllModelsView ? 'text-slate-500' : 'text-lg'">
                   <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: currentModel.color }"></span>
@@ -159,7 +109,7 @@
               <button
                 @click.stop="nextModel"
                 class="h-full flex items-center justify-center hover:bg-slate-50 text-slate-400 hover:text-blue-600 transition-colors border-l border-slate-100"
-                :class="isAllModelsView ? 'w-10' : 'w-8'"
+                :class="isAllModelsView ? 'w-8' : 'w-8'"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
               </button>
@@ -172,13 +122,13 @@
         </div>
       </div>
 
-      <!-- 3. Main Content Grid (Split View) -->
-      <div class="flex-1 flex divide-x divide-slate-200 overflow-hidden">
+      <!-- 3. Main Content Grid (Vertical Layout) -->
+      <div class="flex-1 flex flex-col overflow-hidden">
         
-        <!-- Column 1: Chart (Flex Auto - Takes remaining space) -->
-        <div class="flex-1 flex flex-col overflow-hidden relative min-w-0 bg-white">
-          <!-- Chart Section -->
-          <div class="relative flex flex-col min-h-0 flex-1">
+        <!-- Top: Chart & Holdings (Flex Row) -->
+        <div class="flex-[2] flex overflow-hidden relative min-h-0 bg-white border-b border-slate-200">
+          <!-- Chart Section (Flex 1) -->
+          <div class="flex-1 flex flex-col min-h-0 relative">
             <div class="absolute top-4 left-4 z-10 flex items-center gap-2">
               <h2 class="text-sm font-bold text-slate-800 flex items-center bg-white/80 backdrop-blur px-2 py-1 rounded border border-slate-200 shadow-sm">
                 <span class="mr-2">📈</span>
@@ -189,184 +139,167 @@
               <div ref="chartRef" class="w-full h-full"></div>
             </div>
           </div>
-        </div>
 
-        <!-- Column 2: Strategy (Fixed Width 350px) -->
-        <div class="w-[350px] flex-shrink-0 flex flex-col bg-slate-50/50 relative min-h-0">
-            <!-- Table Header Controls -->
-            <div class="px-3 py-2 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
-              <h3 class="font-bold text-slate-800 flex items-center text-sm">
-                <span class="mr-2">📋</span>
-                策略详情
-              </h3>
-              <div class="flex items-center gap-2">
-                <select v-model="sortType" class="pl-1 pr-4 py-1 text-[10px] text-slate-600 border border-slate-200 rounded hover:border-blue-400 focus:outline-none bg-white cursor-pointer">
-                  <option value="time_desc">最新</option>
-                  <option value="profit_desc">盈亏</option>
-                  <option value="position_desc">仓位</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Table Content -->
-            <div class="flex-1 overflow-hidden relative">
-              <div class="h-full overflow-y-auto custom-scrollbar pb-12">
-                <table class="w-full text-xs text-left">
-                  <thead class="bg-slate-50 text-slate-500 font-medium uppercase tracking-wider sticky top-0 z-10 shadow-sm">
-                    <tr>
-                      <th class="py-2 px-2 bg-slate-50 border-b border-slate-200">股票</th>
-                      <th class="py-2 px-2 bg-slate-50 border-b border-slate-200">策略</th>
-                      <th class="py-2 px-2 text-right bg-slate-50 border-b border-slate-200">盈亏</th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-slate-100 bg-white">
-                    <tr
-                      v-for="(strategy, index) in paginatedStrategies"
-                      :key="index"
-                      class="hover:bg-blue-50/50 transition-colors cursor-pointer group"
-                    >
-                      <td class="py-2 px-2 align-top w-[80px]">
-                        <div class="font-medium text-slate-800 truncate" :title="strategy.stock">{{ strategy.stock }}</div>
-                        <div class="text-[10px] text-slate-400">{{ strategy.code }}</div>
-                        <div v-if="isAllModelsView" class="mt-1">
-                           <span class="text-[9px] px-1 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200 truncate block w-full text-center" :title="strategy.modelName">
-                            {{ strategy.modelName }}
-                          </span>
-                        </div>
-                      </td>
-                      <td class="py-2 px-2 align-top">
-                        <div class="text-slate-600 line-clamp-3 group-hover:text-slate-900 leading-relaxed" :title="strategy.strategyDesc">
-                          {{ strategy.strategyDesc }}
-                        </div>
-                        <div class="mt-1 text-[10px] text-slate-400 font-mono">
-                          {{ strategy.createTime.split(' ')[0] }}
-                        </div>
-                      </td>
-                      <td class="py-2 px-2 text-right align-top w-[60px]">
-                        <span class="font-bold" :class="strategy.profit >= 0 ? 'text-emerald-600' : 'text-red-600'">
-                          {{ strategy.profit > 0 ? '+' : '' }}{{ strategy.profit.toFixed(1) }}%
-                        </span>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              
-              <!-- Login Lock Overlay -->
-              <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white via-white/90 to-transparent flex items-end justify-center pb-6 z-20 pointer-events-none">
-                <button 
-                  @click="handleStrategyClick"
-                  class="pointer-events-auto flex items-center gap-2 px-4 py-1.5 bg-slate-900 text-white rounded-full shadow-lg hover:bg-slate-800 hover:scale-105 transition-all transform"
-                >
-                  <span class="text-xs font-medium">登录查看更多</span>
-                </button>
-              </div>
-            </div>
-        </div>
-
-        <!-- Right Column: Portfolio & Trades (Fixed Width 270px) -->
-        <div class="w-[270px] flex-shrink-0 flex flex-col divide-y divide-slate-200 bg-slate-50/50 overflow-hidden">
-          
-          <!-- Portfolio Section (Flex 1) -->
-          <div class="flex-1 flex flex-col min-h-0 bg-white">
+          <!-- Holdings Section (Fixed Width 360px) - Only in Single Model View -->
+          <div v-if="!isAllModelsView" class="w-[360px] flex-shrink-0 flex flex-col border-l border-slate-200 bg-white min-h-0">
             <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
               <h3 class="text-sm font-bold text-slate-800 flex items-center">
                 <span class="mr-2">🔲</span>
-                {{ isAllModelsView ? '持仓对比' : '持仓分布' }}
+                持仓分布
               </h3>
             </div>
             
             <div class="flex-1 overflow-hidden relative">
-              <!-- List View -->
               <div class="w-full h-full overflow-y-auto custom-scrollbar p-2 space-y-1">
-                
-                <!-- Single Model List -->
-                <template v-if="!isAllModelsView">
-                  <div v-for="(stock, idx) in flatHoldingsList" :key="idx" class="flex items-center justify-between p-2 rounded border border-slate-100 hover:border-blue-200 hover:bg-blue-50/30 transition-colors bg-white">
-                    <div class="flex items-center gap-2 overflow-hidden">
-                      <div class="w-1 h-6 rounded-full flex-shrink-0" :style="{ backgroundColor: stock.color || '#cbd5e1' }"></div>
-                      <div class="min-w-0">
-                        <div class="text-xs font-bold text-slate-700 truncate">{{ stock.name }}</div>
-                        <div class="text-[10px] text-slate-400 truncate">{{ stock.code }}</div>
-                      </div>
-                    </div>
-                    <div class="text-right flex-shrink-0">
-                      <div class="text-xs font-bold text-slate-700">{{ stock.value }}%</div>
-                      <div class="text-[10px]" :class="stock.profit >= 0 ? 'text-emerald-500' : 'text-red-500'">
-                        {{ stock.profit > 0 ? '+' : '' }}{{ stock.profit.toFixed(1) }}%
-                      </div>
+                <div v-for="(stock, idx) in flatHoldingsList" :key="idx" class="flex items-center justify-between p-2 rounded border border-slate-100 hover:border-blue-200 hover:bg-blue-50/30 transition-colors bg-white">
+                  <div class="flex items-center gap-2 overflow-hidden">
+                    <div class="w-1 h-6 rounded-full flex-shrink-0" :style="{ backgroundColor: stock.color || '#cbd5e1' }"></div>
+                    <div class="min-w-0">
+                      <div class="text-xs font-bold text-slate-700 truncate">{{ stock.name }}</div>
+                      <div class="text-[10px] text-slate-400 truncate">{{ stock.code }}</div>
                     </div>
                   </div>
-                </template>
-
-                <!-- All Models Comparison List -->
-                <template v-else>
-                  <div v-for="(model, idx) in allModelsHoldingsSummary" :key="idx" class="p-2 rounded border border-slate-100 hover:border-blue-200 hover:bg-blue-50/30 transition-colors bg-white">
-                    <div class="flex items-center justify-between mb-1.5">
-                      <div class="flex items-center gap-2 overflow-hidden">
-                        <div class="w-2 h-2 rounded-full flex-shrink-0" :style="{ backgroundColor: model.color }"></div>
-                        <div class="text-xs font-bold text-slate-700 truncate">{{ model.name }}</div>
-                      </div>
-                      <div class="text-xs font-bold text-slate-700">{{ model.stockPosition }}% <span class="text-[10px] text-slate-400 font-normal">仓位</span></div>
-                    </div>
-                    <!-- Progress Bar -->
-                    <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden flex">
-                      <div class="h-full" :style="{ width: model.stockPosition + '%', backgroundColor: model.color }"></div>
-                    </div>
-                    <!-- Top Sector -->
-                    <div class="mt-1.5 flex justify-between text-[10px] text-slate-400">
-                      <span>最大持仓: {{ model.topSector }}</span>
-                      <span>{{ model.topSectorValue }}%</span>
+                  <div class="text-right flex-shrink-0">
+                    <div class="text-xs font-bold text-slate-700">{{ stock.value }}%</div>
+                    <div class="text-[10px]" :class="stock.profit >= 0 ? 'text-emerald-500' : 'text-red-500'">
+                      {{ stock.profit > 0 ? '+' : '' }}{{ stock.profit.toFixed(1) }}%
                     </div>
                   </div>
-                </template>
-
+                </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- Trades Section (Flex 1) -->
-          <div class="flex-1 flex flex-col min-h-0 bg-white">
-            <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
-              <h3 class="text-sm font-bold text-slate-800 flex items-center">
-                <span class="mr-2">⚡</span>
-                最近交易
-              </h3>
-              <!-- Stock Filter for Trades -->
-              <select 
-                v-model="selectedStockCode" 
-                class="pl-2 pr-6 py-1 text-[10px] text-slate-600 border border-slate-200 rounded hover:border-blue-400 focus:outline-none bg-white cursor-pointer max-w-[100px]"
-              >
-                <option :value="null">全部股票</option>
-                <option v-for="stock in uniqueTradeStocks" :key="stock.code" :value="stock.code">
-                  {{ stock.name }}
-                </option>
-              </select>
-            </div>
+        <!-- Bottom: Details (Full Width, 40% Height, Split Left/Right) -->
+        <div class="flex-1 flex divide-x divide-slate-200 overflow-hidden min-h-0">
             
-            <div class="flex-1 overflow-y-auto custom-scrollbar p-0">
-              <div v-for="(trade, index) in filteredTrades" :key="index" class="px-4 py-3 border-b border-slate-50 hover:bg-slate-50 transition-colors flex items-center justify-between group">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded flex items-center justify-center text-xs font-bold"
-                    :class="trade.type === '买入' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'">
-                    {{ trade.type === '买入' ? '买' : '卖' }}
-                  </div>
-                  <div>
-                    <div class="text-xs font-bold text-slate-700">{{ trade.stock }}</div>
-                    <div class="text-[10px] text-slate-400">{{ trade.date }} {{ trade.time }}</div>
+            <!-- Left: Strategy (70%) -->
+            <div class="flex-[7] flex flex-col bg-slate-50/50 relative min-h-0">
+                <!-- Table Header Controls -->
+                <div class="px-3 py-2 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
+                  <h3 class="font-bold text-slate-800 flex items-center text-sm">
+                    <span class="mr-2">📋</span>
+                    策略详情
+                  </h3>
+                  <div class="flex items-center gap-2">
+                    <select v-model="sortType" class="pl-1 pr-4 py-1 text-[10px] text-slate-600 border border-slate-200 rounded hover:border-blue-400 focus:outline-none bg-white cursor-pointer">
+                      <option value="time_desc">最新</option>
+                      <option value="profit_desc">盈亏</option>
+                      <option value="position_desc">仓位</option>
+                    </select>
                   </div>
                 </div>
-                <div class="text-right">
-                  <div class="text-xs font-medium text-slate-600">¥{{ trade.price }}</div>
-                  <div class="text-[10px]" :class="trade.profitLoss >= 0 ? 'text-emerald-500' : 'text-red-500'">
-                    {{ trade.profitLoss > 0 ? '+' : '' }}{{ trade.profitLoss }}%
+
+                <!-- Table Content -->
+                <div class="flex-1 overflow-hidden relative">
+                  <div class="h-full overflow-y-auto custom-scrollbar pb-12">
+                    <table class="w-full text-xs text-left">
+                      <thead class="bg-slate-50 text-slate-500 font-medium uppercase tracking-wider sticky top-0 z-10 shadow-sm">
+                        <tr>
+                          <th v-if="isAllModelsView" class="py-2 px-2 bg-slate-50 border-b border-slate-200 w-[90px]">模型</th>
+                          <th class="py-2 px-2 bg-slate-50 border-b border-slate-200 w-[80px]">股票</th>
+                          <th class="py-2 px-2 bg-slate-50 border-b border-slate-200">策略</th>
+                          <th class="py-2 px-2 text-right bg-slate-50 border-b border-slate-200 w-[60px]">盈亏</th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-slate-100 bg-white">
+                        <tr
+                          v-for="(strategy, index) in paginatedStrategies"
+                          :key="index"
+                          class="hover:bg-blue-50/50 transition-colors cursor-pointer group"
+                        >
+                          <td v-if="isAllModelsView" class="py-2 px-2 align-top">
+                            <span 
+                              class="text-[10px] px-1.5 py-0.5 rounded border font-medium truncate block w-full text-center"
+                              :style="{ 
+                                borderColor: strategy.modelColor + '40', 
+                                color: strategy.modelColor, 
+                                backgroundColor: strategy.modelColor + '10' 
+                              }"
+                              :title="strategy.modelName"
+                            >
+                              {{ strategy.modelName }}
+                            </span>
+                          </td>
+                          <td class="py-2 px-2 align-top">
+                            <div class="font-medium text-slate-800 truncate" :title="strategy.stock">{{ strategy.stock }}</div>
+                            <div class="text-[10px] text-slate-400">{{ strategy.code }}</div>
+                          </td>
+                          <td class="py-2 px-2 align-top">
+                            <div class="text-slate-600 line-clamp-3 group-hover:text-slate-900 leading-relaxed" :title="strategy.strategyDesc">
+                              {{ strategy.strategyDesc }}
+                            </div>
+                            <div class="mt-1 text-[10px] text-slate-400 font-mono">
+                              {{ strategy.createTime.split(' ')[0] }}
+                            </div>
+                          </td>
+                          <td class="py-2 px-2 text-right align-top w-[60px]">
+                            <span class="font-bold" :class="strategy.profit >= 0 ? 'text-emerald-600' : 'text-red-600'">
+                              {{ strategy.profit > 0 ? '+' : '' }}{{ strategy.profit.toFixed(1) }}%
+                            </span>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
+                  
+                  <!-- Login Lock Overlay -->
+                  <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white via-white/90 to-transparent flex items-end justify-center pb-6 z-20 pointer-events-none">
+                    <button 
+                      @click="handleStrategyClick"
+                      class="pointer-events-auto flex items-center gap-2 px-4 py-1.5 bg-slate-900 text-white rounded-full shadow-lg hover:bg-slate-800 hover:scale-105 transition-all transform"
+                    >
+                      <span class="text-xs font-medium">登录查看更多</span>
+                    </button>
+                  </div>
+                </div>
+            </div>
+
+            <!-- Right: Trades (30%) -->
+            <div class="flex-[3] flex-shrink-0 flex flex-col bg-slate-50/50 overflow-hidden">
+              <!-- Trades Section (Flex 1) -->
+              <div class="flex-1 flex flex-col min-h-0 bg-white">
+                <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
+                  <h3 class="text-sm font-bold text-slate-800 flex items-center">
+                    <span class="mr-2">⚡</span>
+                    最近交易
+                  </h3>
+                  <!-- Stock Filter for Trades -->
+                  <select 
+                    v-model="selectedStockCode" 
+                    class="pl-2 pr-6 py-1 text-[10px] text-slate-600 border border-slate-200 rounded hover:border-blue-400 focus:outline-none bg-white cursor-pointer max-w-[100px]"
+                  >
+                    <option :value="null">全部股票</option>
+                    <option v-for="stock in uniqueTradeStocks" :key="stock.code" :value="stock.code">
+                      {{ stock.name }}
+                    </option>
+                  </select>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto custom-scrollbar p-0">
+                  <div v-for="(trade, index) in filteredTrades" :key="index" class="px-4 py-3 border-b border-slate-50 hover:bg-slate-50 transition-colors flex items-center justify-between group">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded flex items-center justify-center text-xs font-bold"
+                        :class="trade.type === '买入' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'">
+                        {{ trade.type === '买入' ? '买' : '卖' }}
+                      </div>
+                      <div>
+                        <div class="text-xs font-bold text-slate-700">{{ trade.stock }}</div>
+                        <div class="text-[10px] text-slate-400">{{ trade.date }} {{ trade.time }}</div>
+                      </div>
+                    </div>
+                    <div class="text-right">
+                      <div class="text-xs font-medium text-slate-600">¥{{ trade.price }}</div>
+                      <div class="text-[10px]" :class="trade.profitLoss >= 0 ? 'text-emerald-500' : 'text-red-500'">
+                        {{ trade.profitLoss > 0 ? '+' : '' }}{{ trade.profitLoss }}%
+                      </div>
+                    </div>
+                  </div>
+                  <div v-if="filteredTrades.length === 0" class="text-center py-8 text-slate-400 text-xs">暂无记录</div>
                 </div>
               </div>
-              <div v-if="filteredTrades.length === 0" class="text-center py-8 text-slate-400 text-xs">暂无记录</div>
             </div>
-          </div>
-
         </div>
       </div>
     </div>
@@ -374,7 +307,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import * as echarts from 'echarts'
 
@@ -1130,6 +1063,10 @@ watch(isAllModelsView, (newVal) => {
   if (newVal) {
     sortType.value = 'profit_desc' // Default to profit sort for all view
   }
+  // Resize chart after DOM layout changes (e.g. Holdings panel toggle)
+  nextTick(() => {
+    mainChart?.resize()
+  })
 })
 
 // Update current time
