@@ -7,6 +7,7 @@ import MarketingLayout from '../layouts/MarketingLayout.vue'
 import AuthLayout from '../layouts/AuthLayout.vue'
 import AppLayout from '../layouts/AppLayout.vue'
 import BlankLayout from '../layouts/BlankLayout.vue'
+import FixedLayout from '../layouts/FixedLayout.vue'
 
 // Pages
 import HomePage from '../pages/HomePage.vue'
@@ -47,6 +48,7 @@ import CardDesignPage from '../pages/CardDesignPage.vue'
 import ThemeVizDesignPage from '../pages/ThemeVizDesignPage.vue'
 import TimelineDesignPage from '../pages/TimelineDesignPage.vue'
 import AnalysisDesignPage from '../pages/AnalysisDesignPage.vue'
+import ThemeCardVariationsPage from '../pages/ThemeCardVariationsPage.vue'
 
 const routes = [
   // Root redirect - automatically redirect to Home page
@@ -72,7 +74,7 @@ const routes = [
     path: '/revenueB',
     name: 'RevenueB',
     component: RevenueBPage,
-    meta: { layout: AppLayout }
+    meta: { layout: FixedLayout }
   },
   {
     path: '/card-design',
@@ -96,6 +98,12 @@ const routes = [
     path: '/analysis-design',
     name: 'AnalysisDesign',
     component: AnalysisDesignPage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/theme-card-variations',
+    name: 'ThemeCardVariations',
+    component: ThemeCardVariationsPage,
     meta: { layout: BlankLayout }
   },
   {

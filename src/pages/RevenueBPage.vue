@@ -1,99 +1,209 @@
 <template>
-  <div class="h-screen w-screen overflow-hidden bg-slate-50 p-4 flex flex-col">
+  <div class="h-full w-full overflow-hidden bg-slate-50 p-4 flex flex-col">
     <!-- Unified Dashboard Container -->
     <div class="flex-1 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
       
       <!-- 1. Metrics & Controls Row -->
-      <div class="flex border-b border-slate-200 bg-white shrink-0">
+      <div class="flex border-b border-slate-200 bg-white shrink-0 transition-all duration-300" :class="isAllModelsView ? 'h-48' : 'h-24'">
         <!-- Key Metrics Group (Unified) -->
-        <div class="flex-1 p-4 flex items-center justify-around">
+        <div class="flex-1 p-4 flex justify-around" :class="isAllModelsView ? 'items-stretch' : 'items-center'">
+          
           <!-- Metric 1: Profit -->
-          <div class="text-center">
-            <div class="text-xs text-slate-400 mb-1 font-medium uppercase tracking-wider">总盈亏</div>
-            <div class="text-3xl font-bold tracking-tight" :class="currentModel.profitAmount >= 0 ? 'text-emerald-600' : 'text-red-600'">
-              {{ currentModel.profitAmount > 0 ? '+' : '' }}${{ Math.abs(currentModel.profitAmount).toLocaleString() }}
+          <div class="flex-1 flex flex-col" :class="!isAllModelsView ? 'items-center justify-center' : ''">
+            <div class="text-xs text-slate-400 mb-1 font-medium uppercase tracking-wider text-center">总盈亏{{ isAllModelsView ? '排行' : '' }}</div>
+            
+            <!-- Single View -->
+            <div v-if="!isAllModelsView" class="text-3xl font-bold tracking-tight" :class="displayMetrics.profitAmount >= 0 ? 'text-emerald-600' : 'text-red-600'">
+              {{ displayMetrics.profitAmount > 0 ? '+' : '' }}${{ Math.abs(displayMetrics.profitAmount).toLocaleString() }}
+            </div>
+
+            <!-- All View (List) -->
+            <div v-else class="flex-1 overflow-y-auto custom-scrollbar px-2 w-full">
+              <div v-for="(item, idx) in modelsSortedByProfit" :key="item.name" class="flex items-center justify-between text-xs py-1.5 border-b border-slate-50 last:border-0 hover:bg-slate-50 rounded px-1 transition-colors">
+                <div class="flex items-center gap-2 min-w-0 flex-1">
+                  <span class="text-slate-300 font-mono w-3 text-[10px]">{{ idx + 1 }}</span>
+                  <div class="w-1.5 h-1.5 rounded-full shrink-0" :style="{ backgroundColor: item.color }"></div>
+                  <span class="truncate text-slate-600 font-medium" :title="item.name">{{ item.name }}</span>
+                </div>
+                <span class="font-bold ml-2 text-right" :class="item.profitAmount >= 0 ? 'text-emerald-600' : 'text-red-600'">
+                  {{ item.profitAmount > 0 ? '+' : '' }}${{ Math.abs(item.profitAmount).toLocaleString() }}
+                </span>
+              </div>
             </div>
           </div>
 
           <!-- Divider -->
-          <div class="w-px h-10 bg-slate-100"></div>
+          <div class="w-px bg-slate-100 mx-4" :class="isAllModelsView ? 'h-full' : 'h-10'"></div>
 
           <!-- Metric 2: Return -->
-          <div class="text-center">
-            <div class="text-xs text-slate-400 mb-1 font-medium uppercase tracking-wider">收益率</div>
-            <div class="text-3xl font-bold tracking-tight" :class="currentModel.return >= 0 ? 'text-emerald-600' : 'text-red-600'">
-              {{ currentModel.return > 0 ? '+' : '' }}{{ currentModel.return.toFixed(1) }}%
+          <div class="flex-1 flex flex-col" :class="!isAllModelsView ? 'items-center justify-center' : ''">
+            <div class="text-xs text-slate-400 mb-1 font-medium uppercase tracking-wider text-center">收益率{{ isAllModelsView ? '排行' : '' }}</div>
+            
+            <!-- Single View -->
+            <div v-if="!isAllModelsView" class="text-3xl font-bold tracking-tight" :class="displayMetrics.return >= 0 ? 'text-emerald-600' : 'text-red-600'">
+              {{ displayMetrics.return > 0 ? '+' : '' }}{{ displayMetrics.return.toFixed(1) }}%
+            </div>
+
+            <!-- All View (List) -->
+            <div v-else class="flex-1 overflow-y-auto custom-scrollbar px-2 w-full">
+              <div v-for="(item, idx) in modelsSortedByReturn" :key="item.name" class="flex items-center justify-between text-xs py-1.5 border-b border-slate-50 last:border-0 hover:bg-slate-50 rounded px-1 transition-colors">
+                <div class="flex items-center gap-2 min-w-0 flex-1">
+                  <span class="text-slate-300 font-mono w-3 text-[10px]">{{ idx + 1 }}</span>
+                  <div class="w-1.5 h-1.5 rounded-full shrink-0" :style="{ backgroundColor: item.color }"></div>
+                  <span class="truncate text-slate-600 font-medium" :title="item.name">{{ item.name }}</span>
+                </div>
+                <span class="font-bold ml-2 text-right" :class="item.return >= 0 ? 'text-emerald-600' : 'text-red-600'">
+                  {{ item.return > 0 ? '+' : '' }}{{ item.return.toFixed(1) }}%
+                </span>
+              </div>
             </div>
           </div>
 
           <!-- Divider -->
-          <div class="w-px h-10 bg-slate-100"></div>
+          <div class="w-px bg-slate-100 mx-4" :class="isAllModelsView ? 'h-full' : 'h-10'"></div>
 
           <!-- Metric 3: Max Drawdown -->
-          <div class="text-center">
-            <div class="text-xs text-slate-400 mb-1 font-medium uppercase tracking-wider">最大回撤</div>
-            <div class="text-3xl font-bold tracking-tight text-slate-700">
-              {{ currentModel.maxDrawdown.toFixed(1) }}%
+          <div class="flex-1 flex flex-col" :class="!isAllModelsView ? 'items-center justify-center' : ''">
+            <div class="text-xs text-slate-400 mb-1 font-medium uppercase tracking-wider text-center">最大回撤{{ isAllModelsView ? '排行' : '' }}</div>
+            
+            <!-- Single View -->
+            <div v-if="!isAllModelsView" class="text-3xl font-bold tracking-tight text-slate-700">
+              {{ displayMetrics.maxDrawdown.toFixed(1) }}%
+            </div>
+
+            <!-- All View (List) -->
+            <div v-else class="flex-1 overflow-y-auto custom-scrollbar px-2 w-full">
+              <div v-for="(item, idx) in modelsSortedByDrawdown" :key="item.name" class="flex items-center justify-between text-xs py-1.5 border-b border-slate-50 last:border-0 hover:bg-slate-50 rounded px-1 transition-colors">
+                <div class="flex items-center gap-2 min-w-0 flex-1">
+                  <span class="text-slate-300 font-mono w-3 text-[10px]">{{ idx + 1 }}</span>
+                  <div class="w-1.5 h-1.5 rounded-full shrink-0" :style="{ backgroundColor: item.color }"></div>
+                  <span class="truncate text-slate-600 font-medium" :title="item.name">{{ item.name }}</span>
+                </div>
+                <span class="font-bold ml-2 text-right text-slate-700">
+                  {{ item.maxDrawdown.toFixed(1) }}%
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Model Selector (Fixed Width) -->
-        <div class="w-[280px] p-3 flex items-center justify-center bg-slate-50/50 border-l border-slate-200">
-          <div class="w-full h-full bg-white border border-slate-200 rounded-lg p-1 flex items-center justify-between shadow-sm hover:border-blue-300 transition-colors">
-            <button
-              @click="prevModel"
-              class="w-8 h-full flex items-center justify-center hover:bg-slate-100 rounded text-slate-400 hover:text-blue-600 transition-colors"
+        <!-- View Control Panel -->
+        <div class="w-[360px] border-l border-slate-200 bg-slate-50/50 flex flex-col transition-all duration-300">
+          <!-- Header Label (Only visible in large view) -->
+          <div v-if="isAllModelsView" class="px-4 py-2 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider flex justify-between items-center">
+            <span>视图模式 / View Mode</span>
+            <span class="text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">Global Overview</span>
+          </div>
+
+          <div class="flex-1 p-3 flex gap-3 transition-all duration-300" :class="isAllModelsView ? 'flex-col justify-center' : 'flex-row items-center'">
+            
+            <!-- Mode 1: Global Overview Button -->
+            <button 
+              @click="switchToAllModels"
+              class="group relative overflow-hidden rounded-lg border transition-all duration-300 flex items-center justify-center"
+              :class="[
+                isAllModelsView 
+                  ? 'w-full px-4 py-3 bg-blue-600 border-blue-600 text-white shadow-md scale-[1.02]' 
+                  : 'w-10 h-full bg-white border-slate-200 text-slate-500 hover:border-blue-300 hover:text-blue-600 hover:shadow-sm px-0'
+              ]"
+              :title="!isAllModelsView ? '返回全局概览' : ''"
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+              <div class="flex items-center justify-center z-10">
+                <!-- Icon -->
+                <div class="transition-colors flex items-center justify-center" :class="isAllModelsView ? 'p-1.5 rounded bg-white/20 mr-3' : ''">
+                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                </div>
+                <!-- Text (Only in All View) -->
+                <div v-if="isAllModelsView" class="text-left">
+                  <div class="text-sm font-bold">全局概览</div>
+                  <div class="text-[10px] opacity-80">所有模型数据对比</div>
+                </div>
+              </div>
+              <!-- Checkmark (Only in All View) -->
+              <div v-if="isAllModelsView" class="z-10 ml-auto">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              </div>
             </button>
-            <div class="flex-1 text-center px-2 overflow-hidden">
-              <div class="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Current Model</div>
-              <div class="font-bold text-slate-800 truncate">{{ currentModel.name }}</div>
+
+            <!-- Mode 2: Single Model Selector -->
+            <div 
+              class="bg-white border rounded-lg flex items-center justify-between shadow-sm transition-all duration-300 relative"
+              :class="[
+                !isAllModelsView 
+                  ? 'flex-1 h-full border-blue-500 ring-1 ring-blue-500/20 z-10' 
+                  : 'w-full h-12 border-slate-200 opacity-70 hover:opacity-100 hover:border-blue-300 hover:shadow-md cursor-pointer'
+              ]"
+              @click="isAllModelsView ? switchToSingleModel() : null"
+            >
+              <!-- Left Arrow -->
+              <button
+                @click.stop="prevModel"
+                class="h-full flex items-center justify-center hover:bg-slate-50 text-slate-400 hover:text-blue-600 transition-colors border-r border-slate-100"
+                :class="isAllModelsView ? 'w-10' : 'w-8'"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+              </button>
+              
+              <!-- Center Info -->
+              <div class="flex-1 text-center px-2 overflow-hidden flex flex-col justify-center h-full">
+                <div class="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5 transition-all">
+                  {{ !isAllModelsView ? '当前模型 / Current' : '点击切换单模型' }}
+                </div>
+                <div class="font-bold text-slate-800 truncate flex items-center justify-center gap-2 transition-all" :class="isAllModelsView ? 'text-slate-500' : 'text-lg'">
+                  <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: currentModel.color }"></span>
+                  {{ currentModel.name }}
+                </div>
+              </div>
+
+              <!-- Right Arrow -->
+              <button
+                @click.stop="nextModel"
+                class="h-full flex items-center justify-center hover:bg-slate-50 text-slate-400 hover:text-blue-600 transition-colors border-l border-slate-100"
+                :class="isAllModelsView ? 'w-10' : 'w-8'"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </button>
+              
+              <!-- Active Indicator -->
+              <div v-if="!isAllModelsView" class="absolute -right-1 -top-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-white shadow-sm"></div>
             </div>
-            <button
-              @click="nextModel"
-              class="w-8 h-full flex items-center justify-center hover:bg-slate-100 rounded text-slate-400 hover:text-blue-600 transition-colors"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-            </button>
+
           </div>
         </div>
       </div>
 
       <!-- 3. Main Content Grid (Split View) -->
-      <div class="flex-1 grid grid-cols-12 divide-x divide-slate-200 overflow-hidden">
+      <div class="flex-1 flex divide-x divide-slate-200 overflow-hidden">
         
-        <!-- Left Column: Chart & Strategy (75%) -->
-        <div class="col-span-9 flex flex-col divide-y divide-slate-200 overflow-hidden">
-          
-          <!-- Chart Area (Flex 3) -->
-          <div class="flex-[3] p-4 relative flex flex-col min-h-0">
+        <!-- Column 1: Chart (Flex Auto - Takes remaining space) -->
+        <div class="flex-1 flex flex-col overflow-hidden relative min-w-0 bg-white">
+          <!-- Chart Section -->
+          <div class="relative flex flex-col min-h-0 flex-1">
             <div class="absolute top-4 left-4 z-10 flex items-center gap-2">
               <h2 class="text-sm font-bold text-slate-800 flex items-center bg-white/80 backdrop-blur px-2 py-1 rounded border border-slate-200 shadow-sm">
                 <span class="mr-2">📈</span>
                 净值曲线
               </h2>
             </div>
-            <div ref="chartRef" class="w-full flex-1"></div>
+            <div class="flex-1 p-4 pb-0 w-full h-full">
+              <div ref="chartRef" class="w-full h-full"></div>
+            </div>
           </div>
+        </div>
 
-          <!-- Strategy Table Area (Flex 2) -->
-          <div class="flex-[2] flex flex-col bg-slate-50/30 relative min-h-0">
+        <!-- Column 2: Strategy (Fixed Width 350px) -->
+        <div class="w-[350px] flex-shrink-0 flex flex-col bg-slate-50/50 relative min-h-0">
             <!-- Table Header Controls -->
-            <div class="px-4 py-2 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
+            <div class="px-3 py-2 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
               <h3 class="font-bold text-slate-800 flex items-center text-sm">
                 <span class="mr-2">📋</span>
                 策略详情
-                <span class="ml-2 text-xs font-normal text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
-                  {{ processedStrategies.length }}
-                </span>
               </h3>
               <div class="flex items-center gap-2">
-                <select v-model="sortType" class="pl-2 pr-6 py-1 text-xs text-slate-600 border border-slate-200 rounded hover:border-blue-400 focus:outline-none bg-white cursor-pointer">
-                  <option value="time_desc">最新策略</option>
-                  <option value="profit_desc">盈亏最高</option>
-                  <option value="position_desc">仓位最重</option>
+                <select v-model="sortType" class="pl-1 pr-4 py-1 text-[10px] text-slate-600 border border-slate-200 rounded hover:border-blue-400 focus:outline-none bg-white cursor-pointer">
+                  <option value="time_desc">最新</option>
+                  <option value="profit_desc">盈亏</option>
+                  <option value="position_desc">仓位</option>
                 </select>
               </div>
             </div>
@@ -101,36 +211,40 @@
             <!-- Table Content -->
             <div class="flex-1 overflow-hidden relative">
               <div class="h-full overflow-y-auto custom-scrollbar pb-12">
-                <table class="w-full text-sm text-left">
-                  <thead class="bg-slate-50 text-slate-500 font-medium text-xs uppercase tracking-wider sticky top-0 z-10 shadow-sm">
+                <table class="w-full text-xs text-left">
+                  <thead class="bg-slate-50 text-slate-500 font-medium uppercase tracking-wider sticky top-0 z-10 shadow-sm">
                     <tr>
-                      <th class="py-2 px-4 bg-slate-50 border-b border-slate-200">股票名称</th>
-                      <th class="py-2 px-4 w-1/2 bg-slate-50 border-b border-slate-200">策略逻辑</th>
-                      <th class="py-2 px-4 bg-slate-50 border-b border-slate-200">时间</th>
-                      <th class="py-2 px-4 text-right bg-slate-50 border-b border-slate-200">盈亏</th>
+                      <th class="py-2 px-2 bg-slate-50 border-b border-slate-200">股票</th>
+                      <th class="py-2 px-2 bg-slate-50 border-b border-slate-200">策略</th>
+                      <th class="py-2 px-2 text-right bg-slate-50 border-b border-slate-200">盈亏</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-slate-100 bg-white">
                     <tr
-                      v-for="(strategy, index) in paginatedStrategies.slice(0, 6)"
+                      v-for="(strategy, index) in paginatedStrategies"
                       :key="index"
                       class="hover:bg-blue-50/50 transition-colors cursor-pointer group"
                     >
-                      <td class="py-2.5 px-4">
-                        <div class="font-medium text-slate-800">{{ strategy.stock }}</div>
-                        <div class="text-xs text-slate-400">{{ strategy.code }}</div>
-                      </td>
-                      <td class="py-2.5 px-4">
-                        <div class="text-xs text-slate-600 line-clamp-2 group-hover:text-slate-900" :title="strategy.strategyDesc">
-                          {{ strategy.strategyDesc }}
+                      <td class="py-2 px-2 align-top w-[80px]">
+                        <div class="font-medium text-slate-800 truncate" :title="strategy.stock">{{ strategy.stock }}</div>
+                        <div class="text-[10px] text-slate-400">{{ strategy.code }}</div>
+                        <div v-if="isAllModelsView" class="mt-1">
+                           <span class="text-[9px] px-1 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200 truncate block w-full text-center" :title="strategy.modelName">
+                            {{ strategy.modelName }}
+                          </span>
                         </div>
                       </td>
-                      <td class="py-2.5 px-4 text-xs text-slate-400 font-mono">
-                        {{ strategy.createTime.split(' ')[0] }}
+                      <td class="py-2 px-2 align-top">
+                        <div class="text-slate-600 line-clamp-3 group-hover:text-slate-900 leading-relaxed" :title="strategy.strategyDesc">
+                          {{ strategy.strategyDesc }}
+                        </div>
+                        <div class="mt-1 text-[10px] text-slate-400 font-mono">
+                          {{ strategy.createTime.split(' ')[0] }}
+                        </div>
                       </td>
-                      <td class="py-2.5 px-4 text-right">
-                        <span class="font-bold text-sm" :class="strategy.profit >= 0 ? 'text-emerald-600' : 'text-red-600'">
-                          {{ strategy.profit > 0 ? '+' : '' }}{{ strategy.profit.toFixed(2) }}%
+                      <td class="py-2 px-2 text-right align-top w-[60px]">
+                        <span class="font-bold" :class="strategy.profit >= 0 ? 'text-emerald-600' : 'text-red-600'">
+                          {{ strategy.profit > 0 ? '+' : '' }}{{ strategy.profit.toFixed(1) }}%
                         </span>
                       </td>
                     </tr>
@@ -142,54 +256,71 @@
               <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white via-white/90 to-transparent flex items-end justify-center pb-6 z-20 pointer-events-none">
                 <button 
                   @click="handleStrategyClick"
-                  class="pointer-events-auto flex items-center gap-2 px-6 py-2 bg-slate-900 text-white rounded-full shadow-lg hover:bg-slate-800 hover:scale-105 transition-all transform"
+                  class="pointer-events-auto flex items-center gap-2 px-4 py-1.5 bg-slate-900 text-white rounded-full shadow-lg hover:bg-slate-800 hover:scale-105 transition-all transform"
                 >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                  <span class="text-sm font-medium">登录后查看更多</span>
+                  <span class="text-xs font-medium">登录查看更多</span>
                 </button>
               </div>
             </div>
-          </div>
         </div>
 
-        <!-- Right Column: Portfolio & Trades (25%) -->
-        <div class="col-span-3 flex flex-col divide-y divide-slate-200 bg-slate-50/30 overflow-hidden">
+        <!-- Right Column: Portfolio & Trades (Fixed Width 270px) -->
+        <div class="w-[270px] flex-shrink-0 flex flex-col divide-y divide-slate-200 bg-slate-50/50 overflow-hidden">
           
           <!-- Portfolio Section (Flex 1) -->
           <div class="flex-1 flex flex-col min-h-0 bg-white">
             <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
               <h3 class="text-sm font-bold text-slate-800 flex items-center">
                 <span class="mr-2">🔲</span>
-                持仓分布
+                {{ isAllModelsView ? '持仓对比' : '持仓分布' }}
               </h3>
-              <div class="flex bg-slate-100 rounded p-0.5 border border-slate-200">
-                <button @click="holdingsViewMode = 'list'" class="px-2 py-0.5 text-[10px] rounded transition-all" :class="holdingsViewMode === 'list' ? 'bg-white text-blue-600 shadow-sm font-bold' : 'text-slate-400'">列表</button>
-                <button @click="holdingsViewMode = 'chart'" class="px-2 py-0.5 text-[10px] rounded transition-all" :class="holdingsViewMode === 'chart' ? 'bg-white text-blue-600 shadow-sm font-bold' : 'text-slate-400'">图表</button>
-              </div>
             </div>
             
             <div class="flex-1 overflow-hidden relative">
-              <!-- Chart View -->
-              <div v-show="holdingsViewMode === 'chart'" class="w-full h-full">
-                <div ref="treemapRef" class="w-full h-full"></div>
-              </div>
               <!-- List View -->
-              <div v-if="holdingsViewMode === 'list'" class="w-full h-full overflow-y-auto custom-scrollbar p-2 space-y-1">
-                <div v-for="(stock, idx) in flatHoldingsList" :key="idx" class="flex items-center justify-between p-2 rounded border border-slate-100 hover:border-blue-200 hover:bg-blue-50/30 transition-colors bg-white">
-                  <div class="flex items-center gap-2 overflow-hidden">
-                    <div class="w-1 h-6 rounded-full flex-shrink-0" :style="{ backgroundColor: stock.color || '#cbd5e1' }"></div>
-                    <div class="min-w-0">
-                      <div class="text-xs font-bold text-slate-700 truncate">{{ stock.name }}</div>
-                      <div class="text-[10px] text-slate-400 truncate">{{ stock.code }}</div>
+              <div class="w-full h-full overflow-y-auto custom-scrollbar p-2 space-y-1">
+                
+                <!-- Single Model List -->
+                <template v-if="!isAllModelsView">
+                  <div v-for="(stock, idx) in flatHoldingsList" :key="idx" class="flex items-center justify-between p-2 rounded border border-slate-100 hover:border-blue-200 hover:bg-blue-50/30 transition-colors bg-white">
+                    <div class="flex items-center gap-2 overflow-hidden">
+                      <div class="w-1 h-6 rounded-full flex-shrink-0" :style="{ backgroundColor: stock.color || '#cbd5e1' }"></div>
+                      <div class="min-w-0">
+                        <div class="text-xs font-bold text-slate-700 truncate">{{ stock.name }}</div>
+                        <div class="text-[10px] text-slate-400 truncate">{{ stock.code }}</div>
+                      </div>
+                    </div>
+                    <div class="text-right flex-shrink-0">
+                      <div class="text-xs font-bold text-slate-700">{{ stock.value }}%</div>
+                      <div class="text-[10px]" :class="stock.profit >= 0 ? 'text-emerald-500' : 'text-red-500'">
+                        {{ stock.profit > 0 ? '+' : '' }}{{ stock.profit.toFixed(1) }}%
+                      </div>
                     </div>
                   </div>
-                  <div class="text-right flex-shrink-0">
-                    <div class="text-xs font-bold text-slate-700">{{ stock.value }}%</div>
-                    <div class="text-[10px]" :class="stock.profit >= 0 ? 'text-emerald-500' : 'text-red-500'">
-                      {{ stock.profit > 0 ? '+' : '' }}{{ stock.profit.toFixed(1) }}%
+                </template>
+
+                <!-- All Models Comparison List -->
+                <template v-else>
+                  <div v-for="(model, idx) in allModelsHoldingsSummary" :key="idx" class="p-2 rounded border border-slate-100 hover:border-blue-200 hover:bg-blue-50/30 transition-colors bg-white">
+                    <div class="flex items-center justify-between mb-1.5">
+                      <div class="flex items-center gap-2 overflow-hidden">
+                        <div class="w-2 h-2 rounded-full flex-shrink-0" :style="{ backgroundColor: model.color }"></div>
+                        <div class="text-xs font-bold text-slate-700 truncate">{{ model.name }}</div>
+                      </div>
+                      <div class="text-xs font-bold text-slate-700">{{ model.stockPosition }}% <span class="text-[10px] text-slate-400 font-normal">仓位</span></div>
+                    </div>
+                    <!-- Progress Bar -->
+                    <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden flex">
+                      <div class="h-full" :style="{ width: model.stockPosition + '%', backgroundColor: model.color }"></div>
+                    </div>
+                    <!-- Top Sector -->
+                    <div class="mt-1.5 flex justify-between text-[10px] text-slate-400">
+                      <span>最大持仓: {{ model.topSector }}</span>
+                      <span>{{ model.topSectorValue }}%</span>
                     </div>
                   </div>
-                </div>
+                </template>
+
               </div>
             </div>
           </div>
@@ -249,8 +380,8 @@ import * as echarts from 'echarts'
 
 const router = useRouter()
 
-// Holdings View Mode
-const holdingsViewMode = ref('list')
+// View State
+const isAllModelsView = ref(true)
 
 // Filter & Sort State
 const sortType = ref('time_desc') // Default sort by time desc
@@ -580,18 +711,30 @@ const flatHoldingsList = computed(() => {
   return list.sort((a, b) => b.value - a.value)
 })
 
-// Watch view mode to resize chart
-watch(holdingsViewMode, (newVal) => {
-  if (newVal === 'chart') {
-    setTimeout(() => {
-      treemapChart?.resize()
-    }, 50)
-  }
-})
 
 // Processed Strategies (Filter -> Sort)
 const processedStrategies = computed(() => {
-  let result = [...currentModel.value.strategies]
+  let result = []
+  
+  if (isAllModelsView.value) {
+    // Collect all strategies from all models
+    models.value.forEach(model => {
+      const strategiesWithModel = model.strategies.map(s => ({
+        ...s,
+        modelName: model.name,
+        modelColor: model.color
+      }))
+      result.push(...strategiesWithModel)
+    })
+    
+    // For "All View", default to profit sort if not specified, or respect current sort
+    // User requirement: "展示收益最佳的几个策略" -> implies profit desc sort by default for this view
+    // But we still respect the sort dropdown if user changes it. 
+    // Let's force profit_desc if the user hasn't explicitly changed it, or just respect the sort.
+    // Given the requirement, let's ensure we show best strategies.
+  } else {
+    result = [...currentModel.value.strategies]
+  }
 
   // Sort
   result.sort((a, b) => {
@@ -662,21 +805,83 @@ const handleStrategyClick = () => {
 const currentModelIndex = ref(0)
 const currentModel = computed(() => models.value[currentModelIndex.value])
 
+// Sorted Models for Comparison View
+const modelsSortedByProfit = computed(() => {
+  return [...models.value].sort((a, b) => b.profitAmount - a.profitAmount)
+})
+
+const modelsSortedByReturn = computed(() => {
+  return [...models.value].sort((a, b) => b.return - a.return)
+})
+
+const modelsSortedByDrawdown = computed(() => {
+  // Drawdown is negative, closer to 0 is better (e.g. -5% is better than -10%)
+  return [...models.value].sort((a, b) => b.maxDrawdown - a.maxDrawdown)
+})
+
+// Display Metrics (Computed based on view mode)
+const displayMetrics = computed(() => {
+  if (!isAllModelsView.value) {
+    return currentModel.value
+  }
+  // In All View, we display lists, so this return value is not used for the main numbers
+  // But we keep it safe
+  return {
+    profitAmount: 0,
+    return: 0,
+    maxDrawdown: 0
+  }
+})
+
 // Update Time
 const updateTime = ref('')
 
 // Chart Refs
 const chartRef = ref(null)
-const treemapRef = ref(null)
 let mainChart = null
-let treemapChart = null
+
+// Computed for All Models Holdings Summary (List View)
+const allModelsHoldingsSummary = computed(() => {
+  return models.value.map(model => {
+    // Calculate total stock position (exclude cash)
+    const stockPosition = model.holdings
+      .filter(h => h.name !== '现金')
+      .reduce((sum, h) => sum + h.value, 0)
+    
+    // Find top sector
+    const topSectorObj = [...model.holdings]
+      .filter(h => h.name !== '现金')
+      .sort((a, b) => b.value - a.value)[0]
+      
+    return {
+      name: model.name,
+      color: model.color,
+      stockPosition: stockPosition,
+      topSector: topSectorObj ? topSectorObj.name : '无',
+      topSectorValue: topSectorObj ? topSectorObj.value : 0
+    }
+  }).sort((a, b) => b.stockPosition - a.stockPosition)
+})
 
 // Methods
+const switchToAllModels = () => {
+  isAllModelsView.value = true
+  sortType.value = 'profit_desc' // Switch to profit sort to show best strategies
+  updateChartHighlight()
+}
+
+const switchToSingleModel = () => {
+  isAllModelsView.value = false
+  updateChartHighlight()
+}
+
 const prevModel = () => {
+  isAllModelsView.value = false
   currentModelIndex.value = (currentModelIndex.value - 1 + models.value.length) % models.value.length
 }
 
 const nextModel = () => {
+  isAllModelsView.value = false
   currentModelIndex.value = (currentModelIndex.value + 1) % models.value.length
 }
 
@@ -892,180 +1097,39 @@ const updateChartHighlight = () => {
   const option = mainChart.getOption()
   const newSeries = option.series.map(s => {
     const isCurrent = s.name === currentModel.value.name
+    // Highlight if it's the current model OR if we are in "All Models View"
+    const shouldHighlight = isAllModelsView.value || isCurrent
+    
     return {
       ...s,
       lineStyle: {
-        width: isCurrent ? 4 : 1.5,
+        width: shouldHighlight ? (isAllModelsView.value ? 2.5 : 4) : 1.5,
         color: s.itemStyle.color, // Keep original color
-        opacity: isCurrent ? 1 : 0.2 // Fade others
+        opacity: shouldHighlight ? 1 : 0.15 // Fade others more if not highlighted
       },
-      z: isCurrent ? 10 : 1
+      z: isCurrent ? 10 : (isAllModelsView.value ? 5 : 1)
     }
   })
   
   mainChart.setOption({ series: newSeries })
 }
 
-// Initialize Treemap
-const initTreemap = () => {
-  if (!treemapRef.value) return
-  
-  treemapChart = echarts.init(treemapRef.value)
-  updateTreemap()
-}
-
-// Update Treemap based on current model
-const updateTreemap = () => {
-  if (!treemapChart) return
-  
-  const data = currentModel.value.holdings.map(h => ({
-    name: h.name,
-    value: h.value,
-    itemStyle: {
-      color: h.color
-    },
-    children: h.children
-  }))
-
-  const option = {
-    tooltip: {
-      formatter: (info) => {
-        const value = info.value;
-        const treePathInfo = info.treePathInfo;
-        const treePath = [];
-        for (let i = 1; i < treePathInfo.length; i++) {
-          treePath.push(treePathInfo[i].name);
-        }
-        
-        let content = `<div class="font-bold mb-1">${echarts.format.encodeHTML(treePath.join(' > '))}</div>`;
-        
-        if (info.data.code) {
-           // It's a stock
-           const profit = info.data.profit;
-           const profitColor = profit >= 0 ? '#10b981' : '#ef4444';
-           content += `
-             <div class="text-xs text-slate-500 mb-1">代码: ${info.data.code}</div>
-             <div class="flex justify-between gap-4">
-               <span>权重:</span>
-               <span class="font-bold">${value}%</span>
-             </div>
-             <div class="flex justify-between gap-4">
-               <span>今日涨跌:</span>
-               <span style="color: ${profitColor}; font-weight: bold;">
-                 ${profit > 0 ? '+' : ''}${profit.toFixed(2)}%
-               </span>
-             </div>
-           `;
-        } else {
-          // It's a sector
-          content += `
-            <div class="flex justify-between gap-4">
-               <span>总权重:</span>
-               <span class="font-bold">${value}%</span>
-             </div>
-             <div class="text-xs text-slate-400 mt-1">点击查看详情</div>
-          `;
-        }
-        
-        return content;
-      },
-      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-      borderColor: '#e2e8f0',
-      borderWidth: 1,
-      textStyle: { color: '#334155' }
-    },
-    series: [
-      {
-        type: 'treemap',
-        visibleMin: 300,
-        label: {
-          show: true,
-          formatter: '{b}'
-        },
-        itemStyle: {
-          borderColor: '#fff',
-          borderWidth: 1,
-          gapWidth: 1
-        },
-        breadcrumb: {
-          show: true,
-          height: 24,
-          bottom: 0,
-          itemStyle: {
-            color: '#f1f5f9',
-            borderColor: '#cbd5e1',
-            borderWidth: 1,
-            textStyle: {
-              color: '#64748b'
-            }
-          }
-        },
-        roam: false, // Disable zoom/pan
-        nodeClick: 'zoomToNode', // Click to zoom
-        leafDepth: 1, // Show children on click
-        levels: [
-          {
-            itemStyle: {
-              borderColor: '#fff',
-              borderWidth: 2,
-              gapWidth: 2
-            },
-            upperLabel: {
-              show: false
-            }
-          },
-          {
-            itemStyle: {
-              borderColor: '#fff',
-              borderWidth: 1,
-              gapWidth: 1
-            },
-            emphasis: {
-              itemStyle: {
-                borderColor: '#ccc'
-              }
-            }
-          },
-          {
-            colorSaturation: [0.35, 0.5],
-            itemStyle: {
-              borderWidth: 1,
-              gapWidth: 1,
-              borderColorSaturation: 0.6
-            },
-            // Use profit to determine color for leaf nodes (stocks)
-            visualMin: -10,
-            visualMax: 10,
-            visualDimension: 2 // Use profit (index 2 if mapped, but here we use custom logic in render or just simple color mapping)
-          }
-        ],
-        data: data.map(sector => ({
-          ...sector,
-          // Map children to have color based on profit
-          children: sector.children?.map(stock => ({
-            ...stock,
-            itemStyle: {
-              // Green for profit, Red for loss (Chinese market style)
-              // Or Emerald/Red as per design system
-              color: stock.profit >= 0 
-                ? `rgba(16, 185, 129, ${0.4 + Math.min(Math.abs(stock.profit)/10, 0.6)})` // Emerald
-                : `rgba(239, 68, 68, ${0.4 + Math.min(Math.abs(stock.profit)/10, 0.6)})`   // Red
-            }
-          }))
-        }))
-      }
-    ]
-  }
-  
-  treemapChart.setOption(option)
-}
 
 // Watch for model changes
 watch(currentModelIndex, () => {
-  updateTreemap()
+  // If we are in all models view, changing index (via background logic or if we allowed it) shouldn't break view
+  // But prev/next buttons set isAllModelsView = false, so this triggers correctly.
   updateChartHighlight()
-  currentPage.value = 1 // Reset pagination
-  clearSelection() // Reset selection
+  if (!isAllModelsView.value) {
+    currentPage.value = 1 // Reset pagination only if switching specific models
+  }
+})
+
+watch(isAllModelsView, (newVal) => {
+  updateChartHighlight()
+  if (newVal) {
+    sortType.value = 'profit_desc' // Default to profit sort for all view
+  }
 })
 
 // Update current time
@@ -1085,12 +1149,13 @@ onMounted(() => {
   generateMockData() // Generate more data
   updateCurrentTime()
   initMainChart()
-  initTreemap()
+  
+  // Default to All Models View
+  switchToAllModels()
   
   // Handle window resize
   window.addEventListener('resize', () => {
     mainChart?.resize()
-    treemapChart?.resize()
   })
 })
 </script>
