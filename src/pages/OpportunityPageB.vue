@@ -666,92 +666,195 @@
                  </button>
               </div>
             </div>
-            <TransitionGroup 
-              :name="listTransitionName" 
-              tag="div" 
-              class="flex-1 overflow-y-auto custom-scrollbar p-3 relative"
-              :class="completedViewMode === 'card' ? 'grid grid-cols-3 gap-3 content-start' : 'space-y-3'"
-            >
-              <div 
-                v-for="task in completedTasks" 
-                :key="task.id" 
-                @click="toggleCompletedTask(task.id)"
-                class="cursor-pointer transition-all group relative overflow-hidden flex"
-                :class="[
-                  selectedCompletedTasks.includes(task.id) ? 'border-emerald-500/50 bg-emerald-900/10' : 'border-[#333] hover:border-blue-500/50',
-                  completedViewMode === 'card' ? 'bg-[#151515] rounded-xl border p-3 flex-col shadow-lg aspect-square' : 'bg-[#111] border rounded-sm p-3 flex-row items-center gap-3'
-                ]"
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-3 relative flex flex-col gap-6">
+              <!-- Found Opportunities -->
+              <TransitionGroup 
+                :name="listTransitionName" 
+                tag="div" 
+                class="relative"
+                :class="completedViewMode === 'card' ? 'grid grid-cols-3 gap-3 content-start' : 'space-y-3'"
               >
-                <!-- Checkbox (Always visible) -->
                 <div 
-                  class="w-4 h-4 border border-[#444] rounded-[2px] flex items-center justify-center transition-colors z-30 shrink-0" 
+                  v-for="task in completedFoundTasks" 
+                  :key="task.id" 
+                  @click="toggleCompletedTask(task.id)"
+                  class="cursor-pointer transition-all group relative overflow-hidden flex"
                   :class="[
-                    selectedCompletedTasks.includes(task.id) ? 'bg-emerald-500 border-emerald-500' : '',
-                    completedViewMode === 'card' ? 'absolute top-3 left-3' : ''
+                    selectedCompletedTasks.includes(task.id) ? 'border-emerald-500/50 bg-emerald-900/10' : 'border-[#333] hover:border-blue-500/50',
+                    completedViewMode === 'card' ? 'bg-[#151515] rounded-xl border p-3 flex-col shadow-lg aspect-square' : 'bg-[#111] border rounded-sm p-3 flex-row items-center gap-3'
                   ]"
                 >
-                   <svg v-if="selectedCompletedTasks.includes(task.id)" class="w-3 h-3 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4"><path d="M5 13l4 4L19 7"></path></svg>
-                </div>
-
-                <!-- Card View Content -->
-                <div v-if="completedViewMode === 'card'" class="w-full h-full relative z-10 flex flex-col justify-between">
-                  <!-- Background decoration -->
-                  <div class="absolute top-0 right-0 w-20 h-20 bg-blue-500/5 rounded-full blur-xl -mr-4 -mt-4 pointer-events-none"></div>
-
-                  <div class="flex justify-center mt-1">
-                    <span class="text-[9px] font-mono px-1.5 py-0.5 rounded uppercase tracking-wider border" 
-                      :class="task.type === 'strategy' ? 'text-blue-400 border-blue-500/30 bg-blue-900/10' : 'text-purple-400 border-purple-500/30 bg-purple-900/10'">
-                      {{ task.type === 'strategy' ? 'STRAT' : 'PLAN' }}
-                    </span>
+                  <!-- Checkbox (Always visible) -->
+                  <div 
+                    class="w-4 h-4 border border-[#444] rounded-[2px] flex items-center justify-center transition-colors z-30 shrink-0" 
+                    :class="[
+                      selectedCompletedTasks.includes(task.id) ? 'bg-emerald-500 border-emerald-500' : '',
+                      completedViewMode === 'card' ? 'absolute top-3 left-3' : ''
+                    ]"
+                  >
+                     <svg v-if="selectedCompletedTasks.includes(task.id)" class="w-3 h-3 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4"><path d="M5 13l4 4L19 7"></path></svg>
                   </div>
-                  
-                  <div class="text-center my-auto">
-                    <h3 class="text-xl font-bold mb-0.5 text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-400 group-hover:from-blue-400 group-hover:to-blue-200 transition-all">
-                      {{ task.symbol || 'UNK' }}
-                    </h3>
-                    <p class="text-[9px] text-slate-400 font-mono line-clamp-1 px-2">{{ task.stockName || task.title }}</p>
-                  </div>
-                  
-                  <!-- Mock Data Grid -->
-                  <div class="grid grid-cols-2 gap-1 border-y border-[#333] py-2 mb-1">
-                    <div class="text-center border-r border-[#333]">
-                      <div class="text-sm font-bold text-white">A</div>
-                      <div class="text-[8px] text-slate-500 uppercase tracking-wider">Rating</div>
+
+                  <!-- Card View Content -->
+                  <div v-if="completedViewMode === 'card'" class="w-full h-full relative z-10 flex flex-col justify-between">
+                    <!-- Background decoration -->
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-blue-500/5 rounded-full blur-xl -mr-4 -mt-4 pointer-events-none"></div>
+
+                    <div class="flex justify-center mt-1">
+                      <span class="text-[9px] font-mono px-1.5 py-0.5 rounded uppercase tracking-wider border" 
+                        :class="task.type === 'strategy' ? 'text-blue-400 border-blue-500/30 bg-blue-900/10' : 'text-purple-400 border-purple-500/30 bg-purple-900/10'">
+                        {{ task.type === 'strategy' ? 'STRAT' : 'PLAN' }}
+                      </span>
                     </div>
-                    <div class="text-center">
-                      <div class="text-sm font-bold text-emerald-400">LONG</div>
-                      <div class="text-[8px] text-slate-500 uppercase tracking-wider">Dir</div>
+                    
+                    <div class="text-center my-auto">
+                      <h3 class="text-xl font-bold mb-0.5 text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-400 group-hover:from-blue-400 group-hover:to-blue-200 transition-all">
+                        {{ task.symbol || 'UNK' }}
+                      </h3>
+                      <p class="text-[9px] text-slate-400 font-mono line-clamp-1 px-2">{{ task.stockName || task.title }}</p>
                     </div>
-                  </div>
+                    
+                    <!-- Mock Data Grid -->
+                    <div class="grid grid-cols-2 gap-1 border-y border-[#333] py-2 mb-1">
+                      <div class="text-center border-r border-[#333]">
+                        <div class="text-sm font-bold text-white">A</div>
+                        <div class="text-[8px] text-slate-500 uppercase tracking-wider">Rating</div>
+                      </div>
+                      <div class="text-center">
+                        <div class="text-sm font-bold text-emerald-400">LONG</div>
+                        <div class="text-[8px] text-slate-500 uppercase tracking-wider">Dir</div>
+                      </div>
+                    </div>
 
-                  <div class="flex justify-between text-[8px] text-slate-500 font-mono">
-                    <span>{{ task.estTime || '1-3 M' }}</span>
-                    <span>{{ task.completedAt }}</span>
-                  </div>
-                  
-                  <!-- View Button Overlay -->
-                  <div class="absolute inset-0 -m-3 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/60 backdrop-blur-[1px] z-20 rounded-xl">
-                    <button @click.stop="openViewModal(task)" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold rounded shadow-lg transform scale-90 group-hover:scale-100 transition-all">
-                      VIEW REPORT
-                    </button>
-                  </div>
-                </div>
-
-                <!-- List View Content -->
-                <div v-else class="flex-1 flex items-center justify-between overflow-hidden">
-                   <div class="flex items-center gap-3 overflow-hidden">
-                      <span class="text-[10px] font-mono px-1.5 py-0.5 rounded border shrink-0" :class="task.type === 'strategy' ? 'text-blue-400 border-blue-500/30 bg-blue-900/10' : 'text-purple-400 border-purple-500/30 bg-purple-900/10'">{{ task.type === 'strategy' ? 'STRAT' : 'PLAN' }}</span>
-                      <span class="text-xs font-bold text-gray-300 truncate group-hover:text-white">{{ task.title }}</span>
-                   </div>
-                   <div class="flex items-center gap-3 shrink-0">
-                      <span class="text-[10px] text-gray-600 font-mono">{{ task.completedAt }}</span>
-                      <button @click.stop="openViewModal(task)" class="p-1 bg-[#222] hover:bg-[#333] text-gray-400 hover:text-white rounded-sm border border-[#333] opacity-0 group-hover:opacity-100 transition-opacity">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    <div class="flex justify-between text-[8px] text-slate-500 font-mono">
+                      <span>{{ task.estTime || '1-3 M' }}</span>
+                      <span>{{ task.completedAt }}</span>
+                    </div>
+                    
+                    <!-- View Button Overlay -->
+                    <div class="absolute inset-0 -m-3 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/60 backdrop-blur-[1px] z-20 rounded-xl">
+                      <button @click.stop="openViewModal(task)" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold rounded shadow-lg transform scale-90 group-hover:scale-100 transition-all">
+                        VIEW REPORT
                       </button>
-                   </div>
+                    </div>
+                  </div>
+
+                  <!-- List View Content -->
+                  <div v-else class="flex-1 flex items-center justify-between overflow-hidden">
+                     <div class="flex items-center gap-3 overflow-hidden">
+                        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded border shrink-0" :class="task.type === 'strategy' ? 'text-blue-400 border-blue-500/30 bg-blue-900/10' : 'text-purple-400 border-purple-500/30 bg-purple-900/10'">{{ task.type === 'strategy' ? 'STRAT' : 'PLAN' }}</span>
+                        <span class="text-xs font-bold text-gray-300 truncate group-hover:text-white">{{ task.title }}</span>
+                     </div>
+                     <div class="flex items-center gap-3 shrink-0">
+                        <span class="text-[10px] text-gray-600 font-mono">{{ task.completedAt }}</span>
+                        <button @click.stop="openViewModal(task)" class="p-1 bg-[#222] hover:bg-[#333] text-gray-400 hover:text-white rounded-sm border border-[#333] opacity-0 group-hover:opacity-100 transition-opacity">
+                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        </button>
+                     </div>
+                  </div>
                 </div>
+              </TransitionGroup>
+
+              <!-- No Opportunity Found Section -->
+              <div v-if="completedNotFoundTasks.length > 0" class="border-t border-[#222] pt-4">
+                <div class="flex justify-between items-center mb-3 px-1">
+                  <div class="flex items-center gap-2">
+                    <div class="w-1.5 h-1.5 rounded-full bg-gray-600"></div>
+                    <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">No Opportunity Found</span>
+                    <span class="text-[10px] font-mono text-gray-700">{{ completedNotFoundTasks.length }}</span>
+                  </div>
+                  <button 
+                    @click="clearNotFoundTasks"
+                    class="text-[10px] font-bold text-gray-600 hover:text-red-400 uppercase transition-colors flex items-center gap-1"
+                    title="Clear all not found"
+                  >
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    Clear
+                  </button>
+                </div>
+
+                <!-- Hint Message -->
+                <div class="mb-3 px-2 py-2 bg-[#1a1a1a] border border-dashed border-gray-700 rounded text-[10px] text-gray-400 flex gap-2 items-start">
+                   <svg class="w-3 h-3 text-gray-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                   <p>不是每一次生成都会发现机会。如果未发现，请尝试<button @click="activeTab = 'generate'" class="text-cyan-500 hover:underline">重新配置参数</button>再次生成。</p>
+                </div>
+                
+                <TransitionGroup 
+                  :name="listTransitionName" 
+                  tag="div" 
+                  class="relative"
+                  :class="completedViewMode === 'card' ? 'grid grid-cols-3 gap-3 content-start' : 'space-y-3'"
+                >
+                  <div 
+                    v-for="task in completedNotFoundTasks" 
+                    :key="task.id" 
+                    @click="toggleCompletedTask(task.id)"
+                    class="cursor-pointer transition-all group relative overflow-hidden flex opacity-70 hover:opacity-100 grayscale hover:grayscale-0"
+                    :class="[
+                      selectedCompletedTasks.includes(task.id) ? 'border-gray-500/50 bg-gray-900/10' : 'border-[#222] hover:border-gray-500/50',
+                      completedViewMode === 'card' ? 'bg-[#0f0f0f] rounded-xl border p-3 flex-col shadow-sm aspect-square' : 'bg-[#0f0f0f] border rounded-sm p-3 flex-row items-center gap-3'
+                    ]"
+                  >
+                    <!-- Checkbox (Always visible) -->
+                    <div 
+                      class="w-4 h-4 border border-[#333] rounded-[2px] flex items-center justify-center transition-colors z-30 shrink-0" 
+                      :class="[
+                        selectedCompletedTasks.includes(task.id) ? 'bg-gray-500 border-gray-500' : '',
+                        completedViewMode === 'card' ? 'absolute top-3 left-3' : ''
+                      ]"
+                    >
+                       <svg v-if="selectedCompletedTasks.includes(task.id)" class="w-3 h-3 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4"><path d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+
+                    <!-- Card View Content -->
+                    <div v-if="completedViewMode === 'card'" class="w-full h-full relative z-10 flex flex-col justify-between">
+                      <div class="flex justify-center mt-1">
+                        <span class="text-[9px] font-mono px-1.5 py-0.5 rounded uppercase tracking-wider border text-gray-500 border-gray-800 bg-gray-900/30">
+                          {{ task.type === 'strategy' ? 'STRAT' : 'PLAN' }}
+                        </span>
+                      </div>
+                      
+                      <div class="text-center my-auto">
+                        <h3 class="text-xl font-bold mb-0.5 text-gray-400 group-hover:text-gray-200 transition-all">
+                          {{ task.symbol || 'UNK' }}
+                        </h3>
+                        <p class="text-[9px] text-gray-600 font-mono line-clamp-1 px-2">{{ task.stockName || task.title }}</p>
+                      </div>
+                      
+                      <div class="text-center py-2 mb-1">
+                        <div class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">No Signal</div>
+                      </div>
+
+                      <div class="flex justify-between text-[8px] text-gray-700 font-mono">
+                        <span>--</span>
+                        <span>{{ task.completedAt }}</span>
+                      </div>
+                      
+                      <!-- View Button Overlay -->
+                      <div class="absolute inset-0 -m-3 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/60 backdrop-blur-[1px] z-20 rounded-xl">
+                        <button @click.stop="openViewModal(task)" class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-[10px] font-bold rounded shadow-lg transform scale-90 group-hover:scale-100 transition-all">
+                          VIEW LOG
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- List View Content -->
+                    <div v-else class="flex-1 flex items-center justify-between overflow-hidden">
+                       <div class="flex items-center gap-3 overflow-hidden">
+                          <span class="text-[10px] font-mono px-1.5 py-0.5 rounded border shrink-0 text-gray-500 border-gray-800 bg-gray-900/30">{{ task.type === 'strategy' ? 'STRAT' : 'PLAN' }}</span>
+                          <span class="text-xs font-bold text-gray-500 truncate group-hover:text-gray-300">{{ task.title }}</span>
+                       </div>
+                       <div class="flex items-center gap-3 shrink-0">
+                          <span class="text-[10px] text-gray-700 font-mono">{{ task.completedAt }}</span>
+                          <button @click.stop="openViewModal(task)" class="p-1 bg-[#1a1a1a] hover:bg-[#222] text-gray-600 hover:text-gray-400 rounded-sm border border-[#222] opacity-0 group-hover:opacity-100 transition-opacity">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                          </button>
+                       </div>
+                    </div>
+                  </div>
+                </TransitionGroup>
               </div>
-            </TransitionGroup>
+            </div>
           </div>
 
         </div>
@@ -1086,9 +1189,9 @@ const tasks = ref([
   { id: 101, type: 'strategy', title: 'Tech Momentum Alpha', symbol: 'QQQ', stockName: 'Invesco QQQ', status: 'pending', estTime: '2m' },
   { id: 102, type: 'plan', title: 'Q3 Rebalancing', symbol: 'SPY', stockName: 'SPDR S&P 500', status: 'pending', estTime: '5m' },
   { id: 103, type: 'strategy', title: 'Crypto Volatility', symbol: 'COIN', stockName: 'Coinbase', status: 'processing', progress: 45, timeLeft: '30s', statusText: 'Backtesting...' },
-  { id: 104, type: 'plan', title: 'Retirement Safe Haven', symbol: 'TLT', stockName: 'iShares 20+ Year Treasury Bond', status: 'completed', completedAt: '10:23 AM' },
-  { id: 105, type: 'strategy', title: 'High Yield Divs', symbol: 'VYM', stockName: 'Vanguard High Dividend Yield', status: 'completed', completedAt: '09:15 AM' },
-  { id: 106, type: 'strategy', title: 'Penny Stock Scanner', symbol: 'IWM', stockName: 'iShares Russell 2000', status: 'completed', completedAt: 'Yesterday' },
+  { id: 104, type: 'plan', title: 'Retirement Safe Haven', symbol: 'TLT', stockName: 'iShares 20+ Year Treasury Bond', status: 'completed', completedAt: '10:23 AM', foundOpportunity: true },
+  { id: 105, type: 'strategy', title: 'High Yield Divs', symbol: 'VYM', stockName: 'Vanguard High Dividend Yield', status: 'completed', completedAt: '09:15 AM', foundOpportunity: true },
+  { id: 106, type: 'strategy', title: 'Penny Stock Scanner', symbol: 'IWM', stockName: 'iShares Russell 2000', status: 'completed', completedAt: 'Yesterday', foundOpportunity: false },
 ])
 
 const selectedCompletedTasks = ref([])
@@ -1102,6 +1205,8 @@ const filteredTasks = computed(() => {
 const pendingTasks = computed(() => filteredTasks.value.filter(t => t.status === 'pending'))
 const processingTasks = computed(() => filteredTasks.value.filter(t => t.status === 'processing'))
 const completedTasks = computed(() => filteredTasks.value.filter(t => t.status === 'completed'))
+const completedFoundTasks = computed(() => completedTasks.value.filter(t => t.foundOpportunity !== false))
+const completedNotFoundTasks = computed(() => completedTasks.value.filter(t => t.foundOpportunity === false))
 const totalTasks = computed(() => filteredTasks.value.length)
 
 const isAllSelected = computed(() => {
@@ -1216,6 +1321,19 @@ const handleDelete = () => {
   }
 }
 
+const clearNotFoundTasks = () => {
+  if (completedNotFoundTasks.value.length === 0) return
+  if (confirm(`Clear all ${completedNotFoundTasks.value.length} items where no opportunity was found?`)) {
+    listTransitionName.value = 'list-delete'
+    const idsToRemove = completedNotFoundTasks.value.map(t => t.id)
+    setTimeout(() => {
+      tasks.value = tasks.value.filter(t => !idsToRemove.includes(t.id))
+      // Also remove from selection if present
+      selectedCompletedTasks.value = selectedCompletedTasks.value.filter(id => !idsToRemove.includes(id))
+    }, 50)
+  }
+}
+
 // Queue Processing Logic
 const maxConcurrent = ref(2)
 
@@ -1254,6 +1372,7 @@ onMounted(() => {
         { id: 901, type: 'strategy', title: 'AI Momentum Scan', symbol: 'NVDA', stockName: 'NVIDIA', status: 'processing', progress: 70, timeLeft: '10s', statusText: 'Analyzing patterns...', estTime: '1m' },
         { id: 902, type: 'plan', title: 'Portfolio Rebalance', symbol: 'SPY', stockName: 'SPDR S&P 500', status: 'pending', estTime: '2m', isNew: true },
         { id: 903, type: 'strategy', title: 'Crypto Volatility', symbol: 'BTC', stockName: 'Bitcoin', status: 'pending', estTime: '3m' },
+        { id: 904, type: 'strategy', title: 'Meme Stock Alert', symbol: 'GME', stockName: 'GameStop', status: 'completed', completedAt: 'Just now', foundOpportunity: false },
      ]
      // Keep existing completed tasks but replace pending/processing with demo ones
      const existingCompleted = tasks.value.filter(t => t.status === 'completed')
@@ -1276,6 +1395,8 @@ onMounted(() => {
             task.progress = 100
             task.status = 'completed'
             task.completedAt = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            // Randomly decide if opportunity found (80% chance yes)
+            task.foundOpportunity = Math.random() > 0.2
             // Trigger next task immediately
             processQueue()
           }
