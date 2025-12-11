@@ -12,18 +12,6 @@
         <div class="w-[400px] flex flex-col bg-[#0a0a0a] border border-[#222] rounded-lg overflow-hidden shadow-2xl shadow-black/50">
           <!-- Search & Filter Header -->
           <div class="p-4 border-b border-[#222] bg-[#0a0a0a]">
-            <div class="relative mb-4">
-              <input 
-                v-model="searchQuery"
-                type="text" 
-                placeholder="SEARCH_ASSET // 输入代码或名称" 
-                class="w-full bg-[#111] border border-[#333] text-white text-sm px-4 py-2.5 rounded-sm focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-all font-mono placeholder-gray-600"
-              />
-              <div class="absolute right-3 top-2.5 text-gray-600">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-              </div>
-            </div>
-            
             <div class="flex gap-1 bg-[#111] p-1 rounded-sm border border-[#222]">
               <button 
                 v-for="tab in assetTabs" 
@@ -34,6 +22,18 @@
               >
                 {{ tab.label }}
               </button>
+            </div>
+
+            <div v-if="currentAssetTab === 'search'" class="relative mt-4">
+              <input 
+                v-model="searchQuery"
+                type="text" 
+                placeholder="SEARCH_ASSET // 输入代码或名称" 
+                class="w-full bg-[#111] border border-[#333] text-white text-sm px-4 py-2.5 rounded-sm focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-all font-mono placeholder-gray-600"
+              />
+              <div class="absolute right-3 top-2.5 text-gray-600">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              </div>
             </div>
           </div>
 
@@ -104,68 +104,25 @@
                 <h2 class="text-xl font-bold text-white uppercase tracking-widest mb-1">Strategy Config</h2>
                 <p class="text-xs text-gray-500 font-mono">CONFIGURE YOUR ANALYSIS PARAMETERS</p>
               </div>
-              <div class="flex items-center gap-2">
-                 <span class="text-xs text-gray-500 uppercase">Mode:</span>
-                 <button 
-                   @click="isAdvancedMode = !isAdvancedMode"
-                   class="text-xs font-bold px-3 py-1 rounded-sm border border-[#333] transition-all"
-                   :class="isAdvancedMode ? 'bg-cyan-900/20 text-cyan-400 border-cyan-500/50' : 'bg-[#111] text-gray-400 hover:text-white'"
-                 >
-                   {{ isAdvancedMode ? 'ADVANCED' : 'SIMPLE' }}
-                 </button>
-              </div>
             </div>
 
-            <!-- Simple Mode Settings (Always Visible or simplified view) -->
-            <div v-if="!isAdvancedMode" class="space-y-8">
-               <!-- Simple Period Selection -->
-               <div>
-                 <h3 class="text-sm font-bold text-gray-400 mb-4 flex items-center gap-2">
-                   <span class="w-1 h-4 bg-cyan-500"></span> 投资周期
-                 </h3>
-                 <div class="grid grid-cols-4 gap-4">
-                   <button 
-                     v-for="period in periods" 
-                     :key="period.id"
-                     @click="selectedPeriod = period.id"
-                     class="p-4 bg-[#111] border border-[#222] rounded-sm hover:border-[#444] transition-all text-left group relative overflow-hidden"
-                     :class="selectedPeriod === period.id ? 'border-cyan-500/50 bg-cyan-900/10' : ''"
-                   >
-                     <div class="text-sm font-bold text-white mb-1 group-hover:text-cyan-400 transition-colors">{{ period.title }}</div>
-                     <div class="text-xs text-gray-500 font-mono">{{ period.desc }}</div>
-                     <div v-if="selectedPeriod === period.id" class="absolute top-0 right-0 w-2 h-2 bg-cyan-500"></div>
-                   </button>
-                 </div>
-               </div>
-
-               <!-- Simple Risk Selection -->
-               <div>
-                 <h3 class="text-sm font-bold text-gray-400 mb-4 flex items-center gap-2">
-                   <span class="w-1 h-4 bg-purple-500"></span> 风险偏好
-                 </h3>
-                 <div class="grid grid-cols-4 gap-4">
-                   <button 
-                     v-for="risk in risks" 
-                     :key="risk.id"
-                     @click="selectedRisk = risk.id"
-                     class="p-4 bg-[#111] border border-[#222] rounded-sm hover:border-[#444] transition-all text-left group relative overflow-hidden"
-                     :class="selectedRisk === risk.id ? 'border-purple-500/50 bg-purple-900/10' : ''"
-                   >
-                     <div class="text-sm font-bold text-white mb-1 group-hover:text-purple-400 transition-colors">{{ risk.title }}</div>
-                     <div class="text-xs text-gray-500">{{ risk.desc }}</div>
-                     <div v-if="selectedRisk === risk.id" class="absolute top-0 right-0 w-2 h-2 bg-purple-500"></div>
-                   </button>
-                 </div>
-               </div>
+            <!-- Recommendation Hint -->
+            <div class="bg-cyan-900/10 border border-cyan-500/20 rounded-sm p-3 mb-6 flex items-start gap-3">
+              <div class="mt-0.5 text-cyan-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              </div>
+              <p class="text-xs text-cyan-200/80 leading-relaxed">
+                <span class="font-bold text-cyan-400">使用推荐卡片</span> = 如果你回答之前的问题，那么推荐来自你的回答；如果你没回答，则交给模型随机判断。
+              </p>
             </div>
 
             <!-- Advanced Mode Settings -->
-            <div v-else class="space-y-10 animate-fade-in">
+            <div class="space-y-10 animate-fade-in">
               
               <!-- 1. Analysis Framework -->
               <div>
                 <h3 class="text-sm font-bold text-gray-400 mb-4 flex items-center gap-2 uppercase tracking-wider">
-                  <span class="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span> 主分析框架
+                  <span class="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span> 推荐配置：主分析框架
                 </h3>
                 <div class="grid grid-cols-4 gap-4">
                   <button 
@@ -194,19 +151,22 @@
                 <h3 class="text-sm font-bold text-gray-400 mb-4 flex items-center gap-2 uppercase tracking-wider">
                   <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span> 投资周期
                 </h3>
-                <div class="grid grid-cols-4 gap-4">
+                <div class="grid grid-cols-5 gap-4">
                   <button 
                     v-for="period in periods" 
                     :key="period.id"
                     @click="selectedPeriod = period.id"
                     class="p-4 bg-[#111] border border-[#222] rounded-sm hover:bg-[#161616] transition-all text-left relative group h-24 flex flex-col justify-between"
-                    :class="selectedPeriod === period.id ? 'border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.1)]' : 'hover:border-[#444]'"
+                    :class="selectedPeriod === period.id ? 'border-blue-500 bg-blue-900/20 shadow-[0_0_20px_rgba(59,130,246,0.3)] ring-1 ring-blue-500/50' : 'hover:border-[#444]'"
                   >
                     <component :is="period.icon" class="w-5 h-5 text-gray-600 group-hover:text-blue-400 transition-colors" :class="selectedPeriod === period.id ? 'text-blue-400' : ''" />
                     <div>
                       <div class="text-sm font-bold text-white mb-0.5">{{ period.title }}</div>
-                      <div class="text-[10px] text-gray-500 font-mono">{{ period.desc }}</div>
+                      <div class="text-[10px] text-gray-500 font-mono" :class="selectedPeriod === period.id ? 'text-blue-200/70' : ''">{{ period.desc }}</div>
                     </div>
+                    
+                    <!-- Active Indicator Corner -->
+                    <div v-if="selectedPeriod === period.id" class="absolute top-0 right-0 w-0 h-0 border-t-[12px] border-r-[12px] border-t-transparent border-r-blue-500"></div>
                   </button>
                 </div>
               </div>
@@ -216,23 +176,26 @@
                 <h3 class="text-sm font-bold text-gray-400 mb-4 flex items-center gap-2 uppercase tracking-wider">
                   <span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span> 风险偏好
                 </h3>
-                <div class="grid grid-cols-4 gap-4">
+                <div class="grid grid-cols-5 gap-4">
                   <button 
                     v-for="risk in risks" 
                     :key="risk.id"
                     @click="selectedRisk = risk.id"
                     class="p-4 bg-[#111] border border-[#222] rounded-sm hover:bg-[#161616] transition-all text-left relative group h-24 flex flex-col justify-between"
-                    :class="selectedRisk === risk.id ? 'border-orange-500/50 shadow-[0_0_15px_rgba(249,115,22,0.1)]' : 'hover:border-[#444]'"
+                    :class="selectedRisk === risk.id ? 'border-orange-500 bg-orange-900/20 shadow-[0_0_20px_rgba(249,115,22,0.3)] ring-1 ring-orange-500/50' : 'hover:border-[#444]'"
                   >
                     <component :is="risk.icon" class="w-5 h-5 text-gray-600 group-hover:text-orange-400 transition-colors" :class="selectedRisk === risk.id ? 'text-orange-400' : ''" />
                     <div>
                       <div class="text-sm font-bold text-white mb-0.5">{{ risk.title }}</div>
-                      <div class="text-[10px] text-gray-500">{{ risk.desc }}</div>
+                      <div class="text-[10px] text-gray-500" :class="selectedRisk === risk.id ? 'text-orange-200/70' : ''">{{ risk.desc }}</div>
                     </div>
                     
+                    <!-- Active Indicator Corner -->
+                    <div v-if="selectedRisk === risk.id" class="absolute top-0 right-0 w-0 h-0 border-t-[12px] border-r-[12px] border-t-transparent border-r-orange-500"></div>
+
                     <!-- Progress Bar Visual -->
-                    <div class="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 opacity-20 w-full"></div>
-                    <div class="absolute bottom-0 left-0 h-0.5 bg-orange-500" :style="{ width: risk.intensity + '%', opacity: selectedRisk === risk.id ? 1 : 0 }"></div>
+                    <div v-if="risk.id !== 'auto'" class="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 opacity-20 w-full"></div>
+                    <div v-if="risk.id !== 'auto'" class="absolute bottom-0 left-0 h-0.5 bg-orange-500" :style="{ width: risk.intensity + '%', opacity: selectedRisk === risk.id ? 1 : 0 }"></div>
                   </button>
                 </div>
               </div>
@@ -932,6 +895,7 @@ const IconShield = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'curre
 const IconScale = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('path', { d: 'M12 3v19' }), h('path', { d: 'M5 8h14' }), h('path', { d: 'M2 14h6' }), h('path', { d: 'M16 14h6' })])
 const IconFire = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('path', { d: 'M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.1.2-2.2.5-3.3a7 7 0 0 0 3 3.8z' })])
 const IconSkull = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('path', { d: 'M12 2c-4.4 0-8 3.6-8 8 0 2.8 1.5 5.3 3.8 6.7l.2 3.3h8l.2-3.3c2.3-1.4 3.8-3.9 3.8-6.7 0-4.4-3.6-8-8-8z' }), h('path', { d: 'M9 10h.01' }), h('path', { d: 'M15 10h.01' }), h('path', { d: 'M10 14h4' })])
+const IconAuto = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('path', { d: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z' })])
 
 
 const router = useRouter()
@@ -953,7 +917,6 @@ const switchTab = (tabId) => {
 const currentAssetTab = ref('watchlist')
 const assetTabs = [
   { id: 'watchlist', label: '我的关注' },
-  { id: 'holdings', label: '我的持仓' },
   { id: 'search', label: '搜索' }
 ]
 
@@ -978,7 +941,6 @@ const holdings = [
 
 const currentStockList = computed(() => {
   if (currentAssetTab.value === 'watchlist') return watchlist
-  if (currentAssetTab.value === 'holdings') return holdings
   if (currentAssetTab.value === 'search') {
     if (!searchQuery.value) return []
     // Simple mock search filter
@@ -1007,13 +969,12 @@ const removeStock = (symbol) => {
 }
 
 // --- Strategy Configuration Logic ---
-const isAdvancedMode = ref(true)
-const selectedFrameworks = ref(['all'])
-const selectedPeriod = ref('mid')
-const selectedRisk = ref('medium')
+const selectedFrameworks = ref(['auto'])
+const selectedPeriod = ref('auto')
+const selectedRisk = ref('auto')
 
 const frameworks = [
-  { id: 'all', title: '全部框架', desc: '综合多种分析方法，全面评估投资机会', icon: IconTarget },
+  { id: 'auto', title: '智能推荐', desc: 'AI根据市场环境自动选择最佳分析框架', icon: IconAuto },
   { id: 'tech', title: '技术分析', desc: '基于图表、趋势和技术指标进行分析', icon: IconChart },
   { id: 'fundamental', title: '基本面分析', desc: '分析公司财务报表、盈利能力和估值', icon: IconDocument },
   { id: 'quant', title: '量化分析', desc: '使用数学模型和统计方法评估机会', icon: IconMath },
@@ -1024,6 +985,7 @@ const frameworks = [
 ]
 
 const periods = [
+  { id: 'auto', title: '智能推荐', desc: 'AI自动匹配最佳周期', icon: IconAuto },
   { id: 'short', title: '短期', desc: '1-5天', icon: IconClock },
   { id: 'short-mid', title: '短中期', desc: '1天-1个月', icon: IconCalendar },
   { id: 'mid', title: '中长期', desc: '1-6个月', icon: IconCalendar },
@@ -1031,6 +993,7 @@ const periods = [
 ]
 
 const risks = [
+  { id: 'auto', title: '智能推荐', desc: 'AI自动调整风险偏好', icon: IconAuto, intensity: 50 },
   { id: 'low', title: '低风险', desc: '稳健保守，重视资本保护', icon: IconShield, intensity: 25 },
   { id: 'medium', title: '中等风险', desc: '平衡收益与风险', icon: IconScale, intensity: 50 },
   { id: 'high', title: '高风险', desc: '追求高收益，接受较高波动', icon: IconFire, intensity: 75 },
@@ -1038,21 +1001,21 @@ const risks = [
 ]
 
 const toggleFramework = (id) => {
-  if (id === 'all') {
-    selectedFrameworks.value = ['all']
+  if (id === 'auto') {
+    selectedFrameworks.value = ['auto']
     return
   }
   
   const index = selectedFrameworks.value.indexOf(id)
   if (index === -1) {
-    // If selecting specific, remove 'all'
-    const allIndex = selectedFrameworks.value.indexOf('all')
-    if (allIndex !== -1) selectedFrameworks.value.splice(allIndex, 1)
+    // If selecting specific, remove 'auto'
+    const autoIndex = selectedFrameworks.value.indexOf('auto')
+    if (autoIndex !== -1) selectedFrameworks.value.splice(autoIndex, 1)
     selectedFrameworks.value.push(id)
   } else {
     selectedFrameworks.value.splice(index, 1)
-    // If empty, default back to all? Or allow empty? Let's default to all if empty
-    if (selectedFrameworks.value.length === 0) selectedFrameworks.value = ['all']
+    // If empty, default back to auto
+    if (selectedFrameworks.value.length === 0) selectedFrameworks.value = ['auto']
   }
 }
 
@@ -1073,13 +1036,13 @@ const handleInitializeGeneration = () => {
     const newTask = {
       id: Date.now() + Math.floor(Math.random() * 1000),
       type: 'strategy',
-      title: `${symbol} Strategy - ${isAdvancedMode.value ? 'Advanced' : 'Simple'}`,
+      title: `${symbol} Strategy - Advanced`,
       symbol: symbol,
       stockName: stockName,
       status: 'pending',
-      estTime: isAdvancedMode.value ? '5m' : '2m',
+      estTime: '5m',
       progress: 0,
-      timeLeft: isAdvancedMode.value ? '5m' : '2m',
+      timeLeft: '5m',
       statusText: 'Queued',
       isNew: true
     }
