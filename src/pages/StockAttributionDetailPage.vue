@@ -2,8 +2,29 @@
   <div class="bg-[#0f0f0f] min-h-screen pt-24 pb-20 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto">
 
+      <!-- Top Search Bar -->
+      <div class="flex flex-col items-center justify-center mb-4 animate-fade-in-down">
+        <div class="relative group w-full max-w-md">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <svg class="h-4 w-4 text-gray-500 group-focus-within:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input 
+            v-model="searchSymbol"
+            @keyup.enter="handleSearch"
+            type="text" 
+            placeholder="Search to jump to another stock (e.g. NVDA)..." 
+            class="w-full bg-[#1a1a1a]/80 backdrop-blur border border-[#333] text-white text-sm pl-10 pr-4 py-2.5 rounded-full focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all shadow-lg placeholder-gray-500 hover:border-gray-600"
+          />
+          <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+            <span class="text-[10px] text-gray-600 border border-[#333] rounded px-1.5 py-0.5 bg-[#111]">Enter</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Stock Basic Info Card -->
-      <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-6 mb-8">
+      <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-6 mb-8 relative">
         <div class="flex items-start justify-between">
           <!-- Left Section: Company Info & Price -->
           <div class="flex-1">
@@ -153,20 +174,39 @@
 
       <!-- Related Themes Tab -->
       <div v-if="activeTab === 'themes'" class="animate-fade-in">
-        <div class="mb-6 flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <h3 class="text-lg font-bold text-white">相关主题</h3>
-            <span class="text-sm text-gray-500">({{ relatedThemes.length }})</span>
-          </div>
-          <div class="text-xs text-gray-500">
-            数据与市场热点同步
-          </div>
+        <!-- Sort Controls -->
+        <div class="mb-4 flex justify-end gap-2">
+          <!-- Sort by Change -->
+          <button 
+            @click="handleSort('change')"
+            class="flex items-center gap-2 px-3 py-1.5 bg-[#1a1a1a] border rounded-lg text-xs font-bold transition-all"
+            :class="sortField === 'change' ? 'border-blue-500 text-white' : 'border-[#333] text-gray-400 hover:text-white hover:border-gray-500'"
+          >
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
+            <span>Change</span>
+            <span v-if="sortField === 'change'" class="text-blue-400 ml-1">
+              {{ sortDirection === 'desc' ? '↓' : '↑' }}
+            </span>
+          </button>
+
+          <!-- Sort by Time -->
+          <button 
+            @click="handleSort('time')"
+            class="flex items-center gap-2 px-3 py-1.5 bg-[#1a1a1a] border rounded-lg text-xs font-bold transition-all"
+            :class="sortField === 'time' ? 'border-blue-500 text-white' : 'border-[#333] text-gray-400 hover:text-white hover:border-gray-500'"
+          >
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>Time</span>
+            <span v-if="sortField === 'time'" class="text-blue-400 ml-1">
+              {{ sortDirection === 'desc' ? '↓' : '↑' }}
+            </span>
+          </button>
         </div>
 
         <!-- Themes List -->
         <div v-if="relatedThemes.length > 0" class="space-y-4">
           <div 
-            v-for="theme in relatedThemes" 
+            v-for="theme in sortedThemes" 
             :key="theme.id" 
             :id="`theme-${theme.id}`"
             @click="toggleThemeExpand(theme)"
@@ -176,29 +216,15 @@
             ]"
           >
             <div class="flex flex-col md:flex-row gap-6">
-              <!-- Left: Sentiment & Confidence -->
-              <div class="md:w-48 flex-shrink-0">
-                <div class="flex items-center gap-2 mb-2">
-                  <span class="text-xs font-bold px-2 py-1 rounded border" 
-                    :class="{
-                      'bg-green-900/30 text-green-400 border-green-900/50': theme.sentiment === 'BULLISH',
-                      'bg-gray-700/30 text-gray-400 border-gray-700/50': theme.sentiment === 'NEUTRAL',
-                      'bg-red-900/30 text-red-400 border-red-900/50': theme.sentiment === 'BEARISH'
-                    }">
-                    {{ theme.sentiment }}
-                  </span>
-                  <span class="text-sm font-bold text-white">{{ theme.confidence }}%</span>
-                </div>
-                <div class="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                  <div class="h-full" 
-                    :class="{
-                      'bg-green-500': theme.sentiment === 'BULLISH',
-                      'bg-gray-500': theme.sentiment === 'NEUTRAL',
-                      'bg-red-500': theme.sentiment === 'BEARISH'
-                    }"
-                    :style="{ width: theme.confidence + '%' }"></div>
-                </div>
-              </div>
+                  <!-- Left: Theme Change -->
+                  <div class="md:w-32 flex-shrink-0 flex items-center justify-center border-r border-[#333] mr-6 pr-6">
+                    <div class="text-center">
+                      <div class="text-2xl font-bold font-mono" :class="getThemeChange(theme) >= 0 ? 'text-green-400' : 'text-red-400'">
+                        {{ getThemeChange(theme) >= 0 ? '+' : '' }}{{ getThemeChange(theme) }}%
+                      </div>
+                      <div class="text-[10px] text-gray-500 uppercase tracking-wider mt-1">Today</div>
+                    </div>
+                  </div>
 
               <!-- Middle: Content -->
               <div class="flex-1 min-w-0">
@@ -212,28 +238,23 @@
                 </div>
               </div>
 
-              <!-- Right: Meta -->
-              <div class="flex flex-row md:flex-col justify-between items-end md:w-32 flex-shrink-0 text-right">
-                <div class="text-xs text-gray-500">{{ theme.timeAgo }}</div>
-                <div class="flex items-center gap-1 text-xs font-medium" 
-                  :class="{
-                    'text-red-400': theme.heat === 'High',
-                    'text-orange-400': theme.heat === 'Med',
-                    'text-blue-400': theme.heat === 'Low'
-                  }">
-                  <span>🔥</span> {{ theme.heat }} Heat
+              <!-- Right: Meta & Expand -->
+              <div class="flex flex-row md:flex-col justify-between items-end md:w-auto flex-shrink-0 text-right">
+                <div class="text-xs text-gray-500 mb-2">{{ theme.timeAgo }}</div>
+                
+                <!-- Expand Indicator -->
+                <div class="text-gray-500 group-hover:text-white transition-colors mt-auto flex items-center gap-1">
+                  <span class="text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">View Details</span>
+                  <svg 
+                    class="w-5 h-5 transition-transform duration-300" 
+                    :class="theme.isExpanded ? 'rotate-180' : ''"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
                 </div>
               </div>
             </div>
-
-            <!-- Follow Button -->
-            <button 
-              @click.stop="toggleThemeFollow(theme)"
-              class="absolute top-5 right-5 text-xs px-2 py-1 rounded border transition-colors z-10"
-              :class="theme.isFollowed ? 'bg-green-900/30 text-green-400 border-green-900/50' : 'bg-[#2a2a2a] text-gray-400 border-[#333] hover:text-white hover:border-gray-500'"
-            >
-              {{ theme.isFollowed ? '✓ 已关注' : '+ 关注' }}
-            </button>
 
             <!-- Expanded Content -->
             <div v-if="theme.isExpanded" class="mt-6 pt-6 border-t border-[#333] animate-fade-in cursor-default" @click.stop>
@@ -548,13 +569,45 @@
           </div>
         </div>
         
-        <!-- Mock Bar Chart -->
-        <div class="flex items-end gap-1 h-8 flex-1 max-w-md mx-auto">
-          <div v-for="i in 14" :key="i" class="w-full bg-blue-900/30 rounded-t-sm relative group" :style="{ height: Math.random() * 100 + '%' }">
-            <div class="absolute bottom-0 left-0 w-full bg-blue-500 rounded-t-sm transition-all duration-300" :style="{ height: Math.random() * 100 + '%' }"></div>
+        <!-- Event Sentiment Chart -->
+        <div class="flex items-end gap-1 h-12 flex-1 max-w-md mx-auto relative px-2">
+          <!-- Background Grid -->
+          <div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-10 z-0">
+            <div class="w-full h-px bg-gray-500 border-t border-dashed"></div>
+            <div class="w-full h-px bg-gray-500 border-t border-dashed"></div>
+            <div class="w-full h-px bg-gray-500 border-t border-dashed"></div>
           </div>
-          <div class="w-full bg-blue-500 h-full rounded-t-sm relative">
-             <span class="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] text-gray-500 whitespace-nowrap">Today</span>
+
+          <div 
+            v-for="bar in eventChartData" 
+            :key="bar.id" 
+            @click="scrollToEventGroup(bar.id)"
+            class="w-full relative group flex flex-col justify-end cursor-pointer hover:opacity-90 transition-opacity z-10"
+            :style="{ height: Math.max(15, bar.height) + '%' }"
+          >
+            <!-- Stacked Bars -->
+            <div class="w-full bg-red-500/80" :style="{ height: bar.bearishH + '%' }"></div>
+            <div class="w-full bg-gray-500/80" :style="{ height: bar.neutralH + '%' }"></div>
+            <div class="w-full bg-green-500/80 rounded-t-[1px]" :style="{ height: bar.bullishH + '%' }"></div>
+            
+            <!-- Label -->
+            <div v-if="bar.label" class="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[9px] text-gray-500 whitespace-nowrap font-mono">
+              {{ bar.label }}
+            </div>
+
+            <!-- Tooltip -->
+            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-50 pointer-events-none">
+              <div class="bg-[#1a1a1a] border border-[#444] rounded p-2 text-[10px] shadow-xl whitespace-nowrap backdrop-blur-md">
+                <div class="font-bold text-white mb-1 border-b border-[#333] pb-1">Total: {{ bar.total }}</div>
+                <div class="grid grid-cols-2 gap-x-3 gap-y-0.5">
+                  <span class="text-green-400">Bullish</span> <span class="text-right font-mono">{{ bar.bullish }}</span>
+                  <span class="text-red-400">Bearish</span> <span class="text-right font-mono">{{ bar.bearish }}</span>
+                  <span class="text-gray-400">Neutral</span> <span class="text-right font-mono">{{ bar.neutral }}</span>
+                </div>
+              </div>
+              <!-- Arrow -->
+              <div class="w-2 h-2 bg-[#1a1a1a] border-r border-b border-[#444] transform rotate-45 absolute -bottom-1 left-1/2 -translate-x-1/2"></div>
+            </div>
           </div>
         </div>
 
@@ -574,15 +627,20 @@
 
       <!-- Event List -->
       <div class="space-y-8">
-        <div v-for="(group, groupName) in groupedEvents" :key="groupName">
+        <div 
+          v-for="bar in [...eventChartData].reverse()" 
+          :key="bar.id" 
+          :id="`event-group-${bar.id}`"
+          v-show="bar.total > 0"
+        >
           <div class="flex items-center gap-4 mb-4 border-b border-[#333] pb-2">
-            <h2 class="text-lg font-bold text-white">{{ groupName }}</h2>
-            <span class="text-sm text-gray-500">{{ group.length }} events</span>
+            <h2 class="text-lg font-bold text-white">{{ bar.label || `${24 - bar.id}h ago` }}</h2>
+            <span class="text-sm text-gray-500">{{ bar.total }} events</span>
           </div>
           
           <div class="space-y-2">
             <div 
-              v-for="event in group" 
+              v-for="event in chartLinkedEvents[bar.id]" 
               :key="event.id" 
               @click="openDetail(event)"
               class="bg-[#1a1a1a] hover:bg-[#222] border border-[#333] rounded-lg p-4 flex items-center justify-between cursor-pointer transition-colors group"
@@ -1054,6 +1112,111 @@ marked.setOptions({
 const route = useRoute()
 const router = useRouter()
 const symbol = ref(route.params.id || 'NVDA')
+
+// --- Search Logic ---
+const searchSymbol = ref('')
+
+const handleSearch = () => {
+  if (!searchSymbol.value) return
+  const symbol = searchSymbol.value.toUpperCase()
+  router.push({ 
+    name: 'StockAttributionDetail', 
+    params: { id: symbol },
+    query: { tab: activeTab.value }
+  })
+  searchSymbol.value = ''
+}
+
+// Helper to calculate theme change
+const getThemeChange = (theme) => {
+  if (theme.change !== undefined) return theme.change
+  if (theme.stockDetails && theme.stockDetails.length > 0) {
+    const total = theme.stockDetails.reduce((sum, stock) => sum + stock.change, 0)
+    return (total / theme.stockDetails.length).toFixed(2)
+  }
+  return 0.00
+}
+
+// Theme Sorting Logic
+const sortField = ref('default') // 'default', 'change', 'time'
+const sortDirection = ref('desc')
+
+const handleSort = (field) => {
+  if (sortField.value === field) {
+    sortDirection.value = sortDirection.value === 'desc' ? 'asc' : 'desc'
+  } else {
+    sortField.value = field
+    sortDirection.value = 'desc'
+  }
+}
+
+const sortedThemes = computed(() => {
+  if (sortField.value === 'default') return relatedThemes.value
+  
+  return [...relatedThemes.value].sort((a, b) => {
+    let valA, valB
+    
+    if (sortField.value === 'change') {
+      valA = parseFloat(getThemeChange(a))
+      valB = parseFloat(getThemeChange(b))
+    } else if (sortField.value === 'time') {
+      valA = a.timestamp || 0
+      valB = b.timestamp || 0
+    }
+    
+    return sortDirection.value === 'desc' ? valB - valA : valA - valB
+  })
+})
+
+// Mock Chart Data
+const eventChartData = computed(() => {
+  return Array.from({ length: 24 }, (_, i) => {
+    const bullish = Math.floor(Math.random() * 8)
+    const bearish = Math.floor(Math.random() * 4)
+    const neutral = Math.floor(Math.random() * 3)
+    const total = bullish + bearish + neutral
+    return {
+      id: i,
+      label: i === 23 ? 'Today' : (i === 0 ? '24h ago' : ''),
+      bullish,
+      bearish,
+      neutral,
+      total,
+      bullishH: total ? (bullish / total) * 100 : 0,
+      bearishH: total ? (bearish / total) * 100 : 0,
+      neutralH: total ? (neutral / total) * 100 : 0,
+      height: Math.min(100, Math.max(10, total * 8)) // Scale height
+    }
+  })
+})
+
+// Mock Events for Chart Linking
+const chartLinkedEvents = computed(() => {
+  const events = {}
+  eventChartData.value.forEach(bar => {
+    if (bar.total > 0) {
+      // Generate mock events for this bar
+      events[bar.id] = Array.from({ length: bar.total }, (_, i) => ({
+        id: `${bar.id}-${i}`,
+        time: `${String(bar.id).padStart(2, '0')}:${String(Math.floor(Math.random()*60)).padStart(2, '0')}`,
+        title: `Event ${i + 1} related to market movement`,
+        sentiment: i < bar.bullish ? 'Bullish' : (i < bar.bullish + bar.bearish ? 'Bearish' : 'Neutral'),
+        desc: 'This is a detailed description of the event...'
+      }))
+    }
+  })
+  return events
+})
+
+const scrollToEventGroup = (id) => {
+  const element = document.getElementById(`event-group-${id}`)
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    // Optional: Add highlight class temporarily
+    element.classList.add('bg-[#222]')
+    setTimeout(() => element.classList.remove('bg-[#222]'), 1000)
+  }
+}
 
 // --- Stock Basic Info Data ---
 const stockInfo = ref({

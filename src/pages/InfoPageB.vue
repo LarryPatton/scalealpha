@@ -1008,11 +1008,13 @@
                   {{ isCopied ? '已复制' : '分享' }}
                 </button>
                 <button 
-                  @click="addToWatchlist({ symbol: selectedStrategy.symbol || 'MSFT' })"
-                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-lg shadow-blue-900/30 hover:scale-105 hover:shadow-blue-500/40 border border-blue-500"
+                  @click="toggleStrategyWatchlist"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all shadow-lg hover:scale-105 border"
+                  :class="isStrategyWatchlisted ? 'bg-blue-600 text-white border-blue-500 shadow-blue-900/30' : 'bg-[#333] hover:bg-[#444] text-gray-300 hover:text-white border-[#444]'"
                 >
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-                  关注 {{ selectedStrategy.symbol || 'MSFT' }}
+                  <svg v-if="!isStrategyWatchlisted" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                  <svg v-else class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                  {{ isStrategyWatchlisted ? '已关注' : `关注 ${selectedStrategy.symbol || 'MSFT'}` }}
                 </button>
                 <button 
                   @click="goToStockDetail(selectedStrategy.symbol || 'MSFT')"
@@ -1022,11 +1024,13 @@
                   {{ selectedStrategy.symbol || 'MSFT' }} 详情
                 </button>
                 <button 
-                  @click="saveReport(selectedStrategy)"
-                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#2a2a2a] hover:bg-[#333] text-gray-300 hover:text-white text-xs font-bold transition-all shadow-lg hover:scale-105 border border-[#444]"
+                  @click="toggleStrategyReport"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all shadow-lg hover:scale-105 border"
+                  :class="isStrategyReportSaved ? 'bg-green-600/20 text-green-400 border-green-600/30' : 'bg-[#2a2a2a] hover:bg-[#333] text-gray-300 hover:text-white border-[#444]'"
                 >
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
-                  保存报告
+                  <svg v-if="!isStrategyReportSaved" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                  <svg v-else class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                  {{ isStrategyReportSaved ? '已保存' : '保存报告' }}
                 </button>
               </div>
             </div>
@@ -2058,10 +2062,20 @@ const switchTab = (tabId) => {
 // --- Strategy Modal Logic ---
 const showStrategyModal = ref(false)
 const selectedStrategy = ref({})
+const isStrategyWatchlisted = ref(false)
+const isStrategyReportSaved = ref(false)
 const chatInput = ref('')
 const chatHistory = ref([])
 const isChatLoading = ref(false)
 const relatedPlans = ref([])
+
+const toggleStrategyWatchlist = () => {
+  isStrategyWatchlisted.value = !isStrategyWatchlisted.value
+}
+
+const toggleStrategyReport = () => {
+  isStrategyReportSaved.value = !isStrategyReportSaved.value
+}
 
 const quickPrompts = [
   "这个策略的主要风险是什么？",
@@ -2070,6 +2084,8 @@ const quickPrompts = [
 ]
 
 const openStrategyModal = (opp) => {
+  isStrategyWatchlisted.value = false // Reset state
+  isStrategyReportSaved.value = false // Reset state
   selectedStrategy.value = {
     ...opp,
     grade: 'A+', // Mock data
