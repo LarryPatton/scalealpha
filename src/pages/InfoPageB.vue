@@ -181,109 +181,32 @@
       </div>
       
       <!-- Tab: Themes (Waterfall) -->
-      <div v-else-if="activeTab === 'themes'" class="max-w-[1920px] mx-auto">
-        <div 
-          :class="viewMode === 'card' ? 'grid gap-6' : 'flex flex-col space-y-4'"
-          :style="viewMode === 'card' ? { gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))` } : {}"
-        >
-          
-          <!-- Theme Card -->
-          <div v-for="theme in themes" :key="theme.id" class="bg-[#1a1a1a] rounded-xl border border-[#333] overflow-hidden hover:border-gray-500 transition-colors group">
-            
-            <!-- Header -->
-            <div class="p-4 border-b border-[#333] bg-[#222]">
-              <div class="flex justify-between items-start mb-2">
-                <div class="flex items-center gap-2">
-                  <span class="text-xs font-bold px-1.5 py-0.5 rounded border" 
-                    :class="theme.sentiment === 'Bullish' ? 'bg-green-900/30 text-green-400 border-green-900/50' : 'bg-red-900/30 text-red-400 border-red-900/50'">
-                    {{ theme.sentiment }}
-                  </span>
-                  <span class="text-xs font-bold text-white">{{ theme.heat }}% Heat</span>
-                </div>
-                <button class="text-xs bg-[#333] hover:bg-[#444] text-white px-2 py-1 rounded border border-[#444] transition-colors">
-                  + Follow
-                </button>
-              </div>
-              
-              <!-- Macro Viz: Sentiment Bar & Heatmap Grid -->
-              <div class="mb-4 space-y-2">
-                <!-- Sentiment Bar -->
-                <div class="flex items-center gap-2 text-[10px] font-mono text-gray-500">
-                  <div class="flex-1 h-1.5 bg-[#333] rounded-full overflow-hidden flex">
-                    <div class="h-full bg-green-500" :style="{ width: theme.stats.upRatio + '%' }"></div>
-                    <div class="h-full bg-red-500" :style="{ width: theme.stats.downRatio + '%' }"></div>
-                  </div>
-                  <div class="flex gap-2 whitespace-nowrap">
-                    <span class="text-green-400">{{ theme.stats.upCount }}↑</span>
-                    <span class="text-red-400">{{ theme.stats.downCount }}↓</span>
-                  </div>
-                </div>
-
-                <!-- Heatmap Grid -->
-                <div class="grid grid-cols-[repeat(auto-fill,minmax(40px,1fr))] gap-0.5 w-full rounded overflow-hidden bg-[#111] p-0.5">
-                  <div 
-                    v-for="(stock, i) in theme.relatedStocks" 
-                    :key="i"
-                    @click.stop="goToStockDetail(stock.symbol, theme.id)"
-                    class="h-6 flex items-center justify-center text-[9px] font-bold text-white/90 opacity-90 hover:opacity-100 transition-all cursor-pointer rounded-[1px]"
-                    :class="getHeatmapColor(stock.change)"
-                    :title="`${stock.symbol}: ${stock.change > 0 ? '+' : ''}${stock.change}%`"
-                  >
-                    {{ stock.symbol }}
-                  </div>
-                </div>
-              </div>
-
-              <!-- Theme Image -->
-              <div class="w-full h-32 bg-[#111] rounded-lg overflow-hidden mb-4 relative group/image">
-                <img :src="theme.image" class="w-full h-full object-cover opacity-80 group-hover/image:opacity-100 transition-opacity" alt="Theme Image" />
-              </div>
-
-              <h3 class="text-lg font-bold text-white leading-tight mb-1">{{ theme.title }}</h3>
-              <p class="text-xs text-gray-400 line-clamp-2">{{ theme.desc }}</p>
-            </div>
-
-            <!-- List Items -->
-            <div class="divide-y divide-[#333]">
-              <div 
-                v-for="item in theme.items" 
-                :key="item.id" 
-                @click="goToStockDetail(item.title.split(' ')[0], theme.id)"
-                class="p-3 flex gap-3 hover:bg-[#2a2a2a] transition-colors cursor-pointer group/item"
+      <div v-else-if="activeTab === 'themes'" class="w-full">
+        
+        <!-- Theme Performance Chart -->
+        <div class="mb-8 bg-[#1a1a1a] border border-[#333] rounded-xl p-4 relative">
+          <div class="flex justify-between items-center mb-4 px-2">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <span class="w-1 h-4 bg-blue-500 rounded-full"></span>
+              主题指数走势 (每日涨跌幅)
+            </h3>
+            <div class="flex gap-2">
+              <button 
+                v-for="period in ['1M', '3M', '6M', 'YTD']" 
+                :key="period"
+                class="px-3 py-1 text-xs font-bold rounded-full transition-colors"
+                :class="selectedChartPeriod === period ? 'bg-blue-600 text-white' : 'bg-[#333] text-gray-400 hover:text-white'"
+                @click="selectedChartPeriod = period"
               >
-                <!-- Left Content -->
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center justify-between mb-1">
-                    <span class="font-bold text-sm text-gray-200 truncate">{{ item.title }}</span>
-                    <span v-if="item.change" class="text-xs font-mono ml-2" :class="item.change > 0 ? 'text-green-400' : 'text-red-400'">
-                      {{ item.change > 0 ? '+' : ''}}{{ item.change }}%
-                    </span>
-                  </div>
-                  <p class="text-xs text-gray-500 line-clamp-2 leading-relaxed group-hover/item:text-gray-400">
-                    {{ item.desc }}
-                  </p>
-                </div>
-                
-                <!-- Right Image/Chart -->
-                <div class="w-16 h-12 flex-shrink-0 bg-[#333] rounded overflow-hidden relative">
-                  <img v-if="item.image" :src="item.image" class="w-full h-full object-cover opacity-80 group-hover/item:opacity-100 transition-opacity" />
-                  <div v-else class="w-full h-full flex items-center justify-center text-gray-600 text-[10px]">
-                    Chart
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Footer -->
-            <div class="p-2 text-center border-t border-[#333] bg-[#1a1a1a]">
-              <button class="text-xs text-gray-500 hover:text-white transition-colors w-full py-1">
-                View All {{ theme.totalItems }} Items
+                {{ period }}
               </button>
             </div>
-
           </div>
-
+          <div ref="themeChartRef" class="w-full h-[70vh]"></div>
         </div>
+
+        <!-- Theme Cards Removed as requested -->
+        <!-- <div ... > ... </div> -->
 
         <!-- Loading Sentinel -->
         <div ref="loadSentinel" class="h-24 flex items-center justify-center mt-8 w-full">
@@ -688,8 +611,39 @@
           </div>
 
           <!-- Middle: Analysis Content (Flex-1) -->
-          <div class="flex-1 overflow-y-auto p-10 scrollbar-thin bg-[#0f0f0f] border-r border-[#2a2a2a]">
-            <div class="max-w-5xl mx-auto space-y-12">
+          <div class="flex-1 flex flex-col overflow-hidden bg-[#0f0f0f] border-r border-[#2a2a2a]">
+            
+            <!-- New Top Bar -->
+            <div class="px-8 py-4 border-b border-[#2a2a2a] bg-[#151515] flex justify-between items-center shrink-0">
+              <div class="text-lg font-bold text-white flex items-center gap-2 truncate">
+                <span class="text-blue-400 truncate max-w-[200px]" :title="selectedEvent.title">{{ selectedEvent.title }}</span>
+                <span class="text-gray-500 text-sm">对</span>
+                <span class="text-white bg-[#333] px-2 py-0.5 rounded text-sm font-mono">{{ selectedEvent.stocks[0].symbol }}</span>
+                <span class="text-gray-500 text-sm">的影响分析</span>
+              </div>
+              
+              <div class="flex items-center gap-3 shrink-0">
+                <button 
+                  @click="addToWatchlist(selectedEvent.stocks[0])"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-lg shadow-blue-900/30 hover:scale-105 hover:shadow-blue-500/40 border border-blue-500"
+                  title="添加到关注"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                  关注 {{ selectedEvent.stocks[0].symbol }}
+                </button>
+                <button 
+                  @click="goToStockDetail(selectedEvent.stocks[0].symbol)"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold transition-all shadow-lg hover:scale-105 border border-slate-600"
+                  title="查看详情"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                  {{ selectedEvent.stocks[0].symbol }} 详情
+                </button>
+              </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-10 scrollbar-thin">
+              <div class="max-w-5xl mx-auto space-y-12">
               
               <!-- Impact Analysis -->
               <div>
@@ -758,6 +712,7 @@
               </div>
 
             </div>
+          </div>
           </div>
 
           <!-- Right: Original Event (350px) -->
@@ -942,33 +897,56 @@
 
           <!-- Strategy Content (Right, Flex-1) -->
           <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Scrollable Content Area -->
-            <div class="flex-1 overflow-y-auto p-6 scrollbar-thin">
-              <!-- Strategy Title & Meta -->
-              <div class="mb-8">
-                <div class="flex items-center gap-3 mb-4">
-                  <span class="px-2 py-1 rounded text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
+            
+            <!-- New Top Bar -->
+            <div class="px-6 py-4 border-b border-[#2a2a2a] bg-[#151515] flex justify-between items-center shrink-0">
+              <!-- Left: Title & Meta -->
+              <div class="flex items-center gap-4 overflow-hidden">
+                <h2 class="text-lg font-bold text-white truncate max-w-[300px]" :title="selectedStrategy.title">{{ selectedStrategy.title }}</h2>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wide" 
+                    :class="{
+                      'bg-green-500/20 text-green-400 border border-green-500/30': selectedStrategy.grade === 'A' || selectedStrategy.grade === 'A+',
+                      'bg-blue-500/20 text-blue-400 border border-blue-500/30': selectedStrategy.grade === 'B',
+                      'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30': selectedStrategy.grade === 'C'
+                    }">
                     GRADE {{ selectedStrategy.grade }}
                   </span>
-                  <span class="px-2 py-1 rounded text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#333] text-gray-300 border border-[#444]">
                     {{ selectedStrategy.term }}
                   </span>
-                  <span class="text-gray-500 text-sm">{{ selectedStrategy.time }}</span>
-                </div>
-                
-                <h2 class="text-2xl font-bold text-white mb-2">{{ selectedStrategy.title }}</h2>
-                <div class="flex items-center gap-4 text-sm text-gray-400">
-                  <span class="flex items-center gap-1">
-                    <span class="w-2 h-2 rounded-full bg-purple-500"></span>
-                    {{ selectedStrategy.category }}
-                  </span>
-                  <span class="flex items-center gap-1">
-                    <i class="fas fa-clock"></i>
-                    {{ selectedStrategy.duration }}
-                  </span>
+                  <span class="text-xs text-gray-500">{{ selectedStrategy.time }}</span>
                 </div>
               </div>
+              
+              <!-- Right: Actions -->
+              <div class="flex items-center gap-3 shrink-0">
+                <button 
+                  @click="addToWatchlist({ symbol: selectedStrategy.symbol || 'MSFT' })"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-lg shadow-blue-900/30 hover:scale-105 hover:shadow-blue-500/40 border border-blue-500"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                  关注
+                </button>
+                <button 
+                  @click="goToStockDetail(selectedStrategy.symbol || 'MSFT')"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold transition-all shadow-lg hover:scale-105 border border-slate-600"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                  详情
+                </button>
+                <button 
+                  @click="saveReport(selectedStrategy)"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#2a2a2a] hover:bg-[#333] text-gray-300 hover:text-white text-xs font-bold transition-all shadow-lg hover:scale-105 border border-[#444]"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                  保存报告
+                </button>
+              </div>
+            </div>
 
+            <!-- Scrollable Content Area -->
+            <div class="flex-1 overflow-y-auto p-6 scrollbar-thin">
               <!-- Strategy Summary Box -->
               <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-5 mb-8">
                 <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
@@ -1118,11 +1096,131 @@
       </div>
     </div>
   </div>
+
+  <!-- Theme Detail Modal (Large Size) -->
+  <div v-if="showThemeDetailModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-300" @click.self="showThemeDetailModal = false">
+    <div class="relative w-full max-w-[90vw] h-[85vh] bg-[#1a1a1a] rounded-xl border border-[#333] shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
+      <!-- Close Button -->
+      <button @click="showThemeDetailModal = false" class="absolute top-4 right-4 z-10 text-gray-400 hover:text-white bg-black/50 rounded-full p-1 transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <!-- Content (Optimized Layout) -->
+      <div v-if="selectedThemeDetail" class="flex h-full">
+         <!-- Left: Visual & Macro (40%) -->
+         <div class="w-[40%] border-r border-[#333] bg-[#222] flex flex-col relative overflow-hidden">
+            <!-- Background Image (Full Height) -->
+            <div class="absolute inset-0">
+               <img :src="selectedThemeDetail.image" class="w-full h-full object-cover opacity-40" />
+               <div class="absolute inset-0 bg-gradient-to-t from-[#1a1a1a] via-[#1a1a1a]/80 to-transparent"></div>
+            </div>
+            
+            <div class="relative z-10 flex-1 flex flex-col p-8">
+               <!-- Top Actions -->
+               <div class="flex justify-between items-start mb-auto">
+                  <div class="flex items-center gap-3">
+                    <span class="text-sm font-bold px-2 py-1 rounded border backdrop-blur-sm" 
+                      :class="selectedThemeDetail.sentiment === 'Bullish' ? 'bg-green-900/30 text-green-400 border-green-900/50' : 'bg-red-900/30 text-red-400 border-red-900/50'">
+                      {{ selectedThemeDetail.sentiment }}
+                    </span>
+                    <span class="text-sm font-bold text-white drop-shadow-md">{{ selectedThemeDetail.heat }}% Heat</span>
+                  </div>
+                  <button class="text-sm bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded border border-white/10 transition-colors backdrop-blur-sm">
+                    + Follow
+                  </button>
+               </div>
+               
+               <!-- Title & Desc -->
+               <div class="mb-8">
+                 <h2 class="text-4xl font-bold text-white mb-4 drop-shadow-lg leading-tight">{{ selectedThemeDetail.title }}</h2>
+                 <p class="text-lg text-gray-300 leading-relaxed drop-shadow-md">{{ selectedThemeDetail.desc }}</p>
+               </div>
+
+               <!-- Macro Viz -->
+               <div class="space-y-4 bg-black/40 p-4 rounded-xl backdrop-blur-sm border border-white/5">
+                  <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Market Sentiment</h4>
+                  <!-- Sentiment Bar -->
+                  <div class="flex items-center gap-3 text-xs font-mono text-gray-500">
+                    <div class="flex-1 h-2 bg-[#333] rounded-full overflow-hidden flex">
+                      <div class="h-full bg-green-500" :style="{ width: selectedThemeDetail.stats.upRatio + '%' }"></div>
+                      <div class="h-full bg-red-500" :style="{ width: selectedThemeDetail.stats.downRatio + '%' }"></div>
+                    </div>
+                    <div class="flex gap-3 whitespace-nowrap text-sm">
+                      <span class="text-green-400">{{ selectedThemeDetail.stats.upCount }}↑</span>
+                      <span class="text-red-400">{{ selectedThemeDetail.stats.downCount }}↓</span>
+                    </div>
+                  </div>
+
+                  <!-- Heatmap Grid -->
+                  <div class="grid grid-cols-[repeat(auto-fill,minmax(40px,1fr))] gap-1 w-full">
+                    <div 
+                      v-for="(stock, i) in selectedThemeDetail.relatedStocks" 
+                      :key="i"
+                      @click.stop="goToStockDetail(stock.symbol, selectedThemeDetail.id)"
+                      class="h-8 flex items-center justify-center text-[10px] font-bold text-white/90 opacity-90 hover:opacity-100 transition-all cursor-pointer rounded-[2px]"
+                      :class="getHeatmapColor(stock.change)"
+                      :title="`${stock.symbol}: ${stock.change > 0 ? '+' : ''}${stock.change}%`"
+                    >
+                      {{ stock.symbol }}
+                    </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+
+         <!-- Right: Stock List (60%) -->
+         <div class="flex-1 bg-[#1a1a1a] flex flex-col min-w-0">
+            <div class="p-6 border-b border-[#333] flex justify-between items-center">
+              <h3 class="text-xl font-bold text-white">Related Assets</h3>
+              <div class="flex gap-2">
+                <button class="text-xs text-gray-400 hover:text-white px-2 py-1">Sort by Market Cap</button>
+                <button class="text-xs text-gray-400 hover:text-white px-2 py-1">Sort by Performance</button>
+              </div>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-6">
+              <div class="grid grid-cols-1 gap-4">
+                 <div 
+                    v-for="item in selectedThemeDetail.items" 
+                    :key="item.id" 
+                    @click="goToStockDetail(item.title.split(' ')[0], selectedThemeDetail.id)"
+                    class="p-4 flex gap-5 hover:bg-[#222] transition-colors cursor-pointer rounded-xl border border-[#333] hover:border-gray-600 group/item"
+                  >
+                    <!-- Left Content -->
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-3">
+                          <span class="font-bold text-lg text-white truncate">{{ item.title }}</span>
+                          <span v-if="item.change" class="text-sm font-mono px-2 py-0.5 rounded bg-[#111]" :class="item.change > 0 ? 'text-green-400' : 'text-red-400'">
+                            {{ item.change > 0 ? '+' : ''}}{{ item.change }}%
+                          </span>
+                        </div>
+                      </div>
+                      <p class="text-sm text-gray-400 line-clamp-2 leading-relaxed group-hover/item:text-gray-300">
+                        {{ item.desc }}
+                      </p>
+                    </div>
+                    
+                    <!-- Right Image/Chart -->
+                    <div class="w-32 h-20 flex-shrink-0 bg-[#333] rounded-lg overflow-hidden relative border border-[#444]">
+                      <img v-if="item.image" :src="item.image" class="w-full h-full object-cover opacity-80 group-hover/item:opacity-100 transition-opacity" />
+                      <div v-else class="w-full h-full flex items-center justify-center text-gray-600 text-xs">
+                        Chart
+                      </div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+         </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch, onUnmounted, computed, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import * as echarts from 'echarts'
 import Navbar from '../components/Navbar.vue'
 
 const route = useRoute()
@@ -1262,6 +1360,191 @@ const activeTab = ref(route.query.tab || 'opportunities')
 const isLoading = ref(false)
 const loadSentinel = ref(null)
 let observer = null
+
+// --- Theme Chart Logic ---
+const themeChartRef = ref(null)
+const selectedChartPeriod = ref('1M')
+let themeChart = null
+
+// Theme Detail Modal Logic
+const showThemeDetailModal = ref(false)
+const selectedThemeDetail = ref(null)
+
+const handleChartClick = (params) => {
+  if (params.componentType === 'series') {
+    const themeName = params.seriesName
+    console.log('Chart clicked:', themeName)
+    
+    // Find theme data from themes list
+    // Try exact match first
+    let theme = themes.value.find(t => t.title === themeName)
+    
+    // If not found, try partial match (in case of suffixes)
+    if (!theme) {
+      theme = themes.value.find(t => t.title.startsWith(themeName))
+    }
+    
+    console.log('Found theme:', theme)
+    
+    if (theme) {
+      selectedThemeDetail.value = theme
+      showThemeDetailModal.value = true
+    }
+  }
+}
+
+const generateThemeChartData = () => {
+  // Use titles from themeTemplates to ensure matching
+  const themesList = themeTemplates.slice(0, 5).map(t => t.title)
+  const days = 30 // Default 1M
+  const dates = []
+  const series = []
+  
+  // Generate dates
+  const today = new Date()
+  for (let i = 0; i < days; i++) {
+    const d = new Date(today)
+    d.setDate(d.getDate() - (days - 1 - i))
+    dates.push(`${d.getMonth() + 1}/${d.getDate()}`)
+  }
+
+  // Generate series data (Daily Change %)
+  themesList.forEach(theme => {
+    const data = []
+    for (let i = 0; i < days; i++) {
+      // Random daily change between -3% and +3%
+      const change = (Math.random() * 6 - 3).toFixed(2)
+      data.push(parseFloat(change))
+    }
+    series.push({
+      name: theme,
+      type: 'line',
+      data: data,
+      smooth: true,
+      showSymbol: true, // Enable symbols for easier clicking
+      symbolSize: 8,    // Increase symbol size
+      lineStyle: { width: 2 }
+    })
+  })
+
+  return { dates, series }
+}
+
+const initThemeChart = () => {
+  if (!themeChartRef.value) return
+  
+  if (themeChart) {
+    themeChart.dispose()
+  }
+  
+  themeChart = echarts.init(themeChartRef.value)
+  const { dates, series } = generateThemeChartData()
+  
+  const option = {
+    backgroundColor: 'transparent',
+    tooltip: {
+      trigger: 'axis',
+      backgroundColor: 'rgba(20, 20, 20, 0.9)',
+      borderColor: '#333',
+      textStyle: { color: '#fff' },
+      formatter: function (params) {
+        let result = `<div style="font-weight:bold; margin-bottom:5px;">${params[0].axisValue}</div>`
+        params.forEach(item => {
+          const color = item.color
+          const val = item.value
+          const sign = val >= 0 ? '+' : ''
+          const valColor = val >= 0 ? '#10B981' : '#EF4444'
+          result += `<div style="display:flex; justify-content:space-between; align-items:center; gap:15px; font-size:12px;">
+            <span style="display:flex; align-items:center; gap:5px;">
+              <span style="width:8px; height:8px; border-radius:50%; background-color:${color}"></span>
+              <span style="color:#ccc">${item.seriesName}</span>
+            </span>
+            <span style="color:${valColor}; font-weight:bold;">${sign}${val}%</span>
+          </div>`
+        })
+        return result
+      }
+    },
+    legend: {
+      data: series.map(s => s.name),
+      textStyle: { color: '#999' },
+      bottom: 0,
+      icon: 'circle',
+      itemWidth: 8,
+      itemHeight: 8
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '10%',
+      top: '10%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'category',
+      boundaryGap: false,
+      data: dates,
+      axisLine: { lineStyle: { color: '#333' } },
+      axisLabel: { color: '#666' },
+      splitLine: { show: false }
+    },
+    yAxis: {
+      type: 'value',
+      axisLine: { show: false },
+      axisLabel: { 
+        color: '#666',
+        formatter: '{value}%'
+      },
+      splitLine: { 
+        lineStyle: { color: '#222' } 
+      },
+      // Add a zero line visual guide
+      axisPointer: {
+        show: true,
+        lineStyle: {
+          color: '#333',
+          type: 'dashed'
+        }
+      }
+    },
+    series: series
+  }
+  
+  themeChart.setOption(option)
+  
+  // Add zero line markLine to the first series as a reference
+  themeChart.setOption({
+    series: [{
+      markLine: {
+        symbol: 'none',
+        silent: true,
+        lineStyle: { color: '#444', type: 'dashed', width: 1 },
+        data: [{ yAxis: 0 }]
+      }
+    }]
+  })
+
+  // Add click event listener
+  themeChart.on('click', handleChartClick)
+  
+  // Handle resize
+  window.addEventListener('resize', () => {
+    themeChart && themeChart.resize()
+  })
+}
+
+watch(activeTab, (newVal) => {
+  if (newVal === 'themes') {
+    nextTick(() => {
+      initThemeChart()
+    })
+  }
+})
+
+watch(selectedChartPeriod, () => {
+  // Mock data refresh
+  initThemeChart()
+})
 
 // --- Attribution Logic ---
 const allAttributionEvents = ref([])
@@ -1643,6 +1926,13 @@ const loadMore = async () => {
 onMounted(() => {
   setupObserver()
   window.addEventListener('scroll', handleWindowScroll)
+  
+  // Init chart if starting on themes tab
+  if (activeTab.value === 'themes') {
+    nextTick(() => {
+      initThemeChart()
+    })
+  }
 })
 
 onUnmounted(() => {
@@ -1776,6 +2066,9 @@ const generatePlanForStrategy = (strategy) => {
 }
 
 const goToStockDetail = (symbol, sourceId) => {
+  // Close any open modals
+  showEventModal.value = false
+  
   console.log('Navigating to stock detail:', symbol, sourceId)
   // Determine if sourceId is a theme ID or event ID
   const isTheme = typeof sourceId === 'number'
@@ -1800,6 +2093,14 @@ const openEventModal = (event) => {
 
 const closeEventModal = () => {
   showEventModal.value = false
+}
+
+const addToWatchlist = (stock) => {
+  alert(`已将 ${stock.symbol} 添加到关注列表`)
+}
+
+const saveReport = (strategy) => {
+  alert(`已保存策略报告：${strategy.title}`)
 }
 
 const renderedStrategyContent = computed(() => selectedStrategy.value.content || '')

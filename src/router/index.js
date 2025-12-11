@@ -41,6 +41,7 @@ import BacktestPage from '../pages/BacktestPage.vue'
 import BlogPage from '../pages/BlogPage.vue'
 import PingPingPage from '../pages/PingPingPage.vue'
 import OpportunityPage from '../pages/OpportunityPage.vue'
+import OpportunityPageB from '../pages/OpportunityPageB.vue'
 import OpportunityReportDetail from '../pages/OpportunityReportDetail.vue'
 import PlanningPage from '../pages/PlanningPage.vue'
 import PlanningDetailPage from '../pages/PlanningDetailPage.vue'
@@ -239,6 +240,12 @@ const routes = [
     name: 'Opportunity',
     component: OpportunityPage,
     meta: { layout: AppLayout }
+  },
+  {
+    path: '/opportunityB',
+    name: 'OpportunityB',
+    component: OpportunityPageB,
+    meta: { layout: BlankLayout }
   },
   {
     path: '/opportunity/report/:reportId',

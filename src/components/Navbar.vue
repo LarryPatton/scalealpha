@@ -13,7 +13,7 @@
           <!-- Links (Only if logged in) -->
           <div v-if="userEmail" class="hidden md:flex items-center gap-6">
             <router-link to="/infoB" active-class="text-white font-bold border-b-2 border-blue-500 pb-0.5" class="text-gray-400 hover:text-white font-medium transition-colors">Info</router-link>
-            <router-link to="/opportunity" active-class="text-white font-bold border-b-2 border-blue-500 pb-0.5" class="text-gray-400 hover:text-white font-medium transition-colors">机会发现</router-link>
+            <router-link to="/opportunityB" active-class="text-white font-bold border-b-2 border-blue-500 pb-0.5" class="text-gray-400 hover:text-white font-medium transition-colors">机会发现</router-link>
           </div>
         </div>
 
@@ -46,9 +46,9 @@
           </router-link>
 
           <!-- Watchlist Link (If Logged In) -->
-          <router-link v-if="userEmail" to="/opportunities?tab=events" class="text-sm font-medium text-gray-300 hover:text-white transition-colors hidden sm:block">
+          <button v-if="userEmail" @click="showWatchlistModal = true" class="text-sm font-medium text-gray-300 hover:text-white transition-colors hidden sm:block">
             我的关注
-          </router-link>
+          </button>
 
           <!-- User Avatar & Menu (If Logged In) -->
           <div v-if="userEmail" class="relative">
@@ -87,6 +87,9 @@
       </div>
     </div>
   </nav>
+
+  <!-- Watchlist Modal -->
+  <WatchlistModal v-if="showWatchlistModal" @close="showWatchlistModal = false" />
 </template>
 
 <script setup>
@@ -94,6 +97,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserProfile } from '../composables/useUserProfile'
 import { useSavedReports } from '../composables/useSavedReports'
+import WatchlistModal from './WatchlistModal.vue'
 
 const router = useRouter()
 const userEmail = ref('')
@@ -105,6 +109,7 @@ const { clearSavedReports } = useSavedReports()
 
 // 账户菜单状态
 const showAccountMenu = ref(false)
+const showWatchlistModal = ref(false)
 
 // 切换账户菜单
 const toggleAccountMenu = () => {
