@@ -397,7 +397,7 @@
     <!-- (Removed Bottom Right Floating Buttons) -->
 
     <!-- 5. Grid Control (Bottom Left) -->
-    <div v-if="['opportunities', 'themes'].includes(activeTab)" class="fixed bottom-8 left-8 z-50 flex items-center transition-all duration-300">
+    <div v-if="activeTab === 'opportunities' && viewMode === 'card'" class="fixed bottom-8 left-8 z-50 flex items-center transition-all duration-300">
       <!-- Expanded State -->
       <div 
         v-if="isGridControlExpanded"
@@ -998,18 +998,28 @@
               <!-- Right: Actions -->
               <div class="flex items-center gap-3 shrink-0">
                 <button 
+                  @click="copyShareLink"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all shadow-lg hover:scale-105 border"
+                  :class="isCopied ? 'bg-green-600/20 text-green-400 border-green-600/30' : 'bg-[#333] hover:bg-[#444] text-gray-300 hover:text-white border-[#444]'"
+                  :title="isCopied ? '已复制' : '复制分享链接'"
+                >
+                  <svg v-if="!isCopied" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                  <svg v-else class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                  {{ isCopied ? '已复制' : '分享' }}
+                </button>
+                <button 
                   @click="addToWatchlist({ symbol: selectedStrategy.symbol || 'MSFT' })"
                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-lg shadow-blue-900/30 hover:scale-105 hover:shadow-blue-500/40 border border-blue-500"
                 >
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-                  关注
+                  关注 {{ selectedStrategy.symbol || 'MSFT' }}
                 </button>
                 <button 
                   @click="goToStockDetail(selectedStrategy.symbol || 'MSFT')"
                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold transition-all shadow-lg hover:scale-105 border border-slate-600"
                 >
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                  详情
+                  {{ selectedStrategy.symbol || 'MSFT' }} 详情
                 </button>
                 <button 
                   @click="saveReport(selectedStrategy)"
