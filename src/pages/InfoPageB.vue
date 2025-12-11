@@ -40,6 +40,7 @@
 
           <!-- Filter Button -->
           <button 
+            v-if="activeTab !== 'themes'"
             @click="showFilterModal = true"
             class="h-9 w-9 bg-[#1a1a1a] hover:bg-[#2a2a2a] border border-[#333] rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-colors"
           >
@@ -49,8 +50,28 @@
 
         <!-- Right: View Controls -->
         <div class="flex items-center gap-3">
-          <!-- View Switcher (Opportunities & Themes only) -->
-          <div v-if="['opportunities', 'themes'].includes(activeTab)" class="bg-[#1a1a1a] border border-[#333] rounded-lg p-1 flex items-center">
+          <!-- Sort Buttons (Themes only) -->
+          <div v-if="activeTab === 'themes'" class="flex items-center gap-2">
+            <button 
+              @click="setSort('change')"
+              class="flex items-center gap-2 px-3 py-1.5 border rounded-lg text-xs font-medium transition-colors"
+              :class="sortBy === 'change' ? 'bg-[#333] text-white border-gray-500' : 'bg-[#1a1a1a] text-gray-400 border-[#333] hover:text-white hover:border-gray-600'"
+            >
+              <span>涨跌幅排序</span>
+              <svg v-if="sortBy === 'change'" class="w-3 h-3 transition-transform duration-300" :class="sortOrder === 'asc' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <button 
+              @click="setSort('time')"
+              class="flex items-center gap-2 px-3 py-1.5 border rounded-lg text-xs font-medium transition-colors"
+              :class="sortBy === 'time' ? 'bg-[#333] text-white border-gray-500' : 'bg-[#1a1a1a] text-gray-400 border-[#333] hover:text-white hover:border-gray-600'"
+            >
+              <span>时间排序</span>
+              <svg v-if="sortBy === 'time'" class="w-3 h-3 transition-transform duration-300" :class="sortOrder === 'asc' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+
+          <!-- View Switcher (Opportunities only) -->
+          <div v-if="['opportunities'].includes(activeTab)" class="bg-[#1a1a1a] border border-[#333] rounded-lg p-1 flex items-center">
             <button 
               @click="viewMode = 'card'"
               class="p-1.5 rounded-md transition-all"
@@ -180,8 +201,53 @@
         </div>
       </div>
       
-      <!-- Tab: Themes (Waterfall) -->
-      <div v-else-if="activeTab === 'themes'" class="w-full">
+      <!-- Tab: Themes (List View - Simplified Attribution Cards) -->
+      <div v-else-if="activeTab === 'themes'" class="w-full max-w-7xl mx-auto px-4">
+        <div class="space-y-4">
+          <div 
+            v-for="event in allEvents" 
+            :key="event.id" 
+            @click="openThemeDetailFromEvent(event)"
+            class="bg-[#1a1a1a] border border-[#333] rounded-xl p-6 flex items-center gap-6 hover:border-blue-500/50 hover:bg-[#222] transition-all cursor-pointer group shadow-lg"
+          >
+            <!-- Left: Title & Desc -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-3 mb-2">
+                <h3 class="text-xl font-bold text-white truncate group-hover:text-blue-400 transition-colors">{{ event.title }}</h3>
+                <span class="text-xs px-2 py-0.5 rounded bg-[#333] text-gray-400 font-mono border border-[#444]">{{ event.time.split(' ')[0] }}</span>
+              </div>
+              <p class="text-sm text-gray-400 line-clamp-2 leading-relaxed">{{ event.desc }}</p>
+            </div>
+
+            <!-- Middle: Affected Stocks (Attribution Style) -->
+            <div class="flex items-center gap-3 shrink-0">
+              <div v-for="stock in event.stocks.slice(0, 3)" :key="stock.symbol" class="flex items-center gap-3 bg-[#151515] p-2 rounded border border-[#333] min-w-[120px]">
+                <div class="w-8 h-8 rounded bg-[#222] flex items-center justify-center text-xs font-bold text-gray-300 border border-[#333]">
+                  {{ stock.symbol[0] }}
+                </div>
+                <div>
+                  <div class="font-bold text-gray-200 text-xs">{{ stock.symbol }}</div>
+                  <div class="text-[10px]" :class="stock.change > 0 ? 'text-green-500' : 'text-red-500'">
+                    {{ stock.change > 0 ? '+' : '' }}{{ stock.change }}%
+                  </div>
+                </div>
+              </div>
+              <span v-if="event.stocks.length > 3" class="text-xs text-gray-500 bg-[#151515] px-2 py-1 rounded border border-[#333] h-8 flex items-center">+{{ event.stocks.length - 3 }}</span>
+            </div>
+
+            <!-- Right: Theme Change -->
+            <div class="text-right min-w-[100px] pl-6 border-l border-[#333]">
+              <div class="text-2xl font-bold font-mono" :class="parseFloat(event.themeChange) > 0 ? 'text-green-500' : 'text-red-500'">
+                {{ parseFloat(event.themeChange) > 0 ? '+' : '' }}{{ event.themeChange }}%
+              </div>
+              <div class="text-[10px] text-gray-500 uppercase tracking-wider mt-1">Theme Change</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: ThemesB (Original Chart & Modal) -->
+      <div v-else-if="activeTab === 'themesB'" class="w-full">
         
         <!-- Theme Performance Chart -->
         <div class="mb-8 bg-[#1a1a1a] border border-[#333] rounded-xl p-4 relative">
@@ -316,7 +382,7 @@
     <div class="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-40">
       <div class="bg-[#1a1a1a]/90 backdrop-blur-xl border border-[#333] rounded-full p-1.5 shadow-2xl flex items-center gap-1">
         <button 
-          v-for="tab in tabs" 
+          v-for="tab in tabs.filter(t => t.id !== 'themesB')" 
           :key="tab.id"
           @click="switchTab(tab.id)"
           class="px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2"
@@ -623,6 +689,16 @@
               </div>
               
               <div class="flex items-center gap-3 shrink-0">
+                <button 
+                  @click="copyShareLink"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all shadow-lg hover:scale-105 border"
+                  :class="isCopied ? 'bg-green-600/20 text-green-400 border-green-600/30' : 'bg-[#333] hover:bg-[#444] text-gray-300 hover:text-white border-[#444]'"
+                  :title="isCopied ? '已复制' : '复制分享链接'"
+                >
+                  <svg v-if="!isCopied" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                  <svg v-else class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                  {{ isCopied ? '已复制' : '分享' }}
+                </button>
                 <button 
                   @click="addToWatchlist(selectedEvent.stocks[0])"
                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-lg shadow-blue-900/30 hover:scale-105 hover:shadow-blue-500/40 border border-blue-500"
@@ -1107,106 +1183,50 @@
 
       <!-- Content (Optimized Layout) -->
       <div v-if="selectedThemeDetail" class="flex h-full">
-         <!-- Left: Visual & Macro (40%) -->
-         <div class="w-[40%] border-r border-[#333] bg-[#222] flex flex-col relative overflow-hidden">
-            <!-- Background Image (Full Height) -->
-            <div class="absolute inset-0">
-               <img :src="selectedThemeDetail.image" class="w-full h-full object-cover opacity-40" />
-               <div class="absolute inset-0 bg-gradient-to-t from-[#1a1a1a] via-[#1a1a1a]/80 to-transparent"></div>
-            </div>
+         <!-- Left: Title & Desc (30%) -->
+         <div class="w-[30%] border-r border-[#333] bg-gradient-to-br from-[#222] to-[#1a1a1a] flex flex-col p-8 justify-center relative overflow-hidden">
+            <!-- Decorative Elements -->
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500 opacity-50"></div>
+            <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
             
-            <div class="relative z-10 flex-1 flex flex-col p-8">
-               <!-- Top Actions -->
-               <div class="flex justify-between items-start mb-auto">
-                  <div class="flex items-center gap-3">
-                    <span class="text-sm font-bold px-2 py-1 rounded border backdrop-blur-sm" 
-                      :class="selectedThemeDetail.sentiment === 'Bullish' ? 'bg-green-900/30 text-green-400 border-green-900/50' : 'bg-red-900/30 text-red-400 border-red-900/50'">
-                      {{ selectedThemeDetail.sentiment }}
-                    </span>
-                    <span class="text-sm font-bold text-white drop-shadow-md">{{ selectedThemeDetail.heat }}% Heat</span>
-                  </div>
-                  <button class="text-sm bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded border border-white/10 transition-colors backdrop-blur-sm">
-                    + Follow
-                  </button>
-               </div>
-               
-               <!-- Title & Desc -->
-               <div class="mb-8">
-                 <h2 class="text-4xl font-bold text-white mb-4 drop-shadow-lg leading-tight">{{ selectedThemeDetail.title }}</h2>
-                 <p class="text-lg text-gray-300 leading-relaxed drop-shadow-md">{{ selectedThemeDetail.desc }}</p>
-               </div>
-
-               <!-- Macro Viz -->
-               <div class="space-y-4 bg-black/40 p-4 rounded-xl backdrop-blur-sm border border-white/5">
-                  <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Market Sentiment</h4>
-                  <!-- Sentiment Bar -->
-                  <div class="flex items-center gap-3 text-xs font-mono text-gray-500">
-                    <div class="flex-1 h-2 bg-[#333] rounded-full overflow-hidden flex">
-                      <div class="h-full bg-green-500" :style="{ width: selectedThemeDetail.stats.upRatio + '%' }"></div>
-                      <div class="h-full bg-red-500" :style="{ width: selectedThemeDetail.stats.downRatio + '%' }"></div>
-                    </div>
-                    <div class="flex gap-3 whitespace-nowrap text-sm">
-                      <span class="text-green-400">{{ selectedThemeDetail.stats.upCount }}↑</span>
-                      <span class="text-red-400">{{ selectedThemeDetail.stats.downCount }}↓</span>
-                    </div>
-                  </div>
-
-                  <!-- Heatmap Grid -->
-                  <div class="grid grid-cols-[repeat(auto-fill,minmax(40px,1fr))] gap-1 w-full">
-                    <div 
-                      v-for="(stock, i) in selectedThemeDetail.relatedStocks" 
-                      :key="i"
-                      @click.stop="goToStockDetail(stock.symbol, selectedThemeDetail.id)"
-                      class="h-8 flex items-center justify-center text-[10px] font-bold text-white/90 opacity-90 hover:opacity-100 transition-all cursor-pointer rounded-[2px]"
-                      :class="getHeatmapColor(stock.change)"
-                      :title="`${stock.symbol}: ${stock.change > 0 ? '+' : ''}${stock.change}%`"
-                    >
-                      {{ stock.symbol }}
-                    </div>
-                  </div>
-               </div>
+            <div class="relative z-10">
+               <h2 class="text-3xl font-bold text-white mb-6 leading-tight">{{ selectedThemeDetail.title }}</h2>
+               <div class="w-12 h-1 bg-blue-500 mb-6 rounded-full"></div>
+               <p class="text-base text-gray-400 leading-relaxed">{{ selectedThemeDetail.desc }}</p>
             </div>
          </div>
 
-         <!-- Right: Stock List (60%) -->
+         <!-- Right: Stock List (70%) -->
          <div class="flex-1 bg-[#1a1a1a] flex flex-col min-w-0">
-            <div class="p-6 border-b border-[#333] flex justify-between items-center">
-              <h3 class="text-xl font-bold text-white">Related Assets</h3>
-              <div class="flex gap-2">
-                <button class="text-xs text-gray-400 hover:text-white px-2 py-1">Sort by Market Cap</button>
-                <button class="text-xs text-gray-400 hover:text-white px-2 py-1">Sort by Performance</button>
-              </div>
+            <div class="px-8 py-6 border-b border-[#333] flex justify-between items-center bg-[#1a1a1a]/50 backdrop-blur-sm sticky top-0 z-10">
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                Related Assets
+              </h3>
             </div>
             
-            <div class="flex-1 overflow-y-auto custom-scrollbar p-6">
-              <div class="grid grid-cols-1 gap-4">
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-8">
+              <div class="grid grid-cols-1 gap-3">
                  <div 
                     v-for="item in selectedThemeDetail.items" 
                     :key="item.id" 
                     @click="goToStockDetail(item.title.split(' ')[0], selectedThemeDetail.id)"
-                    class="p-4 flex gap-5 hover:bg-[#222] transition-colors cursor-pointer rounded-xl border border-[#333] hover:border-gray-600 group/item"
+                    class="p-4 flex items-center justify-between hover:bg-[#222] transition-all cursor-pointer rounded-lg border border-[#333] hover:border-blue-500/30 group/item"
                   >
-                    <!-- Left Content -->
-                    <div class="flex-1 min-w-0">
-                      <div class="flex items-center justify-between mb-2">
-                        <div class="flex items-center gap-3">
-                          <span class="font-bold text-lg text-white truncate">{{ item.title }}</span>
-                          <span v-if="item.change" class="text-sm font-mono px-2 py-0.5 rounded bg-[#111]" :class="item.change > 0 ? 'text-green-400' : 'text-red-400'">
-                            {{ item.change > 0 ? '+' : ''}}{{ item.change }}%
-                          </span>
-                        </div>
+                    <div class="flex-1 min-w-0 pr-4">
+                      <div class="flex items-center gap-3 mb-1">
+                        <span class="font-bold text-base text-white truncate group-hover/item:text-blue-400 transition-colors">{{ item.title }}</span>
                       </div>
-                      <p class="text-sm text-gray-400 line-clamp-2 leading-relaxed group-hover/item:text-gray-300">
+                      <p class="text-xs text-gray-500 line-clamp-1 group-hover/item:text-gray-400">
                         {{ item.desc }}
                       </p>
                     </div>
                     
-                    <!-- Right Image/Chart -->
-                    <div class="w-32 h-20 flex-shrink-0 bg-[#333] rounded-lg overflow-hidden relative border border-[#444]">
-                      <img v-if="item.image" :src="item.image" class="w-full h-full object-cover opacity-80 group-hover/item:opacity-100 transition-opacity" />
-                      <div v-else class="w-full h-full flex items-center justify-center text-gray-600 text-xs">
-                        Chart
-                      </div>
+                    <div class="flex items-center gap-4 shrink-0">
+                      <span v-if="item.change" class="text-sm font-mono font-bold" :class="item.change > 0 ? 'text-green-500' : 'text-red-500'">
+                        {{ item.change > 0 ? '+' : ''}}{{ item.change }}%
+                      </span>
+                      <svg class="w-4 h-4 text-gray-600 group-hover/item:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </div>
                   </div>
               </div>
@@ -1352,6 +1372,7 @@ const scrollToTop = () => {
 // Tabs Configuration
 const tabs = [
   { id: 'themes', label: '市场热点' },
+  { id: 'themesB', label: '主题指数' },
   { id: 'opportunities', label: '机会推荐' },
   { id: 'attribution', label: '事件分析' }
 ]
@@ -1534,7 +1555,7 @@ const initThemeChart = () => {
 }
 
 watch(activeTab, (newVal) => {
-  if (newVal === 'themes') {
+  if (newVal === 'themesB') {
     nextTick(() => {
       initThemeChart()
     })
@@ -1548,6 +1569,71 @@ watch(selectedChartPeriod, () => {
 
 // --- Attribution Logic ---
 const allAttributionEvents = ref([])
+const sortBy = ref('change') // 'change' | 'time'
+const sortOrder = ref('desc') // 'desc' | 'asc'
+
+const allEvents = computed(() => {
+  const events = [...allAttributionEvents.value]
+  return events.sort((a, b) => {
+    if (sortBy.value === 'change') {
+      const changeA = parseFloat(a.themeChange || 0)
+      const changeB = parseFloat(b.themeChange || 0)
+      return sortOrder.value === 'desc' ? changeB - changeA : changeA - changeB
+    } else {
+      // Sort by time (Mock time string "HH:MM AM/PM")
+      const parseTime = (t) => {
+        if (!t) return 0
+        const [time, period] = t.split(' ')
+        let [hours, minutes] = time.split(':').map(Number)
+        if (period === 'PM' && hours !== 12) hours += 12
+        if (period === 'AM' && hours === 12) hours = 0
+        return hours * 60 + minutes
+      }
+      const timeA = parseTime(a.time)
+      const timeB = parseTime(b.time)
+      return sortOrder.value === 'desc' ? timeB - timeA : timeA - timeB
+    }
+  })
+})
+
+const setSort = (type) => {
+  if (sortBy.value === type) {
+    sortOrder.value = sortOrder.value === 'desc' ? 'asc' : 'desc'
+  } else {
+    sortBy.value = type
+    sortOrder.value = 'desc'
+  }
+}
+
+const openThemeDetailFromEvent = (event) => {
+  // Map event to theme detail structure
+  selectedThemeDetail.value = {
+    id: event.id,
+    title: event.title,
+    desc: event.desc,
+    image: event.image || 'https://images.unsplash.com/photo-1611974765270-ca1258634369?q=80&w=1964&auto=format&fit=crop',
+    sentiment: 'Neutral', // Default, or derive from stocks
+    heat: Math.floor(Math.random() * 40) + 60,
+    stats: {
+      upRatio: 60,
+      downRatio: 40,
+      upCount: event.stocks.filter(s => s.change > 0).length,
+      downCount: event.stocks.filter(s => s.change <= 0).length
+    },
+    relatedStocks: event.stocks.map(s => ({
+      symbol: s.symbol,
+      change: s.change
+    })),
+    items: event.stocks.map(s => ({
+      id: s.symbol,
+      title: `${s.symbol} Analysis`,
+      desc: s.reason || `Detailed impact analysis for ${s.symbol}.`,
+      change: s.change,
+      image: null
+    }))
+  }
+  showThemeDetailModal.value = true
+}
 
 // Mock Data Generator for Events
 const generateEvents = (marketId, count, startIndex) => {
@@ -1683,7 +1769,8 @@ const generateEvents = (marketId, count, startIndex) => {
       stocks: template.stocks.map(s => ({
         ...s,
         change: parseFloat((s.change + (Math.random() - 0.5)).toFixed(2))
-      }))
+      })),
+      themeChange: (Math.random() * 6 - 3).toFixed(2) // Persistent theme change for sorting
     }
   })
 }
@@ -1726,6 +1813,7 @@ const generateMockOpportunities = (count, startIndex) => {
       score: Math.floor(Math.random() * 20) + 80,
       return: (Math.random() * 30 + 5).toFixed(1),
       reason: `AI analysis indicates a strong ${template.type === 'Long' ? 'upside' : 'downside'} potential based on recent ${template.strategy} signals. Market sentiment is currently ${template.type === 'Long' ? 'bullish' : 'bearish'} with high institutional interest. Key technical levels are being tested with increasing volume.`,
+      themeChange: (Math.random() * 6 - 3).toFixed(2) // Persistent theme change for sorting
     }
   })
 }
@@ -1927,8 +2015,8 @@ onMounted(() => {
   setupObserver()
   window.addEventListener('scroll', handleWindowScroll)
   
-  // Init chart if starting on themes tab
-  if (activeTab.value === 'themes') {
+  // Init chart if starting on themesB tab
+  if (activeTab.value === 'themesB') {
     nextTick(() => {
       initThemeChart()
     })
@@ -2084,7 +2172,8 @@ const goToStockDetail = (symbol, sourceId) => {
 
 // --- Event Detail Modal Logic ---
 const showEventModal = ref(false)
-const selectedEvent = ref({ stocks: [{ symbol: '', change: 0 }] }) // Init with safe default
+const selectedEvent = ref(null)
+const isCopied = ref(false)
 
 const openEventModal = (event) => {
   selectedEvent.value = event
@@ -2097,6 +2186,18 @@ const closeEventModal = () => {
 
 const addToWatchlist = (stock) => {
   alert(`已将 ${stock.symbol} 添加到关注列表`)
+}
+
+const copyShareLink = () => {
+  const url = window.location.href
+  navigator.clipboard.writeText(url).then(() => {
+    isCopied.value = true
+    setTimeout(() => {
+      isCopied.value = false
+    }, 2000)
+  }).catch(() => {
+    console.error('Copy failed')
+  })
 }
 
 const saveReport = (strategy) => {
