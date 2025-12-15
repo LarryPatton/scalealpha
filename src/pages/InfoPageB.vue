@@ -6,6 +6,20 @@
     <!-- 2. Main Content Area -->
     <main class="flex-grow flex flex-col p-4 lg:p-6 relative">
       
+      <!-- Help Button for Tour -->
+      <button 
+        @click="startInfoTour"
+        class="fixed top-20 right-6 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-[#1a1a1a] border border-[#333] text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all group shadow-lg"
+        title="查看使用引导"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span class="absolute right-full mr-2 px-2 py-1 text-xs text-white bg-[#222] border border-[#333] rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+          使用引导
+        </span>
+      </button>
+      
       <!-- Hero Section (Always visible for all tabs) -->
       <div class="mb-8 text-center py-10">
         <h1 class="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">
@@ -17,11 +31,11 @@
       </div>
 
       <!-- Universal Filter Bar -->
-      <div class="sticky top-16 z-40 bg-[#0f0f0f]/95 backdrop-blur border-b border-[#333] px-4 lg:px-8 py-3 mb-6 flex flex-wrap items-center justify-between gap-4 transition-all duration-300">
+      <div id="info-filter-bar" class="sticky top-16 z-40 bg-[#0f0f0f]/95 backdrop-blur border-b border-[#333] px-4 lg:px-8 py-3 mb-6 flex flex-wrap items-center justify-between gap-4 transition-all duration-300">
         <!-- Left: Filter & Switcher -->
         <div class="flex items-center gap-3">
           <!-- Content Switcher -->
-          <div class="bg-[#1a1a1a] border border-[#333] rounded-lg p-1 flex items-center">
+          <div id="content-switcher" class="bg-[#1a1a1a] border border-[#333] rounded-lg p-1 flex items-center">
             <button 
               @click="contentFilter = 'recommended'"
               class="px-3 py-1.5 rounded-md text-xs font-bold transition-all"
@@ -40,6 +54,7 @@
 
           <!-- Filter Button -->
           <button 
+            id="filter-button"
             v-if="activeTab !== 'themes'"
             @click="showFilterModal = true"
             class="h-9 w-9 bg-[#1a1a1a] hover:bg-[#2a2a2a] border border-[#333] rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-colors"
@@ -93,7 +108,7 @@
       </div>
 
       <!-- Tab: Opportunities (Waterfall) -->
-      <div v-if="activeTab === 'opportunities'" class="w-full px-4 lg:px-8">
+      <div id="opportunities-content" v-if="activeTab === 'opportunities'" class="w-full px-4 lg:px-8">
         <div 
           :class="viewMode === 'card' ? 'grid gap-6' : 'flex flex-col space-y-4'"
           :style="viewMode === 'card' ? { gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))` } : {}"
@@ -103,6 +118,7 @@
             <div 
               v-for="(opp, index) in filteredOpportunities" 
               :key="opp.id + '-' + index" 
+              :id="index === 0 ? 'first-opportunity-card' : undefined"
               @click="openStrategyModal(opp)"
               class="bg-slate-900 rounded-xl shadow-lg p-6 text-center text-white border border-slate-800 hover:border-blue-500/50 transition-all duration-300 cursor-pointer group relative overflow-hidden"
             >
@@ -379,7 +395,7 @@
     </main>
 
     <!-- 3. Floating Tabs (Bottom Center) -->
-    <div class="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-40">
+    <div id="floating-tabs" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-40">
       <div class="bg-[#1a1a1a]/90 backdrop-blur-xl border border-[#333] rounded-full p-1.5 shadow-2xl flex items-center gap-1">
         <button 
           v-for="tab in tabs.filter(t => t.id !== 'themesB')" 
@@ -397,7 +413,7 @@
     <!-- (Removed Bottom Right Floating Buttons) -->
 
     <!-- 5. Grid Control (Bottom Left) -->
-    <div v-if="activeTab === 'opportunities' && viewMode === 'card'" class="fixed bottom-8 left-8 z-50 flex items-center transition-all duration-300">
+    <div id="grid-control" v-if="activeTab === 'opportunities' && viewMode === 'card'" class="fixed bottom-8 left-8 z-50 flex items-center transition-all duration-300">
       <!-- Expanded State -->
       <div 
         v-if="isGridControlExpanded"
@@ -1255,6 +1271,8 @@
 import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import * as echarts from 'echarts'
+import { driver } from 'driver.js'
+import 'driver.js/dist/driver.css'
 import Navbar from '../components/Navbar.vue'
 
 const route = useRoute()
@@ -2024,6 +2042,68 @@ const loadMore = async () => {
   isLoading.value = false
 }
 
+// Tour function for Info page
+const startInfoTour = () => {
+  const driverObj = driver({
+    showProgress: true,
+    steps: [
+      { 
+        element: '#content-switcher', 
+        popover: { 
+          title: '内容切换', 
+          description: '在"推荐"和"关注"之间切换，查看系统推荐的机会或您关注的标的相关内容。',
+          side: "bottom", 
+          align: 'start' 
+        } 
+      },
+      { 
+        element: '#filter-button', 
+        popover: { 
+          title: '高级筛选', 
+          description: '点击打开筛选面板，按来源、方向、周期、评级等条件精确过滤内容。',
+          side: "bottom", 
+          align: 'start' 
+        } 
+      },
+      { 
+        element: '#first-opportunity-card', 
+        popover: { 
+          title: '机会卡片详解', 
+          description: `<div style="text-align:left;line-height:1.6">
+<b>• Strategy</b>: 策略类型标签<br>
+<b>• Symbol</b>: 股票/标的代码<br>
+<b>• Rating</b>: AI 综合评级 (A+/A/B/C/D)<br>
+<b>• Direction</b>: 建议方向 (Long做多/Short做空)<br>
+<b>• 底部信息</b>: 建议周期、分析模型、风险等级<br><br>
+<i>点击卡片可查看完整分析报告</i>
+</div>`,
+          side: "right", 
+          align: 'start' 
+        } 
+      },
+      { 
+        element: '#floating-tabs', 
+        popover: { 
+          title: '内容分类', 
+          description: '在不同类型的内容之间切换：Opportunities (机会)、Themes (主题) 和 Attribution (归因分析)。',
+          side: "top", 
+          align: 'center' 
+        } 
+      },
+      { 
+        element: '#grid-control', 
+        popover: { 
+          title: '布局控制', 
+          description: '调整卡片网格的列数，自定义您喜欢的浏览布局。',
+          side: "right", 
+          align: 'center' 
+        } 
+      }
+    ]
+  });
+  driverObj.drive();
+}
+
 // Lifecycle
 onMounted(() => {
   setupObserver()
@@ -2034,6 +2114,14 @@ onMounted(() => {
     nextTick(() => {
       initThemeChart()
     })
+  }
+  
+  // Show tour for first time visitors
+  if (!localStorage.getItem('hasSeenInfoTour')) {
+    setTimeout(() => {
+      startInfoTour();
+      localStorage.setItem('hasSeenInfoTour', 'true');
+    }, 1000);
   }
 })
 

@@ -37,7 +37,21 @@
       <!-- Header Removed as per user request -->
       
       <!-- Main Split Layout: Generate Tab -->
-      <div v-if="activeTab === 'generate'" class="flex-1 flex gap-6 min-h-0 mt-0 pb-24 animate-fade-in">
+      <div v-if="activeTab === 'generate'" class="flex-1 flex gap-6 min-h-0 mt-0 pb-24 animate-fade-in relative">
+        
+        <!-- Help Button for Generate Tour -->
+        <button 
+          @click="startGenerateTour"
+          class="absolute top-2 right-2 z-30 w-8 h-8 flex items-center justify-center rounded-full bg-[#1a1a1a] border border-[#333] text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all group"
+          title="查看使用引导"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span class="absolute right-full mr-2 px-2 py-1 text-xs text-white bg-[#222] border border-[#333] rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            使用引导
+          </span>
+        </button>
         
         <!-- Left Column: Asset Selection -->
         <div id="asset-selection-panel" class="w-[400px] flex flex-col bg-[#0a0a0a] border border-[#222] rounded-lg overflow-hidden shadow-2xl shadow-black/50">
@@ -117,8 +131,8 @@
             
             <!-- Summary Footer -->
             <div class="p-3 text-xs text-gray-500 flex justify-between items-center font-mono">
-              <span>SELECTED: <span class="text-cyan-400">{{ selectedStocks.length }}</span></span>
-              <button @click="selectedStocks = []" class="hover:text-white transition-colors">CLEAR ALL</button>
+              <span>SELECTED: <span class="text-cyan-400">{{ selectedStocks.length > 0 ? selectedStocks[0] : 'NONE' }}</span></span>
+              <button @click="selectedStocks = []" class="hover:text-white transition-colors">CLEAR</button>
             </div>
           </div>
         </div>
@@ -127,10 +141,10 @@
         <div class="flex-1 flex flex-col bg-[#0a0a0a] border border-[#222] rounded-lg overflow-hidden shadow-2xl shadow-black/50 relative">
           
           <!-- Scrollable Content -->
-          <div class="flex-1 overflow-y-auto custom-scrollbar p-8">
+          <div class="flex-1 overflow-y-auto custom-scrollbar p-4">
             
             <!-- Header -->
-            <div class="flex justify-between items-end mb-8 border-b border-[#222] pb-4">
+            <div class="flex justify-between items-end mb-4 border-b border-[#222] pb-2">
               <div>
                 <h2 class="text-xl font-bold text-white uppercase tracking-widest mb-1">Strategy Config</h2>
                 <p class="text-xs text-gray-500 font-mono">CONFIGURE YOUR ANALYSIS PARAMETERS</p>
@@ -138,7 +152,7 @@
             </div>
 
             <!-- Recommendation Hint -->
-            <div class="bg-cyan-900/10 border border-cyan-500/20 rounded-sm p-3 mb-6 flex items-start gap-3">
+            <div class="bg-cyan-900/10 border border-cyan-500/20 rounded-sm p-2 mb-4 flex items-start gap-3">
               <div class="mt-0.5 text-cyan-400">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
               </div>
@@ -148,30 +162,31 @@
             </div>
 
             <!-- Advanced Mode Settings -->
-            <div class="space-y-10 animate-fade-in">
+            <div class="space-y-4 animate-fade-in">
               
               <!-- 1. Analysis Framework -->
               <div id="analysis-frameworks">
-                <h3 class="text-sm font-bold text-gray-400 mb-4 flex items-center gap-2 uppercase tracking-wider">
+                <h3 class="text-sm font-bold text-gray-400 mb-2 flex items-center gap-2 uppercase tracking-wider">
                   <span class="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span> 推荐配置：主分析框架
                 </h3>
-                <div class="grid grid-cols-4 gap-4">
+                <div class="grid grid-cols-4 gap-2">
                   <button 
                     v-for="framework in frameworks" 
                     :key="framework.id"
                     @click="toggleFramework(framework.id)"
-                    class="p-4 bg-[#111] border border-[#222] rounded-sm hover:bg-[#161616] transition-all text-left relative group h-28 flex flex-col justify-between"
+                    class="p-2 bg-[#111] border border-[#222] rounded-sm hover:bg-[#161616] transition-all text-left relative group h-20 flex flex-col justify-between"
                     :class="selectedFrameworks.includes(framework.id) ? 'border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.1)]' : 'hover:border-[#444]'"
                   >
                     <div class="flex justify-between items-start">
-                      <component :is="framework.icon" class="w-6 h-6 text-gray-600 group-hover:text-cyan-400 transition-colors" :class="selectedFrameworks.includes(framework.id) ? 'text-cyan-400' : ''" />
+                      <component v-if="framework.id === 'auto' && selectedFrameworks.includes('auto')" :is="IconAutoFilled" class="w-5 h-5 text-cyan-400 transition-colors" />
+                      <component v-else :is="framework.icon" class="w-5 h-5 text-gray-600 group-hover:text-cyan-400 transition-colors" :class="selectedFrameworks.includes(framework.id) ? 'text-cyan-400' : ''" />
                       <div class="w-3 h-3 border border-[#333] rounded-[1px] flex items-center justify-center" :class="selectedFrameworks.includes(framework.id) ? 'bg-cyan-500 border-cyan-500' : ''">
                         <svg v-if="selectedFrameworks.includes(framework.id)" class="w-2 h-2 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4"><path d="M5 13l4 4L19 7"></path></svg>
                       </div>
                     </div>
                     <div>
-                      <div class="text-sm font-bold text-white mb-1">{{ framework.title }}</div>
-                      <div class="text-[10px] text-gray-500 leading-tight">{{ framework.desc }}</div>
+                      <div class="text-xs font-bold text-white mb-0.5">{{ framework.title }}</div>
+                      <div class="text-[9px] text-gray-500 leading-tight line-clamp-1">{{ framework.desc }}</div>
                     </div>
                   </button>
                 </div>
@@ -179,21 +194,22 @@
 
               <!-- 2. Investment Period -->
               <div id="investment-period">
-                <h3 class="text-sm font-bold text-gray-400 mb-4 flex items-center gap-2 uppercase tracking-wider">
+                <h3 class="text-sm font-bold text-gray-400 mb-2 flex items-center gap-2 uppercase tracking-wider">
                   <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span> 投资周期
                 </h3>
-                <div class="grid grid-cols-5 gap-4">
+                <div class="grid grid-cols-5 gap-2">
                   <button 
                     v-for="period in periods" 
                     :key="period.id"
                     @click="selectedPeriod = period.id"
-                    class="p-4 bg-[#111] border border-[#222] rounded-sm hover:bg-[#161616] transition-all text-left relative group h-24 flex flex-col justify-between"
+                    class="p-2 bg-[#111] border border-[#222] rounded-sm hover:bg-[#161616] transition-all text-left relative group h-16 flex flex-col justify-between"
                     :class="selectedPeriod === period.id ? 'border-blue-500 bg-blue-900/20 shadow-[0_0_20px_rgba(59,130,246,0.3)] ring-1 ring-blue-500/50' : 'hover:border-[#444]'"
                   >
-                    <component :is="period.icon" class="w-5 h-5 text-gray-600 group-hover:text-blue-400 transition-colors" :class="selectedPeriod === period.id ? 'text-blue-400' : ''" />
+                    <component v-if="period.id === 'auto' && selectedPeriod === 'auto'" :is="IconAutoFilled" class="w-4 h-4 text-blue-400 transition-colors" />
+                    <component v-else :is="period.icon" class="w-4 h-4 text-gray-600 group-hover:text-blue-400 transition-colors" :class="selectedPeriod === period.id ? 'text-blue-400' : ''" />
                     <div>
-                      <div class="text-sm font-bold text-white mb-0.5">{{ period.title }}</div>
-                      <div class="text-[10px] text-gray-500 font-mono" :class="selectedPeriod === period.id ? 'text-blue-200/70' : ''">{{ period.desc }}</div>
+                      <div class="text-xs font-bold text-white mb-0">{{ period.title }}</div>
+                      <div class="text-[9px] text-gray-500 font-mono line-clamp-1" :class="selectedPeriod === period.id ? 'text-blue-200/70' : ''">{{ period.desc }}</div>
                     </div>
                     
                     <!-- Active Indicator Corner -->
@@ -204,21 +220,22 @@
 
               <!-- 3. Risk Appetite -->
               <div id="risk-appetite">
-                <h3 class="text-sm font-bold text-gray-400 mb-4 flex items-center gap-2 uppercase tracking-wider">
+                <h3 class="text-sm font-bold text-gray-400 mb-2 flex items-center gap-2 uppercase tracking-wider">
                   <span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span> 风险偏好
                 </h3>
-                <div class="grid grid-cols-5 gap-4">
+                <div class="grid grid-cols-5 gap-2">
                   <button 
                     v-for="risk in risks" 
                     :key="risk.id"
                     @click="selectedRisk = risk.id"
-                    class="p-4 bg-[#111] border border-[#222] rounded-sm hover:bg-[#161616] transition-all text-left relative group h-24 flex flex-col justify-between"
+                    class="p-2 bg-[#111] border border-[#222] rounded-sm hover:bg-[#161616] transition-all text-left relative group h-16 flex flex-col justify-between"
                     :class="selectedRisk === risk.id ? 'border-orange-500 bg-orange-900/20 shadow-[0_0_20px_rgba(249,115,22,0.3)] ring-1 ring-orange-500/50' : 'hover:border-[#444]'"
                   >
-                    <component :is="risk.icon" class="w-5 h-5 text-gray-600 group-hover:text-orange-400 transition-colors" :class="selectedRisk === risk.id ? 'text-orange-400' : ''" />
+                    <component v-if="risk.id === 'auto' && selectedRisk === 'auto'" :is="IconAutoFilled" class="w-4 h-4 text-orange-400 transition-colors" />
+                    <component v-else :is="risk.icon" class="w-4 h-4 text-gray-600 group-hover:text-orange-400 transition-colors" :class="selectedRisk === risk.id ? 'text-orange-400' : ''" />
                     <div>
-                      <div class="text-sm font-bold text-white mb-0.5">{{ risk.title }}</div>
-                      <div class="text-[10px] text-gray-500" :class="selectedRisk === risk.id ? 'text-orange-200/70' : ''">{{ risk.desc }}</div>
+                      <div class="text-xs font-bold text-white mb-0">{{ risk.title }}</div>
+                      <div class="text-[9px] text-gray-500 line-clamp-1" :class="selectedRisk === risk.id ? 'text-orange-200/70' : ''">{{ risk.desc }}</div>
                     </div>
                     
                     <!-- Active Indicator Corner -->
@@ -258,10 +275,24 @@
       </div>
 
         <!-- My Strategy Tab Content -->
-        <div v-else-if="activeTab === 'mystrategy'" class="flex-1 flex flex-col min-h-0 mt-0 pb-20 animate-fade-in">
+        <div v-else-if="activeTab === 'mystrategy'" class="flex-1 flex flex-col min-h-0 mt-0 pb-20 animate-fade-in relative">
+          
+          <!-- Help Button for Strategy Tour -->
+          <button 
+            @click="startStrategyTour"
+            class="absolute top-2 right-2 z-30 w-8 h-8 flex items-center justify-center rounded-full bg-[#1a1a1a] border border-[#333] text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all group"
+            title="查看使用引导"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="absolute right-full mr-2 px-2 py-1 text-xs text-white bg-[#222] border border-[#333] rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+              使用引导
+            </span>
+          </button>
           
           <!-- Active Tasks Section (Zone A) -->
-          <div class="w-full mb-2 border border-[#222] bg-[#0a0a0a] rounded-lg p-3 shadow-lg shrink-0">
+          <div id="active-generation-panel" class="w-full mb-2 border border-[#222] bg-[#0a0a0a] rounded-lg p-3 shadow-lg shrink-0">
              <div class="flex justify-between items-center mb-2">
               <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
                  <span class="w-2 h-2 rounded-full" :class="(pendingTasks.length + processingTasks.length) > 0 ? 'bg-cyan-500 animate-pulse' : 'bg-gray-600'"></span>
@@ -308,15 +339,21 @@
               <div class="flex-1 overflow-y-auto custom-scrollbar py-1">
                 <!-- Smart Filters Section -->
               <div class="px-3 py-2">
-                <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Smart Filters</h3>
-                <div class="space-y-0.5">
+                <div class="flex items-center justify-between mb-1">
+                  <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Smart Filters</h3>
+                  <!-- Toggle Switch -->
                   <button 
-                    @click="libraryFilter = 'all'"
-                    class="w-full text-left px-3 py-1.5 rounded text-xs font-medium transition-colors flex justify-between items-center group"
-                    :class="libraryFilter === 'all' ? 'bg-[#222] text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-[#111]'"
+                    @click="smartFiltersEnabled = !smartFiltersEnabled; if(!smartFiltersEnabled) libraryFilter = 'all'"
+                    class="relative w-7 h-4 rounded-full transition-colors duration-200"
+                    :class="smartFiltersEnabled ? 'bg-cyan-600' : 'bg-[#333]'"
                   >
-                    <span>All Active</span>
+                    <span 
+                      class="absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-transform duration-200"
+                      :class="smartFiltersEnabled ? 'translate-x-3' : 'translate-x-0'"
+                    ></span>
                   </button>
+                </div>
+                <div v-if="smartFiltersEnabled" class="space-y-0.5">
                   <button 
                     @click="libraryFilter = 'high-grade'"
                     class="w-full text-left px-3 py-1.5 rounded text-xs font-medium transition-colors flex justify-between items-center group"
@@ -325,12 +362,29 @@
                     <span>High Grade (A/B)</span>
                   </button>
                   <button 
+                    @click="libraryFilter = 'recommend-update'"
+                    class="w-full text-left px-3 py-1.5 rounded text-xs font-medium transition-colors flex justify-between items-center group"
+                    :class="libraryFilter === 'recommend-update' ? 'bg-[#222] text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-[#111]'"
+                  >
+                    <span>Recommended Update</span>
+                  </button>
+                  <button 
                     @click="libraryFilter = 'no-signal'"
                     class="w-full text-left px-3 py-1.5 rounded text-xs font-medium transition-colors flex justify-between items-center group"
                     :class="libraryFilter === 'no-signal' ? 'bg-[#222] text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-[#111]'"
                   >
                     <span>No Signal Logs</span>
                   </button>
+                  <button 
+                    @click="libraryFilter = 'no-opportunity'"
+                    class="w-full text-left px-3 py-1.5 rounded text-xs font-medium transition-colors flex justify-between items-center group"
+                    :class="libraryFilter === 'no-opportunity' ? 'bg-[#222] text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-[#111]'"
+                  >
+                    <span>No Opportunity Found</span>
+                  </button>
+                </div>
+                <div v-else class="text-[10px] text-gray-600 px-3 py-1">
+                  Filters disabled
                 </div>
               </div>
 
@@ -398,15 +452,60 @@
           <!-- Right Content: Strategy List -->
           <div id="strategy-list-container" class="flex-1 flex flex-col bg-[#0a0a0a] border border-[#222] rounded-lg overflow-hidden shadow-2xl shadow-black/50">
             <!-- Header -->
-            <div id="strategy-toolbar" class="px-4 py-3 border-b border-[#222] flex justify-between items-center bg-[#0f0f0f] h-[60px]">
+            <div id="strategy-toolbar" class="px-4 py-3 border-b border-[#222] flex justify-between items-center bg-[#0f0f0f] h-[60px] relative z-20">
               
               <!-- Normal Header Content -->
-            <div v-if="selectedStrategies.length === 0" class="flex justify-between items-center w-full animate-fade-in">
+            <div class="flex justify-between items-center w-full animate-fade-in">
               <div>
-                <h2 class="text-lg font-bold text-white">{{ currentCollectionName }}</h2>
+                <div class="flex items-center gap-3">
+                  <h2 class="text-lg font-bold text-white">{{ currentCollectionName }}</h2>
+                  <div v-if="selectedStrategies.length > 0" class="flex items-center gap-2 px-2 py-0.5 bg-cyan-900/30 rounded border border-cyan-500/30 animate-fade-in">
+                    <span class="text-xs font-bold text-cyan-400">{{ selectedStrategies.length }} Selected</span>
+                    <button @click="selectedStrategies = []" class="text-xs text-gray-400 hover:text-white flex items-center justify-center w-4 h-4 rounded-full hover:bg-white/10 transition-colors">✕</button>
+                  </div>
+                </div>
                 <p class="text-xs text-gray-500 font-mono">{{ displayedStrategies.length }} strategies found</p>
               </div>
               <div class="flex items-center gap-3">
+                <!-- Move to Group (Moved from Bulk Action) -->
+                <div class="relative mr-2" v-if="selectedStrategies.length > 0">
+                  <button 
+                    @click="showMoveMenu = !showMoveMenu"
+                    class="flex items-center gap-2 px-3 py-1.5 bg-cyan-900/20 border border-cyan-500/50 text-cyan-400 rounded-sm text-xs font-bold uppercase tracking-wider hover:bg-cyan-900/40 transition-all"
+                  >
+                    <component :is="IconBriefcase" class="w-3 h-3" />
+                    Move to Group
+                    <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                  </button>
+                  
+                  <!-- Dropdown Menu -->
+                  <div v-if="showMoveMenu" class="absolute left-0 top-full mt-2 w-48 bg-[#1a1a1a] border border-[#333] rounded shadow-xl z-[100] overflow-hidden">
+                    <div class="py-1">
+                      <button 
+                        v-for="col in customCollections" 
+                        :key="col.id"
+                        @click="moveStrategiesToGroup(col.id)"
+                        class="w-full text-left px-4 py-2 text-xs text-gray-300 hover:bg-[#222] hover:text-white flex items-center gap-2"
+                      >
+                        <component :is="col.icon" class="w-3 h-3 text-gray-500" />
+                        {{ col.label }}
+                      </button>
+                      <div v-if="customCollections.length === 0" class="px-4 py-2 text-xs text-gray-500 italic">
+                        No custom groups
+                      </div>
+                    </div>
+                    <div class="border-t border-[#333] p-1">
+                       <button @click="startCreateGroup(); showMoveMenu = false" class="w-full text-left px-3 py-2 text-xs text-cyan-400 hover:bg-[#222] font-bold flex items-center gap-2">
+                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                         Create New Group
+                       </button>
+                    </div>
+                  </div>
+                  
+                  <!-- Backdrop to close menu -->
+                  <div v-if="showMoveMenu" class="fixed inset-0 z-[99]" @click="showMoveMenu = false"></div>
+                </div>
+
                 <!-- Search -->
                 <div class="relative">
                   <input 
@@ -430,63 +529,7 @@
               </div>
             </div>
 
-            <!-- Bulk Action Header -->
-            <div v-else class="flex justify-between items-center w-full bg-[#1a1a1a] -m-4 p-4 animate-fade-in h-[73px] relative z-20">
-              <div class="flex items-center gap-4">
-                <span class="text-sm font-bold text-white">{{ selectedStrategies.length }} Selected</span>
-                <button @click="selectedStrategies = []" class="text-xs text-gray-500 hover:text-white">Cancel</button>
-              </div>
-              
-              <div class="flex items-center gap-3">
-                <!-- Regenerate Button -->
-                <button 
-                  @click="handleRegenerateSelected"
-                  class="flex items-center gap-2 px-4 py-2 bg-emerald-900/20 border border-emerald-500/50 text-emerald-400 rounded text-xs font-bold uppercase tracking-wider hover:bg-emerald-900/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  :disabled="selectedStrategies.length === 0"
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                  Regenerate
-                </button>
-
-                <div class="relative">
-                  <button 
-                    @click="showMoveMenu = !showMoveMenu"
-                    class="flex items-center gap-2 px-4 py-2 bg-cyan-900/20 border border-cyan-500/50 text-cyan-400 rounded text-xs font-bold uppercase tracking-wider hover:bg-cyan-900/40 transition-all"
-                  >
-                    <component :is="IconBriefcase" class="w-4 h-4" />
-                    Move to Group
-                    <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                  </button>
-                  
-                  <!-- Dropdown Menu -->
-                <div v-if="showMoveMenu" class="absolute right-0 top-full mt-2 w-48 bg-[#1a1a1a] border border-[#333] rounded shadow-xl z-50 overflow-hidden">
-                  <div class="py-1">
-                    <button 
-                      v-for="col in customCollections" 
-                      :key="col.id"
-                      @click="moveStrategiesToGroup(col.id)"
-                      class="w-full text-left px-4 py-2 text-xs text-gray-300 hover:bg-[#222] hover:text-white flex items-center gap-2"
-                    >
-                      <component :is="col.icon" class="w-3 h-3 text-gray-500" />
-                      {{ col.label }}
-                    </button>
-                    <div v-if="customCollections.length === 0" class="px-4 py-2 text-xs text-gray-500 italic">
-                      No custom groups
-                    </div>
-                  </div>
-                  <div class="border-t border-[#333] p-1">
-                     <button @click="startCreateGroup(); showMoveMenu = false" class="w-full text-left px-3 py-2 text-xs text-cyan-400 hover:bg-[#222] font-bold flex items-center gap-2">
-                       <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                       Create New Group
-                     </button>
-                  </div>
-                </div>
-                
-                <!-- Backdrop to close menu -->
-                <div v-if="showMoveMenu" class="fixed inset-0 z-40" @click="showMoveMenu = false"></div>
-              </div>
-              </div>
-            </div>
+            <!-- Bulk Action Header Removed -->
           </div>
 
           <!-- Table -->
@@ -556,11 +599,35 @@
               <tbody class="divide-y divide-[#111]">
                 <tr 
                   v-for="(strategy, index) in displayedStrategies" 
-                  :key="strategy.id" 
-                  :id="index === 0 ? 'first-strategy-row' : ''"
-                  @click="openStrategyModal(strategy)"
-                  class="hover:bg-[#161616] transition-colors group relative cursor-pointer"
+                  :key="strategy.id"
+                  :id="index === 0 ? 'first-strategy-row' : undefined"
+                  class="border-b border-[#222] transition-colors group cursor-pointer relative"
+                  :class="[
+                    selectedStrategies.includes(strategy.id) ? 'bg-cyan-900/10' : 'hover:bg-[#161616]',
+                    strategy.grade === 'N/A' ? 'opacity-50 grayscale' : '',
+                    regeneratingStrategies[strategy.id] ? 'pointer-events-none' : ''
+                  ]"
+                  @click="strategy.grade !== 'N/A' && !regeneratingStrategies[strategy.id] ? openStrategyModal(strategy) : null"
                 >
+                  <!-- Regenerating Overlay -->
+                  <td v-if="regeneratingStrategies[strategy.id]" colspan="9" class="absolute inset-0 z-20">
+                    <div class="absolute inset-0 bg-[#0a0a0a]/90 backdrop-blur-sm flex flex-col items-center justify-center">
+                      <div class="flex items-center gap-3 mb-2">
+                        <svg class="w-4 h-4 text-cyan-400 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span class="text-xs font-bold text-cyan-400 uppercase tracking-wider">Updating...</span>
+                      </div>
+                      <div class="w-48 h-1.5 bg-[#222] rounded-full overflow-hidden">
+                        <div 
+                          class="h-full bg-gradient-to-r from-cyan-500 to-emerald-500 rounded-full transition-all duration-300"
+                          :style="{ width: `${Math.min(regeneratingStrategies[strategy.id]?.progress || 0, 100)}%` }"
+                        ></div>
+                      </div>
+                      <span class="text-[10px] text-gray-500 mt-1 font-mono">{{ Math.round(regeneratingStrategies[strategy.id]?.progress || 0) }}%</span>
+                    </div>
+                  </td>
                   <td class="px-6 py-4 whitespace-nowrap relative z-10">
                     <div 
                       @click.stop="toggleStrategySelection(strategy.id)" 
@@ -578,9 +645,17 @@
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center justify-between gap-4">
                       <div class="text-sm text-gray-300">{{ strategy.stockName }}</div>
-                      <!-- Hover Hint -->
-                      <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-                        <span class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider border border-cyan-500/30 px-2 py-1 rounded bg-[#0a0a0a]/90 whitespace-nowrap shadow-[0_0_10px_rgba(6,182,212,0.2)] backdrop-blur-sm">
+                      <!-- Actions -->
+                      <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <button 
+                          v-if="strategy.source !== 'Official'"
+                          @click.stop="handleRegenerateSingle(strategy)"
+                          class="flex items-center gap-1 px-2 py-1 bg-emerald-900/20 border border-emerald-500/50 text-emerald-400 rounded text-[10px] font-bold uppercase tracking-wider hover:bg-emerald-900/40"
+                        >
+                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                          Update
+                        </button>
+                        <span v-if="strategy.grade !== 'N/A'" class="pointer-events-none text-[10px] text-cyan-400 font-bold uppercase tracking-wider border border-cyan-500/30 px-2 py-1 rounded bg-[#0a0a0a]/90 whitespace-nowrap shadow-[0_0_10px_rgba(6,182,212,0.2)] backdrop-blur-sm">
                           Click to View
                         </span>
                       </div>
@@ -1396,6 +1471,125 @@
         </button>
       </div>
     </div>
+
+    <!-- Floating MiniMap Panel (Right Side) -->
+    <div class="fixed right-0 top-1/2 -translate-y-1/2 z-50 flex items-center">
+      <!-- Toggle Button -->
+      <button 
+        @click="isMiniMapExpanded = !isMiniMapExpanded"
+        class="w-8 h-16 bg-[#111]/95 backdrop-blur border border-r-0 border-[#333] rounded-l-lg flex items-center justify-center text-gray-400 hover:text-cyan-400 transition-all"
+        :class="isMiniMapExpanded ? 'translate-x-0' : ''"
+      >
+        <svg 
+          class="w-4 h-4 transition-transform duration-300" 
+          :class="isMiniMapExpanded ? 'rotate-180' : ''"
+          fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+
+      <!-- Expanded Panel -->
+      <div 
+        class="bg-[#0a0a0a]/95 backdrop-blur-xl border border-[#333] rounded-l-xl shadow-2xl overflow-hidden transition-all duration-300"
+        :class="isMiniMapExpanded ? 'w-56 opacity-100' : 'w-0 opacity-0'"
+      >
+        <div class="p-4 min-w-[224px]">
+          <!-- Header -->
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-[#222]">
+            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">流程导航</span>
+            <span class="text-[10px] text-cyan-500 font-mono">{{ currentStepIndex + 1 }}/{{ miniMapSteps.length }}</span>
+          </div>
+
+          <!-- Steps -->
+          <div class="space-y-3">
+            <div 
+              v-for="(step, index) in miniMapSteps" 
+              :key="step.key"
+              class="flex items-start gap-3 group cursor-pointer"
+              @click="handleMiniMapStepClick(step)"
+            >
+              <!-- Node & Connector -->
+              <div class="flex flex-col items-center">
+                <!-- Connector Line (Top) -->
+                <div 
+                  v-if="index > 0" 
+                  class="w-0.5 h-2 -mt-3 mb-1 transition-colors"
+                  :class="step.status === 'done' || step.status === 'active' ? 'bg-cyan-500' : 'bg-[#333]'"
+                ></div>
+                
+                <!-- Node Circle -->
+                <div 
+                  class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all text-[10px] font-bold"
+                  :class="[
+                    step.status === 'active' ? 'border-cyan-500 bg-cyan-900/30 text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.3)] scale-110' : 
+                    step.status === 'done' ? 'border-cyan-700 bg-cyan-900/20 text-cyan-500' : 
+                    step.status === 'blocked' ? 'border-amber-500/50 bg-amber-900/20 text-amber-500' :
+                    'border-[#333] bg-[#111] text-gray-600'
+                  ]"
+                >
+                  <svg v-if="step.status === 'done'" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                  <svg v-else-if="step.status === 'blocked'" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01"></path></svg>
+                  <span v-else>{{ index + 1 }}</span>
+                  
+                  <!-- Active Pulse -->
+                  <div v-if="step.status === 'active'" class="absolute inset-0 rounded-full border border-cyan-500 animate-ping opacity-30"></div>
+                </div>
+
+                <!-- Connector Line (Bottom) -->
+                <div 
+                  v-if="index < miniMapSteps.length - 1" 
+                  class="w-0.5 h-2 mt-1 transition-colors"
+                  :class="miniMapSteps[index + 1].status === 'done' || miniMapSteps[index + 1].status === 'active' ? 'bg-cyan-500' : 'bg-[#333]'"
+                ></div>
+              </div>
+
+              <!-- Labels -->
+              <div class="flex-1 pt-0.5">
+                <div 
+                  class="text-xs font-medium transition-colors"
+                  :class="step.status === 'active' ? 'text-white' : step.status === 'done' ? 'text-gray-400' : 'text-gray-600'"
+                >
+                  {{ step.title }}
+                </div>
+                <div 
+                  v-if="step.hint" 
+                  class="text-[10px] mt-0.5 transition-colors"
+                  :class="step.status === 'active' ? 'text-cyan-400' : 'text-gray-600'"
+                >
+                  {{ step.hint }}
+                </div>
+              </div>
+
+              <!-- Action Arrow -->
+              <svg 
+                v-if="step.action && (step.status === 'active' || step.status === 'done')"
+                class="w-4 h-4 text-gray-600 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all mt-0.5" 
+                fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Legend -->
+          <div class="mt-4 pt-3 border-t border-[#222] flex flex-wrap gap-3 text-[10px] text-gray-600">
+            <div class="flex items-center gap-1">
+              <div class="w-2 h-2 rounded-full bg-cyan-500"></div>
+              <span>进行中</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <div class="w-2 h-2 rounded-full bg-cyan-900"></div>
+              <span>已完成</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <div class="w-2 h-2 rounded-full bg-[#333]"></div>
+              <span>待进行</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -1423,6 +1617,7 @@ const IconScale = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'curren
 const IconFire = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('path', { d: 'M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.1.2-2.2.5-3.3a7 7 0 0 0 3 3.8z' })])
 const IconSkull = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('path', { d: 'M12 2c-4.4 0-8 3.6-8 8 0 2.8 1.5 5.3 3.8 6.7l.2 3.3h8l.2-3.3c2.3-1.4 3.8-3.9 3.8-6.7 0-4.4-3.6-8-8-8z' }), h('path', { d: 'M9 10h.01' }), h('path', { d: 'M15 10h.01' }), h('path', { d: 'M10 14h4' })])
 const IconAuto = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('path', { d: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z' })])
+const IconAutoFilled = h('svg', { viewBox: '0 0 24 24', fill: 'currentColor' }, [h('path', { d: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z' })])
 
 
 const router = useRouter()
@@ -1481,9 +1676,11 @@ const currentStockList = computed(() => {
 const toggleStock = (stock) => {
   const index = selectedStocks.value.indexOf(stock.symbol)
   if (index === -1) {
-    selectedStocks.value.push(stock.symbol)
+    // Single selection mode: clear others and select this one
+    selectedStocks.value = [stock.symbol]
   } else {
-    selectedStocks.value.splice(index, 1)
+    // Deselect if already selected
+    selectedStocks.value = []
   }
 }
 
@@ -1576,8 +1773,8 @@ const handleInitializeGeneration = () => {
     newTasks.push(newTask)
   })
 
-  // Switch to queue tab
-  switchTab('queue')
+  // Switch to mystrategy tab
+  switchTab('mystrategy')
 
   // Clear highlight after 3 seconds
   setTimeout(() => {
@@ -1587,72 +1784,129 @@ const handleInitializeGeneration = () => {
   }, 3000)
 }
 
+// Tour functions for reusability
+const startGenerateTour = () => {
+  const driverObj = driver({
+    showProgress: true,
+    steps: [
+      { 
+        element: '#asset-selection-panel', 
+        popover: { 
+          title: '1. 选择分析对象', 
+          description: '从您的自选股 (Watchlist) 中选择，或通过搜索添加您感兴趣的股票/加密货币。',
+          side: "right", 
+          align: 'start' 
+        } 
+      },
+      { 
+        element: '#analysis-frameworks', 
+        popover: { 
+          title: '2. 定制分析视角', 
+          description: '想看基本面还是技术面？选择 AI 分析的侧重点。如果不确定，保持"智能推荐"即可。',
+          side: "left", 
+          align: 'start' 
+        } 
+      },
+      { 
+        element: '#investment-period', 
+        popover: { 
+          title: '3. 设定周期', 
+          description: '告诉 AI 您的持仓周期预期，生成的策略将为您量身定制。',
+          side: "left", 
+          align: 'start' 
+        } 
+      },
+      { 
+        element: '#risk-appetite', 
+        popover: { 
+          title: '4. 风险偏好', 
+          description: '设置您的风险承受能力，从低风险到极高风险。',
+          side: "left", 
+          align: 'start' 
+        } 
+      },
+      { 
+        element: '#generate-btn', 
+        popover: { 
+          title: '5. 一键生成', 
+          description: '准备好后，点击这里。AI 将在后台为您运行复杂的分析模型。',
+          side: "top", 
+          align: 'center' 
+        } 
+      }
+    ]
+  });
+  driverObj.drive();
+}
+
+const startStrategyTour = () => {
+  const driverObj = driver({
+    showProgress: true,
+    steps: [
+      { 
+        element: '#active-generation-panel', 
+        popover: { 
+          title: '实时任务监控', 
+          description: '这里显示正在生成或排队中的策略任务。您可以实时查看生成进度和预计剩余时间。',
+          side: "bottom", 
+          align: 'start' 
+        } 
+      },
+      { 
+        element: '#strategy-list-container', 
+        popover: { 
+          title: '您的策略知识库', 
+          description: '所有保存的策略都在这里。您可以查看 AI 给出的评级 (Grade)、方向 (Long/Short) 和所用模型。',
+          side: "left", 
+          align: 'start' 
+        } 
+      },
+      { 
+        element: '#strategy-toolbar', 
+        popover: { 
+          title: '搜索与筛选', 
+          description: '使用搜索框快速查找策略，或通过筛选器按方向、来源等条件过滤显示的策略。',
+          side: "bottom", 
+          align: 'center' 
+        } 
+      },
+      { 
+        element: '#strategy-sidebar', 
+        popover: { 
+          title: '分类与归档', 
+          description: '创建文件夹来整理您的思路，或使用智能过滤器快速查找高分策略。',
+          side: "right", 
+          align: 'start' 
+        } 
+      },
+      { 
+        element: '#first-strategy-row', 
+        popover: { 
+          title: '打开策略详情', 
+          description: '点击任意策略行，即可打开详细的策略报告。在报告中您可以查看完整的投资逻辑、历史表现，还可以与 AI 对话来进一步提问。',
+          side: "bottom", 
+          align: 'center' 
+        } 
+      }
+    ]
+  });
+  driverObj.drive();
+}
+
 // Initialize from URL query
 onMounted(() => {
   if (route.query.tab && tabs.some(t => t.id === route.query.tab)) {
     activeTab.value = route.query.tab
   }
 
-  // Start Tour if on Generate Tab
+  // Start Tour if on Generate Tab (only first time)
   if (activeTab.value === 'generate') {
-    const driverObj = driver({
-      showProgress: true,
-      steps: [
-        { 
-          element: '#asset-selection-panel', 
-          popover: { 
-            title: '1. 选择分析对象', 
-            description: '从您的自选股 (Watchlist) 中勾选，或通过搜索添加您感兴趣的股票/加密货币。支持多选哦！',
-            side: "right", 
-            align: 'start' 
-          } 
-        },
-        { 
-          element: '#analysis-frameworks', 
-          popover: { 
-            title: '2. 定制分析视角', 
-            description: '想看基本面还是技术面？选择 AI 分析的侧重点。如果不确定，保持“智能推荐”即可。',
-            side: "left", 
-            align: 'start' 
-          } 
-        },
-        { 
-          element: '#investment-period', 
-          popover: { 
-            title: '3. 设定周期', 
-            description: '告诉 AI 您的持仓周期预期，生成的策略将为您量身定制。',
-            side: "left", 
-            align: 'start' 
-          } 
-        },
-        { 
-          element: '#risk-appetite', 
-          popover: { 
-            title: '4. 风险偏好', 
-            description: '设置您的风险承受能力，从低风险到极高风险。',
-            side: "left", 
-            align: 'start' 
-          } 
-        },
-        { 
-          element: '#generate-btn', 
-          popover: { 
-            title: '5. 一键生成', 
-            description: '准备好后，点击这里。AI 将在后台为您运行复杂的分析模型。',
-            side: "top", 
-            align: 'center' 
-          } 
-        }
-      ]
-    });
-
-    // Optional: Check if user has seen tour before
-    // if (!localStorage.getItem('hasSeenGenerateTour')) {
+    if (!localStorage.getItem('hasSeenGenerateTour')) {
       setTimeout(() => {
-        driverObj.drive();
-        // localStorage.setItem('hasSeenGenerateTour', 'true');
+        startGenerateTour();
+        localStorage.setItem('hasSeenGenerateTour', 'true');
       }, 1000);
-    // }
+    }
   }
 })
 
@@ -1664,56 +1918,13 @@ watch(() => route.query.tab, (newTab) => {
 
 watch(activeTab, (newTab) => {
   if (newTab === 'mystrategy') {
-    // Wait for DOM update
-    setTimeout(() => {
-      const driverObj = driver({
-        showProgress: true,
-        steps: [
-          { 
-            element: '#strategy-list-container', 
-            popover: { 
-              title: '您的策略知识库', 
-              description: '所有保存的策略都在这里。您可以查看 AI 给出的评级 (Grade)、方向 (Long/Short) 和所用模型。',
-              side: "left", 
-              align: 'start' 
-            } 
-          },
-          { 
-            element: '#first-strategy-row', 
-            popover: { 
-              title: '查看深度报告', 
-              description: '点击任意策略，即可打开详情卡片。您可以阅读完整的投资逻辑，甚至与 AI 对话来进一步提问。',
-              side: "bottom", 
-              align: 'center' 
-            } 
-          },
-          { 
-            element: '#strategy-sidebar', 
-            popover: { 
-              title: '分类与归档', 
-              description: '创建文件夹来整理您的思路，或使用智能过滤器快速查找高分策略。',
-              side: "right", 
-              align: 'start' 
-            } 
-          },
-          { 
-            element: '#strategy-toolbar', 
-            popover: { 
-              title: '导出与分享', 
-              description: '支持将策略报告导出为 PDF 或分享给团队成员。',
-              side: "bottom", 
-              align: 'start' 
-            } 
-          }
-        ]
-      });
-
-      // Optional: Check if user has seen tour before
-      // if (!localStorage.getItem('hasSeenStrategyTour')) {
-        driverObj.drive();
-        // localStorage.setItem('hasSeenStrategyTour', 'true');
-      // }
-    }, 800); // Delay to allow animation/rendering
+    // Wait for DOM update, then show tour only for first time
+    if (!localStorage.getItem('hasSeenStrategyTour')) {
+      setTimeout(() => {
+        startStrategyTour();
+        localStorage.setItem('hasSeenStrategyTour', 'true');
+      }, 800);
+    }
   }
 })
 
@@ -2076,8 +2287,87 @@ onUnmounted(() => {
 
 // --- My Strategy Logic ---
 const allSavedStrategies = ref([])
+
+// --- MiniMap Navigation Logic ---
+const isMiniMapExpanded = ref(false)
+
+// Compute MiniMap steps based on current state
+const miniMapSteps = computed(() => {
+  const hasSelectedStocks = selectedStocks.value.length > 0
+  const hasGeneratedStrategies = allSavedStrategies.value.length > 0
+  const isGenerating = pendingTasks.value.some(t => t.status === 'generating')
+  
+  // Determine current step based on state
+  let currentStep = 'select_assets'
+  if (hasSelectedStocks && selectedFrameworks.value.length > 0 && selectedPeriod.value && selectedRisk.value) {
+    currentStep = 'configure_params'
+  }
+  if (isGenerating) {
+    currentStep = 'generating'
+  }
+  if (hasGeneratedStrategies) {
+    currentStep = 'view_results'
+  }
+  if (activeTab.value === 'mystrategy') {
+    currentStep = 'manage_strategies'
+  }
+  
+  return [
+    {
+      key: 'select_assets',
+      title: '选择资产',
+      hint: hasSelectedStocks ? `已选 ${selectedStocks.value.length} 个` : '选择要分析的标的',
+      status: currentStep === 'select_assets' ? 'active' : (hasSelectedStocks ? 'done' : 'pending'),
+      action: () => { activeTab.value = 'generate' }
+    },
+    {
+      key: 'configure_params',
+      title: '配置参数',
+      hint: '设置分析框架和风险',
+      status: currentStep === 'configure_params' ? 'active' : 
+              (currentStep === 'generating' || currentStep === 'view_results' || currentStep === 'manage_strategies' ? 'done' : 'pending'),
+      action: () => { activeTab.value = 'generate' }
+    },
+    {
+      key: 'generating',
+      title: '生成策略',
+      hint: isGenerating ? '正在分析中...' : '点击生成按钮',
+      status: currentStep === 'generating' ? 'active' : 
+              (currentStep === 'view_results' || currentStep === 'manage_strategies' ? 'done' : 'pending'),
+      action: null
+    },
+    {
+      key: 'view_results',
+      title: '查看结果',
+      hint: hasGeneratedStrategies ? `${allSavedStrategies.value.length} 个策略` : '等待生成完成',
+      status: currentStep === 'view_results' ? 'active' : 
+              (currentStep === 'manage_strategies' ? 'done' : 'pending'),
+      action: () => { activeTab.value = 'mystrategy' }
+    },
+    {
+      key: 'manage_strategies',
+      title: '管理策略',
+      hint: '收藏、对比、执行',
+      status: currentStep === 'manage_strategies' ? 'active' : 'pending',
+      action: () => { activeTab.value = 'mystrategy' }
+    }
+  ]
+})
+
+const currentStepIndex = computed(() => {
+  return miniMapSteps.value.findIndex(s => s.status === 'active')
+})
+
+const handleMiniMapStepClick = (step) => {
+  if (step.action && (step.status === 'done' || step.status === 'active')) {
+    step.action()
+  }
+}
+
 const selectedCollection = ref('all')
-const libraryFilter = ref('all') // 'all', 'high-grade', 'no-signal'
+const smartFiltersEnabled = ref(false) // Toggle for Smart Filters section
+const libraryFilter = ref('all') // 'all', 'high-grade', 'no-signal', 'no-opportunity', 'recommend-update'
+const regeneratingStrategies = ref({}) // Track strategies being regenerated: { strategyId: { progress: 0-100 } }
 const strategySearchQuery = ref('')
 const strategyFilterOption = ref('all') // 'all', 'long', 'short'
 
@@ -2214,18 +2504,96 @@ const handleRegenerateSelected = () => {
 
   selectedStrategies.value = []
   
-  // Force tab switch
-  activeTab.value = 'mystrategy'
-  // Use router if available, but activeTab change should be enough for v-if
-  if (typeof router !== 'undefined') {
-    router.push({ query: { ...route.query, tab: 'mystrategy' } })
+  // Force tab switch if not already there
+  if (activeTab.value !== 'mystrategy') {
+    activeTab.value = 'mystrategy'
+    if (typeof router !== 'undefined') {
+      router.push({ query: { ...route.query, tab: 'mystrategy' } })
+    }
   }
+  
+  // Scroll to top to see active generation
+  nextTick(() => {
+    const panel = document.getElementById('active-generation-panel')
+    if (panel) {
+      panel.scrollIntoView({ behavior: 'smooth' })
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  })
   
   // Clear highlight
   setTimeout(() => {
     newTasks.forEach(t => {
       t.isNew = false
     })
+  }, 3000)
+}
+
+// Handle regenerate for a single strategy (Update button in row)
+const handleRegenerateSingle = (strategy) => {
+  if (!strategy) return
+  
+  // Check if already regenerating
+  if (regeneratingStrategies.value[strategy.id]) {
+    return
+  }
+  
+  // Check if it's an Official strategy
+  if (strategy.source === 'Official') {
+    addToast('Official strategies cannot be regenerated.', 'error')
+    return
+  }
+  
+  // Mark as regenerating with initial progress
+  regeneratingStrategies.value[strategy.id] = { progress: 0 }
+  
+  const newTask = {
+    id: Date.now() + Math.floor(Math.random() * 10000),
+    type: 'strategy',
+    title: `${strategy.symbol} Strategy - Regenerated`,
+    symbol: strategy.symbol,
+    stockName: strategy.stockName,
+    strategyId: strategy.id, // Link to the strategy for progress tracking
+    status: 'pending',
+    estTime: '2m',
+    progress: 0,
+    timeLeft: '2m',
+    statusText: 'Queued',
+    isNew: true
+  }
+  tasks.value.push(newTask)
+  
+  addToast(`Regenerating strategy for ${strategy.symbol}`, 'success')
+  
+  // Process the task
+  processNextTask()
+  
+  // Simulate progress for the row overlay
+  const progressInterval = setInterval(() => {
+    if (regeneratingStrategies.value[strategy.id]) {
+      const currentProgress = regeneratingStrategies.value[strategy.id].progress
+      if (currentProgress < 95) {
+        regeneratingStrategies.value[strategy.id].progress = currentProgress + Math.random() * 15
+      }
+    }
+  }, 500)
+  
+  // Complete after simulation (mock: 5 seconds)
+  setTimeout(() => {
+    clearInterval(progressInterval)
+    if (regeneratingStrategies.value[strategy.id]) {
+      regeneratingStrategies.value[strategy.id].progress = 100
+      // Remove from regenerating after a brief moment
+      setTimeout(() => {
+        delete regeneratingStrategies.value[strategy.id]
+      }, 500)
+    }
+  }, 5000)
+  
+  // Clear highlight after 3 seconds
+  setTimeout(() => {
+    newTask.isNew = false
   }, 3000)
 }
 
@@ -2336,15 +2704,13 @@ const displayedStrategies = computed(() => {
   if (libraryFilter.value === 'high-grade') {
     strategies = strategies.filter(s => ['A', 'B'].includes(s.grade))
   } else if (libraryFilter.value === 'no-signal') {
-    // Assuming 'no-signal' means strategies with no clear direction or specific status
-    // For now, let's filter for 'HOLD' or empty direction if applicable, 
-    // or maybe strategies that are archived/rejected.
-    // Based on previous context, it might be related to 'completedNotFoundTasks' logic,
-    // but here we are filtering 'allSavedStrategies'. 
-    // Let's assume it filters for low grades or specific status for now.
-    // If 'no-signal' refers to the "No Opportunity Found" logs, those are usually separate.
-    // However, if we want to filter existing strategies:
-    strategies = strategies.filter(s => !['A', 'B'].includes(s.grade))
+    // No Signal Logs: show C and D grade strategies
+    strategies = strategies.filter(s => ['C', 'D'].includes(s.grade))
+  } else if (libraryFilter.value === 'no-opportunity') {
+    // No Opportunity Found: show strategies with N/A grade (no opportunity)
+    strategies = strategies.filter(s => s.grade === 'N/A')
+  } else if (libraryFilter.value === 'recommend-update') {
+    strategies = strategies.filter(s => s.needsUpdate)
   }
 
   // 2. Search
@@ -2560,6 +2926,56 @@ const generateDemoStrategies = () => {
       savedAt: new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000).toISOString(),
       categoryName: 'Industrial',
       categoryId: 'industrial'
+    },
+    {
+      id: 'demo-11',
+      symbol: 'INTC',
+      stockName: 'Intel Corporation',
+      direction: 'NEUTRAL',
+      grade: 'N/A',
+      horizon: 'N/A',
+      source: 'Official',
+      hasExecutionPlan: false,
+      isWatchlist: false,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Semiconductors',
+      categoryId: 'semi'
+    },
+    {
+      id: 'demo-12',
+      symbol: 'CSCO',
+      stockName: 'Cisco Systems, Inc.',
+      direction: 'LONG',
+      grade: 'B',
+      horizon: 'Medium-term (3-6 months)',
+      source: 'Official',
+      hasExecutionPlan: false,
+      isWatchlist: false,
+      isArchived: false,
+      needsUpdate: true,
+      generatedAt: new Date(now.getTime() - 45 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 45 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Tech Stocks',
+      categoryId: 'tech'
+    },
+    {
+      id: 'demo-13',
+      symbol: 'ORCL',
+      stockName: 'Oracle Corporation',
+      direction: 'SHORT',
+      grade: 'C',
+      horizon: 'Short-term (1-3 months)',
+      source: 'My Strategy',
+      hasExecutionPlan: false,
+      isWatchlist: false,
+      isArchived: false,
+      needsUpdate: true,
+      generatedAt: new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Tech Stocks',
+      categoryId: 'tech'
     }
   ]
 }
