@@ -308,11 +308,24 @@
               </div>
 
               <!-- Processing Tasks -->
-              <div v-for="task in processingTasks" :key="task.id" class="min-w-[280px] bg-[#111] border border-cyan-900/30 rounded-sm p-3 relative overflow-hidden group">
+              <div 
+                v-for="task in processingTasks" 
+                :key="task.id" 
+                class="min-w-[280px] bg-[#111] border rounded-sm p-3 relative overflow-hidden group cursor-pointer transition-all"
+                :class="[
+                  selectedStrategyId === `temp-${task.id}` 
+                    ? 'border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.3)] ring-2 ring-cyan-500/30 selected-task-glow' 
+                    : 'border-cyan-900/30 hover:border-cyan-500/50'
+                ]"
+                @click="selectTaskStrategy(task)"
+              >
+                 <!-- 选中指示器 -->
+                 <div v-if="selectedStrategyId === `temp-${task.id}`" class="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-cyan-500 via-emerald-500 to-cyan-500 animate-gradient-x"></div>
                  <div class="flex justify-between items-start mb-2">
                     <div class="flex items-center gap-2">
                        <span class="text-xs font-bold text-white">{{ task.symbol }}</span>
                        <span class="text-[10px] px-1.5 py-0.5 bg-cyan-900/20 text-cyan-400 rounded border border-cyan-900/30">PROCESSING</span>
+                       <span v-if="selectedStrategyId === `temp-${task.id}`" class="text-[10px] px-1.5 py-0.5 bg-emerald-900/30 text-emerald-400 rounded border border-emerald-500/30 animate-pulse">SELECTED</span>
                     </div>
                     <div class="text-[10px] text-gray-500">{{ task.timeLeft }}</div>
                  </div>
@@ -323,9 +336,24 @@
               </div>
 
               <!-- Pending Tasks -->
-              <div v-for="task in pendingTasks" :key="task.id" class="min-w-[200px] bg-[#111] border border-[#222] rounded-sm p-3 opacity-70 flex flex-col justify-center">
+              <div 
+                v-for="task in pendingTasks" 
+                :key="task.id" 
+                class="min-w-[200px] bg-[#111] border rounded-sm p-3 flex flex-col justify-center cursor-pointer transition-all relative overflow-hidden"
+                :class="[
+                  selectedStrategyId === `temp-${task.id}` 
+                    ? 'border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.3)] ring-2 ring-cyan-500/30 opacity-100 selected-task-glow' 
+                    : 'border-[#222] hover:border-gray-500 opacity-70 hover:opacity-100'
+                ]"
+                @click="selectTaskStrategy(task)"
+              >
+                 <!-- 选中指示器 -->
+                 <div v-if="selectedStrategyId === `temp-${task.id}`" class="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-cyan-500 via-emerald-500 to-cyan-500 animate-gradient-x"></div>
                  <div class="flex justify-between items-center mb-1">
-                    <span class="text-xs font-bold text-gray-400">{{ task.symbol }}</span>
+                    <div class="flex items-center gap-2">
+                      <span class="text-xs font-bold" :class="selectedStrategyId === `temp-${task.id}` ? 'text-white' : 'text-gray-400'">{{ task.symbol }}</span>
+                      <span v-if="selectedStrategyId === `temp-${task.id}`" class="text-[10px] px-1.5 py-0.5 bg-emerald-900/30 text-emerald-400 rounded border border-emerald-500/30 animate-pulse">SELECTED</span>
+                    </div>
                     <span class="text-[10px] text-gray-600">PENDING</span>
                  </div>
                  <div class="text-[10px] text-gray-600 font-mono">Est: {{ task.estTime }}</div>
@@ -410,7 +438,7 @@
                 <span class="text-[10px] font-mono" :class="selectedCollection === col.id ? 'text-cyan-500' : 'text-gray-600'">{{ col.count }}</span>
                 <!-- Delete Button for Custom Groups -->
                 <div 
-                  v-if="!['all', 'official', 'my', 'plans'].includes(col.id)" 
+                  v-if="!['all', 'official', 'my', 'plans', 'only-plan'].includes(col.id)" 
                   @click.stop="promptDeleteGroup(col)" 
                   class="w-3.5 h-3.5 flex items-center justify-center rounded hover:bg-red-900/30 text-gray-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
                 >
@@ -459,16 +487,25 @@
               <div>
                 <div class="flex items-center gap-3">
                   <h2 class="text-lg font-bold text-white">{{ currentCollectionName }}</h2>
-                  <div v-if="selectedStrategies.length > 0" class="flex items-center gap-2 px-2 py-0.5 bg-cyan-900/30 rounded border border-cyan-500/30 animate-fade-in">
-                    <span class="text-xs font-bold text-cyan-400">{{ selectedStrategies.length }} Selected</span>
-                    <button @click="selectedStrategies = []" class="text-xs text-gray-400 hover:text-white flex items-center justify-center w-4 h-4 rounded-full hover:bg-white/10 transition-colors">✕</button>
+                  <div v-if="selectedStrategyId" class="flex items-center gap-2 px-2 py-0.5 bg-cyan-900/30 rounded border border-cyan-500/30 animate-fade-in">
+                    <span class="text-xs font-bold text-cyan-400">{{ selectedStrategy?.symbol || 'Selected' }}</span>
+                    <button @click="clearStrategySelection()" class="text-xs text-gray-400 hover:text-white flex items-center justify-center w-4 h-4 rounded-full hover:bg-white/10 transition-colors">✕</button>
                   </div>
                 </div>
                 <p class="text-xs text-gray-500 font-mono">{{ displayedStrategies.length }} strategies found</p>
               </div>
               <div class="flex items-center gap-3">
+                <!-- 一键清理 No Opportunity Found 按钮 -->
+                <button 
+                  v-if="libraryFilter === 'no-opportunity' && displayedStrategies.length > 0"
+                  @click="clearNoOpportunityStrategies"
+                  class="flex items-center gap-1.5 px-2.5 py-1.5 bg-red-900/20 border border-red-500/50 text-red-400 rounded text-[10px] font-bold uppercase tracking-wider hover:bg-red-900/40 transition-all"
+                >
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                  Clear All
+                </button>
                 <!-- Move to Group (Moved from Bulk Action) -->
-                <div class="relative mr-2" v-if="selectedStrategies.length > 0">
+                <div class="relative mr-2" v-if="selectedStrategyId">
                   <button 
                     @click="showMoveMenu = !showMoveMenu"
                     class="flex items-center gap-2 px-3 py-1.5 bg-cyan-900/20 border border-cyan-500/50 text-cyan-400 rounded-sm text-xs font-bold uppercase tracking-wider hover:bg-cyan-900/40 transition-all"
@@ -603,11 +640,11 @@
                   :id="index === 0 ? 'first-strategy-row' : undefined"
                   class="border-b border-[#222] transition-colors group cursor-pointer relative"
                   :class="[
-                    selectedStrategies.includes(strategy.id) ? 'bg-cyan-900/10' : 'hover:bg-[#161616]',
+                    selectedStrategyId === strategy.id ? 'bg-cyan-900/20 border-l-2 border-l-cyan-500' : 'hover:bg-[#161616]',
                     strategy.grade === 'N/A' ? 'opacity-50 grayscale' : '',
                     regeneratingStrategies[strategy.id] ? 'pointer-events-none' : ''
                   ]"
-                  @click="strategy.grade !== 'N/A' && !regeneratingStrategies[strategy.id] ? openStrategyModal(strategy) : null"
+                  @click="strategy.grade !== 'N/A' && !regeneratingStrategies[strategy.id] ? toggleStrategySelection(strategy.id) : null"
                 >
                   <!-- Regenerating Overlay -->
                   <td v-if="regeneratingStrategies[strategy.id]" colspan="9" class="absolute inset-0 z-20">
@@ -628,18 +665,29 @@
                       <span class="text-[10px] text-gray-500 mt-1 font-mono">{{ Math.round(regeneratingStrategies[strategy.id]?.progress || 0) }}%</span>
                     </div>
                   </td>
+                  <!-- 单选指示器 -->
                   <td class="px-6 py-4 whitespace-nowrap relative z-10">
                     <div 
                       @click.stop="toggleStrategySelection(strategy.id)" 
-                      class="w-4 h-4 border border-[#444] rounded-[2px] flex items-center justify-center cursor-pointer hover:border-cyan-500 transition-colors" 
-                      :class="selectedStrategies.includes(strategy.id) ? 'bg-cyan-500 border-cyan-500' : ''"
+                      class="w-4 h-4 border-2 rounded-full flex items-center justify-center cursor-pointer transition-colors" 
+                      :class="selectedStrategyId === strategy.id ? 'border-cyan-500 bg-cyan-500' : 'border-[#444] hover:border-cyan-500'"
                     >
-                      <svg v-if="selectedStrategies.includes(strategy.id)" class="w-3 h-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                      <div v-if="selectedStrategyId === strategy.id" class="w-1.5 h-1.5 bg-black rounded-full"></div>
                     </div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center gap-2">
                       <span class="font-mono font-bold text-white">{{ strategy.symbol }}</span>
+                      <!-- 有执行计划的图标 -->
+                      <span 
+                        v-if="strategy.hasExecutionPlan" 
+                        class="flex items-center justify-center w-4 h-4 rounded bg-amber-900/30 border border-amber-500/30"
+                        title="Has Execution Plan"
+                      >
+                        <svg class="w-2.5 h-2.5 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                      </span>
                     </div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
@@ -655,9 +703,14 @@
                           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                           Update
                         </button>
-                        <span v-if="strategy.grade !== 'N/A'" class="pointer-events-none text-[10px] text-cyan-400 font-bold uppercase tracking-wider border border-cyan-500/30 px-2 py-1 rounded bg-[#0a0a0a]/90 whitespace-nowrap shadow-[0_0_10px_rgba(6,182,212,0.2)] backdrop-blur-sm">
-                          Click to View
-                        </span>
+                        <button 
+                          v-if="strategy.grade !== 'N/A'" 
+                          @click.stop="viewStrategyDetail(strategy)"
+                          class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider border border-cyan-500/30 px-2 py-1 rounded bg-[#0a0a0a]/90 whitespace-nowrap shadow-[0_0_10px_rgba(6,182,212,0.2)] backdrop-blur-sm hover:bg-cyan-900/30 hover:border-cyan-500/50 transition-colors cursor-pointer"
+                        >
+                          <svg class="w-3 h-3 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                          View
+                        </button>
                       </div>
                     </div>
                   </td>
@@ -1472,41 +1525,85 @@
       </div>
     </div>
 
-    <!-- Floating MiniMap Panel (Right Side) -->
-    <div class="fixed right-0 top-1/2 -translate-y-1/2 z-50 flex items-center">
-      <!-- Toggle Button -->
-      <button 
-        @click="isMiniMapExpanded = !isMiniMapExpanded"
-        class="w-8 h-16 bg-[#111]/95 backdrop-blur border border-r-0 border-[#333] rounded-l-lg flex items-center justify-center text-gray-400 hover:text-cyan-400 transition-all"
-        :class="isMiniMapExpanded ? 'translate-x-0' : ''"
-      >
-        <svg 
-          class="w-4 h-4 transition-transform duration-300" 
-          :class="isMiniMapExpanded ? 'rotate-180' : ''"
-          fill="none" stroke="currentColor" viewBox="0 0 24 24"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-        </svg>
-      </button>
-
-      <!-- Expanded Panel -->
+    <!-- Floating MiniMap - Draggable Dot (收起状态) -->
+    <div 
+      v-if="!isMiniMapExpanded"
+      ref="miniMapDot"
+      class="fixed z-50 cursor-grab active:cursor-grabbing select-none"
+      :style="{ left: miniMapPosition.x + 'px', top: miniMapPosition.y + 'px' }"
+      @mousedown="startDragMiniMap"
+      @touchstart="startDragMiniMap"
+    >
       <div 
-        class="bg-[#0a0a0a]/95 backdrop-blur-xl border border-[#333] rounded-l-xl shadow-2xl overflow-hidden transition-all duration-300"
-        :class="isMiniMapExpanded ? 'w-56 opacity-100' : 'w-0 opacity-0'"
+        class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500/20 to-cyan-900/40 backdrop-blur-xl border border-cyan-500/30 shadow-[0_0_20px_rgba(6,182,212,0.3)] flex items-center justify-center transition-all hover:scale-110 hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] group"
+        @click="handleMiniMapDotClick"
       >
-        <div class="p-4 min-w-[224px]">
+        <!-- 进度环 -->
+        <svg class="w-10 h-10 absolute" viewBox="0 0 36 36">
+          <circle 
+            cx="18" cy="18" r="15.5" 
+            fill="none" 
+            stroke="#333" 
+            stroke-width="2"
+          />
+          <circle 
+            cx="18" cy="18" r="15.5" 
+            fill="none" 
+            stroke="url(#miniMapGradient)" 
+            stroke-width="2"
+            stroke-linecap="round"
+            :stroke-dasharray="`${miniMapProgress} 100`"
+            transform="rotate(-90 18 18)"
+            class="transition-all duration-300"
+          />
+          <defs>
+            <linearGradient id="miniMapGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#06b6d4" />
+              <stop offset="100%" stop-color="#10b981" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <!-- 中心图标 -->
+        <div class="relative z-10 text-cyan-400 group-hover:text-cyan-300 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+        </div>
+        <!-- 当前步骤指示 -->
+        <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#0a0a0a] border border-cyan-500/50 flex items-center justify-center">
+          <span class="text-[10px] font-bold text-cyan-400">{{ currentActiveStepNumber }}</span>
+        </div>
+        <!-- 脉冲动画 (有活动任务时) -->
+        <div v-if="hasActiveTask" class="absolute inset-0 rounded-full border border-cyan-500 animate-ping opacity-30"></div>
+      </div>
+    </div>
+
+    <!-- Floating MiniMap Panel (展开状态) -->
+    <div 
+      v-if="isMiniMapExpanded"
+      class="fixed z-50 flex items-center"
+      :style="miniMapPanelStyle"
+    >
+      <!-- Expanded Panel -->
+      <div class="bg-[#0a0a0a]/95 backdrop-blur-xl border border-[#333] rounded-xl shadow-2xl overflow-hidden transition-all duration-300 w-44">
+        <div class="p-3">
           <!-- Header -->
-          <div class="flex items-center justify-between mb-4 pb-3 border-b border-[#222]">
-            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">流程导航</span>
-            <span class="text-[10px] text-cyan-500 font-mono">{{ currentStepIndex + 1 }}/{{ miniMapSteps.length }}</span>
+          <div class="flex items-center justify-between mb-3 pb-2 border-b border-[#222]">
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">流程导航</span>
+            <button 
+              @click="isMiniMapExpanded = false"
+              class="w-5 h-5 rounded-full bg-[#222] hover:bg-[#333] flex items-center justify-center text-gray-500 hover:text-white transition-colors"
+            >
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
           </div>
 
           <!-- Steps -->
-          <div class="space-y-3">
+          <div class="space-y-2">
             <div 
               v-for="(step, index) in miniMapSteps" 
               :key="step.key"
-              class="flex items-start gap-3 group cursor-pointer"
+              class="flex items-start gap-2 group cursor-pointer"
               @click="handleMiniMapStepClick(step)"
             >
               <!-- Node & Connector -->
@@ -1514,77 +1611,111 @@
                 <!-- Connector Line (Top) -->
                 <div 
                   v-if="index > 0" 
-                  class="w-0.5 h-2 -mt-3 mb-1 transition-colors"
+                  class="w-0.5 h-1.5 -mt-2 mb-0.5 transition-colors"
                   :class="step.status === 'done' || step.status === 'active' ? 'bg-cyan-500' : 'bg-[#333]'"
                 ></div>
                 
                 <!-- Node Circle -->
                 <div 
-                  class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all text-[10px] font-bold"
+                  class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all text-[9px] font-bold relative"
                   :class="[
-                    step.status === 'active' ? 'border-cyan-500 bg-cyan-900/30 text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.3)] scale-110' : 
+                    step.status === 'active' && !step.blocked ? 'border-cyan-500 bg-cyan-900/30 text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.3)] scale-110' : 
+                    step.status === 'active' && step.blocked ? 'border-amber-500 bg-amber-900/30 text-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.3)] scale-110' :
                     step.status === 'done' ? 'border-cyan-700 bg-cyan-900/20 text-cyan-500' : 
                     step.status === 'blocked' ? 'border-amber-500/50 bg-amber-900/20 text-amber-500' :
+                    step.status === 'skipped' ? 'border-[#444] bg-[#1a1a1a] text-gray-500' :
                     'border-[#333] bg-[#111] text-gray-600'
                   ]"
                 >
-                  <svg v-if="step.status === 'done'" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                  <svg v-else-if="step.status === 'blocked'" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01"></path></svg>
+                  <svg v-if="step.status === 'done'" class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                  <svg v-else-if="step.status === 'skipped'" class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                  <svg v-else-if="step.status === 'blocked'" class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                  <svg v-else-if="step.blocked" class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                   <span v-else>{{ index + 1 }}</span>
                   
                   <!-- Active Pulse -->
-                  <div v-if="step.status === 'active'" class="absolute inset-0 rounded-full border border-cyan-500 animate-ping opacity-30"></div>
+                  <div v-if="step.status === 'active' && !step.blocked" class="absolute inset-0 rounded-full border border-cyan-500 animate-ping opacity-30"></div>
+                  <div v-if="step.status === 'active' && step.blocked" class="absolute inset-0 rounded-full border border-amber-500 animate-ping opacity-30"></div>
                 </div>
 
                 <!-- Connector Line (Bottom) -->
                 <div 
                   v-if="index < miniMapSteps.length - 1" 
-                  class="w-0.5 h-2 mt-1 transition-colors"
+                  class="w-0.5 h-1.5 mt-0.5 transition-colors"
                   :class="miniMapSteps[index + 1].status === 'done' || miniMapSteps[index + 1].status === 'active' ? 'bg-cyan-500' : 'bg-[#333]'"
                 ></div>
               </div>
 
               <!-- Labels -->
-              <div class="flex-1 pt-0.5">
+              <div class="flex-1 pt-0">
                 <div 
-                  class="text-xs font-medium transition-colors"
-                  :class="step.status === 'active' ? 'text-white' : step.status === 'done' ? 'text-gray-400' : 'text-gray-600'"
+                  class="text-[11px] font-medium transition-colors leading-tight"
+                  :class="[
+                    step.status === 'active' && !step.blocked ? 'text-white' : 
+                    step.status === 'active' && step.blocked ? 'text-amber-300' :
+                    step.status === 'blocked' ? 'text-amber-500/70' :
+                    step.status === 'done' ? 'text-gray-400' : 
+                    step.status === 'skipped' ? 'text-gray-500 line-through' : 'text-gray-600'
+                  ]"
                 >
                   {{ step.title }}
                 </div>
                 <div 
                   v-if="step.hint" 
-                  class="text-[10px] mt-0.5 transition-colors"
-                  :class="step.status === 'active' ? 'text-cyan-400' : 'text-gray-600'"
+                  class="text-[9px] mt-0.5 transition-colors leading-tight"
+                  :class="[
+                    step.status === 'active' && !step.blocked ? 'text-cyan-400' : 
+                    step.status === 'active' && step.blocked ? 'text-amber-400' :
+                    step.status === 'blocked' ? 'text-amber-500/50' :
+                    step.status === 'skipped' ? 'text-gray-500 italic' :
+                    'text-gray-600'
+                  ]"
                 >
                   {{ step.hint }}
                 </div>
               </div>
 
-              <!-- Action Arrow -->
-              <svg 
-                v-if="step.action && (step.status === 'active' || step.status === 'done')"
-                class="w-4 h-4 text-gray-600 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all mt-0.5" 
-                fill="none" stroke="currentColor" viewBox="0 0 24 24"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
             </div>
           </div>
 
           <!-- Legend -->
-          <div class="mt-4 pt-3 border-t border-[#222] flex flex-wrap gap-3 text-[10px] text-gray-600">
+          <div class="mt-4 pt-3 border-t border-[#222] flex flex-wrap gap-x-3 gap-y-1.5 text-[10px] text-gray-600">
             <div class="flex items-center gap-1">
               <div class="w-2 h-2 rounded-full bg-cyan-500"></div>
               <span>进行中</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <div class="w-2 h-2 rounded-full bg-[#444]"></div>
+              <span>已跳过</span>
             </div>
             <div class="flex items-center gap-1">
               <div class="w-2 h-2 rounded-full bg-cyan-900"></div>
               <span>已完成</span>
             </div>
             <div class="flex items-center gap-1">
+              <div class="w-2 h-2 rounded-full bg-amber-500"></div>
+              <span>阻塞</span>
+            </div>
+            <div class="flex items-center gap-1">
               <div class="w-2 h-2 rounded-full bg-[#333]"></div>
               <span>待进行</span>
+            </div>
+          </div>
+
+          <!-- Selected Strategy Info -->
+          <div v-if="selectedStrategy && selectedStrategy.id" class="mt-3 pt-3 border-t border-[#222]">
+            <div class="text-[10px] text-gray-500 mb-1">当前策略</div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-white">{{ selectedStrategy.symbol }}</span>
+              <span 
+                class="text-[10px] px-1.5 py-0.5 rounded font-bold"
+                :class="[
+                  selectedStrategy.grade === 'A+' || selectedStrategy.grade === 'A' ? 'bg-emerald-900/50 text-emerald-400' :
+                  selectedStrategy.grade === 'B' ? 'bg-cyan-900/50 text-cyan-400' :
+                  selectedStrategy.grade === 'C' ? 'bg-amber-900/50 text-amber-400' :
+                  'bg-gray-800 text-gray-500'
+                ]"
+              >{{ selectedStrategy.grade }}</span>
             </div>
           </div>
         </div>
@@ -1775,6 +1906,30 @@ const handleInitializeGeneration = () => {
 
   // Switch to mystrategy tab
   switchTab('mystrategy')
+
+  // 自动选中第一个生成的任务，MiniMap 状态跟随更新
+  if (newTasks.length > 0) {
+    const firstTask = newTasks[0]
+    selectedStrategyId.value = `temp-${firstTask.id}`
+    selectedStrategy.value = {
+      id: `temp-${firstTask.id}`,
+      symbol: firstTask.symbol,
+      stockName: firstTask.stockName,
+      title: firstTask.title,
+      grade: 'N/A',
+      status: firstTask.status,
+      isGenerating: false,
+      isPending: true,
+      generatedAt: null
+    }
+    
+    // 显示选中提示
+    if (newTasks.length === 1) {
+      addToast(`已选择 ${firstTask.symbol}，策略等待生成...`, 'info')
+    } else {
+      addToast(`已选择 ${firstTask.symbol}，共 ${newTasks.length} 个策略等待生成...`, 'info')
+    }
+  }
 
   // Clear highlight after 3 seconds
   setTimeout(() => {
@@ -2006,6 +2161,43 @@ const quickPrompts = [
   "如何对冲此策略的下行风险？"
 ]
 
+// Select a strategy by task (from Active Generation cards) - 只选中，不弹窗
+const selectTaskStrategy = (task) => {
+  // Try to find existing strategy with same symbol
+  const existingStrategy = allSavedStrategies.value.find(s => s.symbol === task.symbol)
+  
+  if (existingStrategy) {
+    // If strategy exists, select it (不打开弹窗)
+    selectedStrategyId.value = existingStrategy.id
+    selectedStrategy.value = {
+      ...existingStrategy,
+      title: existingStrategy.title || existingStrategy.stockName || `${existingStrategy.symbol} Strategy`,
+      grade: existingStrategy.grade || 'N/A',
+      direction: existingStrategy.direction || 'LONG',
+      term: existingStrategy.horizon || 'Short Term',
+      timeAgo: existingStrategy.generatedAt ? new Date(existingStrategy.generatedAt).toLocaleDateString() : '2h ago',
+    }
+    switchTab('mystrategy')
+    addToast(`已选择 ${existingStrategy.symbol}`, 'info')
+  } else {
+    // If no existing strategy, create a temporary placeholder
+    selectedStrategyId.value = `temp-${task.id}`
+    selectedStrategy.value = {
+      id: `temp-${task.id}`,
+      symbol: task.symbol,
+      stockName: task.stockName || task.symbol,
+      title: task.title || `${task.symbol} Strategy`,
+      grade: 'N/A', // Not yet generated
+      status: task.status,
+      isGenerating: task.status === 'processing',
+      isPending: task.status === 'pending',
+      generatedAt: null
+    }
+    switchTab('mystrategy')
+    addToast(`已选择 ${task.symbol}，策略${task.status === 'processing' ? '正在生成中' : '等待生成'}...`, 'info')
+  }
+}
+
 const openStrategyModal = (opp) => {
   isStrategyWatchlisted.value = false // Reset state
   isStrategyReportSaved.value = false // Reset state
@@ -2228,6 +2420,16 @@ const processQueue = () => {
       nextTask.progress = 0
       nextTask.statusText = 'Initializing...'
       nextTask.timeLeft = 'Calculating...'
+      
+      // 如果是当前选中的任务，更新 selectedStrategy 状态
+      if (selectedStrategyId.value === `temp-${nextTask.id}`) {
+        selectedStrategy.value = {
+          ...selectedStrategy.value,
+          status: 'processing',
+          isGenerating: true,
+          isPending: false
+        }
+      }
     }
   }
 }
@@ -2270,6 +2472,36 @@ onMounted(() => {
             task.completedAt = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
             // Randomly decide if opportunity found (80% chance yes)
             task.foundOpportunity = Math.random() > 0.2
+            
+            // 如果是当前选中的任务，更新状态并切换到真正的策略
+            if (selectedStrategyId.value === `temp-${task.id}`) {
+              // 查找是否有对应的已保存策略
+              const existingStrategy = allSavedStrategies.value.find(s => s.symbol === task.symbol)
+              if (existingStrategy) {
+                // 切换到真正的策略
+                selectedStrategyId.value = existingStrategy.id
+                selectedStrategy.value = {
+                  ...existingStrategy,
+                  title: existingStrategy.title || existingStrategy.stockName || `${existingStrategy.symbol} Strategy`,
+                  grade: existingStrategy.grade || 'N/A',
+                  direction: existingStrategy.direction || 'LONG',
+                  term: existingStrategy.horizon || 'Short Term',
+                  timeAgo: existingStrategy.generatedAt ? new Date(existingStrategy.generatedAt).toLocaleDateString() : 'Just now',
+                }
+                addToast(`${task.symbol} 策略生成完成！`, 'success')
+              } else {
+                // 如果没有保存的策略（可能是模拟），更新状态为已完成
+                selectedStrategy.value = {
+                  ...selectedStrategy.value,
+                  status: 'completed',
+                  isGenerating: false,
+                  isPending: false,
+                  grade: task.foundOpportunity ? 'A' : 'N/A'
+                }
+                addToast(`${task.symbol} 策略生成完成！`, 'success')
+              }
+            }
+            
             // Trigger next task immediately
             processQueue()
           }
@@ -2290,72 +2522,441 @@ const allSavedStrategies = ref([])
 
 // --- MiniMap Navigation Logic ---
 const isMiniMapExpanded = ref(false)
+const miniMapDot = ref(null)
 
-// Compute MiniMap steps based on current state
+// MiniMap 位置 (初始位置在右侧中间)
+const miniMapPosition = ref({ x: window.innerWidth - 60, y: window.innerHeight / 2 })
+
+// 拖动状态
+const isDraggingMiniMap = ref(false)
+const dragStartPos = ref({ x: 0, y: 0 })
+const dragStartMiniMapPos = ref({ x: 0, y: 0 })
+const hasDragged = ref(false) // 用于区分点击和拖动
+
+// 开始拖动
+const startDragMiniMap = (e) => {
+  isDraggingMiniMap.value = true
+  hasDragged.value = false
+  
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY
+  
+  dragStartPos.value = { x: clientX, y: clientY }
+  dragStartMiniMapPos.value = { ...miniMapPosition.value }
+  
+  document.addEventListener('mousemove', onDragMiniMap)
+  document.addEventListener('mouseup', stopDragMiniMap)
+  document.addEventListener('touchmove', onDragMiniMap)
+  document.addEventListener('touchend', stopDragMiniMap)
+}
+
+// 拖动中
+const onDragMiniMap = (e) => {
+  if (!isDraggingMiniMap.value) return
+  
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY
+  
+  const deltaX = clientX - dragStartPos.value.x
+  const deltaY = clientY - dragStartPos.value.y
+  
+  // 如果移动超过 5px，认为是拖动
+  if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+    hasDragged.value = true
+  }
+  
+  // 计算新位置，限制在屏幕范围内
+  const newX = Math.min(Math.max(10, dragStartMiniMapPos.value.x + deltaX), window.innerWidth - 60)
+  const newY = Math.min(Math.max(60, dragStartMiniMapPos.value.y + deltaY), window.innerHeight - 60)
+  
+  miniMapPosition.value = { x: newX, y: newY }
+}
+
+// 停止拖动
+const stopDragMiniMap = () => {
+  isDraggingMiniMap.value = false
+  
+  document.removeEventListener('mousemove', onDragMiniMap)
+  document.removeEventListener('mouseup', stopDragMiniMap)
+  document.removeEventListener('touchmove', onDragMiniMap)
+  document.removeEventListener('touchend', stopDragMiniMap)
+  
+  // 自动吸附到边缘
+  const screenWidth = window.innerWidth
+  if (miniMapPosition.value.x < screenWidth / 2) {
+    miniMapPosition.value.x = 10
+  } else {
+    miniMapPosition.value.x = screenWidth - 60
+  }
+}
+
+// 点击悬浮球（非拖动时展开）
+const handleMiniMapDotClick = (e) => {
+  if (!hasDragged.value) {
+    e.stopPropagation()
+    isMiniMapExpanded.value = true
+  }
+}
+
+// 计算进度百分比 (用于进度环)
+const miniMapProgress = computed(() => {
+  const doneSteps = miniMapSteps.value.filter(s => s.status === 'done').length
+  const totalSteps = miniMapSteps.value.length
+  return (doneSteps / totalSteps) * 100
+})
+
+// 当前活动步骤编号
+const currentActiveStepNumber = computed(() => {
+  const activeIndex = miniMapSteps.value.findIndex(s => s.status === 'active')
+  return activeIndex >= 0 ? activeIndex + 1 : miniMapSteps.value.filter(s => s.status === 'done').length + 1
+})
+
+// 是否有活动任务
+const hasActiveTask = computed(() => {
+  return tasks.value.some(t => t.status === 'processing') || 
+         (selectedStrategy.value && selectedStrategy.value.isGenerating)
+})
+
+// 悬浮球是否在左侧
+const isMiniMapOnLeft = computed(() => {
+  return miniMapPosition.value.x < window.innerWidth / 2
+})
+
+// 展开面板的位置样式
+const miniMapPanelStyle = computed(() => {
+  const panelWidth = 176 // w-44 = 11rem = 176px
+  const dotSize = 48 // 悬浮球大小
+  const gap = 8 // 间距
+  
+  let left, top
+  
+  if (isMiniMapOnLeft.value) {
+    // 在左侧，向右展开
+    left = miniMapPosition.value.x + dotSize + gap
+  } else {
+    // 在右侧，向左展开
+    left = miniMapPosition.value.x - panelWidth - gap
+  }
+  
+  // 垂直方向居中于悬浮球，但不超出屏幕
+  top = Math.max(50, Math.min(miniMapPosition.value.y - 120, window.innerHeight - 350))
+  
+  return {
+    left: left + 'px',
+    top: top + 'px'
+  }
+})
+
+// Helper: Check if grade is B级以上 (A+, A, B)
+const isGradeAboveB = (grade) => {
+  if (!grade) return false
+  const upperGrade = grade.toUpperCase()
+  return ['A+', 'A', 'B'].includes(upperGrade)
+}
+
+// Helper: Check if grade indicates no opportunity
+const isNoOpportunity = (grade) => {
+  if (!grade) return true
+  const upperGrade = grade.toUpperCase()
+  return upperGrade === 'N/A' || upperGrade === 'NA' || upperGrade === ''
+}
+
+// Helper: Check if using default/auto parameters
+const isUsingDefaultParams = () => {
+  return selectedFrameworks.value.includes('auto') && 
+         selectedPeriod.value === 'auto' && 
+         selectedRisk.value === 'auto'
+}
+
+// Helper: Check if strategy needs update (e.g., older than 24 hours)
+const strategyNeedsUpdate = (strategy) => {
+  if (!strategy || !strategy.generatedAt) return false
+  const generatedTime = new Date(strategy.generatedAt).getTime()
+  const now = Date.now()
+  const hoursSinceGenerated = (now - generatedTime) / (1000 * 60 * 60)
+  return hoursSinceGenerated > 24 // Needs update if older than 24 hours
+}
+
+// Compute MiniMap steps based on current state and selected strategy
 const miniMapSteps = computed(() => {
   const hasSelectedStocks = selectedStocks.value.length > 0
   const hasGeneratedStrategies = allSavedStrategies.value.length > 0
   const isGenerating = pendingTasks.value.some(t => t.status === 'generating')
+  const generatedCount = allSavedStrategies.value.length
+  const isGenerateTab = activeTab.value === 'generate'
+  const isMyStrategyTab = activeTab.value === 'mystrategy'
   
-  // Determine current step based on state
-  let currentStep = 'select_assets'
-  if (hasSelectedStocks && selectedFrameworks.value.length > 0 && selectedPeriod.value && selectedRisk.value) {
-    currentStep = 'configure_params'
+  // Selected strategy info
+  const strategy = selectedStrategy.value
+  const hasSelectedStrategy = strategy && strategy.id
+  const strategyGrade = hasSelectedStrategy ? strategy.grade : null
+  const hasPlan = hasSelectedStrategy ? strategy.hasExecutionPlan : false
+  const needsUpdate = hasSelectedStrategy && strategyNeedsUpdate(strategy)
+  
+  // Grade analysis
+  const gradeAboveB = isGradeAboveB(strategyGrade)
+  const noOpportunity = isNoOpportunity(strategyGrade)
+  const gradeBelowB = hasSelectedStrategy && !gradeAboveB && !noOpportunity // C, D grades
+  
+  // --- Step 1: 策略准备（选择资产 + 配置参数） ---
+  // 只在 generate tab 中可以被激活
+  let step1Status = 'pending'
+  let step1Hint = '选择要分析的标的'
+  
+  if (hasSelectedStocks) {
+    step1Status = 'done'
+    if (isUsingDefaultParams()) {
+      step1Hint = '默认推荐参数，等待生成策略'
+    } else {
+      step1Hint = '自定义参数，等待生成策略'
+    }
+  } else if (isGenerateTab) {
+    // 只在 generate tab 时激活
+    step1Status = 'active'
   }
-  if (isGenerating) {
-    currentStep = 'generating'
+  
+  // --- Step 2: 机会生成 ---
+  // 只在 mystrategy tab 中选中策略后才激活
+  let step2Status = 'pending'
+  let step2Hint = '等待选择策略'
+  let step2Blocked = false
+  
+  // Check if selected strategy is generating or pending
+  const isStrategyGenerating = hasSelectedStrategy && strategy.isGenerating
+  const isStrategyPending = hasSelectedStrategy && strategy.isPending
+  // Check if selected strategy is being updated (regenerating)
+  const isStrategyUpdating = hasSelectedStrategy && regeneratingStrategies.value[strategy.id]
+  // Check if selected strategy is "Only Plan" (has plan but no strategy report)
+  const isOnlyPlan = hasSelectedStrategy && strategy.hasExecutionPlan && strategy.hasStrategy === false
+  
+  if (!isMyStrategyTab) {
+    // 不在 mystrategy tab 时，保持 pending 状态
+    step2Status = 'pending'
+    step2Hint = '等待选择策略'
+  } else if (!hasSelectedStrategy) {
+    // 在 mystrategy tab 但未选中策略
+    step2Status = 'pending'
+    step2Hint = '请选择一个策略'
+  } else if (isOnlyPlan) {
+    // Only Plan 策略，跳过机会生成步骤
+    step2Status = 'skipped'
+    step2Hint = '仅计划模式'
+  } else if (isStrategyUpdating) {
+    // 选中的策略正在更新中
+    step2Status = 'active'
+    const progress = Math.round(regeneratingStrategies.value[strategy.id]?.progress || 0)
+    step2Hint = `正在更新... ${progress}%`
+  } else if (isStrategyGenerating) {
+    // 选中的策略正在生成中
+    step2Status = 'active'
+    step2Hint = '正在生成中...'
+  } else if (isStrategyPending) {
+    // 选中的策略等待生成
+    step2Status = 'active'
+    step2Hint = '等待生成...'
+  } else {
+    // 在 mystrategy tab 且选中了已生成的策略
+    if (needsUpdate) {
+      step2Status = 'active'
+      step2Hint = '建议更新策略'
+      step2Blocked = true
+    } else {
+      step2Status = 'done'
+      step2Hint = '策略已生成'
+    }
   }
-  if (hasGeneratedStrategies) {
-    currentStep = 'view_results'
+  
+  // 判断步骤2是否完成（策略已生成且不在生成/等待/更新状态）
+  const isStep2Done = step2Status === 'done'
+  const isStep2InProgress = isStrategyGenerating || isStrategyPending || isStrategyUpdating
+  
+  // --- Step 3: 机会判定 ---
+  // 只在 mystrategy tab 中选中策略后才激活，且步骤2必须完成
+  let step3Status = 'pending'
+  let step3Hint = '等待选择策略'
+  let step3Blocked = false
+  
+  if (!isMyStrategyTab) {
+    // 不在 mystrategy tab 时，保持 pending 状态
+    step3Status = 'pending'
+    step3Hint = '等待选择策略'
+  } else if (!hasSelectedStrategy) {
+    // 在 mystrategy tab 但未选中策略
+    step3Status = 'pending'
+    step3Hint = '请选择一个策略'
+  } else if (isOnlyPlan) {
+    // Only Plan 策略，跳过机会判定步骤
+    step3Status = 'skipped'
+    step3Hint = '仅计划模式'
+  } else if (isStep2InProgress) {
+    // 步骤2还在进行中，步骤3保持灰色
+    step3Status = 'pending'
+    step3Hint = '等待策略生成完成'
+  } else {
+    // 步骤2已完成，根据 grade 判断步骤3状态
+    if (noOpportunity) {
+      step3Status = 'active'
+      step3Hint = '暂无机会，建议更新策略'
+      step3Blocked = true
+    } else if (gradeBelowB) {
+      step3Status = 'active'
+      step3Hint = `${strategyGrade}级机会，建议调整参数`
+      step3Blocked = true
+    } else if (gradeAboveB) {
+      if (hasPlan) {
+        step3Status = 'done'
+        step3Hint = `${strategyGrade}级机会`
+      } else {
+        step3Status = 'active'
+        step3Hint = `${strategyGrade}级机会，可生成计划 →`
+      }
+    }
   }
-  if (activeTab.value === 'mystrategy') {
-    currentStep = 'manage_strategies'
+  
+  // 判断步骤3是否完成或通过
+  const isStep3Done = step3Status === 'done'
+  const isStep3Active = step3Status === 'active' && !step3Blocked
+  const isStep3Skipped = step3Status === 'skipped' // Only Plan 模式跳过
+  const isStep3Passed = isStep3Done || isStep3Active || isStep3Skipped // 可以进入步骤4
+  
+  // --- Step 4: 计划生成 ---
+  // 只在 mystrategy tab 中选中策略后才激活，且步骤3必须通过
+  let step4Status = 'pending'
+  let step4Hint = '等待选择策略'
+  let step4Blocked = false
+  
+  if (!isMyStrategyTab) {
+    // 不在 mystrategy tab 时，保持 pending 状态
+    step4Status = 'pending'
+    step4Hint = '等待选择策略'
+  } else if (!hasSelectedStrategy) {
+    // 在 mystrategy tab 但未选中策略
+    step4Status = 'pending'
+    step4Hint = '请选择一个策略'
+  } else if (isStep2InProgress) {
+    // 步骤2还在进行中，步骤4保持灰色
+    step4Status = 'pending'
+    step4Hint = '等待策略生成完成'
+  } else if (isOnlyPlan) {
+    // Only Plan 模式，直接显示计划状态
+    if (hasPlan) {
+      step4Status = 'done'
+      step4Hint = '计划已生成'
+    } else {
+      step4Status = 'active'
+      step4Hint = '等待生成计划'
+    }
+  } else if (step3Blocked) {
+    // 步骤3被阻塞，步骤4也被阻塞
+    if (noOpportunity) {
+      step4Status = 'blocked'
+      step4Hint = '需有策略机会'
+      step4Blocked = true
+    } else if (gradeBelowB) {
+      step4Status = 'blocked'
+      step4Hint = '需B级以上机会'
+      step4Blocked = true
+    }
+  } else if (isStep3Passed) {
+    // 步骤3通过，根据计划状态判断
+    if (hasPlan) {
+      step4Status = 'done'
+      step4Hint = '计划已生成'
+    } else {
+      step4Status = 'active'
+      step4Hint = '等待生成计划'
+    }
+  } else {
+    // 步骤3未完成
+    step4Status = 'pending'
+    step4Hint = '等待机会判定'
+  }
+  
+  // 判断步骤4是否完成
+  const isStep4Done = step4Status === 'done'
+  
+  // --- Step 5: 执行/完成 ---
+  // 只在 mystrategy tab 中选中策略后才激活，且步骤4必须完成
+  let step5Status = 'pending'
+  let step5Hint = '等待选择策略'
+  
+  if (!isMyStrategyTab) {
+    // 不在 mystrategy tab 时，保持 pending 状态
+    step5Status = 'pending'
+    step5Hint = '等待选择策略'
+  } else if (!hasSelectedStrategy) {
+    // 在 mystrategy tab 但未选中策略
+    step5Status = 'pending'
+    step5Hint = '请选择一个策略'
+  } else if (isStep2InProgress) {
+    // 步骤2还在进行中，步骤5保持灰色
+    step5Status = 'pending'
+    step5Hint = '等待策略生成完成'
+  } else if (step4Blocked) {
+    // 步骤4被阻塞，步骤5保持灰色
+    step5Status = 'pending'
+    step5Hint = '等待计划生成'
+  } else if (isStep4Done) {
+    // 步骤4完成，可以执行
+    step5Status = 'active'
+    step5Hint = '可执行交易'
+  } else {
+    // 步骤4未完成
+    step5Status = 'pending'
+    step5Hint = '等待计划生成'
   }
   
   return [
     {
-      key: 'select_assets',
-      title: '选择资产',
-      hint: hasSelectedStocks ? `已选 ${selectedStocks.value.length} 个` : '选择要分析的标的',
-      status: currentStep === 'select_assets' ? 'active' : (hasSelectedStocks ? 'done' : 'pending'),
-      action: () => { activeTab.value = 'generate' }
+      key: 'strategy_setup',
+      title: '策略准备',
+      hint: step1Hint,
+      status: step1Status,
+      action: () => { switchTab('generate') }
     },
     {
-      key: 'configure_params',
-      title: '配置参数',
-      hint: '设置分析框架和风险',
-      status: currentStep === 'configure_params' ? 'active' : 
-              (currentStep === 'generating' || currentStep === 'view_results' || currentStep === 'manage_strategies' ? 'done' : 'pending'),
-      action: () => { activeTab.value = 'generate' }
+      key: 'opportunity_generate',
+      title: '机会生成',
+      hint: step2Hint,
+      status: step2Status,
+      blocked: step2Blocked,
+      action: () => { switchTab('generate') }
     },
     {
-      key: 'generating',
-      title: '生成策略',
-      hint: isGenerating ? '正在分析中...' : '点击生成按钮',
-      status: currentStep === 'generating' ? 'active' : 
-              (currentStep === 'view_results' || currentStep === 'manage_strategies' ? 'done' : 'pending'),
-      action: null
+      key: 'opportunity_gate',
+      title: '机会判定',
+      hint: step3Hint,
+      status: step3Status,
+      blocked: step3Blocked,
+      action: hasSelectedStrategy ? () => { switchTab('mystrategy') } : null
     },
     {
-      key: 'view_results',
-      title: '查看结果',
-      hint: hasGeneratedStrategies ? `${allSavedStrategies.value.length} 个策略` : '等待生成完成',
-      status: currentStep === 'view_results' ? 'active' : 
-              (currentStep === 'manage_strategies' ? 'done' : 'pending'),
-      action: () => { activeTab.value = 'mystrategy' }
+      key: 'planning',
+      title: '计划生成',
+      hint: step4Hint,
+      status: step4Status,
+      blocked: step4Blocked,
+      action: hasSelectedStrategy && gradeAboveB && !hasPlan ? () => { 
+        // Navigate to planning page
+        router.push({ name: 'PlanningDetail', params: { id: strategy.id } })
+      } : null
     },
     {
-      key: 'manage_strategies',
-      title: '管理策略',
-      hint: '收藏、对比、执行',
-      status: currentStep === 'manage_strategies' ? 'active' : 'pending',
-      action: () => { activeTab.value = 'mystrategy' }
+      key: 'execution',
+      title: '执行/完成',
+      hint: step5Hint,
+      status: step5Status,
+      action: hasSelectedStrategy && hasPlan ? () => {
+        // Navigate to trading page
+        router.push({ name: 'Trading' })
+      } : null
     }
   ]
 })
 
 const currentStepIndex = computed(() => {
-  return miniMapSteps.value.findIndex(s => s.status === 'active')
+  const activeIndex = miniMapSteps.value.findIndex(s => s.status === 'active')
+  return activeIndex >= 0 ? activeIndex : 0
 })
 
 const handleMiniMapStepClick = (step) => {
@@ -2398,29 +2999,59 @@ const handleSort = (field) => {
   }
 }
 
-// Strategy Selection & Management
-const selectedStrategies = ref([])
+// Strategy Selection & Management (单选模式)
+const selectedStrategyId = ref(null) // 单选：只保存一个策略ID
 const showMoveMenu = ref(false)
 
+// 为了向后兼容，保留 selectedStrategies 作为计算属性
+const selectedStrategies = computed(() => {
+  return selectedStrategyId.value ? [selectedStrategyId.value] : []
+})
+
 const isAllStrategiesSelected = computed(() => {
-  return displayedStrategies.value.length > 0 && selectedStrategies.value.length === displayedStrategies.value.length
+  // 单选模式下不支持全选
+  return false
 })
 
 const toggleSelectAllStrategies = () => {
-  if (isAllStrategiesSelected.value) {
-    selectedStrategies.value = []
-  } else {
-    selectedStrategies.value = displayedStrategies.value.map(s => s.id)
-  }
+  // 单选模式下不支持全选，清除选择
+  selectedStrategyId.value = null
 }
 
 const toggleStrategySelection = (id) => {
-  const index = selectedStrategies.value.indexOf(id)
-  if (index === -1) {
-    selectedStrategies.value.push(id)
+  // 单选模式：如果点击的是已选中的，取消选择；否则选中新的
+  if (selectedStrategyId.value === id) {
+    selectedStrategyId.value = null
+    selectedStrategy.value = null
   } else {
-    selectedStrategies.value.splice(index, 1)
+    selectedStrategyId.value = id
+    // 更新 selectedStrategy 用于 MiniMap（但不打开弹窗）
+    const strategy = allSavedStrategies.value.find(s => s.id === id)
+    if (strategy) {
+      selectedStrategy.value = {
+        ...strategy,
+        title: strategy.title || strategy.stockName || `${strategy.symbol} Strategy`,
+        grade: strategy.grade || 'N/A',
+        direction: strategy.direction || 'LONG',
+        term: strategy.horizon || 'Short Term',
+        timeAgo: strategy.generatedAt ? new Date(strategy.generatedAt).toLocaleDateString() : '2h ago',
+      }
+    }
   }
+}
+
+// 查看策略详情（打开弹窗）
+const viewStrategyDetail = (strategy) => {
+  if (strategy.grade === 'N/A' || regeneratingStrategies.value[strategy.id]) return
+  // 先选中该策略
+  selectedStrategyId.value = strategy.id
+  // 然后打开弹窗
+  openStrategyModal(strategy)
+}
+
+// 清除选择的辅助函数
+const clearStrategySelection = () => {
+  selectedStrategyId.value = null
 }
 
 const moveStrategiesToGroup = (groupId) => {
@@ -2434,7 +3065,7 @@ const moveStrategiesToGroup = (groupId) => {
     }
   })
   
-  selectedStrategies.value = []
+  clearStrategySelection()
   showMoveMenu.value = false
 }
 
@@ -2502,7 +3133,7 @@ const handleRegenerateSelected = () => {
     newTasks.push(newTask)
   })
 
-  selectedStrategies.value = []
+  clearStrategySelection()
   
   // Force tab switch if not already there
   if (activeTab.value !== 'mystrategy') {
@@ -2662,12 +3293,14 @@ const strategyCollections = computed(() => {
   const officialCount = allSavedStrategies.value.filter(s => s.source === 'Official').length
   const myCount = allSavedStrategies.value.filter(s => s.source === 'My Strategy').length
   const planCount = allSavedStrategies.value.filter(s => s.hasExecutionPlan).length
+  const onlyPlanCount = allSavedStrategies.value.filter(s => s.hasExecutionPlan && !s.hasStrategy).length
 
   const preset = [
     { id: 'all', label: 'All Strategies', count: allCount, icon: IconBriefcase },
     { id: 'official', label: 'Official Reports', count: officialCount, icon: IconDocument },
     { id: 'my', label: 'My Strategies', count: myCount, icon: IconTarget },
     { id: 'plans', label: 'With Execution Plans', count: planCount, icon: IconLightning },
+    { id: 'only-plan', label: 'Only Plan', count: onlyPlanCount, icon: IconCalendar, isFixed: true },
   ]
 
   const custom = customCollections.value.map(c => ({
@@ -2695,6 +3328,8 @@ const displayedStrategies = computed(() => {
     strategies = strategies.filter(s => s.source === 'My Strategy')
   } else if (selectedCollection.value === 'plans') {
     strategies = strategies.filter(s => s.hasExecutionPlan)
+  } else if (selectedCollection.value === 'only-plan') {
+    strategies = strategies.filter(s => s.hasExecutionPlan && !s.hasStrategy)
   } else {
     // Custom Collection
     strategies = strategies.filter(s => s.categoryId === selectedCollection.value)
@@ -2976,8 +3611,182 @@ const generateDemoStrategies = () => {
       savedAt: new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000).toISOString(),
       categoryName: 'Tech Stocks',
       categoryId: 'tech'
+    },
+    // No Opportunity Found 示例数据
+    {
+      id: 'demo-no-opp-1',
+      symbol: 'INTC',
+      stockName: 'Intel Corporation',
+      direction: 'NEUTRAL',
+      grade: 'N/A',
+      horizon: 'N/A',
+      source: 'Official',
+      model: 'Gemini 1.5 Pro',
+      hasExecutionPlan: false,
+      isWatchlist: false,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Tech Stocks',
+      categoryId: 'tech'
+    },
+    {
+      id: 'demo-no-opp-2',
+      symbol: 'IBM',
+      stockName: 'International Business Machines',
+      direction: 'NEUTRAL',
+      grade: 'N/A',
+      horizon: 'N/A',
+      source: 'My Strategy',
+      model: 'Claude 3.5',
+      hasExecutionPlan: false,
+      isWatchlist: false,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Tech Stocks',
+      categoryId: 'tech'
+    },
+    {
+      id: 'demo-no-opp-3',
+      symbol: 'GE',
+      stockName: 'General Electric',
+      direction: 'NEUTRAL',
+      grade: 'N/A',
+      horizon: 'N/A',
+      source: 'My Strategy',
+      model: 'GPT-4o',
+      hasExecutionPlan: false,
+      isWatchlist: false,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: null,
+      categoryId: null
+    },
+    {
+      id: 'demo-no-opp-4',
+      symbol: 'F',
+      stockName: 'Ford Motor Company',
+      direction: 'NEUTRAL',
+      grade: 'N/A',
+      horizon: 'N/A',
+      source: 'My Strategy',
+      model: 'Gemini 1.5 Pro',
+      hasExecutionPlan: false,
+      isWatchlist: false,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'High Risk',
+      categoryId: 'high-risk'
+    },
+    {
+      id: 'demo-no-opp-5',
+      symbol: 'T',
+      stockName: 'AT&T Inc.',
+      direction: 'NEUTRAL',
+      grade: 'N/A',
+      horizon: 'N/A',
+      source: 'Official',
+      model: 'Gemini 1.5 Pro',
+      hasExecutionPlan: false,
+      isWatchlist: false,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: null,
+      categoryId: null
+    },
+    // Only Plan 示例数据 - 只有执行计划，没有策略报告
+    {
+      id: 'demo-only-plan-1',
+      symbol: 'COIN',
+      stockName: 'Coinbase Global Inc.',
+      direction: 'LONG',
+      grade: 'B',
+      horizon: 'Short-term (1-3 months)',
+      source: 'My Strategy',
+      model: 'Gemini 1.5 Pro',
+      hasExecutionPlan: true,
+      hasStrategy: false,
+      isWatchlist: false,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'High Risk',
+      categoryId: 'high-risk'
+    },
+    {
+      id: 'demo-only-plan-2',
+      symbol: 'PLTR',
+      stockName: 'Palantir Technologies',
+      direction: 'LONG',
+      grade: 'A',
+      horizon: 'Medium-term (3-6 months)',
+      source: 'My Strategy',
+      model: 'Claude 3.5',
+      hasExecutionPlan: true,
+      hasStrategy: false,
+      isWatchlist: false,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Tech Stocks',
+      categoryId: 'tech'
+    },
+    {
+      id: 'demo-only-plan-3',
+      symbol: 'SQ',
+      stockName: 'Block Inc.',
+      direction: 'SHORT',
+      grade: 'B',
+      horizon: 'Short-term (1-3 months)',
+      source: 'My Strategy',
+      model: 'GPT-4o',
+      hasExecutionPlan: true,
+      hasStrategy: false,
+      isWatchlist: false,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: null,
+      categoryId: null
     }
   ]
+}
+
+// 一键清理 No Opportunity Found 策略
+const clearNoOpportunityStrategies = () => {
+  const noOppStrategies = allSavedStrategies.value.filter(s => 
+    s.grade === 'N/A' || s.grade === 'NA' || !s.grade
+  )
+  
+  if (noOppStrategies.length === 0) {
+    addToast('No strategies to clear', 'info')
+    return
+  }
+  
+  const count = noOppStrategies.length
+  
+  // 移除所有 No Opportunity Found 的策略
+  allSavedStrategies.value = allSavedStrategies.value.filter(s => 
+    s.grade && s.grade !== 'N/A' && s.grade !== 'NA'
+  )
+  
+  // 如果当前选中的策略被删除了，清除选择
+  if (selectedStrategyId.value) {
+    const stillExists = allSavedStrategies.value.find(s => s.id === selectedStrategyId.value)
+    if (!stillExists) {
+      selectedStrategyId.value = null
+      selectedStrategy.value = null
+    }
+  }
+  
+  // 切换回 All Strategies
+  libraryFilter.value = 'all'
+  
+  addToast(`Cleared ${count} strategies with no opportunity`, 'success')
 }
 
 // Load saved strategies from localStorage
@@ -3089,6 +3898,30 @@ const loadSavedStrategies = () => {
 }
 .animate-flash {
   animation: flash-highlight 1.5s infinite;
+}
+
+/* Selected Task Glow Animation */
+@keyframes selected-glow {
+  0%, 100% { 
+    box-shadow: 0 0 15px rgba(6,182,212,0.3), 0 0 30px rgba(6,182,212,0.1);
+  }
+  50% { 
+    box-shadow: 0 0 25px rgba(6,182,212,0.5), 0 0 50px rgba(6,182,212,0.2);
+  }
+}
+.selected-task-glow {
+  animation: selected-glow 2s ease-in-out infinite;
+}
+
+/* Gradient Animation for Top Border */
+@keyframes gradient-x {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 2s ease infinite;
 }
 
 /* Toast Transitions */
