@@ -52,6 +52,7 @@ import AnalysisDesignPage from '../pages/AnalysisDesignPage.vue'
 import ThemeCardVariationsPage from '../pages/ThemeCardVariationsPage.vue'
 import OpportunityCardDesignPage from '../pages/OpportunityCardDesignPage.vue';
 import FlowDesignPage from '../pages/FlowDesignPage.vue';
+import ThemesLifecyclePage from '../pages/ThemesLifecyclePage.vue';
 
 const routes = [
   // Root redirect - automatically redirect to Home page
@@ -119,6 +120,12 @@ const routes = [
     path: '/flow-design',
     name: 'FlowDesign',
     component: FlowDesignPage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/themes-lifecycle',
+    name: 'ThemesLifecycle',
+    component: ThemesLifecyclePage,
     meta: { layout: BlankLayout }
   },
   {
