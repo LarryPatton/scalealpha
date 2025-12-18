@@ -890,6 +890,213 @@
         </div>
       </section>
 
+      <!-- Section: Page Standards (新增：已统一的页面规范) -->
+      <section id="standards" class="scroll-mt-24">
+        <SectionHeader title="页面统一规范" subtitle="Page Standards" description="已在核心页面统一应用的视觉语言规范" />
+        
+        <!-- 应用范围 -->
+        <div class="mt-8 p-4 rounded-lg border" :style="{ backgroundColor: tokens.colors.accent.primary.bg, borderColor: tokens.colors.accent.primary.border }">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-lg">📋</span>
+            <span class="font-bold" :style="{ color: tokens.colors.text.primary }">已统一的页面</span>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span 
+              v-for="page in unifiedPages" 
+              :key="page.name"
+              class="px-3 py-1.5 text-xs font-mono rounded border"
+              :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.strong, color: tokens.colors.text.secondary }"
+            >
+              {{ page.name }}
+            </span>
+          </div>
+        </div>
+
+        <!-- 圆角规范 -->
+        <div class="mt-8">
+          <h3 class="text-sm font-bold uppercase tracking-wider mb-4" :style="{ color: tokens.colors.text.tertiary }">圆角半径规范 (混合策略)</h3>
+          <div class="grid grid-cols-3 gap-4">
+            <div 
+              class="p-4 border"
+              :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default, borderRadius: tokens.borderRadius.sharp }"
+            >
+              <div class="flex items-center gap-3 mb-3">
+                <div 
+                  class="w-12 h-12 border-2 flex items-center justify-center"
+                  :style="{ borderRadius: tokens.borderRadius.sharp, borderColor: tokens.colors.accent.primary.DEFAULT, backgroundColor: tokens.colors.accent.primary.bg }"
+                >
+                  <span class="text-xs font-mono" :style="{ color: tokens.colors.accent.primary.DEFAULT }">2px</span>
+                </div>
+                <div>
+                  <p class="font-bold text-sm" :style="{ color: tokens.colors.text.primary }">Sharp</p>
+                  <p class="text-xs" :style="{ color: tokens.colors.text.muted }">rounded-sm</p>
+                </div>
+              </div>
+              <p class="text-xs" :style="{ color: tokens.colors.text.secondary }">用于卡片、面板、输入框、下拉框等容器类元素。锐利边角营造专业科技感。</p>
+            </div>
+
+            <div 
+              class="p-4 border"
+              :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default, borderRadius: tokens.borderRadius.sharp }"
+            >
+              <div class="flex items-center gap-3 mb-3">
+                <div 
+                  class="w-12 h-12 border-2 flex items-center justify-center"
+                  :style="{ borderRadius: tokens.borderRadius.full, borderColor: tokens.colors.accent.success.DEFAULT, backgroundColor: tokens.colors.accent.success.bg }"
+                >
+                  <span class="text-xs font-mono" :style="{ color: tokens.colors.accent.success.DEFAULT }">full</span>
+                </div>
+                <div>
+                  <p class="font-bold text-sm" :style="{ color: tokens.colors.text.primary }">Full</p>
+                  <p class="text-xs" :style="{ color: tokens.colors.text.muted }">rounded-full</p>
+                </div>
+              </div>
+              <p class="text-xs" :style="{ color: tokens.colors.text.secondary }">用于胶囊型按钮、Tab 切换器、状态徽章、头像、状态指示点等。</p>
+            </div>
+
+            <div 
+              class="p-4 border"
+              :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default, borderRadius: tokens.borderRadius.sharp }"
+            >
+              <div class="flex items-center gap-3 mb-3">
+                <div 
+                  class="w-12 h-12 border-2 flex items-center justify-center"
+                  :style="{ borderRadius: tokens.borderRadius.rounded, borderColor: tokens.colors.accent.warning.DEFAULT, backgroundColor: tokens.colors.accent.warning.bg }"
+                >
+                  <span class="text-xs font-mono" :style="{ color: tokens.colors.accent.warning.DEFAULT }">8px</span>
+                </div>
+                <div>
+                  <p class="font-bold text-sm" :style="{ color: tokens.colors.text.primary }">Rounded</p>
+                  <p class="text-xs" :style="{ color: tokens.colors.text.muted }">rounded-lg</p>
+                </div>
+              </div>
+              <p class="text-xs" :style="{ color: tokens.colors.text.secondary }">仅用于特殊场景如模态框外框。日常开发优先使用 sharp。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 浮动 Tab 规范 -->
+        <div class="mt-8">
+          <h3 class="text-sm font-bold uppercase tracking-wider mb-4" :style="{ color: tokens.colors.text.tertiary }">浮动 Tab 导航规范</h3>
+          <div 
+            class="p-4 border"
+            :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default, borderRadius: tokens.borderRadius.sharp }"
+          >
+            <!-- 示例 Tab -->
+            <div class="flex justify-center mb-4">
+              <div 
+                class="backdrop-blur-xl border rounded-full p-1.5 shadow-2xl flex items-center gap-1"
+                :style="{ backgroundColor: tokens.colors.background.elevated + 'E6', borderColor: tokens.colors.border.strong }"
+              >
+                <button 
+                  v-for="(tab, index) in exampleTabs" 
+                  :key="tab"
+                  class="px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2"
+                  :class="index === 0 ? 'shadow-lg scale-105' : ''"
+                  :style="index === 0 ? { backgroundColor: isDark ? '#ffffff' : tokens.colors.text.primary, color: isDark ? '#000000' : '#ffffff' } : { color: tokens.colors.text.muted }"
+                >
+                  {{ tab }}
+                </button>
+              </div>
+            </div>
+            
+            <!-- 规格说明 -->
+            <div class="grid grid-cols-2 gap-4 mt-4 pt-4 border-t" :style="{ borderColor: tokens.colors.border.default }">
+              <div>
+                <p class="text-xs font-bold uppercase tracking-wider mb-2" :style="{ color: tokens.colors.text.muted }">容器样式</p>
+                <ul class="space-y-1 text-xs" :style="{ color: tokens.colors.text.secondary }">
+                  <li><code class="px-1 rounded" :style="{ backgroundColor: tokens.colors.background.elevated }">backdrop-blur-xl</code> 毛玻璃效果</li>
+                  <li><code class="px-1 rounded" :style="{ backgroundColor: tokens.colors.background.elevated }">rounded-full</code> 完全圆角</li>
+                  <li><code class="px-1 rounded" :style="{ backgroundColor: tokens.colors.background.elevated }">p-1.5</code> 内边距</li>
+                  <li><code class="px-1 rounded" :style="{ backgroundColor: tokens.colors.background.elevated }">gap-1</code> 按钮间距</li>
+                  <li>背景: <code class="px-1 rounded" :style="{ backgroundColor: tokens.colors.background.elevated }">background.elevated + 'E6'</code></li>
+                  <li>边框: <code class="px-1 rounded" :style="{ backgroundColor: tokens.colors.background.elevated }">border.strong</code></li>
+                </ul>
+              </div>
+              <div>
+                <p class="text-xs font-bold uppercase tracking-wider mb-2" :style="{ color: tokens.colors.text.muted }">按钮样式</p>
+                <ul class="space-y-1 text-xs" :style="{ color: tokens.colors.text.secondary }">
+                  <li><code class="px-1 rounded" :style="{ backgroundColor: tokens.colors.background.elevated }">px-6 py-2.5</code> 尺寸</li>
+                  <li><code class="px-1 rounded" :style="{ backgroundColor: tokens.colors.background.elevated }">text-sm font-bold</code> 文字</li>
+                  <li><code class="px-1 rounded" :style="{ backgroundColor: tokens.colors.background.elevated }">duration-300</code> 过渡时间</li>
+                  <li>激活态: 白底黑字 + <code class="px-1 rounded" :style="{ backgroundColor: tokens.colors.background.elevated }">shadow-lg scale-105</code></li>
+                  <li>默认态: <code class="px-1 rounded" :style="{ backgroundColor: tokens.colors.background.elevated }">text.muted</code></li>
+                  <li>悬停态: 背景变为 <code class="px-1 rounded" :style="{ backgroundColor: tokens.colors.background.elevated }">border.strong</code></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 主题切换一致性 -->
+        <div class="mt-8">
+          <h3 class="text-sm font-bold uppercase tracking-wider mb-4" :style="{ color: tokens.colors.text.tertiary }">主题切换规范</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div 
+              class="p-4 border"
+              :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default, borderRadius: tokens.borderRadius.sharp }"
+            >
+              <div class="flex items-center gap-2 mb-3">
+                <span class="text-lg">🌙</span>
+                <span class="font-bold text-sm" :style="{ color: tokens.colors.text.primary }">深色模式</span>
+              </div>
+              <ul class="space-y-1 text-xs" :style="{ color: tokens.colors.text.secondary }">
+                <li>激活 Tab 按钮: <span class="font-mono px-1 rounded" :style="{ backgroundColor: '#ffffff', color: '#000000' }">白底黑字</span></li>
+                <li>页面背景: <code class="font-mono">#050505</code> (base)</li>
+                <li>卡片背景: <code class="font-mono">#0a0a0a</code> (surface)</li>
+                <li>强调色保持 cyan-500</li>
+              </ul>
+            </div>
+            <div 
+              class="p-4 border"
+              :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default, borderRadius: tokens.borderRadius.sharp }"
+            >
+              <div class="flex items-center gap-2 mb-3">
+                <span class="text-lg">☀️</span>
+                <span class="font-bold text-sm" :style="{ color: tokens.colors.text.primary }">浅色模式</span>
+              </div>
+              <ul class="space-y-1 text-xs" :style="{ color: tokens.colors.text.secondary }">
+                <li>激活 Tab 按钮: <span class="font-mono px-1 rounded" :style="{ backgroundColor: '#0f172a', color: '#ffffff' }">深底白字</span></li>
+                <li>页面背景: <code class="font-mono">#f8fafc</code> (slate-50)</li>
+                <li>卡片背景: <code class="font-mono">#ffffff</code> (white)</li>
+                <li>强调色调整为 cyan-600</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 已修复的问题 -->
+        <div class="mt-8">
+          <h3 class="text-sm font-bold uppercase tracking-wider mb-4" :style="{ color: tokens.colors.text.tertiary }">已统一的视觉元素</h3>
+          <div 
+            class="border overflow-hidden"
+            :style="{ borderColor: tokens.colors.border.default, borderRadius: tokens.borderRadius.sharp }"
+          >
+            <table class="w-full text-sm">
+              <thead>
+                <tr :style="{ backgroundColor: tokens.colors.background.elevated }">
+                  <th class="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider" :style="{ color: tokens.colors.text.muted }">元素</th>
+                  <th class="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider" :style="{ color: tokens.colors.text.muted }">统一规范</th>
+                  <th class="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider" :style="{ color: tokens.colors.text.muted }">应用页面</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr 
+                  v-for="(item, index) in unifiedElements" 
+                  :key="index"
+                  class="border-t"
+                  :style="{ borderColor: tokens.colors.border.default }"
+                >
+                  <td class="px-4 py-3 font-medium" :style="{ color: tokens.colors.text.primary }">{{ item.element }}</td>
+                  <td class="px-4 py-3 font-mono text-xs" :style="{ color: tokens.colors.text.secondary }">{{ item.spec }}</td>
+                  <td class="px-4 py-3 text-xs" :style="{ color: tokens.colors.text.muted }">{{ item.pages }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
       <!-- Section: Example -->
       <section id="example" class="scroll-mt-24">
         <SectionHeader title="综合示例" subtitle="Example" description="使用 Design Tokens 构建的完整组件" />
@@ -1031,6 +1238,7 @@ const sections = [
   { id: 'components', label: 'Components' },
   { id: 'states', label: 'States' },
   { id: 'animations', label: 'Animations' },
+  { id: 'standards', label: 'Standards' },
   { id: 'example', label: 'Example' },
 ]
 
@@ -1061,6 +1269,28 @@ const accentComparison = [
   { name: 'Warning', dark: '#f59e0b', darkCode: 'amber-500', light: '#d97706', lightCode: 'amber-600' },
   { name: 'Danger', dark: '#f43f5e', darkCode: 'rose-500', light: '#e11d48', lightCode: 'rose-600' },
   { name: 'Info', dark: '#3b82f6', darkCode: 'blue-500', light: '#2563eb', lightCode: 'blue-600' },
+]
+
+// 已统一的页面列表
+const unifiedPages = [
+  { name: 'OpportunityPageB.vue', route: '/scalealpha/opportunity' },
+  { name: 'InfoPageB.vue', route: '/scalealpha/info' },
+  { name: 'RevenueBPage.vue', route: '/scalealpha/revenue' },
+]
+
+// 浮动 Tab 示例数据
+const exampleTabs = ['机会挖掘', '信息中心', '收益明细']
+
+// 已统一的视觉元素列表
+const unifiedElements = [
+  { element: '圆角 - 卡片/面板', spec: 'rounded-sm (2px)', pages: '全部页面' },
+  { element: '圆角 - Tab/按钮', spec: 'rounded-full', pages: '全部页面' },
+  { element: '浮动 Tab 导航', spec: '毛玻璃容器 + 白底激活态', pages: 'OpportunityPageB, InfoPageB' },
+  { element: '主题切换支持', spec: 'useTheme() composable', pages: '全部页面' },
+  { element: '页面背景 (深色)', spec: '#050505 (background.base)', pages: '全部页面' },
+  { element: '页面背景 (浅色)', spec: '#f8fafc (slate-50)', pages: '全部页面' },
+  { element: '卡片边框', spec: 'border.default + border.subtle', pages: '全部页面' },
+  { element: '滚动条样式', spec: 'CSS Variables 主题适配', pages: 'RevenueBPage' },
 ]
 
 const scrollToSection = (id) => {

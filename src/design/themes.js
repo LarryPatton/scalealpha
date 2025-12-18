@@ -107,7 +107,7 @@ export const lightTheme = {
   colors: {
     // 背景色 - 4层系统 (浅色调)
     background: {
-      base: '#f8fafc',      // Level 0: 页面最底层 (slate-50)
+      base: '#f5f5f5',      // Level 0: 页面最底层 (slate-50)
       surface: '#ffffff',   // Level 1: 主要面板/卡片
       elevated: '#f1f5f9',  // Level 2: 悬浮元素、输入框 (slate-100)
       overlay: '#e2e8f0',   // Level 3: 模态框、下拉菜单 (slate-200)

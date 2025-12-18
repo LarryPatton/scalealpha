@@ -57,6 +57,9 @@ const isDark = computed(() => currentThemeName.value === 'dark')
 // 计算属性：是否为浅色模式
 const isLight = computed(() => currentThemeName.value === 'light')
 
+// 计算属性：直接获取 colors（简化写法）
+const colors = computed(() => currentTheme.value.colors)
+
 /**
  * 初始化主题（从 localStorage 读取）
  */
@@ -153,6 +156,7 @@ export function useTheme() {
     themeName: readonly(currentThemeName),
     theme: currentTheme,
     tokens,
+    colors,  // 简化写法：直接获取 colors
     isDark,
     isLight,
     

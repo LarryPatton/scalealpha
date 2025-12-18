@@ -10,7 +10,7 @@
  */
 
 // ============================================
-// 颜色系统 (Color System)
+// 颜色系统 (Color System) - 深色主题 (Dark Theme)
 // ============================================
 
 export const colors = {
@@ -86,6 +86,92 @@ export const colors = {
     B: '#3b82f6', // Blue (复用 info)
     C: '#f59e0b', // Amber (复用 warning)
   },
+}
+
+// ============================================
+// 颜色系统 (Color System) - 浅色主题 (Light Theme)
+// ============================================
+
+export const colorsLight = {
+  // 背景色 - 4层系统
+  background: {
+    base: '#f8fafc',      // Level 0: 页面最底层 (slate-50)
+    surface: '#ffffff',   // Level 1: 主要面板/卡片
+    elevated: '#f1f5f9',  // Level 2: 悬浮元素、输入框 (slate-100)
+    overlay: '#e2e8f0',   // Level 3: 模态框、下拉菜单 (slate-200)
+  },
+  
+  // 边框色 - 3层系统
+  border: {
+    subtle: '#f1f5f9',    // 最浅边框 (slate-100)
+    default: '#e2e8f0',   // 默认边框 (slate-200)
+    strong: '#cbd5e1',    // 强调边框 (slate-300)
+  },
+  
+  // 文字颜色 - 5层系统
+  text: {
+    primary: '#1e293b',   // 主要文字、标题 (slate-800)
+    secondary: '#334155', // 次要文字 (slate-700)
+    tertiary: '#475569',  // 第三层文字 (slate-600)
+    muted: '#64748b',     // 弱化文字 (slate-500)
+    disabled: '#94a3b8',  // 禁用文字 (slate-400)
+  },
+  
+  // 强调色 - 与深色主题保持一致（略微调整亮度）
+  accent: {
+    primary: '#0891b2', // Cyan-600 - 主交互色
+    primaryLight: '#06b6d4',
+    primaryDark: '#0e7490',
+    primaryBg: 'rgba(8, 145, 178, 0.1)',
+    primaryBorder: 'rgba(8, 145, 178, 0.3)',
+    
+    success: '#059669', // Emerald-600 - 成功/LONG
+    successLight: '#10b981',
+    successDark: '#047857',
+    successBg: 'rgba(5, 150, 105, 0.1)',
+    successBorder: 'rgba(5, 150, 105, 0.3)',
+    
+    warning: '#d97706', // Amber-600 - 警告/待更新
+    warningLight: '#f59e0b',
+    warningDark: '#b45309',
+    warningBg: 'rgba(217, 119, 6, 0.1)',
+    warningBorder: 'rgba(217, 119, 6, 0.3)',
+    
+    danger: '#e11d48', // Rose-600 - 危险/SHORT
+    dangerLight: '#f43f5e',
+    dangerDark: '#be123c',
+    dangerBg: 'rgba(225, 29, 72, 0.1)',
+    dangerBorder: 'rgba(225, 29, 72, 0.3)',
+    
+    info: '#2563eb', // Blue-600 - 信息/B级
+    infoLight: '#3b82f6',
+    infoDark: '#1d4ed8',
+    infoBg: 'rgba(37, 99, 235, 0.1)',
+    infoBorder: 'rgba(37, 99, 235, 0.3)',
+  },
+  
+  // 语义化颜色别名
+  semantic: {
+    success: '#059669',
+    error: '#e11d48',
+    warning: '#d97706',
+    info: '#2563eb',
+  },
+  
+  // 评级专用色
+  grade: {
+    A: '#059669',
+    B: '#2563eb',
+    C: '#d97706',
+  },
+}
+
+// ============================================
+// 主题获取函数
+// ============================================
+
+export const getThemeColors = (theme = 'dark') => {
+  return theme === 'light' ? colorsLight : colors
 }
 
 // ============================================

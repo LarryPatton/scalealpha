@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen text-gray-300 font-sans selection:bg-cyan-500/30 overflow-hidden flex flex-col" :style="{ backgroundColor: tokens.colors.background.base }">
+  <div class="h-screen font-sans selection:bg-cyan-500/30 overflow-hidden flex flex-col" :style="{ backgroundColor: tokens.colors.background.base, color: tokens.colors.text.secondary }">
     <Navbar />
     
     <main class="flex-1 pt-16 px-4 lg:px-8 max-w-[2200px] mx-auto w-full flex flex-col overflow-hidden relative">
@@ -43,8 +43,8 @@
         <!-- Help Button for Generate Tour -->
         <button 
           @click="startGenerateTour"
-          class="absolute top-2 right-2 z-30 w-8 h-8 flex items-center justify-center rounded-full border text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all group"
-          :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.strong }"
+          class="absolute top-2 right-2 z-30 w-8 h-8 flex items-center justify-center rounded-full border hover:text-cyan-400 hover:border-cyan-500/50 transition-all group"
+          :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.strong, color: tokens.colors.text.muted }"
           title="查看使用引导"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -56,7 +56,7 @@
         </button>
         
         <!-- Left Column: Asset Selection -->
-        <div id="asset-selection-panel" class="w-[400px] flex flex-col border rounded-lg overflow-hidden shadow-2xl shadow-black/50" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+        <div id="asset-selection-panel" class="w-[400px] flex flex-col border overflow-hidden" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
           <!-- Search & Filter Header -->
           <div class="p-4 border-b" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
             <div class="flex gap-1 p-1 rounded-sm border" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default }">
@@ -65,8 +65,8 @@
                 :key="tab.id"
                 @click="currentAssetTab = tab.id"
                 class="flex-1 py-1.5 text-xs font-medium rounded-sm transition-all uppercase tracking-wider"
-                :class="currentAssetTab === tab.id ? 'text-cyan-400 shadow-sm' : 'text-gray-500 hover:text-gray-300'"
-                :style="currentAssetTab === tab.id ? { backgroundColor: tokens.colors.background.overlay } : {}"
+                :class="currentAssetTab === tab.id ? 'text-cyan-400 shadow-sm' : ''"
+                :style="currentAssetTab === tab.id ? { backgroundColor: tokens.colors.background.overlay } : { color: tokens.colors.text.muted }"
               >
                 {{ tab.label }}
               </button>
@@ -77,10 +77,10 @@
                 v-model="searchQuery"
                 type="text" 
                 placeholder="SEARCH_ASSET // 输入代码或名称" 
-                class="w-full border text-white text-sm px-4 py-2.5 rounded-sm focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-all font-mono placeholder-gray-600"
-                :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.strong }"
+                class="w-full border text-sm px-4 py-2.5 rounded-sm focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-all font-mono"
+                :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.strong, color: tokens.colors.text.primary }"
               />
-              <div class="absolute right-3 top-2.5 text-gray-600">
+              <div class="absolute right-3 top-2.5" :style="{ color: tokens.colors.text.disabled }">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
               </div>
             </div>
@@ -145,7 +145,7 @@
         </div>
 
         <!-- Right Column: Strategy Configuration -->
-        <div class="flex-1 flex flex-col border rounded-lg overflow-hidden shadow-2xl shadow-black/50 relative" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+        <div class="flex-1 flex flex-col border overflow-hidden relative" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
           
           <!-- Scrollable Content - 使用 flex 布局充分利用纵向空间 -->
           <div class="flex-1 flex flex-col overflow-y-auto custom-scrollbar p-4">
@@ -153,8 +153,8 @@
             <!-- Header - 固定高度区域 -->
             <div class="flex justify-between items-center mb-3 border-b pb-2 shrink-0" :style="{ borderColor: tokens.colors.border.default }">
               <div>
-                <h2 class="text-xl font-bold text-white uppercase tracking-widest mb-1">Strategy Config</h2>
-                <p class="text-xs text-gray-500 font-mono">CONFIGURE YOUR ANALYSIS PARAMETERS</p>
+                <h2 class="text-xl font-bold uppercase tracking-widest mb-1" :style="{ color: tokens.colors.text.primary }">Strategy Config</h2>
+                <p class="text-xs font-mono" :style="{ color: tokens.colors.text.muted }">CONFIGURE YOUR ANALYSIS PARAMETERS</p>
               </div>
             </div>
 
@@ -279,7 +279,7 @@
         <div v-else-if="activeTab === 'mystrategy'" class="flex-1 flex flex-col min-h-0 mt-0 pb-20 animate-fade-in relative">
           
           <!-- Active Tasks Section (Zone A) -->
-          <div id="active-generation-panel" class="w-full mb-2 border rounded-lg p-3 shadow-lg shrink-0" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+          <div id="active-generation-panel" class="w-full mb-2 border p-3 shrink-0" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
              <div class="flex justify-between items-center mb-2">
               <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
                  <span class="w-2 h-2 rounded-full" :class="(pendingTasks.length + processingTasks.length) > 0 ? 'bg-cyan-500 animate-pulse' : 'bg-gray-600'"></span>
@@ -383,7 +383,7 @@
                 <div 
                   v-if="hiddenTasksCount > 0"
                   @click="isActiveGenExpanded = true"
-                  class="min-w-[100px] max-w-[100px] border border-dashed rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer transition-all shrink-0"
+                  class="min-w-[100px] max-w-[100px] border border-dashed rounded p-3 flex flex-col items-center justify-center cursor-pointer transition-all shrink-0"
                   :style="{ background: `linear-gradient(to bottom right, ${tokens.colors.background.overlay}, ${tokens.colors.background.base})`, borderColor: tokens.colors.accent.primary + '4D' }"
                 >
                   <span class="text-xl font-bold" :style="{ color: tokens.colors.accent.primary }">+{{ hiddenTasksCount }}</span>
@@ -451,7 +451,7 @@
 
           <div class="flex-1 flex gap-4 overflow-hidden">
             <!-- Left Sidebar: Collections -->
-            <div id="strategy-sidebar" class="w-56 flex flex-col border rounded-lg overflow-hidden" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+            <div id="strategy-sidebar" class="w-56 flex flex-col border overflow-hidden" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
               <div class="flex-1 overflow-y-auto custom-scrollbar py-1">
                 <!-- Smart Filters Section -->
               <div class="px-3 py-2">
@@ -590,7 +590,7 @@
         </div>
 
           <!-- Right Content: Strategy List -->
-          <div id="strategy-list-container" class="flex-1 flex flex-col border rounded-lg overflow-hidden shadow-2xl shadow-black/50" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+          <div id="strategy-list-container" class="flex-1 flex flex-col border overflow-hidden" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
             <!-- Header -->
             <div id="strategy-toolbar" class="px-4 py-3 border-b flex justify-between items-center h-[60px] relative z-20" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.elevated }">
               
@@ -1134,7 +1134,7 @@
 
       <!-- Generate Plan Modal (方案B: 单页折叠式) -->
       <div v-if="showGeneratePlanModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-300" @click.self="closeGeneratePlanModal">
-        <div class="rounded-lg border w-[820px] max-w-[95vw] overflow-hidden shadow-2xl shadow-black/50 flex flex-col transform transition-all duration-300 scale-100 animate-modal-in" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+        <div class="border w-[820px] max-w-[95vw] overflow-hidden flex flex-col transform transition-all duration-200 scale-100 animate-modal-in" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
           
           <!-- Modal Header -->
           <div class="px-6 py-4 border-b flex justify-between items-center" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
@@ -1426,7 +1426,7 @@
 
       <!-- Save Confirm Modal -->
       <div v-if="showSaveConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-300" @click.self="showSaveConfirmModal = false">
-        <div class="rounded-xl border w-[400px] overflow-hidden shadow-2xl flex flex-col transform transition-all duration-300 scale-100 animate-modal-in" :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }">
+        <div class="border w-[400px] overflow-hidden flex flex-col transform transition-all duration-200 scale-100 animate-modal-in" :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }">
           <div class="p-6 text-center">
             <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" :style="{ backgroundColor: tokens.colors.semantic.success + '33' }">
               <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" :style="{ color: tokens.colors.semantic.success }"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
@@ -1438,14 +1438,14 @@
             <div class="flex gap-3">
               <button 
                 @click="showSaveConfirmModal = false"
-                class="flex-1 py-2.5 rounded-lg font-medium transition-colors"
+                class="flex-1 py-2.5 rounded font-medium transition-colors"
                 :style="{ backgroundColor: tokens.colors.border.default, color: tokens.colors.text.secondary }"
               >
                 Stay Here
               </button>
               <button 
                 @click="switchTab('mystrategy'); showSaveConfirmModal = false"
-                class="flex-1 py-2.5 text-white rounded-lg font-bold transition-colors"
+                class="flex-1 py-2.5 text-white rounded font-bold transition-colors"
                 :style="{ backgroundColor: tokens.colors.semantic.success }"
               >
                 View My Strategies
@@ -1457,7 +1457,7 @@
 
       <!-- Delete Group Modal -->
       <div v-if="showDeleteGroupModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-300" @click.self="showDeleteGroupModal = false">
-        <div class="rounded-xl border w-[350px] overflow-hidden shadow-2xl flex flex-col transform transition-all duration-300 scale-100 animate-modal-in" :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }">
+        <div class="border w-[350px] overflow-hidden flex flex-col transform transition-all duration-200 scale-100 animate-modal-in" :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }">
           <div class="p-6 text-center">
             <div class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4" :style="{ backgroundColor: tokens.colors.semantic.error + '33' }">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" :style="{ color: tokens.colors.semantic.error }"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -1495,7 +1495,7 @@
           <div class="px-8 py-5 border-b flex justify-between items-center backdrop-blur-xl z-10 shrink-0" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.overlay + 'F2' }">
             <div class="flex items-center gap-3">
               <!-- Grade Badge -->
-              <div class="px-2.5 py-1 rounded-md text-xs font-semibold tracking-wide" 
+              <div class="px-2.5 py-1 rounded text-xs font-semibold tracking-wide"
                 :style="selectedStrategy.grade === 'A' || selectedStrategy.grade === 'A+' 
                   ? { backgroundColor: tokens.colors.semantic.success + '1A', color: tokens.colors.semantic.success }
                   : selectedStrategy.grade === 'B'
@@ -1504,7 +1504,7 @@
                 GRADE {{ selectedStrategy.grade }}
               </div>
               <!-- Direction Badge -->
-              <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold"
+              <div class="flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-semibold"
                 :style="selectedStrategy.direction === 'LONG' 
                   ? { backgroundColor: tokens.colors.semantic.success + '1A', color: tokens.colors.semantic.success }
                   : selectedStrategy.direction === 'SHORT'
@@ -1564,7 +1564,7 @@
                         v-for="(prompt, idx) in quickPrompts" 
                         :key="idx"
                         @click="useQuickPrompt(prompt)"
-                        class="w-full text-left px-3 py-2.5 border rounded-lg text-xs transition-all duration-200 flex items-center justify-between group hover:shadow-lg"
+                        class="w-full text-left px-3 py-2.5 border rounded text-xs transition-all duration-200 flex items-center justify-between group"
                         :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong, color: tokens.colors.text.secondary }"
                       >
                         <span class="group-hover:text-blue-400 transition-colors">{{ prompt }}</span>
@@ -1586,7 +1586,7 @@
                         <div class="text-xs font-medium mb-1" :style="{ color: tokens.colors.text.tertiary }">
                           {{ msg.role === 'user' ? 'You' : 'ScaleAlpha AI' }}
                         </div>
-                        <div class="text-sm leading-relaxed whitespace-pre-wrap p-3 rounded-lg border" :style="{ backgroundColor: tokens.colors.border.default, borderColor: tokens.colors.border.strong, color: tokens.colors.text.secondary }">{{ msg.content }}</div>
+                        <div class="text-sm leading-relaxed whitespace-pre-wrap p-3 rounded border" :style="{ backgroundColor: tokens.colors.border.default, borderColor: tokens.colors.border.strong, color: tokens.colors.text.secondary }">{{ msg.content }}</div>
                       </div>
                    </div>
 
@@ -1597,7 +1597,7 @@
                       </div>
                       <div class="flex-1">
                          <div class="text-xs font-medium mb-1" :style="{ color: tokens.colors.text.tertiary }">ScaleAlpha AI</div>
-                         <div class="p-3 rounded-lg border w-16" :style="{ backgroundColor: tokens.colors.border.default, borderColor: tokens.colors.border.strong }">
+                         <div class="p-3 rounded border w-16" :style="{ backgroundColor: tokens.colors.border.default, borderColor: tokens.colors.border.strong }">
                             <div class="flex gap-1 items-center h-4 justify-center">
                               <div class="w-1.5 h-1.5 rounded-full animate-bounce" style="animation-delay: 0ms" :style="{ backgroundColor: tokens.colors.text.muted }"></div>
                               <div class="w-1.5 h-1.5 rounded-full animate-bounce" style="animation-delay: 150ms" :style="{ backgroundColor: tokens.colors.text.muted }"></div>
@@ -1616,7 +1616,7 @@
                     v-model="chatInput"
                     type="text" 
                     placeholder="输入问题..." 
-                    class="w-full rounded-lg pl-3 pr-10 py-2.5 text-sm focus:outline-none focus:ring-1 border"
+                    class="w-full rounded pl-3 pr-10 py-2.5 text-sm focus:outline-none focus:ring-1 border"
                     :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.strong, color: tokens.colors.text.primary }"
                     @keyup.enter="sendChatMessage"
                   >
@@ -1660,7 +1660,7 @@
                 <div class="flex items-center gap-3 shrink-0">
                   <button 
                     @click="copyShareLink"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all shadow-lg hover:scale-105 border"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold transition-all border"
                     :style="isCopied ? { backgroundColor: tokens.colors.semantic.success + '33', color: tokens.colors.semantic.success, borderColor: tokens.colors.semantic.success + '4D' } : { backgroundColor: tokens.colors.border.strong, color: tokens.colors.text.secondary, borderColor: tokens.colors.border.strong }"
                     :title="isCopied ? '已复制' : '复制分享链接'"
                   >
@@ -1670,7 +1670,7 @@
                   </button>
                   <button 
                     @click="toggleStrategyWatchlist"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all shadow-lg hover:scale-105 border"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold transition-all border"
                     :style="isStrategyWatchlisted ? { backgroundColor: tokens.colors.accent.secondary, color: tokens.colors.text.primary, borderColor: tokens.colors.accent.primary } : { backgroundColor: tokens.colors.border.strong, color: tokens.colors.text.secondary, borderColor: tokens.colors.border.strong }"
                   >
                     <svg v-if="!isStrategyWatchlisted" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
@@ -1679,7 +1679,7 @@
                   </button>
                   <button 
                     @click="goToStockDetail(selectedStrategy.symbol || 'MSFT')"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-white text-xs font-bold transition-all shadow-lg hover:scale-105 border"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-white text-xs font-bold transition-all border"
                     :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }"
                   >
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
@@ -1687,7 +1687,7 @@
                   </button>
                   <button 
                     @click="toggleStrategyReport"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all shadow-lg hover:scale-105 border"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold transition-all border"
                     :style="isStrategyReportSaved ? { backgroundColor: tokens.colors.semantic.success + '33', color: tokens.colors.semantic.success, borderColor: tokens.colors.semantic.success + '4D' } : { backgroundColor: tokens.colors.border.strong, color: tokens.colors.text.secondary, borderColor: tokens.colors.border.strong }"
                   >
                     <svg v-if="!isStrategyReportSaved" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
@@ -1700,7 +1700,7 @@
               <!-- Scrollable Content Area -->
               <div class="flex-1 overflow-y-auto p-6 scrollbar-thin">
                 <!-- Strategy Summary Box -->
-                <div class="rounded-lg p-5 mb-8 border" :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }">
+                <div class="p-5 mb-8 border" :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }">
                   <h3 class="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2" :style="{ color: tokens.colors.text.muted }">
                     <i class="fas fa-file-alt"></i>
                     Strategy Summary
@@ -1717,13 +1717,13 @@
                 <div class="flex gap-4 mt-12 pt-8 border-t" :style="{ borderColor: tokens.colors.border.strong }">
                   <button 
                     @click="generatePlanForStrategy(selectedStrategy)"
-                    class="flex-1 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                    class="flex-1 text-white py-3 rounded font-medium transition-colors flex items-center justify-center gap-2"
                     :style="{ backgroundColor: tokens.colors.accent.secondary }"
                   >
                     <i class="fas fa-magic"></i>
                     生成交易计划
                   </button>
-                  <button class="px-4 py-3 text-white rounded-lg transition-colors" :style="{ backgroundColor: tokens.colors.border.strong }">
+                  <button class="px-4 py-3 text-white rounded transition-colors" :style="{ backgroundColor: tokens.colors.border.strong }">
                     <i class="fas fa-share-alt"></i>
                   </button>
                 </div>
@@ -1751,7 +1751,7 @@
                 <div 
                   v-for="plan in relatedPlans" 
                   :key="plan.id"
-                  class="rounded-lg border hover:-translate-y-1 hover:shadow-lg hover:shadow-black/50 transition-all duration-300 group"
+                  class="border transition-all duration-200 group"
                   :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: plan.isExpanded ? tokens.colors.accent.primary + '4D' : tokens.colors.border.strong }"
                 >
                   <!-- Plan Header (Collapsible) -->
@@ -1854,8 +1854,8 @@
           :key="tab.id"
           @click="switchTab(tab.id)"
           class="px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2"
-          :class="activeTab === tab.id ? 'bg-white text-black shadow-lg scale-105' : 'text-gray-400 hover:text-white'"
-          :style="activeTab === tab.id ? {} : {}"
+          :class="activeTab === tab.id ? 'shadow-lg scale-105' : ''"
+          :style="activeTab === tab.id ? { backgroundColor: isDark ? '#ffffff' : tokens.colors.text.primary, color: isDark ? '#000000' : '#ffffff' } : { color: tokens.colors.text.muted }"
           @mouseenter="activeTab !== tab.id && ($event.target.style.backgroundColor = tokens.colors.border.strong)"
           @mouseleave="activeTab !== tab.id && ($event.target.style.backgroundColor = 'transparent')"
         >
@@ -1924,7 +1924,7 @@
       :style="miniMapPanelStyle"
     >
       <!-- Expanded Panel -->
-      <div class="backdrop-blur-xl border rounded-xl shadow-2xl overflow-hidden transition-all duration-300 w-44" :style="{ backgroundColor: tokens.colors.background.surface + 'F2', borderColor: tokens.colors.border.strong }">
+      <div class="backdrop-blur-xl border overflow-hidden transition-all duration-200 w-44" :style="{ backgroundColor: tokens.colors.background.surface + 'F2', borderColor: tokens.colors.border.strong }">
         <div class="p-3">
           <!-- Header -->
           <div class="flex items-center justify-between mb-3 pb-2 border-b" :style="{ borderColor: tokens.colors.border.default }">

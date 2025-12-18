@@ -1,39 +1,51 @@
 <template>
-  <div class="h-full w-full overflow-hidden bg-slate-50 p-4 flex flex-col">
+  <div 
+    class="h-full w-full overflow-hidden p-4 flex flex-col transition-colors duration-300" 
+    :style="{ 
+      backgroundColor: theme.background.base,
+      '--scrollbar-track': isDarkMode ? '#1e293b' : '#f1f5f9',
+      '--scrollbar-thumb': isDarkMode ? '#475569' : '#cbd5e1',
+      '--scrollbar-thumb-hover': isDarkMode ? '#64748b' : '#94a3b8'
+    }"
+  >
     <!-- Unified Dashboard Container -->
-    <div class="flex-1 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+    <div class="flex-1 border overflow-hidden flex flex-col transition-colors duration-300" :style="{ backgroundColor: theme.background.surface, borderColor: theme.border.default }">
       
       <!-- 1. Metrics & Controls Row -->
-      <div class="flex border-b border-slate-200 bg-white shrink-0 transition-all duration-300" :class="isAllModelsView ? 'h-16' : 'h-24'">
+      <div 
+        class="flex shrink-0 transition-all duration-300" 
+        :class="isAllModelsView ? 'h-16' : 'h-24'"
+        :style="{ backgroundColor: theme.background.surface, borderBottomWidth: '1px', borderBottomColor: theme.border.default }"
+      >
         <!-- Key Metrics Group (Unified) - Hidden in Global View -->
         <div v-if="!isAllModelsView" class="flex-1 p-4 flex justify-around items-center">
           
           <!-- Metric 1: Profit -->
           <div class="flex-1 flex flex-col items-center justify-center">
-            <div class="text-xs text-slate-400 mb-1 font-medium uppercase tracking-wider text-center">总盈亏</div>
-            <div class="text-3xl font-bold tracking-tight" :class="displayMetrics.profitAmount >= 0 ? 'text-emerald-600' : 'text-red-600'">
+            <div class="text-xs mb-1 font-medium uppercase tracking-wider text-center" :style="{ color: theme.text.muted }">总盈亏</div>
+            <div class="text-3xl font-bold tracking-tight" :style="{ color: displayMetrics.profitAmount >= 0 ? theme.accent.success : theme.accent.danger }">
               {{ displayMetrics.profitAmount > 0 ? '+' : '' }}${{ Math.abs(displayMetrics.profitAmount).toLocaleString() }}
             </div>
           </div>
 
           <!-- Divider -->
-          <div class="w-px bg-slate-100 mx-4 h-10"></div>
+          <div class="w-px mx-4 h-10" :style="{ backgroundColor: theme.border.subtle }"></div>
 
           <!-- Metric 2: Return -->
           <div class="flex-1 flex flex-col items-center justify-center">
-            <div class="text-xs text-slate-400 mb-1 font-medium uppercase tracking-wider text-center">收益率</div>
-            <div class="text-3xl font-bold tracking-tight" :class="displayMetrics.return >= 0 ? 'text-emerald-600' : 'text-red-600'">
+            <div class="text-xs mb-1 font-medium uppercase tracking-wider text-center" :style="{ color: theme.text.muted }">收益率</div>
+            <div class="text-3xl font-bold tracking-tight" :style="{ color: displayMetrics.return >= 0 ? theme.accent.success : theme.accent.danger }">
               {{ displayMetrics.return > 0 ? '+' : '' }}{{ displayMetrics.return.toFixed(1) }}%
             </div>
           </div>
 
           <!-- Divider -->
-          <div class="w-px bg-slate-100 mx-4 h-10"></div>
+          <div class="w-px mx-4 h-10" :style="{ backgroundColor: theme.border.subtle }"></div>
 
           <!-- Metric 3: Max Drawdown -->
           <div class="flex-1 flex flex-col items-center justify-center">
-            <div class="text-xs text-slate-400 mb-1 font-medium uppercase tracking-wider text-center">最大回撤</div>
-            <div class="text-3xl font-bold tracking-tight text-slate-700">
+            <div class="text-xs mb-1 font-medium uppercase tracking-wider text-center" :style="{ color: theme.text.muted }">最大回撤</div>
+            <div class="text-3xl font-bold tracking-tight" :style="{ color: theme.text.secondary }">
               {{ displayMetrics.maxDrawdown.toFixed(1) }}%
             </div>
           </div>
@@ -42,11 +54,19 @@
         <!-- View Control Panel -->
         <div 
           class="flex flex-col transition-all duration-300"
-          :class="isAllModelsView ? 'flex-1 bg-white' : 'w-[360px] border-l border-slate-200 bg-slate-50/50'"
+          :style="[
+            isAllModelsView 
+              ? { flex: 1, backgroundColor: theme.background.surface } 
+              : { width: '360px', borderLeftWidth: '1px', borderLeftColor: theme.border.default, backgroundColor: theme.background.elevated }
+          ]"
         >
           <!-- Header Label (Only visible in large view AND not global view, or maybe just hide in global view to save space?) -->
           <!-- In Global View, we want a clean bar. Let's hide this header in Global View to keep it single row -->
-          <div v-if="!isAllModelsView" class="px-4 py-2 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider flex justify-between items-center">
+          <div 
+            v-if="!isAllModelsView" 
+            class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider flex justify-between items-center"
+            :style="{ borderBottomWidth: '1px', borderBottomColor: theme.border.subtle, color: theme.text.muted }"
+          >
             <span>视图模式 / View Mode</span>
           </div>
 
@@ -55,11 +75,11 @@
             <!-- Mode 1: Global Overview Button -->
             <button 
               @click="switchToAllModels"
-              class="group relative overflow-hidden rounded-lg border transition-all duration-300 flex items-center justify-center"
-              :class="[
+              class="group relative overflow-hidden rounded-sm border transition-all duration-300 flex items-center justify-center"
+              :style="[
                 isAllModelsView 
-                  ? 'w-48 px-4 py-2 bg-blue-600 border-blue-600 text-white shadow-md' 
-                  : 'w-10 h-full bg-white border-slate-200 text-slate-500 hover:border-blue-300 hover:text-blue-600 hover:shadow-sm px-0'
+                  ? { width: '12rem', padding: '0.5rem 1rem', backgroundColor: theme.accent.primary, borderColor: theme.accent.primary, color: '#ffffff' }
+                  : { width: '2.5rem', height: '100%', backgroundColor: theme.background.surface, borderColor: theme.border.default, color: theme.text.muted }
               ]"
               :title="!isAllModelsView ? '返回全局概览' : ''"
             >
@@ -77,29 +97,37 @@
 
             <!-- Mode 2: Single Model Selector -->
             <div 
-              class="bg-white border rounded-lg flex items-center justify-between shadow-sm transition-all duration-300 relative"
-              :class="[
+              class="border rounded-sm flex items-center justify-between shadow-sm transition-all duration-300 relative"
+              :style="[
                 !isAllModelsView 
-                  ? 'flex-1 h-full border-blue-500 ring-1 ring-blue-500/20 z-10' 
-                  : 'w-64 h-10 border-slate-200 opacity-70 hover:opacity-100 hover:border-blue-300 hover:shadow-md cursor-pointer'
+                  ? { flex: 1, height: '100%', borderColor: theme.accent.primary, backgroundColor: theme.background.surface }
+                  : { width: '16rem', height: '2.5rem', borderColor: theme.border.default, backgroundColor: theme.background.surface, cursor: 'pointer' }
               ]"
               @click="isAllModelsView ? switchToSingleModel() : null"
             >
               <!-- Left Arrow -->
               <button
                 @click.stop="prevModel"
-                class="h-full flex items-center justify-center hover:bg-slate-50 text-slate-400 hover:text-blue-600 transition-colors border-r border-slate-100"
-                :class="isAllModelsView ? 'w-8' : 'w-8'"
+                class="h-full flex items-center justify-center transition-colors w-8"
+                :style="{ borderRightWidth: '1px', borderRightColor: theme.border.subtle, color: theme.text.muted }"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
               </button>
               
               <!-- Center Info -->
               <div class="flex-1 text-center px-2 overflow-hidden flex flex-col justify-center h-full">
-                <div v-if="!isAllModelsView" class="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5 transition-all">
+                <div 
+                  v-if="!isAllModelsView" 
+                  class="text-[10px] uppercase tracking-wider mb-0.5 transition-all"
+                  :style="{ color: theme.text.muted }"
+                >
                   当前模型 / Current
                 </div>
-                <div class="font-bold text-slate-800 truncate flex items-center justify-center gap-2 transition-all" :class="isAllModelsView ? 'text-slate-500' : 'text-lg'">
+                <div 
+                  class="font-bold truncate flex items-center justify-center gap-2 transition-all" 
+                  :class="isAllModelsView ? '' : 'text-lg'"
+                  :style="{ color: isAllModelsView ? theme.text.muted : theme.text.primary }"
+                >
                   <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: currentModel.color }"></span>
                   {{ currentModel.name }}
                 </div>
@@ -108,14 +136,18 @@
               <!-- Right Arrow -->
               <button
                 @click.stop="nextModel"
-                class="h-full flex items-center justify-center hover:bg-slate-50 text-slate-400 hover:text-blue-600 transition-colors border-l border-slate-100"
-                :class="isAllModelsView ? 'w-8' : 'w-8'"
+                class="h-full flex items-center justify-center transition-colors w-8"
+                :style="{ borderLeftWidth: '1px', borderLeftColor: theme.border.subtle, color: theme.text.muted }"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
               </button>
               
               <!-- Active Indicator -->
-              <div v-if="!isAllModelsView" class="absolute -right-1 -top-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-white shadow-sm"></div>
+              <div 
+                v-if="!isAllModelsView" 
+                class="absolute -right-1 -top-1 w-3 h-3 rounded-full border-2 shadow-sm"
+                :style="{ backgroundColor: theme.accent.primary, borderColor: theme.background.surface }"
+              ></div>
             </div>
 
           </div>
@@ -126,11 +158,21 @@
       <div class="flex-1 flex flex-col overflow-hidden">
         
         <!-- Top: Chart & Holdings (Flex Row) -->
-        <div class="flex-[2] flex overflow-hidden relative min-h-0 bg-white border-b border-slate-200">
+        <div 
+          class="flex-[2] flex overflow-hidden relative min-h-0"
+          :style="{ backgroundColor: theme.background.surface, borderBottomWidth: '1px', borderBottomColor: theme.border.default }"
+        >
           <!-- Chart Section (Flex 1) -->
           <div class="flex-1 flex flex-col min-h-0 relative">
             <div class="absolute top-4 left-4 z-10 flex items-center gap-2">
-              <h2 class="text-sm font-bold text-slate-800 flex items-center bg-white/80 backdrop-blur px-2 py-1 rounded border border-slate-200 shadow-sm">
+              <h2 
+                class="text-sm font-bold flex items-center backdrop-blur px-2 py-1 rounded border shadow-sm"
+                :style="{ 
+                  color: theme.text.primary, 
+                  backgroundColor: isDarkMode ? 'rgba(30, 41, 59, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+                  borderColor: theme.border.default 
+                }"
+              >
                 <span class="mr-2">📈</span>
                 净值曲线
               </h2>
@@ -141,9 +183,16 @@
           </div>
 
           <!-- Holdings Section (Fixed Width 360px) - Only in Single Model View -->
-          <div v-if="!isAllModelsView" class="w-[360px] flex-shrink-0 flex flex-col border-l border-slate-200 bg-white min-h-0">
-            <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
-              <h3 class="text-sm font-bold text-slate-800 flex items-center">
+          <div 
+            v-if="!isAllModelsView" 
+            class="w-[360px] flex-shrink-0 flex flex-col min-h-0"
+            :style="{ borderLeftWidth: '1px', borderLeftColor: theme.border.default, backgroundColor: theme.background.surface }"
+          >
+            <div 
+              class="px-4 py-3 flex items-center justify-between shrink-0"
+              :style="{ borderBottomWidth: '1px', borderBottomColor: theme.border.default, backgroundColor: theme.background.surface }"
+            >
+              <h3 class="text-sm font-bold flex items-center" :style="{ color: theme.text.primary }">
                 <span class="mr-2">🔲</span>
                 持仓分布
               </h3>
@@ -151,17 +200,25 @@
             
             <div class="flex-1 overflow-hidden relative">
               <div class="w-full h-full overflow-y-auto custom-scrollbar p-2 space-y-1">
-                <div v-for="(stock, idx) in flatHoldingsList" :key="idx" class="flex items-center justify-between p-2 rounded border border-slate-100 hover:border-blue-200 hover:bg-blue-50/30 transition-colors bg-white">
+                <div 
+                  v-for="(stock, idx) in flatHoldingsList" 
+                  :key="idx" 
+                  class="flex items-center justify-between p-2 rounded border transition-colors"
+                  :style="{ 
+                    borderColor: theme.border.subtle, 
+                    backgroundColor: theme.background.surface 
+                  }"
+                >
                   <div class="flex items-center gap-2 overflow-hidden">
-                    <div class="w-1 h-6 rounded-full flex-shrink-0" :style="{ backgroundColor: stock.color || '#cbd5e1' }"></div>
+                    <div class="w-1 h-6 rounded-full flex-shrink-0" :style="{ backgroundColor: stock.color || theme.border.default }"></div>
                     <div class="min-w-0">
-                      <div class="text-xs font-bold text-slate-700 truncate">{{ stock.name }}</div>
-                      <div class="text-[10px] text-slate-400 truncate">{{ stock.code }}</div>
+                      <div class="text-xs font-bold truncate" :style="{ color: theme.text.secondary }">{{ stock.name }}</div>
+                      <div class="text-[10px] truncate" :style="{ color: theme.text.muted }">{{ stock.code }}</div>
                     </div>
                   </div>
                   <div class="text-right flex-shrink-0">
-                    <div class="text-xs font-bold text-slate-700">{{ stock.value }}%</div>
-                    <div class="text-[10px]" :class="stock.profit >= 0 ? 'text-emerald-500' : 'text-red-500'">
+                    <div class="text-xs font-bold" :style="{ color: theme.text.secondary }">{{ stock.value }}%</div>
+                    <div class="text-[10px]" :style="{ color: stock.profit >= 0 ? theme.accent.success : theme.accent.danger }">
                       {{ stock.profit > 0 ? '+' : '' }}{{ stock.profit.toFixed(1) }}%
                     </div>
                   </div>
@@ -172,18 +229,32 @@
         </div>
 
         <!-- Bottom: Details (Full Width, 40% Height, Split Left/Right) -->
-        <div class="flex-1 flex divide-x divide-slate-200 overflow-hidden min-h-0">
+        <div class="flex-1 flex overflow-hidden min-h-0" :style="{ borderColor: theme.border.default }">
             
             <!-- Left: Strategy (70%) -->
-            <div class="flex-[7] flex flex-col bg-slate-50/50 relative min-h-0">
+            <div 
+              class="flex-[7] flex flex-col relative min-h-0"
+              :style="{ backgroundColor: theme.background.elevated, borderRightWidth: '1px', borderRightColor: theme.border.default }"
+            >
                 <!-- Table Header Controls -->
-                <div class="px-3 py-2 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
-                  <h3 class="font-bold text-slate-800 flex items-center text-sm">
+                <div 
+                  class="px-3 py-2 flex items-center justify-between shrink-0"
+                  :style="{ borderBottomWidth: '1px', borderBottomColor: theme.border.default, backgroundColor: theme.background.surface }"
+                >
+                  <h3 class="font-bold flex items-center text-sm" :style="{ color: theme.text.primary }">
                     <span class="mr-2">📋</span>
                     策略详情
                   </h3>
                   <div class="flex items-center gap-2">
-                    <select v-model="sortType" class="pl-1 pr-4 py-1 text-[10px] text-slate-600 border border-slate-200 rounded hover:border-blue-400 focus:outline-none bg-white cursor-pointer">
+                    <select 
+                      v-model="sortType" 
+                      class="pl-1 pr-4 py-1 text-[10px] border rounded focus:outline-none cursor-pointer"
+                      :style="{ 
+                        color: theme.text.secondary, 
+                        borderColor: theme.border.default, 
+                        backgroundColor: theme.background.surface 
+                      }"
+                    >
                       <option value="time_desc">最新</option>
                       <option value="profit_desc">盈亏</option>
                       <option value="position_desc">仓位</option>
@@ -195,19 +266,36 @@
                 <div class="flex-1 overflow-hidden relative">
                   <div class="h-full overflow-y-auto custom-scrollbar pb-12">
                     <table class="w-full text-xs text-left">
-                      <thead class="bg-slate-50 text-slate-500 font-medium uppercase tracking-wider sticky top-0 z-10 shadow-sm">
+                      <thead 
+                        class="font-medium uppercase tracking-wider sticky top-0 z-10 shadow-sm"
+                        :style="{ backgroundColor: theme.background.elevated, color: theme.text.muted }"
+                      >
                         <tr>
-                          <th v-if="isAllModelsView" class="py-2 px-2 bg-slate-50 border-b border-slate-200 w-[90px]">模型</th>
-                          <th class="py-2 px-2 bg-slate-50 border-b border-slate-200 w-[80px]">股票</th>
-                          <th class="py-2 px-2 bg-slate-50 border-b border-slate-200">策略</th>
-                          <th class="py-2 px-2 text-right bg-slate-50 border-b border-slate-200 w-[60px]">盈亏</th>
+                          <th 
+                            v-if="isAllModelsView" 
+                            class="py-2 px-2 w-[90px]"
+                            :style="{ backgroundColor: theme.background.elevated, borderBottomWidth: '1px', borderBottomColor: theme.border.default }"
+                          >模型</th>
+                          <th 
+                            class="py-2 px-2 w-[80px]"
+                            :style="{ backgroundColor: theme.background.elevated, borderBottomWidth: '1px', borderBottomColor: theme.border.default }"
+                          >股票</th>
+                          <th 
+                            class="py-2 px-2"
+                            :style="{ backgroundColor: theme.background.elevated, borderBottomWidth: '1px', borderBottomColor: theme.border.default }"
+                          >策略</th>
+                          <th 
+                            class="py-2 px-2 text-right w-[60px]"
+                            :style="{ backgroundColor: theme.background.elevated, borderBottomWidth: '1px', borderBottomColor: theme.border.default }"
+                          >盈亏</th>
                         </tr>
                       </thead>
-                      <tbody class="divide-y divide-slate-100 bg-white">
+                      <tbody :style="{ backgroundColor: theme.background.surface }">
                         <tr
                           v-for="(strategy, index) in paginatedStrategies"
                           :key="index"
-                          class="hover:bg-blue-50/50 transition-colors cursor-pointer group"
+                          class="transition-colors cursor-pointer group"
+                          :style="{ borderBottomWidth: '1px', borderBottomColor: theme.border.subtle }"
                         >
                           <td v-if="isAllModelsView" class="py-2 px-2 align-top">
                             <span 
@@ -223,19 +311,19 @@
                             </span>
                           </td>
                           <td class="py-2 px-2 align-top">
-                            <div class="font-medium text-slate-800 truncate" :title="strategy.stock">{{ strategy.stock }}</div>
-                            <div class="text-[10px] text-slate-400">{{ strategy.code }}</div>
+                            <div class="font-medium truncate" :style="{ color: theme.text.primary }" :title="strategy.stock">{{ strategy.stock }}</div>
+                            <div class="text-[10px]" :style="{ color: theme.text.muted }">{{ strategy.code }}</div>
                           </td>
                           <td class="py-2 px-2 align-top">
-                            <div class="text-slate-600 line-clamp-3 group-hover:text-slate-900 leading-relaxed" :title="strategy.strategyDesc">
+                            <div class="line-clamp-3 leading-relaxed" :style="{ color: theme.text.secondary }" :title="strategy.strategyDesc">
                               {{ strategy.strategyDesc }}
                             </div>
-                            <div class="mt-1 text-[10px] text-slate-400 font-mono">
+                            <div class="mt-1 text-[10px] font-mono" :style="{ color: theme.text.muted }">
                               {{ strategy.createTime.split(' ')[0] }}
                             </div>
                           </td>
                           <td class="py-2 px-2 text-right align-top w-[60px]">
-                            <span class="font-bold" :class="strategy.profit >= 0 ? 'text-emerald-600' : 'text-red-600'">
+                            <span class="font-bold" :style="{ color: strategy.profit >= 0 ? theme.accent.success : theme.accent.danger }">
                               {{ strategy.profit > 0 ? '+' : '' }}{{ strategy.profit.toFixed(1) }}%
                             </span>
                           </td>
@@ -245,10 +333,18 @@
                   </div>
                   
                   <!-- Login Lock Overlay -->
-                  <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white via-white/90 to-transparent flex items-end justify-center pb-6 z-20 pointer-events-none">
+                  <div 
+                    class="absolute bottom-0 left-0 right-0 h-24 flex items-end justify-center pb-6 z-20 pointer-events-none"
+                    :style="{ 
+                      background: isDarkMode 
+                        ? 'linear-gradient(to top, ' + theme.background.surface + ', ' + theme.background.surface + '90, transparent)' 
+                        : 'linear-gradient(to top, white, rgba(255,255,255,0.9), transparent)'
+                    }"
+                  >
                     <button 
                       @click="handleStrategyClick"
-                      class="pointer-events-auto flex items-center gap-2 px-4 py-1.5 bg-slate-900 text-white rounded-full shadow-lg hover:bg-slate-800 hover:scale-105 transition-all transform"
+                      class="pointer-events-auto flex items-center gap-2 px-4 py-1.5 text-white rounded-full shadow-lg hover:scale-105 transition-all transform"
+                      :style="{ backgroundColor: theme.accent.primary }"
                     >
                       <span class="text-xs font-medium">登录查看更多</span>
                     </button>
@@ -257,18 +353,29 @@
             </div>
 
             <!-- Right: Trades (30%) -->
-            <div class="flex-[3] flex-shrink-0 flex flex-col bg-slate-50/50 overflow-hidden">
+            <div 
+              class="flex-[3] flex-shrink-0 flex flex-col overflow-hidden"
+              :style="{ backgroundColor: theme.background.elevated }"
+            >
               <!-- Trades Section (Flex 1) -->
-              <div class="flex-1 flex flex-col min-h-0 bg-white">
-                <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
-                  <h3 class="text-sm font-bold text-slate-800 flex items-center">
+              <div class="flex-1 flex flex-col min-h-0" :style="{ backgroundColor: theme.background.surface }">
+                <div 
+                  class="px-4 py-3 flex items-center justify-between shrink-0"
+                  :style="{ borderBottomWidth: '1px', borderBottomColor: theme.border.default, backgroundColor: theme.background.surface }"
+                >
+                  <h3 class="text-sm font-bold flex items-center" :style="{ color: theme.text.primary }">
                     <span class="mr-2">⚡</span>
                     最近交易
                   </h3>
                   <!-- Stock Filter for Trades -->
                   <select 
                     v-model="selectedStockCode" 
-                    class="pl-2 pr-6 py-1 text-[10px] text-slate-600 border border-slate-200 rounded hover:border-blue-400 focus:outline-none bg-white cursor-pointer max-w-[100px]"
+                    class="pl-2 pr-6 py-1 text-[10px] border rounded focus:outline-none cursor-pointer max-w-[100px]"
+                    :style="{ 
+                      color: theme.text.secondary, 
+                      borderColor: theme.border.default, 
+                      backgroundColor: theme.background.surface 
+                    }"
                   >
                     <option :value="null">全部股票</option>
                     <option v-for="stock in uniqueTradeStocks" :key="stock.code" :value="stock.code">
@@ -278,25 +385,41 @@
                 </div>
                 
                 <div class="flex-1 overflow-y-auto custom-scrollbar p-0">
-                  <div v-for="(trade, index) in filteredTrades" :key="index" class="px-4 py-3 border-b border-slate-50 hover:bg-slate-50 transition-colors flex items-center justify-between group">
+                  <div 
+                    v-for="(trade, index) in filteredTrades" 
+                    :key="index" 
+                    class="px-4 py-3 transition-colors flex items-center justify-between group"
+                    :style="{ borderBottomWidth: '1px', borderBottomColor: theme.border.subtle }"
+                  >
                     <div class="flex items-center gap-3">
-                      <div class="w-8 h-8 rounded flex items-center justify-center text-xs font-bold"
-                        :class="trade.type === '买入' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'">
+                      <div 
+                        class="w-8 h-8 rounded flex items-center justify-center text-xs font-bold"
+                        :style="{ 
+                          backgroundColor: trade.type === '买入' 
+                            ? (isDarkMode ? 'rgba(16, 185, 129, 0.2)' : 'rgb(209, 250, 229)') 
+                            : (isDarkMode ? 'rgba(239, 68, 68, 0.2)' : 'rgb(254, 226, 226)'),
+                          color: trade.type === '买入' ? theme.accent.success : theme.accent.danger
+                        }"
+                      >
                         {{ trade.type === '买入' ? '买' : '卖' }}
                       </div>
                       <div>
-                        <div class="text-xs font-bold text-slate-700">{{ trade.stock }}</div>
-                        <div class="text-[10px] text-slate-400">{{ trade.date }} {{ trade.time }}</div>
+                        <div class="text-xs font-bold" :style="{ color: theme.text.secondary }">{{ trade.stock }}</div>
+                        <div class="text-[10px]" :style="{ color: theme.text.muted }">{{ trade.date }} {{ trade.time }}</div>
                       </div>
                     </div>
                     <div class="text-right">
-                      <div class="text-xs font-medium text-slate-600">¥{{ trade.price }}</div>
-                      <div class="text-[10px]" :class="trade.profitLoss >= 0 ? 'text-emerald-500' : 'text-red-500'">
+                      <div class="text-xs font-medium" :style="{ color: theme.text.secondary }">¥{{ trade.price }}</div>
+                      <div class="text-[10px]" :style="{ color: trade.profitLoss >= 0 ? theme.accent.success : theme.accent.danger }">
                         {{ trade.profitLoss > 0 ? '+' : '' }}{{ trade.profitLoss }}%
                       </div>
                     </div>
                   </div>
-                  <div v-if="filteredTrades.length === 0" class="text-center py-8 text-slate-400 text-xs">暂无记录</div>
+                  <div 
+                    v-if="filteredTrades.length === 0" 
+                    class="text-center py-8 text-xs"
+                    :style="{ color: theme.text.muted }"
+                  >暂无记录</div>
                 </div>
               </div>
             </div>
@@ -310,8 +433,18 @@
 import { ref, onMounted, computed, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import * as echarts from 'echarts'
+import { useTheme } from '../composables/useTheme'
 
 const router = useRouter()
+
+// 使用全局主题系统 (顶部导航栏的按钮控制)
+const { tokens, isDark } = useTheme()
+
+// 兼容性别名：isDarkMode 指向全局 isDark
+const isDarkMode = isDark
+
+// 当前主题颜色 (从全局 tokens 获取)
+const theme = computed(() => tokens.value.colors)
 
 // View State
 const isAllModelsView = ref(true)
@@ -899,7 +1032,13 @@ const generateTimeSeriesData = (model) => {
 const initMainChart = () => {
   if (!chartRef.value) return
   
-  mainChart = echarts.init(chartRef.value)
+  // Dispose old chart if exists (for theme switch)
+  if (mainChart) {
+    mainChart.dispose()
+  }
+  
+  // Initialize with theme-aware background
+  mainChart = echarts.init(chartRef.value, isDarkMode.value ? 'dark' : null)
   
   const series = models.value.map(model => {
     const { dates, values } = generateTimeSeriesData(model)
@@ -931,7 +1070,11 @@ const initMainChart = () => {
   
   const { dates } = generateTimeSeriesData(models.value[0])
   
+  // Theme-aware colors
+  const currentTheme = theme.value
+  
   const option = {
+    backgroundColor: 'transparent', // Use container's background
     grid: {
       left: '3%',
       right: '4%',
@@ -941,14 +1084,14 @@ const initMainChart = () => {
     },
     tooltip: {
       trigger: 'axis',
-      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-      borderColor: '#e2e8f0',
+      backgroundColor: isDarkMode.value ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+      borderColor: currentTheme.border.default,
       borderWidth: 1,
       textStyle: {
-        color: '#334155'
+        color: currentTheme.text.primary
       },
       formatter: (params) => {
-        let result = `<div style="font-weight: 600; margin-bottom: 8px;">${params[0].axisValue}</div>`
+        let result = `<div style="font-weight: 600; margin-bottom: 8px; color: ${currentTheme.text.primary}">${params[0].axisValue}</div>`
         // Sort params so current model is first
         const sortedParams = [...params].sort((a, b) => {
           if (a.seriesName === currentModel.value.name) return -1
@@ -959,14 +1102,15 @@ const initMainChart = () => {
         sortedParams.forEach(param => {
           const returnRate = ((param.value - 10000) / 10000 * 100).toFixed(2)
           const isCurrent = param.seriesName === currentModel.value.name
-          const weightStyle = isCurrent ? 'font-weight: bold; background: #f1f5f9; padding: 2px 4px; border-radius: 4px;' : ''
+          const highlightBg = isDarkMode.value ? 'rgba(51, 65, 85, 0.8)' : '#f1f5f9'
+          const weightStyle = isCurrent ? `font-weight: bold; background: ${highlightBg}; padding: 2px 4px; border-radius: 4px;` : ''
           
           result += `
             <div style="display: flex; align-items: center; margin: 4px 0; ${weightStyle}">
               <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: ${param.color}; margin-right: 8px;"></span>
-              <span style="flex: 1;">${param.seriesName}</span>
-              <span style="font-weight: 600; margin-left: 12px;">$${param.value.toLocaleString()}</span>
-              <span style="margin-left: 8px; color: ${returnRate >= 0 ? '#10b981' : '#ef4444'};">${returnRate >= 0 ? '+' : ''}${returnRate}%</span>
+              <span style="flex: 1; color: ${currentTheme.text.secondary}">${param.seriesName}</span>
+              <span style="font-weight: 600; margin-left: 12px; color: ${currentTheme.text.primary}">$${param.value.toLocaleString()}</span>
+              <span style="margin-left: 8px; color: ${returnRate >= 0 ? currentTheme.accent.success : currentTheme.accent.danger};">${returnRate >= 0 ? '+' : ''}${returnRate}%</span>
             </div>
           `
         })
@@ -978,7 +1122,7 @@ const initMainChart = () => {
       bottom: 0,
       textStyle: {
         fontSize: 12,
-        color: '#64748b'
+        color: currentTheme.text.muted
       },
       icon: 'circle',
       itemWidth: 10,
@@ -990,11 +1134,11 @@ const initMainChart = () => {
       boundaryGap: false,
       axisLine: {
         lineStyle: {
-          color: '#e2e8f0'
+          color: currentTheme.border.default
         }
       },
       axisLabel: {
-        color: '#94a3b8',
+        color: currentTheme.text.muted,
         fontSize: 11
       }
     },
@@ -1007,13 +1151,13 @@ const initMainChart = () => {
         show: false
       },
       axisLabel: {
-        color: '#94a3b8',
+        color: currentTheme.text.muted,
         fontSize: 11,
         formatter: (value) => `$${(value / 1000).toFixed(0)}k`
       },
       splitLine: {
         lineStyle: {
-          color: '#f1f5f9'
+          color: currentTheme.border.subtle
         }
       }
     },
@@ -1069,6 +1213,13 @@ watch(isAllModelsView, (newVal) => {
   })
 })
 
+// 监听全局主题变化，重新渲染图表
+watch(isDarkMode, () => {
+  nextTick(() => {
+    initMainChart()
+  })
+})
+
 // Update current time
 const updateCurrentTime = () => {
   const now = new Date()
@@ -1103,24 +1254,25 @@ onMounted(() => {
   transition: all 0.3s ease;
 }
 
-/* Scrollbar styling */
+/* Scrollbar styling using CSS variables for theme support */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--scrollbar-track, #f1f5f9);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--scrollbar-thumb, #cbd5e1);
   border-radius: 3px;
+  transition: background 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--scrollbar-thumb-hover, #94a3b8);
 }
 
 /* Custom Scrollbar Class */
@@ -1130,16 +1282,28 @@ onMounted(() => {
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--scrollbar-track, #f1f5f9);
   border-radius: 3px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--scrollbar-thumb, #cbd5e1);
   border-radius: 3px;
+  transition: background 0.3s ease;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--scrollbar-thumb-hover, #94a3b8);
+}
+
+/* Select dropdown styling for dark mode */
+select option {
+  background: inherit;
+  color: inherit;
+}
+
+/* Hover effects with theme awareness */
+.group:hover {
+  filter: brightness(1.05);
 }
 </style>
