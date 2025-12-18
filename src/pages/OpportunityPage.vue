@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-screen bg-[#1a1a1a]">
+  <div class="min-h-screen" :style="{ backgroundColor: tokens.colors.background.base }">
     <!-- Tab切换区域 -->
-    <div class="bg-[#2a2a2a] border-b border-[#404040] py-3">
-      <div class="max-w-7xl mx-auto px-6 flex justify-center">
-        <div class="flex bg-[#1a1a1a] rounded-lg p-1 border border-[#333] w-fit">
+    <div class="border-b py-3" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.strong }">
+      <div class="max-w-7xl mx-auto px-6 flex justify-center items-center gap-4">
+        <div class="flex rounded-lg p-1 border w-fit" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.strong }">
           <button 
             @click="switchTab('generate')"
             class="px-6 py-2 text-sm rounded-md transition-all"
@@ -41,9 +41,9 @@
     <div v-if="activeTab === 'generate'" class="flex h-[calc(100vh-180px)]">
       <!-- Step 1 & 2 Merged: Stock Selection + Strategy Configuration -->
       <!-- Left Sidebar: Stock Selection -->
-      <div class="w-80 bg-[#2a2a2a] border-r border-[#404040] overflow-y-auto">
+      <div class="w-80 border-r overflow-y-auto" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.strong }">
           <div class="p-4">
-            <h2 class="text-lg font-semibold text-white mb-4">股票分类</h2>
+            <h2 class="text-lg font-semibold mb-4" :style="{ color: tokens.colors.text.primary }">股票分类</h2>
             
             <!-- Search Box -->
             <div class="mb-4">
@@ -52,7 +52,8 @@
                   v-model="stockSearchQuery"
                   type="text"
                   placeholder="搜索股票代码或名称..."
-                  class="w-full px-3 py-2 pl-9 bg-[#1f1f1f] border border-[#404040] rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
+                  class="w-full px-3 py-2 pl-9 border rounded-lg text-sm placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
+                  :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.strong, color: tokens.colors.text.primary }"
                   @focus="showSearchResults = true"
                   @blur="handleSearchBlur"
                 />
@@ -1528,7 +1529,12 @@ import OpportunityReportCard from '../components/opportunity/OpportunityReportCa
 import SaveReportsDialog from '../components/opportunity/SaveReportsDialog.vue'
 import PositionConfirmDialog from '../components/opportunity/PositionConfirmDialog.vue'
 import HoldingsClassificationDialog from '../components/opportunity/HoldingsClassificationDialog.vue'
+import ThemeToggle from '../components/ThemeToggle.vue'
 import { useSavedReports } from '../composables/useSavedReports'
+import { useTheme } from '../composables/useTheme'
+
+// 使用主题系统
+const { tokens, isDark, toggleTheme } = useTheme()
 
 const router = useRouter()
 const route = useRoute()

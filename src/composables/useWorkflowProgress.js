@@ -73,8 +73,6 @@ export function useWorkflowProgress() {
         return userProgress.value.hasViewedInfo ? 'completed' : 'available'
       case 'opportunity':
         return userProgress.value.hasViewedOpportunity ? 'completed' : 'available'
-      case 'planning':
-        return userProgress.value.hasCreatedPlan ? 'completed' : 'available'
       default:
         return 'available'
     }
@@ -113,15 +111,8 @@ export function useWorkflowProgress() {
     
     if (currentPath === '/info' || currentPath.startsWith('/info/')) {
       updateProgress('hasViewedInfo', true)
-    }
-    // portfolio-input 不再自动标记为已完成，需要用户手动提交
-    // else if (currentPath === '/portfolio-input') {
-    //   updateProgress('hasInputPortfolio', true)
-    // }
-    else if (currentPath === '/opportunity') {
+    } else if (currentPath === '/opportunity') {
       updateProgress('hasViewedOpportunity', true)
-    } else if (currentPath === '/planning') {
-      updateProgress('hasCreatedPlan', true)
     }
   }
 

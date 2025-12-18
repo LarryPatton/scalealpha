@@ -1,0 +1,468 @@
+/**
+ * ScaleAlpha Theme Styles
+ * 主题切换相关的 CSS 变量和覆盖样式
+ */
+
+/* ============================================
+   CSS 变量定义 (由 useTheme 在运行时设置)
+   ============================================ */
+:root {
+  /* 背景色 */
+  --color-bg-base: #050505;
+  --color-bg-surface: #0a0a0a;
+  --color-bg-elevated: #111111;
+  --color-bg-overlay: #1a1a1a;
+  
+  /* 边框色 */
+  --color-border-subtle: #1a1a1a;
+  --color-border-default: #222222;
+  --color-border-strong: #333333;
+  --color-border-hover: #444444;
+  
+  /* 文字色 */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #d1d5db;
+  --color-text-tertiary: #9ca3af;
+  --color-text-muted: #6b7280;
+  --color-text-disabled: #4b5563;
+  
+  /* 强调色 */
+  --color-accent-primary: #06b6d4;
+  --color-accent-secondary: #0891b2;
+}
+
+/* ============================================
+   主题切换动画
+   ============================================ */
+html {
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+* {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* 所有使用 CSS 变量的元素都平滑过渡 */
+[style*="backgroundColor"],
+[style*="borderColor"],
+[style*="color"] {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* ============================================
+   浅色主题覆盖 - 使用 data-theme 选择器
+   ============================================ */
+
+/* 浅色模式下的文字颜色覆盖 - 更深更易读 */
+[data-theme="light"] .text-white {
+  color: #0f172a !important; /* slate-900 */
+}
+
+[data-theme="light"] .text-gray-100 {
+  color: #1e293b !important; /* slate-800 */
+}
+
+[data-theme="light"] .text-gray-200 {
+  color: #334155 !important; /* slate-700 */
+}
+
+[data-theme="light"] .text-gray-300 {
+  color: #475569 !important; /* slate-600 */
+}
+
+[data-theme="light"] .text-gray-400 {
+  color: #64748b !important; /* slate-500 */
+}
+
+[data-theme="light"] .text-gray-500 {
+  color: #64748b !important; /* slate-500 */
+}
+
+[data-theme="light"] .text-gray-600 {
+  color: #94a3b8 !important; /* slate-400 */
+}
+
+/* 浅色模式下的背景色反转 */
+[data-theme="light"] .bg-black {
+  background-color: #ffffff !important;
+}
+
+[data-theme="light"] .bg-\[\#0f0f0f\],
+[data-theme="light"] .bg-\[\#0a0a0a\],
+[data-theme="light"] .bg-\[\#050505\] {
+  background-color: #f8fafc !important; /* slate-50 */
+}
+
+[data-theme="light"] .bg-\[\#1a1a1a\],
+[data-theme="light"] .bg-\[\#1f1f1f\] {
+  background-color: #f1f5f9 !important; /* slate-100 */
+}
+
+[data-theme="light"] .bg-\[\#2a2a2a\],
+[data-theme="light"] .bg-\[\#222222\] {
+  background-color: #e2e8f0 !important; /* slate-200 */
+}
+
+[data-theme="light"] .bg-\[\#333333\],
+[data-theme="light"] .bg-\[\#333\] {
+  background-color: #cbd5e1 !important; /* slate-300 */
+}
+
+[data-theme="light"] .bg-\[\#3a3a3a\],
+[data-theme="light"] .bg-\[\#404040\] {
+  background-color: #94a3b8 !important; /* slate-400 */
+}
+
+/* 浅色模式下的边框色 */
+[data-theme="light"] .border-\[\#333\],
+[data-theme="light"] .border-\[\#333333\] {
+  border-color: #cbd5e1 !important; /* slate-300 */
+}
+
+[data-theme="light"] .border-\[\#404040\] {
+  border-color: #94a3b8 !important; /* slate-400 */
+}
+
+[data-theme="light"] .border-\[\#2a2a2a\] {
+  border-color: #e2e8f0 !important; /* slate-200 */
+}
+
+/* 浅色模式下的 hover 状态 */
+[data-theme="light"] .hover\:text-white:hover {
+  color: var(--color-text-primary) !important;
+}
+
+[data-theme="light"] .hover\:text-gray-200:hover {
+  color: var(--color-text-secondary) !important;
+}
+
+[data-theme="light"] .hover\:text-gray-300:hover {
+  color: var(--color-text-secondary) !important;
+}
+
+/* 浅色模式下的 placeholder */
+[data-theme="light"] .placeholder-gray-600::placeholder {
+  color: var(--color-text-muted) !important;
+}
+
+/* 浅色模式下的滚动条 */
+[data-theme="light"] .custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--color-bg-base);
+}
+
+[data-theme="light"] .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-border-default);
+}
+
+[data-theme="light"] .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-strong);
+}
+
+/* ============================================
+   浅色模式下的特殊元素
+   ============================================ */
+
+/* 浅色模式下的按钮 hover */
+[data-theme="light"] .group:hover .group-hover\:text-white {
+  color: var(--color-text-primary) !important;
+}
+
+/* 浅色模式下的选中状态反转 */
+[data-theme="light"] .bg-white.text-black {
+  background-color: var(--color-text-primary) !important;
+  color: var(--color-bg-surface) !important;
+}
+
+/* 浅色模式下的 cyan 强调色保持 */
+[data-theme="light"] .text-cyan-400,
+[data-theme="light"] .text-cyan-500 {
+  color: #0891b2 !important; /* cyan-600 更适合浅色背景 */
+}
+
+[data-theme="light"] .border-cyan-500\/30,
+[data-theme="light"] .border-cyan-500\/50 {
+  border-color: rgba(8, 145, 178, 0.5) !important;
+}
+
+/* 浅色模式下的成功/错误/警告色调整 */
+[data-theme="light"] .text-emerald-400 {
+  color: #059669 !important; /* emerald-600 */
+}
+
+[data-theme="light"] .text-rose-400,
+[data-theme="light"] .text-red-400 {
+  color: #e11d48 !important; /* rose-600 */
+}
+
+[data-theme="light"] .text-amber-400 {
+  color: #d97706 !important; /* amber-600 */
+}
+
+/* ============================================
+   浅色模式下的 hover 背景
+   ============================================ */
+[data-theme="light"] .hover\:bg-\[\#3a3a3a\]:hover,
+[data-theme="light"] .hover\:bg-\[\#333333\]:hover,
+[data-theme="light"] .hover\:bg-\[\#2a2a2a\]:hover {
+  background-color: #e2e8f0 !important; /* slate-200 */
+}
+
+[data-theme="light"] .hover\:bg-white\/10:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* ============================================
+   浅色模式下的滚动条
+   ============================================ */
+[data-theme="light"] ::-webkit-scrollbar-track {
+  background: #f1f5f9 !important;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8 !important;
+}
+
+/* ============================================
+   浅色模式下的表单元素
+   ============================================ */
+[data-theme="light"] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme="light"] select,
+[data-theme="light"] textarea {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important; /* slate-300 */
+  color: #0f172a !important; /* slate-900 */
+}
+
+[data-theme="light"] input:focus,
+[data-theme="light"] select:focus,
+[data-theme="light"] textarea:focus {
+  border-color: #0891b2 !important; /* cyan-600 */
+  box-shadow: 0 0 0 2px rgba(8, 145, 178, 0.2) !important;
+}
+
+[data-theme="light"] input::placeholder {
+  color: #94a3b8 !important; /* slate-400 */
+}
+
+[data-theme="light"] .placeholder-gray-500::placeholder {
+  color: #94a3b8 !important; /* slate-400 */
+}
+
+/* ============================================
+   浅色模式下的卡片选中状态
+   ============================================ */
+[data-theme="light"] .border-cyan-500 {
+  border-color: #0891b2 !important; /* cyan-600 */
+}
+
+[data-theme="light"] .border-blue-500 {
+  border-color: #2563eb !important;
+}
+
+[data-theme="light"] .border-purple-500 {
+  border-color: #7c3aed !important;
+}
+
+[data-theme="light"] .border-orange-500 {
+  border-color: #ea580c !important; /* orange-600 */
+}
+
+/* 浅色模式下选中卡片的背景色 - 更浅的色调 */
+[data-theme="light"] .bg-cyan-900\/20 {
+  background-color: rgba(8, 145, 178, 0.12) !important;
+}
+
+[data-theme="light"] .bg-blue-900\/20 {
+  background-color: rgba(37, 99, 235, 0.12) !important;
+}
+
+[data-theme="light"] .bg-orange-900\/20 {
+  background-color: rgba(234, 88, 12, 0.12) !important;
+}
+
+[data-theme="light"] .bg-purple-900\/20 {
+  background-color: rgba(124, 58, 237, 0.12) !important;
+}
+
+/* 浅色模式下选中状态的 shadow/glow 减弱 */
+[data-theme="light"] .shadow-\[0_0_20px_rgba\(6\,182\,212\,0\.3\)\] {
+  box-shadow: 0 2px 8px rgba(8, 145, 178, 0.2) !important;
+}
+
+[data-theme="light"] .shadow-\[0_0_20px_rgba\(59\,130\,246\,0\.3\)\] {
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2) !important;
+}
+
+[data-theme="light"] .shadow-\[0_0_20px_rgba\(249\,115\,22\,0\.3\)\] {
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.2) !important;
+}
+
+/* 浅色模式下的 ring 颜色 */
+[data-theme="light"] .ring-cyan-500\/50 {
+  --tw-ring-color: rgba(8, 145, 178, 0.3) !important;
+}
+
+[data-theme="light"] .ring-blue-500\/50 {
+  --tw-ring-color: rgba(37, 99, 235, 0.3) !important;
+}
+
+[data-theme="light"] .ring-orange-500\/50 {
+  --tw-ring-color: rgba(234, 88, 12, 0.3) !important;
+}
+
+/* ============================================
+   浅色模式下的蓝色/紫色
+   ============================================ */
+[data-theme="light"] .text-blue-300 {
+  color: #1d4ed8 !important; /* blue-700 */
+}
+
+[data-theme="light"] .text-blue-400 {
+  color: #2563eb !important; /* blue-600 */
+}
+
+[data-theme="light"] .text-blue-500 {
+  color: #2563eb !important; /* blue-600 */
+}
+
+[data-theme="light"] .text-purple-300 {
+  color: #7c3aed !important; /* violet-600 */
+}
+
+[data-theme="light"] .text-purple-400,
+[data-theme="light"] .text-purple-500 {
+  color: #7c3aed !important; /* violet-600 */
+}
+
+/* ============================================
+   浅色模式下的 green/emerald
+   ============================================ */
+[data-theme="light"] .text-green-400,
+[data-theme="light"] .text-green-500 {
+  color: #059669 !important; /* emerald-600 */
+}
+
+[data-theme="light"] .text-emerald-300 {
+  color: #047857 !important; /* emerald-700 */
+}
+
+[data-theme="light"] .text-emerald-500 {
+  color: #059669 !important; /* emerald-600 */
+}
+
+/* ============================================
+   浅色模式下的 orange/yellow
+   ============================================ */
+[data-theme="light"] .text-orange-400,
+[data-theme="light"] .text-orange-500 {
+  color: #d97706 !important; /* amber-600 */
+}
+
+[data-theme="light"] .text-yellow-400,
+[data-theme="light"] .text-yellow-500 {
+  color: #d97706 !important; /* amber-600 */
+}
+
+/* ============================================
+   浅色模式下的透明文字色调整
+   ============================================ */
+[data-theme="light"] .text-blue-200\/70 {
+  color: rgba(37, 99, 235, 0.9) !important; /* blue-600 with higher opacity */
+}
+
+[data-theme="light"] .text-orange-200\/70 {
+  color: rgba(217, 119, 6, 0.9) !important; /* amber-600 with higher opacity */
+}
+
+[data-theme="light"] .text-cyan-200\/70 {
+  color: rgba(8, 145, 178, 0.9) !important; /* cyan-600 with higher opacity */
+}
+
+/* 修复浅色模式下 cyan-900 等深色背景转换 */
+[data-theme="light"] .bg-cyan-900\/30 {
+  background-color: rgba(8, 145, 178, 0.15) !important;
+}
+
+/* 修复提示文字颜色 */
+[data-theme="light"] .text-rose-500\/80 {
+  color: rgba(225, 29, 72, 0.9) !important; /* rose-600 */
+}
+
+/* ============================================
+   浅色模式下的阴影效果
+   ============================================ */
+[data-theme="light"] .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="light"] .shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Glow 效果在浅色模式下减弱 */
+[data-theme="light"] .shadow-cyan-500\/20,
+[data-theme="light"] .shadow-cyan-500\/30 {
+  box-shadow: 0 4px 14px -3px rgba(8, 145, 178, 0.25) !important;
+}
+
+[data-theme="light"] .shadow-blue-500\/20,
+[data-theme="light"] .shadow-blue-500\/30 {
+  box-shadow: 0 4px 14px -3px rgba(37, 99, 235, 0.25) !important;
+}
+
+/* ============================================
+   浅色模式下的表格
+   ============================================ */
+[data-theme="light"] table th {
+  background-color: #f1f5f9 !important; /* slate-100 */
+  color: #475569 !important; /* slate-600 */
+}
+
+[data-theme="light"] table td {
+  border-color: #e2e8f0 !important; /* slate-200 */
+}
+
+[data-theme="light"] table tr:hover td {
+  background-color: #f8fafc !important; /* slate-50 */
+}
+
+/* ============================================
+   浅色模式下的 divide 分隔线
+   ============================================ */
+[data-theme="light"] .divide-\[\#2a2a2a\] > * + *,
+[data-theme="light"] .divide-\[\#333\] > * + *,
+[data-theme="light"] .divide-\[\#404040\] > * + * {
+  border-color: #e2e8f0 !important; /* slate-200 */
+}
+
+/* ============================================
+   主题切换按钮特殊样式
+   ============================================ */
+.theme-toggle-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-toggle-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.theme-toggle-btn:hover::before {
+  opacity: 1;
+}
+
+[data-theme="dark"] .theme-toggle-btn::before {
+  background: radial-gradient(circle at center, rgba(6, 182, 212, 0.1), transparent);
+}
+
+[data-theme="light"] .theme-toggle-btn::before {
+  background: radial-gradient(circle at center, rgba(245, 158, 11, 0.1), transparent);
+}

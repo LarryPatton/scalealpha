@@ -30,7 +30,6 @@ import CommunityDetail from '../pages/CommunityDetail.vue'
 import NotFound from '../pages/NotFound.vue'
 
 // Existing Pages
-// import PlanPage from '../pages/PlanPage.vue'  // ❌ 已废弃，使用 PlanningPage
 import HistoryPage from '../pages/HistoryPage.vue'
 import PortfolioPage from '../pages/PortfolioPage.vue'
 import PortfolioInputPage from '../pages/PortfolioInputPage.vue'
@@ -43,8 +42,6 @@ import PingPingPage from '../pages/PingPingPage.vue'
 import OpportunityPage from '../pages/OpportunityPage.vue'
 import OpportunityPageB from '../pages/OpportunityPageB.vue'
 import OpportunityReportDetail from '../pages/OpportunityReportDetail.vue'
-import PlanningPage from '../pages/PlanningPage.vue'
-import PlanningDetailPage from '../pages/PlanningDetailPage.vue'
 import CardDesignPage from '../pages/CardDesignPage.vue'
 import ThemeVizDesignPage from '../pages/ThemeVizDesignPage.vue'
 import TimelineDesignPage from '../pages/TimelineDesignPage.vue'
@@ -54,6 +51,7 @@ import ThemeCardVariationsPage from '../pages/ThemeCardVariationsPage.vue'
 import OpportunityCardDesignPage from '../pages/OpportunityCardDesignPage.vue';
 import FlowDesignPage from '../pages/FlowDesignPage.vue';
 import ThemesLifecyclePage from '../pages/ThemesLifecyclePage.vue';
+import DesignSystemPage from '../pages/DesignSystemPage.vue';
 
 const routes = [
   // Root redirect - automatically redirect to Home page
@@ -127,6 +125,12 @@ const routes = [
     path: '/themes-lifecycle',
     name: 'ThemesLifecycle',
     component: ThemesLifecyclePage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/design-system',
+    name: 'DesignSystem',
+    component: DesignSystemPage,
     meta: { layout: BlankLayout }
   },
   {
@@ -237,7 +241,6 @@ const routes = [
   },
 
   // Existing App Features
-  // 注意：旧的 /plan 路径已废弃，统一使用 /planning
   {
     path: '/history',
     name: 'History',
@@ -272,18 +275,6 @@ const routes = [
     path: '/opportunity/report/:reportId',
     name: 'OpportunityReportDetail',
     component: OpportunityReportDetail,
-    meta: { layout: AppLayout }
-  },
-  {
-    path: '/planning',
-    name: 'Planning',
-    component: PlanningPage,
-    meta: { layout: AppLayout }
-  },
-  {
-    path: '/planning/:planId',
-    name: 'PlanningDetail',
-    component: PlanningDetailPage,
     meta: { layout: AppLayout }
   },
   {
