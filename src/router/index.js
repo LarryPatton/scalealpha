@@ -48,6 +48,7 @@ import PlanningDetailPage from '../pages/PlanningDetailPage.vue'
 import CardDesignPage from '../pages/CardDesignPage.vue'
 import ThemeVizDesignPage from '../pages/ThemeVizDesignPage.vue'
 import TimelineDesignPage from '../pages/TimelineDesignPage.vue'
+import PlanStatusDemo from '../pages/PlanStatusDemo.vue'
 import AnalysisDesignPage from '../pages/AnalysisDesignPage.vue'
 import ThemeCardVariationsPage from '../pages/ThemeCardVariationsPage.vue'
 import OpportunityCardDesignPage from '../pages/OpportunityCardDesignPage.vue';
@@ -126,6 +127,12 @@ const routes = [
     path: '/themes-lifecycle',
     name: 'ThemesLifecycle',
     component: ThemesLifecyclePage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/plan-status-demo',
+    name: 'PlanStatusDemo',
+    component: PlanStatusDemo,
     meta: { layout: BlankLayout }
   },
   {

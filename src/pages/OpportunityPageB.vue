@@ -2,7 +2,7 @@
   <div class="h-screen bg-[#050505] text-gray-300 font-sans selection:bg-cyan-500/30 overflow-hidden flex flex-col">
     <Navbar />
     
-    <main class="flex-1 pt-16 px-4 lg:px-8 max-w-[1920px] mx-auto w-full flex flex-col overflow-hidden relative">
+    <main class="flex-1 pt-16 px-4 lg:px-8 max-w-[2200px] mx-auto w-full flex flex-col overflow-hidden relative">
       <!-- Toast Notifications -->
       <div class="fixed top-20 right-8 z-50 flex flex-col gap-2 pointer-events-none">
         <TransitionGroup name="toast">
@@ -130,9 +130,8 @@
             </div>
             
             <!-- Summary Footer -->
-            <div class="p-3 text-xs text-gray-500 flex justify-between items-center font-mono">
+            <div class="p-3 text-xs text-gray-500 font-mono">
               <span>SELECTED: <span class="text-cyan-400">{{ selectedStocks.length > 0 ? selectedStocks[0] : 'NONE' }}</span></span>
-              <button @click="selectedStocks = []" class="hover:text-white transition-colors">CLEAR</button>
             </div>
           </div>
         </div>
@@ -140,19 +139,19 @@
         <!-- Right Column: Strategy Configuration -->
         <div class="flex-1 flex flex-col bg-[#0a0a0a] border border-[#222] rounded-lg overflow-hidden shadow-2xl shadow-black/50 relative">
           
-          <!-- Scrollable Content -->
-          <div class="flex-1 overflow-y-auto custom-scrollbar p-4">
+          <!-- Scrollable Content - 使用 flex 布局充分利用纵向空间 -->
+          <div class="flex-1 flex flex-col overflow-y-auto custom-scrollbar p-4">
             
-            <!-- Header -->
-            <div class="flex justify-between items-end mb-4 border-b border-[#222] pb-2">
+            <!-- Header - 固定高度区域 -->
+            <div class="flex justify-between items-center mb-3 border-b border-[#222] pb-2 shrink-0">
               <div>
                 <h2 class="text-xl font-bold text-white uppercase tracking-widest mb-1">Strategy Config</h2>
                 <p class="text-xs text-gray-500 font-mono">CONFIGURE YOUR ANALYSIS PARAMETERS</p>
               </div>
             </div>
 
-            <!-- Recommendation Hint -->
-            <div class="bg-cyan-900/10 border border-cyan-500/20 rounded-sm p-2 mb-4 flex items-start gap-3">
+            <!-- Recommendation Hint - 固定高度区域 -->
+            <div class="bg-cyan-900/10 border border-cyan-500/20 rounded-sm p-3 mb-3 flex items-start gap-3 shrink-0">
               <div class="mt-0.5 text-cyan-400">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
               </div>
@@ -161,25 +160,25 @@
               </p>
             </div>
 
-            <!-- Advanced Mode Settings -->
-            <div class="space-y-4 animate-fade-in">
+            <!-- Advanced Mode Settings - 弹性区域，均分剩余空间 -->
+            <div class="flex-1 flex flex-col gap-4 animate-fade-in min-h-0">
               
-              <!-- 1. Analysis Framework -->
-              <div id="analysis-frameworks">
-                <h3 class="text-sm font-bold text-gray-400 mb-2 flex items-center gap-2 uppercase tracking-wider">
+              <!-- 1. Analysis Framework - flex-[2] 因为有2行卡片 -->
+              <div id="analysis-frameworks" class="flex-[2] flex flex-col min-h-0">
+                <h3 class="text-sm font-bold text-gray-400 mb-2 flex items-center gap-2 uppercase tracking-wider shrink-0">
                   <span class="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span> 推荐配置：主分析框架
                 </h3>
-                <div class="grid grid-cols-4 gap-2">
+                <div class="grid grid-cols-4 gap-2 flex-1 auto-rows-fr">
                   <button 
                     v-for="framework in frameworks" 
                     :key="framework.id"
                     @click="toggleFramework(framework.id)"
-                    class="p-2 bg-[#111] border border-[#222] rounded-sm hover:bg-[#161616] transition-all text-left relative group h-20 flex flex-col justify-between"
-                    :class="selectedFrameworks.includes(framework.id) ? 'border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.1)]' : 'hover:border-[#444]'"
+                    class="p-2 bg-[#111] border border-[#222] rounded-sm hover:bg-[#161616] transition-all text-left relative group min-h-[60px] flex flex-col justify-between"
+                    :class="selectedFrameworks.includes(framework.id) ? 'border-cyan-500 bg-cyan-900/20 shadow-[0_0_20px_rgba(6,182,212,0.3)] ring-1 ring-cyan-500/50' : 'hover:border-[#444]'"
                   >
                     <div class="flex justify-between items-start">
-                      <component v-if="framework.id === 'auto' && selectedFrameworks.includes('auto')" :is="IconAutoFilled" class="w-5 h-5 text-cyan-400 transition-colors" />
-                      <component v-else :is="framework.icon" class="w-5 h-5 text-gray-600 group-hover:text-cyan-400 transition-colors" :class="selectedFrameworks.includes(framework.id) ? 'text-cyan-400' : ''" />
+                      <component v-if="framework.id === 'auto' && selectedFrameworks.includes('auto')" :is="IconAutoFilled" class="w-4 h-4 text-cyan-400 transition-colors" />
+                      <component v-else :is="framework.icon" class="w-4 h-4 text-gray-600 group-hover:text-cyan-400 transition-colors" :class="selectedFrameworks.includes(framework.id) ? 'text-cyan-400' : ''" />
                       <div class="w-3 h-3 border border-[#333] rounded-[1px] flex items-center justify-center" :class="selectedFrameworks.includes(framework.id) ? 'bg-cyan-500 border-cyan-500' : ''">
                         <svg v-if="selectedFrameworks.includes(framework.id)" class="w-2 h-2 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4"><path d="M5 13l4 4L19 7"></path></svg>
                       </div>
@@ -192,17 +191,17 @@
                 </div>
               </div>
 
-              <!-- 2. Investment Period -->
-              <div id="investment-period">
-                <h3 class="text-sm font-bold text-gray-400 mb-2 flex items-center gap-2 uppercase tracking-wider">
+              <!-- 2. Investment Period - flex-1 均分空间 -->
+              <div id="investment-period" class="flex-1 flex flex-col min-h-0">
+                <h3 class="text-sm font-bold text-gray-400 mb-2 flex items-center gap-2 uppercase tracking-wider shrink-0">
                   <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span> 投资周期
                 </h3>
-                <div class="grid grid-cols-5 gap-2">
+                <div class="grid grid-cols-5 gap-2 flex-1">
                   <button 
                     v-for="period in periods" 
                     :key="period.id"
                     @click="selectedPeriod = period.id"
-                    class="p-2 bg-[#111] border border-[#222] rounded-sm hover:bg-[#161616] transition-all text-left relative group h-16 flex flex-col justify-between"
+                    class="p-2 bg-[#111] border border-[#222] rounded-sm hover:bg-[#161616] transition-all text-left relative group min-h-[60px] flex flex-col justify-between"
                     :class="selectedPeriod === period.id ? 'border-blue-500 bg-blue-900/20 shadow-[0_0_20px_rgba(59,130,246,0.3)] ring-1 ring-blue-500/50' : 'hover:border-[#444]'"
                   >
                     <component v-if="period.id === 'auto' && selectedPeriod === 'auto'" :is="IconAutoFilled" class="w-4 h-4 text-blue-400 transition-colors" />
@@ -211,24 +210,21 @@
                       <div class="text-xs font-bold text-white mb-0">{{ period.title }}</div>
                       <div class="text-[9px] text-gray-500 font-mono line-clamp-1" :class="selectedPeriod === period.id ? 'text-blue-200/70' : ''">{{ period.desc }}</div>
                     </div>
-                    
-                    <!-- Active Indicator Corner -->
-                    <div v-if="selectedPeriod === period.id" class="absolute top-0 right-0 w-0 h-0 border-t-[12px] border-r-[12px] border-t-transparent border-r-blue-500"></div>
                   </button>
                 </div>
               </div>
 
-              <!-- 3. Risk Appetite -->
-              <div id="risk-appetite">
-                <h3 class="text-sm font-bold text-gray-400 mb-2 flex items-center gap-2 uppercase tracking-wider">
+              <!-- 3. Risk Appetite - flex-1 均分空间 -->
+              <div id="risk-appetite" class="flex-1 flex flex-col min-h-0">
+                <h3 class="text-sm font-bold text-gray-400 mb-2 flex items-center gap-2 uppercase tracking-wider shrink-0">
                   <span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span> 风险偏好
                 </h3>
-                <div class="grid grid-cols-5 gap-2">
+                <div class="grid grid-cols-5 gap-2 flex-1">
                   <button 
                     v-for="risk in risks" 
                     :key="risk.id"
                     @click="selectedRisk = risk.id"
-                    class="p-2 bg-[#111] border border-[#222] rounded-sm hover:bg-[#161616] transition-all text-left relative group h-16 flex flex-col justify-between"
+                    class="p-2 bg-[#111] border border-[#222] rounded-sm hover:bg-[#161616] transition-all text-left relative group min-h-[60px] flex flex-col justify-between"
                     :class="selectedRisk === risk.id ? 'border-orange-500 bg-orange-900/20 shadow-[0_0_20px_rgba(249,115,22,0.3)] ring-1 ring-orange-500/50' : 'hover:border-[#444]'"
                   >
                     <component v-if="risk.id === 'auto' && selectedRisk === 'auto'" :is="IconAutoFilled" class="w-4 h-4 text-orange-400 transition-colors" />
@@ -237,13 +233,6 @@
                       <div class="text-xs font-bold text-white mb-0">{{ risk.title }}</div>
                       <div class="text-[9px] text-gray-500 line-clamp-1" :class="selectedRisk === risk.id ? 'text-orange-200/70' : ''">{{ risk.desc }}</div>
                     </div>
-                    
-                    <!-- Active Indicator Corner -->
-                    <div v-if="selectedRisk === risk.id" class="absolute top-0 right-0 w-0 h-0 border-t-[12px] border-r-[12px] border-t-transparent border-r-orange-500"></div>
-
-                    <!-- Progress Bar Visual -->
-                    <div v-if="risk.id !== 'auto'" class="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 opacity-20 w-full"></div>
-                    <div v-if="risk.id !== 'auto'" class="absolute bottom-0 left-0 h-0.5 bg-orange-500" :style="{ width: risk.intensity + '%', opacity: selectedRisk === risk.id ? 1 : 0 }"></div>
                   </button>
                 </div>
               </div>
@@ -277,20 +266,6 @@
         <!-- My Strategy Tab Content -->
         <div v-else-if="activeTab === 'mystrategy'" class="flex-1 flex flex-col min-h-0 mt-0 pb-20 animate-fade-in relative">
           
-          <!-- Help Button for Strategy Tour -->
-          <button 
-            @click="startStrategyTour"
-            class="absolute top-2 right-2 z-30 w-8 h-8 flex items-center justify-center rounded-full bg-[#1a1a1a] border border-[#333] text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all group"
-            title="查看使用引导"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <span class="absolute right-full mr-2 px-2 py-1 text-xs text-white bg-[#222] border border-[#333] rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-              使用引导
-            </span>
-          </button>
-          
           <!-- Active Tasks Section (Zone A) -->
           <div id="active-generation-panel" class="w-full mb-2 border border-[#222] bg-[#0a0a0a] rounded-lg p-3 shadow-lg shrink-0">
              <div class="flex justify-between items-center mb-2">
@@ -298,12 +273,111 @@
                  <span class="w-2 h-2 rounded-full" :class="(pendingTasks.length + processingTasks.length) > 0 ? 'bg-cyan-500 animate-pulse' : 'bg-gray-600'"></span>
                  Active Generation
               </h3>
-              <span class="text-[10px] font-mono text-gray-600">{{ pendingTasks.length + processingTasks.length }} TASKS</span>
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] font-mono text-gray-600">{{ pendingTasks.length + processingTasks.length }} TASKS</span>
+                <!-- Expand/Collapse Button -->
+                <button 
+                  v-if="pendingTasks.length + processingTasks.length > maxVisibleTasks"
+                  @click="isActiveGenExpanded = !isActiveGenExpanded"
+                  class="flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded border transition-all"
+                  :class="isActiveGenExpanded 
+                    ? 'text-cyan-400 border-cyan-500/50 bg-cyan-900/20 hover:bg-cyan-900/30' 
+                    : 'text-gray-400 border-[#333] hover:border-gray-500 hover:text-gray-200'"
+                >
+                  <svg 
+                    class="w-3 h-3 transition-transform duration-200" 
+                    :class="isActiveGenExpanded ? 'rotate-180' : ''"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                  {{ isActiveGenExpanded ? 'Collapse' : 'Expand' }}
+                </button>
+                <!-- Help Button for Strategy Tour -->
+                <button 
+                  @click="startStrategyTour"
+                  class="w-6 h-6 flex items-center justify-center rounded-full bg-[#1a1a1a] border border-[#333] text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all group"
+                  title="查看使用引导"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </button>
+              </div>
            </div>
            
-           <div class="flex gap-3 overflow-x-auto pb-1 custom-scrollbar min-h-[70px]">
+           <!-- Collapsed View -->
+           <div v-if="!isActiveGenExpanded" class="flex gap-3 overflow-hidden min-h-[70px]">
+                <!-- Empty State -->
+                <div v-if="pendingTasks.length === 0 && processingTasks.length === 0" class="w-full flex items-center justify-center text-gray-600 text-xs font-mono border border-dashed border-[#333] rounded-sm">
+                  NO ACTIVE TASKS
+                </div>
+
+                <!-- Processing Tasks (显示在前面) -->
+                <div 
+                  v-for="task in visibleProcessingTasks" 
+                  :key="task.id" 
+                  class="min-w-[280px] max-w-[280px] bg-[#111] border rounded-sm p-3 relative overflow-hidden group cursor-pointer transition-all shrink-0"
+                  :class="[
+                    selectedStrategyId === `temp-${task.id}` 
+                      ? 'border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.3)] ring-2 ring-cyan-500/30 selected-task-glow' 
+                      : 'border-cyan-900/30 hover:border-cyan-500/50'
+                  ]"
+                  @click="selectTaskStrategy(task)"
+                >
+                   <div v-if="selectedStrategyId === `temp-${task.id}`" class="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-cyan-500 via-emerald-500 to-cyan-500 animate-gradient-x"></div>
+                   <div class="flex justify-between items-start mb-2">
+                      <div class="flex items-center gap-2">
+                         <span class="text-xs font-bold text-white">{{ task.symbol }}</span>
+                         <span class="text-[10px] px-1.5 py-0.5 bg-cyan-900/20 text-cyan-400 rounded border border-cyan-900/30">PROCESSING</span>
+                         <span v-if="selectedStrategyId === `temp-${task.id}`" class="text-[10px] px-1.5 py-0.5 bg-emerald-900/30 text-emerald-400 rounded border border-emerald-500/30 animate-pulse">SELECTED</span>
+                      </div>
+                      <div class="text-[10px] text-gray-500">{{ task.timeLeft }}</div>
+                   </div>
+                   <div class="h-1 bg-[#222] rounded-full overflow-hidden mb-2">
+                      <div class="h-full bg-cyan-500 transition-all duration-300 relative" :style="{ width: task.progress + '%' }"></div>
+                   </div>
+                   <div class="text-[10px] text-gray-500 font-mono">{{ task.statusText }}</div>
+                </div>
+
+                <!-- Pending Tasks (只显示折叠数量) -->
+                <div 
+                  v-for="task in visiblePendingTasks" 
+                  :key="task.id" 
+                  class="min-w-[200px] max-w-[200px] bg-[#111] border rounded-sm p-3 flex flex-col justify-center cursor-pointer transition-all relative overflow-hidden shrink-0"
+                  :class="[
+                    selectedStrategyId === `temp-${task.id}` 
+                      ? 'border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.3)] ring-2 ring-cyan-500/30 opacity-100 selected-task-glow' 
+                      : 'border-[#222] hover:border-gray-500 opacity-70 hover:opacity-100'
+                  ]"
+                  @click="selectTaskStrategy(task)"
+                >
+                   <div v-if="selectedStrategyId === `temp-${task.id}`" class="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-cyan-500 via-emerald-500 to-cyan-500 animate-gradient-x"></div>
+                   <div class="flex justify-between items-center mb-1">
+                      <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold" :class="selectedStrategyId === `temp-${task.id}` ? 'text-white' : 'text-gray-400'">{{ task.symbol }}</span>
+                        <span v-if="selectedStrategyId === `temp-${task.id}`" class="text-[10px] px-1.5 py-0.5 bg-emerald-900/30 text-emerald-400 rounded border border-emerald-500/30 animate-pulse">SELECTED</span>
+                      </div>
+                      <span class="text-[10px] text-gray-600">PENDING</span>
+                   </div>
+                   <div class="text-[10px] text-gray-600 font-mono">Est: {{ task.estTime }}</div>
+                </div>
+
+                <!-- +N More 提示卡片 -->
+                <div 
+                  v-if="hiddenTasksCount > 0"
+                  @click="isActiveGenExpanded = true"
+                  class="min-w-[100px] max-w-[100px] bg-gradient-to-br from-[#1a1a2e] to-[#0f0f1a] border border-dashed border-cyan-500/30 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer transition-all hover:border-cyan-400 hover:shadow-[0_0_15px_rgba(6,182,212,0.2)] shrink-0"
+                >
+                  <span class="text-xl font-bold text-cyan-400">+{{ hiddenTasksCount }}</span>
+                  <span class="text-[10px] text-gray-400 mt-1">more</span>
+                </div>
+           </div>
+
+           <!-- Expanded View (网格布局) -->
+           <div v-else class="grid grid-cols-4 gap-3 min-h-[70px]">
               <!-- Empty State -->
-              <div v-if="pendingTasks.length === 0 && processingTasks.length === 0" class="w-full flex items-center justify-center text-gray-600 text-xs font-mono border border-dashed border-[#333] rounded-sm">
+              <div v-if="pendingTasks.length === 0 && processingTasks.length === 0" class="col-span-4 flex items-center justify-center text-gray-600 text-xs font-mono border border-dashed border-[#333] rounded-sm py-6">
                 NO ACTIVE TASKS
               </div>
 
@@ -311,7 +385,7 @@
               <div 
                 v-for="task in processingTasks" 
                 :key="task.id" 
-                class="min-w-[280px] bg-[#111] border rounded-sm p-3 relative overflow-hidden group cursor-pointer transition-all"
+                class="bg-[#111] border rounded-sm p-3 relative overflow-hidden group cursor-pointer transition-all"
                 :class="[
                   selectedStrategyId === `temp-${task.id}` 
                     ? 'border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.3)] ring-2 ring-cyan-500/30 selected-task-glow' 
@@ -319,7 +393,6 @@
                 ]"
                 @click="selectTaskStrategy(task)"
               >
-                 <!-- 选中指示器 -->
                  <div v-if="selectedStrategyId === `temp-${task.id}`" class="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-cyan-500 via-emerald-500 to-cyan-500 animate-gradient-x"></div>
                  <div class="flex justify-between items-start mb-2">
                     <div class="flex items-center gap-2">
@@ -339,7 +412,7 @@
               <div 
                 v-for="task in pendingTasks" 
                 :key="task.id" 
-                class="min-w-[200px] bg-[#111] border rounded-sm p-3 flex flex-col justify-center cursor-pointer transition-all relative overflow-hidden"
+                class="bg-[#111] border rounded-sm p-3 flex flex-col justify-center cursor-pointer transition-all relative overflow-hidden"
                 :class="[
                   selectedStrategyId === `temp-${task.id}` 
                     ? 'border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.3)] ring-2 ring-cyan-500/30 opacity-100 selected-task-glow' 
@@ -347,7 +420,6 @@
                 ]"
                 @click="selectTaskStrategy(task)"
               >
-                 <!-- 选中指示器 -->
                  <div v-if="selectedStrategyId === `temp-${task.id}`" class="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-cyan-500 via-emerald-500 to-cyan-500 animate-gradient-x"></div>
                  <div class="flex justify-between items-center mb-1">
                     <div class="flex items-center gap-2">
@@ -383,32 +455,48 @@
                 </div>
                 <div v-if="smartFiltersEnabled" class="space-y-0.5">
                   <button 
-                    @click="libraryFilter = 'high-grade'"
+                    @click="selectSmartFilter('high-grade')"
                     class="w-full text-left px-3 py-1.5 rounded text-xs font-medium transition-colors flex justify-between items-center group"
                     :class="libraryFilter === 'high-grade' ? 'bg-[#222] text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-[#111]'"
                   >
-                    <span>High Grade (A/B)</span>
+                    <span class="flex items-center gap-1.5">
+                      <span v-if="hasNewData('high-grade') && libraryFilter !== 'high-grade'" class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                      High Grade (A/B)
+                    </span>
+                    <span class="text-[10px] font-mono" :class="libraryFilter === 'high-grade' ? 'text-cyan-500' : 'text-gray-600'">{{ smartFilterCounts['high-grade'] }}</span>
                   </button>
                   <button 
-                    @click="libraryFilter = 'recommend-update'"
+                    @click="selectSmartFilter('recommend-update')"
                     class="w-full text-left px-3 py-1.5 rounded text-xs font-medium transition-colors flex justify-between items-center group"
                     :class="libraryFilter === 'recommend-update' ? 'bg-[#222] text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-[#111]'"
                   >
-                    <span>Recommended Update</span>
+                    <span class="flex items-center gap-1.5">
+                      <span v-if="hasNewData('recommend-update') && libraryFilter !== 'recommend-update'" class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                      Recommended Update
+                    </span>
+                    <span class="text-[10px] font-mono" :class="libraryFilter === 'recommend-update' ? 'text-cyan-500' : 'text-gray-600'">{{ smartFilterCounts['recommend-update'] }}</span>
                   </button>
                   <button 
-                    @click="libraryFilter = 'no-signal'"
+                    @click="selectSmartFilter('no-signal')"
                     class="w-full text-left px-3 py-1.5 rounded text-xs font-medium transition-colors flex justify-between items-center group"
                     :class="libraryFilter === 'no-signal' ? 'bg-[#222] text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-[#111]'"
                   >
-                    <span>No Signal Logs</span>
+                    <span class="flex items-center gap-1.5">
+                      <span v-if="hasNewData('no-signal') && libraryFilter !== 'no-signal'" class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                      No Signal Logs
+                    </span>
+                    <span class="text-[10px] font-mono" :class="libraryFilter === 'no-signal' ? 'text-cyan-500' : 'text-gray-600'">{{ smartFilterCounts['no-signal'] }}</span>
                   </button>
                   <button 
-                    @click="libraryFilter = 'no-opportunity'"
+                    @click="selectSmartFilter('no-opportunity')"
                     class="w-full text-left px-3 py-1.5 rounded text-xs font-medium transition-colors flex justify-between items-center group"
                     :class="libraryFilter === 'no-opportunity' ? 'bg-[#222] text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-[#111]'"
                   >
-                    <span>No Opportunity Found</span>
+                    <span class="flex items-center gap-1.5">
+                      <span v-if="hasNewData('no-opportunity') && libraryFilter !== 'no-opportunity'" class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                      No Opportunity Found
+                    </span>
+                    <span class="text-[10px] font-mono" :class="libraryFilter === 'no-opportunity' ? 'text-cyan-500' : 'text-gray-600'">{{ smartFilterCounts['no-opportunity'] }}</span>
                   </button>
                 </div>
                 <div v-else class="text-[10px] text-gray-600 px-3 py-1">
@@ -571,65 +659,134 @@
 
           <!-- Table -->
           <div class="flex-1 overflow-y-auto custom-scrollbar">
-            <table class="w-full text-left border-collapse">
-              <thead class="bg-[#0a0a0a] sticky top-0 z-10">
-                <tr>
-                  <th class="px-6 py-3 border-b border-[#222] w-10">
+            <table class="w-full text-left border-collapse table-fixed">
+              <!-- Column Width Definition -->
+              <colgroup>
+                <col style="width: 40px;" />  <!-- Radio -->
+                <col style="width: 75px;" />  <!-- Ticker -->
+                <col style="width: 170px;" /> <!-- Name -->
+                <col style="width: 80px;" />  <!-- Source -->
+                <col style="width: 80px;" />  <!-- Direction -->
+                <col style="width: 55px;" />  <!-- Grade -->
+                <col style="width: 75px;" />  <!-- Horizon -->
+                <col style="width: 90px;" />  <!-- Created -->
+                <col style="width: 80px;" />  <!-- Strategy Update -->
+                <col style="width: 85px;" />  <!-- Plan Status -->
+                <col style="width: 60px;" />  <!-- Plan Count -->
+                <col style="width: 60px;" />  <!-- Unread -->
+                <col style="width: 100px;" /> <!-- Generating -->
+                <col style="width: 85px;" />  <!-- Plan Update -->
+                <col style="width: 90px;" />  <!-- Actions -->
+              </colgroup>
+              <thead class="sticky top-0 z-20">
+                <!-- 分组表头行 -->
+                <tr class="border-b border-[#333] bg-[#0a0a0a]">
+                  <th rowspan="2" class="px-2 py-2 border-b border-[#222] align-middle bg-[#0a0a0a]">
                     <div 
                       @click="toggleSelectAllStrategies" 
-                      class="w-4 h-4 border border-[#444] rounded-[2px] flex items-center justify-center cursor-pointer hover:border-cyan-500 transition-colors" 
+                      class="w-5 h-5 border border-[#444] rounded-[2px] flex items-center justify-center cursor-pointer hover:border-cyan-500 transition-colors mx-auto" 
                       :class="isAllStrategiesSelected ? 'bg-cyan-500 border-cyan-500' : ''"
                     >
-                      <svg v-if="isAllStrategiesSelected" class="w-3 h-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                      <svg v-if="isAllStrategiesSelected" class="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                     </div>
                   </th>
-                  <th @click="handleSort('symbol')" class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-[#222] cursor-pointer hover:text-white transition-colors select-none">
+                  <!-- Ticker 独立列 -->
+                  <th rowspan="2" @click="handleSort('symbol')" class="px-3 py-2 text-[11px] font-bold text-gray-400 uppercase tracking-wider border-b border-[#222] border-r border-r-[#333] cursor-pointer hover:text-white transition-colors select-none align-middle bg-[#0a0a0a]">
                     <div class="flex items-center gap-1">
                       Ticker
                       <span v-if="strategySortField === 'symbol'" class="text-cyan-500">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th @click="handleSort('stockName')" class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-[#222] cursor-pointer hover:text-white transition-colors select-none">
-                    <div class="flex items-center gap-1">
+                  <!-- 策略分组 -->
+                  <th colspan="7" class="px-3 py-2 text-[11px] font-bold text-cyan-400 uppercase tracking-wider border-b border-[#333] border-r border-r-[#333] text-center" style="background: linear-gradient(to right, rgba(14, 116, 144, 0.15), rgba(14, 116, 144, 0.1)), #0a0a0a;">
+                    <div class="flex items-center justify-center gap-2">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                       Strategy
+                    </div>
+                  </th>
+                  <!-- 计划分组 -->
+                  <th colspan="6" class="px-3 py-2 text-[11px] font-bold text-amber-400 uppercase tracking-wider border-b border-[#333] text-center" style="background: linear-gradient(to right, rgba(180, 83, 9, 0.15), rgba(180, 83, 9, 0.1)), #0a0a0a;">
+                    <div class="flex items-center justify-center gap-2">
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                      Execution Plan
+                    </div>
+                  </th>
+                </tr>
+                <!-- 子表头行 -->
+                <tr class="bg-[#0a0a0a]">
+                  <!-- 策略子列 -->
+                  <th @click="handleSort('stockName')" class="px-3 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-[#222] cursor-pointer hover:text-white transition-colors select-none bg-[#0a0a0a]">
+                    <div class="flex items-center gap-1">
+                      Name
                       <span v-if="strategySortField === 'stockName'" class="text-cyan-500">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th @click="handleSort('direction')" class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-[#222] cursor-pointer hover:text-white transition-colors select-none">
-                    <div class="flex items-center gap-1">
-                      Direction
-                      <span v-if="strategySortField === 'direction'" class="text-cyan-500">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
-                    </div>
-                  </th>
-                  <th @click="handleSort('grade')" class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-[#222] cursor-pointer hover:text-white transition-colors select-none">
-                    <div class="flex items-center gap-1">
-                      Grade
-                      <span v-if="strategySortField === 'grade'" class="text-cyan-500">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
-                    </div>
-                  </th>
-                  <th @click="handleSort('horizon')" class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-[#222] cursor-pointer hover:text-white transition-colors select-none">
-                    <div class="flex items-center gap-1">
-                      Horizon
-                      <span v-if="strategySortField === 'horizon'" class="text-cyan-500">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
-                    </div>
-                  </th>
-                  <th @click="handleSort('model')" class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-[#222] cursor-pointer hover:text-white transition-colors select-none">
-                    <div class="flex items-center gap-1">
-                      Model
-                      <span v-if="strategySortField === 'model'" class="text-cyan-500">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
-                    </div>
-                  </th>
-                  <th @click="handleSort('source')" class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-[#222] cursor-pointer hover:text-white transition-colors select-none">
-                    <div class="flex items-center gap-1">
+                  <th @click="handleSort('source')" class="px-3 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-[#222] cursor-pointer hover:text-white transition-colors select-none text-center bg-[#0a0a0a]">
+                    <div class="flex items-center justify-center gap-1">
                       Source
                       <span v-if="strategySortField === 'source'" class="text-cyan-500">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th @click="handleSort('generatedAt')" class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-[#222] cursor-pointer hover:text-white transition-colors select-none">
-                    <div class="flex items-center gap-1">
+                  <th @click="handleSort('direction')" class="px-3 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-[#222] cursor-pointer hover:text-white transition-colors select-none text-center bg-[#0a0a0a]">
+                    <div class="flex items-center justify-center gap-1">
+                      Direction
+                      <span v-if="strategySortField === 'direction'" class="text-cyan-500">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
+                    </div>
+                  </th>
+                  <th @click="handleSort('grade')" class="px-3 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-[#222] cursor-pointer hover:text-white transition-colors select-none text-center bg-[#0a0a0a]">
+                    <div class="flex items-center justify-center gap-1">
+                      Grade
+                      <span v-if="strategySortField === 'grade'" class="text-cyan-500">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
+                    </div>
+                  </th>
+                  <th @click="handleSort('horizon')" class="px-3 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-[#222] cursor-pointer hover:text-white transition-colors select-none text-center bg-[#0a0a0a]">
+                    <div class="flex items-center justify-center gap-1">
+                      Horizon
+                      <span v-if="strategySortField === 'horizon'" class="text-cyan-500">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
+                    </div>
+                  </th>
+                  <th @click="handleSort('generatedAt')" class="px-3 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-[#222] cursor-pointer hover:text-white transition-colors select-none text-center bg-[#0a0a0a]">
+                    <div class="flex items-center justify-center gap-1">
                       Created
                       <span v-if="strategySortField === 'generatedAt'" class="text-cyan-500">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
+                  </th>
+                  <th class="px-3 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-[#222] border-r border-r-[#333] text-center bg-[#0a0a0a]">
+                    Update
+                  </th>
+                  <!-- 计划子列 -->
+                  <th @click="handleSort('hasExecutionPlan')" class="px-3 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-[#222] text-center cursor-pointer hover:text-white transition-colors select-none bg-[#0a0a0a]">
+                    <div class="flex items-center justify-center gap-1">
+                      Status
+                      <span v-if="strategySortField === 'hasExecutionPlan'" class="text-amber-500">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
+                    </div>
+                  </th>
+                  <th @click="handleSort('planCount')" class="px-3 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-[#222] text-center cursor-pointer hover:text-white transition-colors select-none bg-[#0a0a0a]">
+                    <div class="flex items-center justify-center gap-1">
+                      Count
+                      <span v-if="strategySortField === 'planCount'" class="text-amber-500">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
+                    </div>
+                  </th>
+                  <th @click="handleSort('planUnreadCount')" class="px-3 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-[#222] text-center cursor-pointer hover:text-white transition-colors select-none bg-[#0a0a0a]">
+                    <div class="flex items-center justify-center gap-1">
+                      Unread
+                      <span v-if="strategySortField === 'planUnreadCount'" class="text-amber-500">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
+                    </div>
+                  </th>
+                  <th @click="handleSort('planGeneratingCount')" class="px-3 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-[#222] text-center cursor-pointer hover:text-white transition-colors select-none bg-[#0a0a0a]">
+                    <div class="flex items-center justify-center gap-1">
+                      Generating
+                      <span v-if="strategySortField === 'planGeneratingCount'" class="text-amber-500">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
+                    </div>
+                  </th>
+                  <th @click="handleSort('planNeedsUpdate')" class="px-3 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-[#222] text-center cursor-pointer hover:text-white transition-colors select-none">
+                    <div class="flex items-center justify-center gap-1">
+                      Update
+                      <span v-if="strategySortField === 'planNeedsUpdate'" class="text-amber-500">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
+                    </div>
+                  </th>
+                  <th class="px-3 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-[#222] text-center">
+                    Actions
                   </th>
                 </tr>
               </thead>
@@ -647,14 +804,14 @@
                   @click="strategy.grade !== 'N/A' && !regeneratingStrategies[strategy.id] ? toggleStrategySelection(strategy.id) : null"
                 >
                   <!-- Regenerating Overlay -->
-                  <td v-if="regeneratingStrategies[strategy.id]" colspan="9" class="absolute inset-0 z-20">
+                  <td v-if="regeneratingStrategies[strategy.id]" colspan="15" class="absolute inset-0 z-20">
                     <div class="absolute inset-0 bg-[#0a0a0a]/90 backdrop-blur-sm flex flex-col items-center justify-center">
                       <div class="flex items-center gap-3 mb-2">
-                        <svg class="w-4 h-4 text-cyan-400 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-cyan-400 animate-spin" fill="none" viewBox="0 0 24 24">
                           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        <span class="text-xs font-bold text-cyan-400 uppercase tracking-wider">Updating...</span>
+                        <span class="text-sm font-bold text-cyan-400 uppercase tracking-wider">Updating...</span>
                       </div>
                       <div class="w-48 h-1.5 bg-[#222] rounded-full overflow-hidden">
                         <div 
@@ -662,69 +819,72 @@
                           :style="{ width: `${Math.min(regeneratingStrategies[strategy.id]?.progress || 0, 100)}%` }"
                         ></div>
                       </div>
-                      <span class="text-[10px] text-gray-500 mt-1 font-mono">{{ Math.round(regeneratingStrategies[strategy.id]?.progress || 0) }}%</span>
+                      <span class="text-xs text-gray-500 mt-1 font-mono">{{ Math.round(regeneratingStrategies[strategy.id]?.progress || 0) }}%</span>
                     </div>
                   </td>
                   <!-- 单选指示器 -->
-                  <td class="px-6 py-4 whitespace-nowrap relative z-10">
+                  <td class="px-2 py-3 whitespace-nowrap relative z-10">
                     <div 
                       @click.stop="toggleStrategySelection(strategy.id)" 
-                      class="w-4 h-4 border-2 rounded-full flex items-center justify-center cursor-pointer transition-colors" 
+                      class="w-5 h-5 border-2 rounded-full flex items-center justify-center cursor-pointer transition-colors mx-auto" 
                       :class="selectedStrategyId === strategy.id ? 'border-cyan-500 bg-cyan-500' : 'border-[#444] hover:border-cyan-500'"
                     >
-                      <div v-if="selectedStrategyId === strategy.id" class="w-1.5 h-1.5 bg-black rounded-full"></div>
+                      <div v-if="selectedStrategyId === strategy.id" class="w-2 h-2 bg-black rounded-full"></div>
                     </div>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="flex items-center gap-2">
-                      <span class="font-mono font-bold text-white">{{ strategy.symbol }}</span>
-                      <!-- 有执行计划的图标 -->
-                      <span 
-                        v-if="strategy.hasExecutionPlan" 
-                        class="flex items-center justify-center w-4 h-4 rounded bg-amber-900/30 border border-amber-500/30"
-                        title="Has Execution Plan"
-                      >
-                        <svg class="w-2.5 h-2.5 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
-                      </span>
-                    </div>
+                  <!-- Ticker (独立列) -->
+                  <td class="px-3 py-3 whitespace-nowrap border-r border-r-[#222]">
+                    <span class="font-mono font-bold text-white text-sm">{{ strategy.symbol }}</span>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="flex items-center justify-between gap-4">
-                      <div class="text-sm text-gray-300">{{ strategy.stockName }}</div>
-                      <!-- Actions -->
-                      <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <button 
-                          v-if="strategy.source !== 'Official'"
-                          @click.stop="handleRegenerateSingle(strategy)"
-                          class="flex items-center gap-1 px-2 py-1 bg-emerald-900/20 border border-emerald-500/50 text-emerald-400 rounded text-[10px] font-bold uppercase tracking-wider hover:bg-emerald-900/40"
-                        >
-                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                          Update
-                        </button>
-                        <button 
-                          v-if="strategy.grade !== 'N/A'" 
-                          @click.stop="viewStrategyDetail(strategy)"
-                          class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider border border-cyan-500/30 px-2 py-1 rounded bg-[#0a0a0a]/90 whitespace-nowrap shadow-[0_0_10px_rgba(6,182,212,0.2)] backdrop-blur-sm hover:bg-cyan-900/30 hover:border-cyan-500/50 transition-colors cursor-pointer"
-                        >
-                          <svg class="w-3 h-3 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                          View
-                        </button>
+                  <!-- Name + View Button -->
+                  <td class="px-3 py-3 whitespace-nowrap">
+                    <div class="flex items-center justify-between gap-2">
+                      <div class="flex items-center gap-2">
+                        <!-- 未读策略标记 -->
+                        <span v-if="strategy.strategyUnread" class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse flex-shrink-0" title="Unread Strategy"></span>
+                        <span class="text-xs text-gray-300 truncate max-w-[90px]" :title="strategy.stockName">{{ strategy.stockName }}</span>
                       </div>
+                      <!-- View Button (hover) -->
+                      <button 
+                        v-if="strategy.grade !== 'N/A'" 
+                        @click.stop="viewStrategyDetail(strategy)"
+                        class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider border border-cyan-500/30 px-2 py-0.5 rounded bg-[#0a0a0a]/90 whitespace-nowrap hover:bg-cyan-900/30 hover:border-cyan-500/50 transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
+                      >
+                        View
+                      </button>
                     </div>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
+                  <!-- Source -->
+                  <td class="px-3 py-3 whitespace-nowrap text-center">
                     <span 
+                      v-if="strategy.source"
+                      class="px-2 py-0.5 rounded text-[10px] font-bold border"
+                      :class="{
+                        'text-cyan-400 border-cyan-500/30 bg-cyan-900/10': strategy.source === 'AI',
+                        'text-orange-400 border-orange-500/30 bg-orange-900/10': strategy.source === 'Manual',
+                        'text-violet-400 border-violet-500/30 bg-violet-900/10': strategy.source === 'Import'
+                      }"
+                    >
+                      {{ strategy.source }}
+                    </span>
+                    <span v-else class="text-xs text-gray-500 tracking-wider">— — —</span>
+                  </td>
+                  <!-- Direction (完整显示) -->
+                  <td class="px-3 py-3 whitespace-nowrap text-center">
+                    <span 
+                      v-if="strategy.direction === 'LONG' || strategy.direction === 'SHORT'"
                       class="px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-wider border"
                       :class="strategy.direction === 'LONG' ? 'text-emerald-400 border-emerald-500/30 bg-emerald-900/10' : 'text-rose-400 border-rose-500/30 bg-rose-900/10'"
                     >
                       {{ strategy.direction }}
                     </span>
+                    <span v-else class="text-xs text-gray-500 tracking-wider">— — —</span>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
+                  <!-- Grade -->
+                  <td class="px-3 py-3 whitespace-nowrap text-center">
                     <div 
-                      class="w-6 h-6 flex items-center justify-center rounded-sm font-bold text-xs border"
+                      v-if="strategy.grade && strategy.grade !== 'N/A'"
+                      class="w-6 h-6 flex items-center justify-center rounded-sm font-bold text-xs border mx-auto"
                       :class="{
                         'border-emerald-500/30 bg-emerald-900/10 text-emerald-400': strategy.grade === 'A',
                         'border-blue-500/30 bg-blue-900/10 text-blue-400': strategy.grade === 'B',
@@ -733,18 +893,175 @@
                     >
                       {{ strategy.grade }}
                     </div>
+                    <span v-else class="text-xs text-gray-500 tracking-wider">— — —</span>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-xs text-gray-500 font-mono">{{ strategy.horizon }}</div>
+                  <!-- Horizon (完整显示) -->
+                  <td class="px-3 py-3 whitespace-nowrap text-center">
+                    <span 
+                      v-if="strategy.horizon && strategy.horizon !== 'N/A'"
+                      class="px-2 py-0.5 rounded text-[10px] font-bold border"
+                      :class="{
+                        'text-purple-400 border-purple-500/30 bg-purple-900/10': strategy.horizon.includes('Long'),
+                        'text-blue-400 border-blue-500/30 bg-blue-900/10': strategy.horizon.includes('Medium'),
+                        'text-amber-400 border-amber-500/30 bg-amber-900/10': strategy.horizon.includes('Short')
+                      }"
+                      :title="strategy.horizon"
+                    >
+                      {{ strategy.horizon.includes('Long') ? 'Long' : strategy.horizon.includes('Medium') ? 'Medium' : 'Short' }}
+                    </span>
+                    <span v-else class="text-xs text-gray-500 tracking-wider">— — —</span>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="text-xs font-mono text-cyan-400/80 border border-cyan-900/30 bg-cyan-900/10 px-1.5 py-0.5 rounded">{{ strategy.model || 'Gemini 1.5 Pro' }}</span>
+                  <!-- Created (策略下) -->
+                  <td class="px-3 py-3 whitespace-nowrap text-center">
+                    <div class="text-xs text-gray-400 font-mono">{{ new Date(strategy.generatedAt).toLocaleDateString() }}</div>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="text-xs text-gray-400">{{ strategy.source }}</span>
+                  <!-- Strategy Update (建议更新) -->
+                  <td class="px-3 py-3 whitespace-nowrap text-center border-r border-r-[#222]">
+                    <!-- Official 来源：显示官方更新状态 -->
+                    <template v-if="strategy.source === 'Official'">
+                      <span 
+                        v-if="strategy.officialUpdating"
+                        class="px-2.5 py-1 bg-cyan-500/30 border border-cyan-400/60 text-cyan-300 rounded text-[10px] font-bold uppercase tracking-wider mx-auto"
+                        title="Official is updating"
+                      >
+                        Updating
+                      </span>
+                      <span 
+                        v-else-if="strategy.officialUpdated"
+                        class="px-2.5 py-1 bg-emerald-500/30 border border-emerald-400/60 text-emerald-300 rounded text-[10px] font-bold uppercase tracking-wider mx-auto"
+                        title="Official has updated"
+                      >
+                        Updated
+                      </span>
+                      <span v-else class="text-xs text-gray-500 tracking-wider">— — —</span>
+                    </template>
+                    <!-- Only Plan 类型：没有策略，显示空 -->
+                    <template v-else-if="strategy.hasStrategy === false">
+                      <span class="text-xs text-gray-500 tracking-wider">— — —</span>
+                    </template>
+                    <!-- No Opportunity Found (N/A grade)：显示 Retry 按钮 -->
+                    <template v-else-if="strategy.grade === 'N/A'">
+                      <button 
+                        @click.stop="handleRegenerateSingle(strategy)"
+                        class="px-2.5 py-1 bg-purple-500/30 border border-purple-400/60 text-purple-300 rounded text-[10px] font-bold uppercase tracking-wider hover:bg-purple-500/50 hover:text-purple-200 transition-colors mx-auto"
+                        title="Change parameters and retry"
+                      >
+                        Retry
+                      </button>
+                    </template>
+                    <!-- 非 Official 来源：可点击更新 -->
+                    <template v-else>
+                      <button 
+                        v-if="strategy.strategyNeedsUpdate"
+                        @click.stop="handleRegenerateSingle(strategy)"
+                        class="px-2.5 py-1 bg-amber-500/30 border border-amber-400/60 text-amber-300 rounded text-[10px] font-bold uppercase tracking-wider hover:bg-amber-500/50 hover:text-amber-200 transition-colors mx-auto"
+                        title="Click to update"
+                      >
+                        Update
+                      </button>
+                      <span 
+                        v-else 
+                        class="px-2.5 py-1 bg-emerald-500/30 border border-emerald-400/60 text-emerald-300 rounded text-[10px] font-bold uppercase tracking-wider mx-auto"
+                      >
+                        Updated
+                      </span>
+                    </template>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-xs text-gray-500 font-mono">{{ new Date(strategy.generatedAt).toLocaleDateString() }}</div>
+                  <!-- Plan Status -->
+                  <td class="px-3 py-3 whitespace-nowrap text-center">
+                    <span 
+                      v-if="strategy.hasStrategy === false && strategy.hasExecutionPlan"
+                      class="px-2 py-0.5 rounded text-[10px] font-bold border text-purple-400 border-purple-500/30 bg-purple-900/10"
+                      title="Only Plan - No Strategy Report"
+                    >
+                      Only Plan
+                    </span>
+                    <span 
+                      v-else-if="strategy.hasExecutionPlan"
+                      class="px-2 py-0.5 rounded text-[10px] font-bold border text-emerald-400 border-emerald-500/30 bg-emerald-900/10"
+                      title="Has Execution Plan"
+                    >
+                      With Plan
+                    </span>
+                    <span v-else class="text-xs text-gray-500 tracking-wider">— — —</span>
+                  </td>
+                  <!-- Plan Count -->
+                  <td class="px-3 py-3 whitespace-nowrap text-center">
+                    <span v-if="strategy.planCount > 0" class="text-sm font-mono text-gray-300">{{ strategy.planCount }}</span>
+                    <span v-else class="text-xs text-gray-500 tracking-wider">— — —</span>
+                  </td>
+                  <!-- Unread Count -->
+                  <td class="px-3 py-3 whitespace-nowrap text-center">
+                    <span 
+                      v-if="strategy.planUnreadCount > 0" 
+                      class="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full text-xs font-bold bg-cyan-500 text-black"
+                    >
+                      {{ strategy.planUnreadCount }}
+                    </span>
+                    <span v-else class="text-xs text-gray-500 tracking-wider">— — —</span>
+                  </td>
+                  <!-- Generating (带进度条) -->
+                  <td class="px-3 py-3 whitespace-nowrap text-center">
+                    <div v-if="strategy.planGeneratingCount > 0" class="flex flex-col items-center gap-1">
+                      <div class="flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-cyan-400 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span class="text-xs font-mono text-cyan-400">{{ strategy.generatingCurrent }}/{{ strategy.planGeneratingCount }}</span>
+                      </div>
+                      <div class="w-16 h-1.5 bg-[#222] rounded-full overflow-hidden">
+                        <div 
+                          class="h-full bg-gradient-to-r from-cyan-500 to-emerald-500 rounded-full transition-all"
+                          :style="{ width: `${strategy.generatingProgress || 0}%` }"
+                        ></div>
+                      </div>
+                    </div>
+                    <span v-else class="text-xs text-gray-500 tracking-wider">— — —</span>
+                  </td>
+                  <!-- Plan Update -->
+                  <td class="px-3 py-3 whitespace-nowrap text-center">
+                    <button 
+                      v-if="strategy.planNeedsUpdate"
+                      @click.stop
+                      class="flex items-center gap-1.5 px-2 py-1 bg-amber-900/20 border border-amber-500/40 text-amber-400 rounded text-[10px] font-bold uppercase tracking-wider hover:bg-amber-900/40 transition-colors mx-auto"
+                      title="Plan needs update"
+                    >
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                      Update
+                    </button>
+                    <span v-else class="text-xs text-gray-500 tracking-wider">— — —</span>
+                  </td>
+                  <!-- Actions -->
+                  <td class="px-3 py-3 whitespace-nowrap text-center">
+                    <div class="flex items-center justify-center gap-1">
+                      <!-- Generate Plan -->
+                      <button 
+                        v-if="strategy.hasExecutionPlan === false && strategy.grade !== 'N/A'"
+                        @click.stop="generatePlanForStrategy(strategy)"
+                        class="p-1.5 bg-emerald-900/20 border border-emerald-500/40 text-emerald-400 rounded hover:bg-emerald-900/40 transition-colors"
+                        title="Generate Plan"
+                      >
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                      </button>
+                      <!-- View Plans -->
+                      <button 
+                        v-if="strategy.hasExecutionPlan"
+                        @click.stop="viewPlanDetail(strategy)"
+                        class="p-1.5 bg-cyan-900/20 border border-cyan-500/40 text-cyan-400 rounded hover:bg-cyan-900/40 transition-colors"
+                        title="View Plans"
+                      >
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                      </button>
+                      <!-- Delete -->
+                      <button 
+                        @click.stop="deleteStrategy(strategy)"
+                        class="p-1.5 bg-red-900/20 border border-red-500/40 text-red-400 rounded hover:bg-red-900/40 transition-colors"
+                        title="Delete"
+                      >
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -1096,6 +1413,294 @@
             </div>
           </div>
 
+        </div>
+      </div>
+
+      <!-- Generate Plan Modal (方案B: 单页折叠式) -->
+      <div v-if="showGeneratePlanModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-300" @click.self="closeGeneratePlanModal">
+        <div class="bg-[#0a0a0a] rounded-lg border border-[#222] w-[820px] max-w-[95vw] overflow-hidden shadow-2xl shadow-black/50 flex flex-col transform transition-all duration-300 scale-100 animate-modal-in">
+          
+          <!-- Modal Header -->
+          <div class="px-6 py-4 border-b border-[#222] flex justify-between items-center bg-[#0a0a0a]">
+            <div class="flex items-center gap-3">
+              <div class="px-2.5 py-1 rounded-sm text-xs font-semibold tracking-wide bg-cyan-500/10 text-cyan-400 uppercase">
+                <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                Execution Plan
+              </div>
+              <div class="h-4 w-px bg-[#333]"></div>
+              <span class="text-xs text-gray-500 font-mono">CONFIGURE PARAMETERS</span>
+            </div>
+            <button 
+              @click="closeGeneratePlanModal" 
+              class="w-7 h-7 flex items-center justify-center rounded-sm hover:bg-[#222] transition-colors"
+            >
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Target Strategy Info Bar -->
+          <div v-if="generatePlanTarget" class="px-6 py-3 bg-[#111] border-b border-[#222] flex items-center gap-4">
+            <div class="flex items-center gap-3">
+              <span class="font-mono font-bold text-white text-lg">{{ generatePlanTarget.symbol }}</span>
+              <span class="text-sm text-gray-500">{{ generatePlanTarget.stockName }}</span>
+            </div>
+            <div class="flex-1"></div>
+            <span 
+              v-if="generatePlanTarget.direction"
+              class="px-2 py-0.5 rounded-sm text-xs font-bold"
+              :class="generatePlanTarget.direction === 'LONG' ? 'bg-emerald-900/50 text-emerald-400' : 'bg-red-900/50 text-red-400'"
+            >
+              {{ generatePlanTarget.direction }}
+            </span>
+            <span 
+              v-if="generatePlanTarget.grade"
+              class="px-2 py-0.5 rounded-sm text-xs font-bold"
+              :class="{
+                'bg-emerald-900/50 text-emerald-400': generatePlanTarget.grade === 'A' || generatePlanTarget.grade === 'A+',
+                'bg-cyan-900/50 text-cyan-400': generatePlanTarget.grade === 'B',
+                'bg-amber-900/50 text-amber-400': generatePlanTarget.grade === 'C'
+              }"
+            >
+              Grade {{ generatePlanTarget.grade }}
+            </span>
+            <span class="text-xs text-gray-500 font-mono">
+              ${{ currentStockPrice.toFixed(2) }}
+            </span>
+          </div>
+
+          <!-- Modal Body - Two Column Layout -->
+          <div class="p-6 bg-[#0a0a0a]">
+            <div class="flex gap-6">
+              
+              <!-- Left Column: Position Status -->
+              <div class="flex-1 space-y-4">
+                <div class="flex items-center gap-2 mb-3">
+                  <span class="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span>
+                  <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wider">Position Status</h4>
+                </div>
+                
+                <!-- Position Toggle -->
+                <div class="grid grid-cols-2 gap-3">
+                  <button 
+                    @click="generatePlanSettings.hasPosition = false"
+                    class="p-3 rounded-sm border transition-all text-left group"
+                    :class="!generatePlanSettings.hasPosition 
+                      ? 'border-cyan-500 bg-cyan-900/20 shadow-[0_0_20px_rgba(6,182,212,0.2)] ring-1 ring-cyan-500/50' 
+                      : 'border-[#222] bg-[#111] hover:border-[#444]'"
+                  >
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-sm flex items-center justify-center transition-colors"
+                        :class="!generatePlanSettings.hasPosition ? 'bg-cyan-500/20' : 'bg-[#1a1a1a]'"
+                      >
+                        <svg class="w-4 h-4" :class="!generatePlanSettings.hasPosition ? 'text-cyan-400' : 'text-gray-600'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <div class="text-xs font-bold text-white">No Position</div>
+                        <div class="text-[10px] text-gray-500">Open new</div>
+                      </div>
+                    </div>
+                  </button>
+                  <button 
+                    @click="generatePlanSettings.hasPosition = true"
+                    class="p-3 rounded-sm border transition-all text-left group"
+                    :class="generatePlanSettings.hasPosition 
+                      ? 'border-cyan-500 bg-cyan-900/20 shadow-[0_0_20px_rgba(6,182,212,0.2)] ring-1 ring-cyan-500/50' 
+                      : 'border-[#222] bg-[#111] hover:border-[#444]'"
+                  >
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-sm flex items-center justify-center transition-colors"
+                        :class="generatePlanSettings.hasPosition ? 'bg-cyan-500/20' : 'bg-[#1a1a1a]'"
+                      >
+                        <svg class="w-4 h-4" :class="generatePlanSettings.hasPosition ? 'text-cyan-400' : 'text-gray-600'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <div class="text-xs font-bold text-white">Have Position</div>
+                        <div class="text-[10px] text-gray-500">Existing</div>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+
+                <!-- Position Details (Expandable) -->
+                <transition name="slide-fade">
+                  <div v-if="generatePlanSettings.hasPosition" class="p-4 bg-[#111] rounded-sm border border-[#222] space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                      <div>
+                        <label class="block text-[10px] font-medium text-gray-500 mb-1.5 uppercase tracking-wider">Avg Cost</label>
+                        <div class="relative">
+                          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs">$</span>
+                          <input 
+                            type="number" 
+                            v-model.number="generatePlanSettings.averageCost"
+                            class="w-full bg-[#0a0a0a] border border-[#333] rounded-sm pl-6 pr-3 py-2 text-white text-sm font-mono focus:border-cyan-500/50 focus:outline-none transition-colors"
+                            placeholder="178.50"
+                            step="0.01"
+                          >
+                        </div>
+                      </div>
+                      <div>
+                        <label class="block text-[10px] font-medium text-gray-500 mb-1.5 uppercase tracking-wider">Size</label>
+                        <div class="relative">
+                          <input 
+                            type="number" 
+                            v-model.number="generatePlanSettings.positionSize"
+                            class="w-full bg-[#0a0a0a] border border-[#333] rounded-sm px-3 pr-7 py-2 text-white text-sm font-mono focus:border-cyan-500/50 focus:outline-none transition-colors"
+                            placeholder="15"
+                            min="1"
+                            max="100"
+                          >
+                          <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs">%</span>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- P&L Display -->
+                    <div v-if="generatePlanSettings.averageCost && generatePlanSettings.averageCost > 0" 
+                      class="flex items-center justify-between p-2.5 rounded-sm"
+                      :class="positionPnL.isProfit ? 'bg-emerald-900/20 border border-emerald-500/30' : 'bg-red-900/20 border border-red-500/30'"
+                    >
+                      <span class="text-[10px] text-gray-400 uppercase">P&L</span>
+                      <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold font-mono" :class="positionPnL.isProfit ? 'text-emerald-400' : 'text-red-400'">
+                          {{ positionPnL.isProfit ? '+' : '' }}${{ positionPnL.value }}
+                        </span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded-sm" :class="positionPnL.isProfit ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'">
+                          {{ positionPnL.isProfit ? '+' : '' }}{{ positionPnL.percent }}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </transition>
+              </div>
+
+              <!-- Right Column: Investment Preferences -->
+              <div class="flex-1 space-y-4">
+                <div class="flex items-center gap-2 mb-3">
+                  <span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+                  <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wider">Preferences</h4>
+                </div>
+
+                <!-- Investment Horizon -->
+                <div>
+                  <label class="block text-[10px] font-medium text-gray-500 mb-2 uppercase tracking-wider">Horizon</label>
+                  <div class="grid grid-cols-3 gap-2">
+                    <button 
+                      @click="generatePlanSettings.investmentHorizon = 'short'"
+                      class="p-2.5 rounded-sm border transition-all text-center"
+                      :class="generatePlanSettings.investmentHorizon === 'short' 
+                        ? 'border-amber-500 bg-amber-900/20 shadow-[0_0_15px_rgba(245,158,11,0.2)]' 
+                        : 'border-[#222] bg-[#111] hover:border-[#444]'"
+                    >
+                      <svg class="w-4 h-4 mx-auto mb-1" :class="generatePlanSettings.investmentHorizon === 'short' ? 'text-amber-400' : 'text-gray-600'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                      </svg>
+                      <div class="text-[10px] font-bold text-white">Short</div>
+                      <div class="text-[9px] text-gray-500">1-4 wks</div>
+                    </button>
+                    <button 
+                      @click="generatePlanSettings.investmentHorizon = 'medium'"
+                      class="p-2.5 rounded-sm border transition-all text-center"
+                      :class="generatePlanSettings.investmentHorizon === 'medium' 
+                        ? 'border-blue-500 bg-blue-900/20 shadow-[0_0_15px_rgba(59,130,246,0.2)]' 
+                        : 'border-[#222] bg-[#111] hover:border-[#444]'"
+                    >
+                      <svg class="w-4 h-4 mx-auto mb-1" :class="generatePlanSettings.investmentHorizon === 'medium' ? 'text-blue-400' : 'text-gray-600'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                      </svg>
+                      <div class="text-[10px] font-bold text-white">Medium</div>
+                      <div class="text-[9px] text-gray-500">1-3 mos</div>
+                    </button>
+                    <button 
+                      @click="generatePlanSettings.investmentHorizon = 'long'"
+                      class="p-2.5 rounded-sm border transition-all text-center"
+                      :class="generatePlanSettings.investmentHorizon === 'long' 
+                        ? 'border-emerald-500 bg-emerald-900/20 shadow-[0_0_15px_rgba(16,185,129,0.2)]' 
+                        : 'border-[#222] bg-[#111] hover:border-[#444]'"
+                    >
+                      <svg class="w-4 h-4 mx-auto mb-1" :class="generatePlanSettings.investmentHorizon === 'long' ? 'text-emerald-400' : 'text-gray-600'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                      </svg>
+                      <div class="text-[10px] font-bold text-white">Long</div>
+                      <div class="text-[9px] text-gray-500">3+ mos</div>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Risk Preference Slider -->
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <label class="text-[10px] font-medium text-gray-500 uppercase tracking-wider">Risk Level</label>
+                    <span 
+                      class="text-[10px] font-bold px-1.5 py-0.5 rounded-sm"
+                      :class="{
+                        'bg-emerald-900/50 text-emerald-400': generatePlanSettings.riskPreference <= 25,
+                        'bg-blue-900/50 text-blue-400': generatePlanSettings.riskPreference > 25 && generatePlanSettings.riskPreference <= 50,
+                        'bg-amber-900/50 text-amber-400': generatePlanSettings.riskPreference > 50 && generatePlanSettings.riskPreference <= 75,
+                        'bg-red-900/50 text-red-400': generatePlanSettings.riskPreference > 75
+                      }"
+                    >
+                      {{ riskPreferenceLabel }}
+                    </span>
+                  </div>
+                  <input 
+                    type="range" 
+                    v-model.number="generatePlanSettings.riskPreference"
+                    min="0" 
+                    max="100" 
+                    step="1"
+                    class="w-full h-1.5 bg-[#222] rounded-sm appearance-none cursor-pointer slider-thumb"
+                  >
+                  <div class="flex justify-between mt-1.5 text-[9px] text-gray-600">
+                    <span>Conservative</span>
+                    <span>Moderate</span>
+                    <span>Growth</span>
+                    <span>Aggressive</span>
+                  </div>
+                </div>
+
+                <!-- Save as Default -->
+                <label class="flex items-center gap-2 cursor-pointer group mt-2">
+                  <input 
+                    type="checkbox" 
+                    v-model="generatePlanSettings.saveAsDefault"
+                    class="w-3.5 h-3.5 rounded-sm border-[#444] bg-[#111] text-cyan-500 focus:ring-cyan-500/50 focus:ring-offset-0"
+                  >
+                  <span class="text-xs text-gray-500 group-hover:text-gray-400 transition-colors">Save as default</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="px-6 py-4 border-t border-[#222] flex justify-between items-center bg-[#0a0a0a]">
+            <div class="flex items-center gap-2 text-[10px] text-gray-500 font-mono">
+              <span class="px-1.5 py-0.5 bg-[#111] border border-[#222] rounded-sm">{{ generatePlanSettings.hasPosition ? 'EXISTING' : 'NEW' }}</span>
+              <span class="px-1.5 py-0.5 bg-[#111] border border-[#222] rounded-sm uppercase">{{ generatePlanSettings.investmentHorizon }}</span>
+              <span class="px-1.5 py-0.5 bg-[#111] border border-[#222] rounded-sm">{{ riskPreferenceLabel.toUpperCase() }}</span>
+            </div>
+            <div class="flex gap-3">
+              <button 
+                @click="closeGeneratePlanModal"
+                class="px-4 py-2 bg-[#111] hover:bg-[#222] text-gray-400 rounded-sm text-xs font-medium transition-colors border border-[#333]"
+              >
+                Cancel
+              </button>
+              <button 
+                @click="confirmGeneratePlan"
+                class="px-5 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-sm text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-cyan-900/30"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+                Generate
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1736,13 +2341,15 @@ import Navbar from '../components/Navbar.vue'
 const IconTarget = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('path', { d: 'M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 16a6 6 0 1 1 6-6 6 6 0 0 1-6 6z' }), h('path', { d: 'M12 8a4 4 0 1 0 4 4 4 4 0 0 0-4-4z' })])
 const IconChart = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('path', { d: 'M3 3v18h18' }), h('path', { d: 'M18 9l-5 5-4-4-3 3' })])
 const IconDocument = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('path', { d: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z' }), h('path', { d: 'M14 2v6h6' }), h('path', { d: 'M16 13H8' }), h('path', { d: 'M16 17H8' }), h('path', { d: 'M10 9H8' })])
-const IconMath = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('rect', { x: '4', y: '4', width: '16', height: '16', rx: '2' }), h('path', { d: 'M8 8h.01' }), h('path', { d: 'M12 8h.01' }), h('path', { d: 'M16 8h.01' }), h('path', { d: 'M8 12h.01' }), h('path', { d: 'M12 12h.01' }), h('path', { d: 'M16 12h.01' }), h('path', { d: 'M8 16h.01' }), h('path', { d: 'M12 16h.01' }), h('path', { d: 'M16 16h.01' })])
+// 量化分析图标 - 使用函数曲线/sigma符号风格
+const IconMath = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('path', { d: 'M4 4h6l-6 8 6 8H4' }), h('path', { d: 'M14 12h7' }), h('path', { d: 'M14 7h7' }), h('circle', { cx: '17.5', cy: '17.5', r: '2.5' })])
 const IconLightning = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('path', { d: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z' })])
 const IconBriefcase = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('rect', { x: '2', y: '7', width: '20', height: '14', rx: '2', ry: '2' }), h('path', { d: 'M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16' })])
 const IconTrending = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('path', { d: 'M23 6l-9.5 9.5-5-5L1 18' }), h('path', { d: 'M17 6h6v6' })])
 const IconDatabase = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('ellipse', { cx: '12', cy: '5', rx: '9', ry: '3' }), h('path', { d: 'M21 12c0 1.66-4 3-9 3s-9-1.34-9-3' }), h('path', { d: 'M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5' })])
 const IconClock = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('circle', { cx: '12', cy: '12', r: '10' }), h('path', { d: 'M12 6v6l4 2' })])
 const IconCalendar = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('rect', { x: '3', y: '4', width: '18', height: '18', rx: '2', ry: '2' }), h('path', { d: 'M16 2v4' }), h('path', { d: 'M8 2v4' }), h('path', { d: 'M3 10h18' })])
+const IconBan = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('circle', { cx: '12', cy: '12', r: '10' }), h('path', { d: 'M4.93 4.93l14.14 14.14' })])
 const IconShield = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('path', { d: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z' })])
 const IconScale = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('path', { d: 'M12 3v19' }), h('path', { d: 'M5 8h14' }), h('path', { d: 'M2 14h6' }), h('path', { d: 'M16 14h6' })])
 const IconFire = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('path', { d: 'M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.1.2-2.2.5-3.3a7 7 0 0 0 3 3.8z' })])
@@ -2073,6 +2680,9 @@ watch(() => route.query.tab, (newTab) => {
 
 watch(activeTab, (newTab) => {
   if (newTab === 'mystrategy') {
+    // 每次切换到 mystrategy tab 时初始化示例数据
+    initDemoTasks()
+    
     // Wait for DOM update, then show tour only for first time
     if (!localStorage.getItem('hasSeenStrategyTour')) {
       setTimeout(() => {
@@ -2114,6 +2724,64 @@ const completedTasks = computed(() => filteredTasks.value.filter(t => t.status =
 const completedFoundTasks = computed(() => completedTasks.value.filter(t => t.foundOpportunity !== false))
 const completedNotFoundTasks = computed(() => completedTasks.value.filter(t => t.foundOpportunity === false))
 const totalTasks = computed(() => filteredTasks.value.length)
+
+// Active Generation 展开/折叠状态
+const isActiveGenExpanded = ref(false)
+const maxVisibleTasks = 7 // 折叠时最多显示的任务数（固定值）
+
+// 折叠时可见的 Processing 任务
+const visibleProcessingTasks = computed(() => {
+  return processingTasks.value.slice(0, maxVisibleTasks)
+})
+
+// 折叠时可见的 Pending 任务（扣除已显示的 Processing 任务数量）
+const visiblePendingTasks = computed(() => {
+  const remainingSlots = maxVisibleTasks - visibleProcessingTasks.value.length
+  return remainingSlots > 0 ? pendingTasks.value.slice(0, remainingSlots) : []
+})
+
+// 隐藏的任务数量
+const hiddenTasksCount = computed(() => {
+  const totalVisible = visibleProcessingTasks.value.length + visiblePendingTasks.value.length
+  const totalActive = processingTasks.value.length + pendingTasks.value.length
+  return Math.max(0, totalActive - totalVisible)
+})
+
+// 初始化 Active Generation 示例数据
+const initDemoTasks = () => {
+  // Reset/Add more tasks to demonstrate the +N more feature
+  const demoTasks = [
+    { id: 901, type: 'strategy', title: 'AI Momentum Scan', symbol: 'NVDA', stockName: 'NVIDIA', status: 'processing', progress: 15, timeLeft: '45s', statusText: 'Analyzing patterns...', estTime: '1m' },
+    { id: 902, type: 'strategy', title: 'Deep Learning Signal', symbol: 'AMD', stockName: 'AMD Inc.', status: 'processing', progress: 62, timeLeft: '20s', statusText: 'Running backtest...', estTime: '1m' },
+    { id: 903, type: 'plan', title: 'Portfolio Rebalance', symbol: 'SPY', stockName: 'SPDR S&P 500', status: 'pending', estTime: '2m', isNew: true },
+    { id: 904, type: 'strategy', title: 'Crypto Volatility', symbol: 'BTC', stockName: 'Bitcoin', status: 'pending', estTime: '3m' },
+    { id: 905, type: 'strategy', title: 'Tech Growth Alpha', symbol: 'AAPL', stockName: 'Apple Inc.', status: 'pending', estTime: '2m' },
+    { id: 906, type: 'plan', title: 'Dividend Hunter', symbol: 'JNJ', stockName: 'Johnson & Johnson', status: 'pending', estTime: '4m' },
+    { id: 907, type: 'strategy', title: 'EV Sector Play', symbol: 'TSLA', stockName: 'Tesla Inc.', status: 'pending', estTime: '3m' },
+    { id: 908, type: 'plan', title: 'Safe Haven Rotation', symbol: 'GLD', stockName: 'SPDR Gold Shares', status: 'pending', estTime: '2m' },
+    { id: 909, type: 'strategy', title: 'Biotech Breakout', symbol: 'XBI', stockName: 'SPDR Biotech ETF', status: 'pending', estTime: '3m' },
+    { id: 910, type: 'plan', title: 'Income Generator', symbol: 'SCHD', stockName: 'Schwab US Dividend', status: 'pending', estTime: '2m' },
+    { id: 911, type: 'strategy', title: 'Semiconductor Cycle', symbol: 'SMH', stockName: 'VanEck Semiconductor', status: 'pending', estTime: '4m' },
+    { id: 912, type: 'plan', title: 'Risk Parity Model', symbol: 'VTI', stockName: 'Vanguard Total Stock', status: 'pending', estTime: '3m' },
+  ]
+  tasks.value = demoTasks
+  
+  // 重置展开状态
+  isActiveGenExpanded.value = false
+  
+  // 重置 Smart Filter lastCounts 为 0，让所有分类都显示新数据圆点
+  smartFilterLastCounts.value = {
+    'high-grade': 0,
+    'recommend-update': 0,
+    'no-signal': 0,
+    'no-opportunity': 0
+  }
+  
+  // Clear highlight for demo tasks after a delay
+  setTimeout(() => {
+    tasks.value.forEach(t => { if(t.id === 903) t.isNew = false })
+  }, 3000)
+}
 
 const isAllSelected = computed(() => {
   return completedTasks.value.length > 0 && selectedCompletedTasks.value.length === completedTasks.value.length
@@ -2293,8 +2961,134 @@ const togglePlanExpand = (plan) => {
   plan.isExpanded = !plan.isExpanded
 }
 
+// --- Generate Plan Modal Logic ---
+const showGeneratePlanModal = ref(false)
+const generatePlanTarget = ref(null)
+const generatePlanSettings = ref({
+  // 持仓状态
+  hasPosition: false,
+  // 持仓详情（仅当 hasPosition 为 true 时使用）
+  averageCost: null,
+  positionSize: null, // 仓位占比 %
+  // 通用设置
+  investmentHorizon: 'medium', // 'short', 'medium', 'long'
+  riskPreference: 50, // 0-100 滑块值
+  // 保存选项
+  saveAsDefault: false
+})
+
+// 当前股价（模拟数据，实际应从策略或API获取）
+const currentStockPrice = computed(() => {
+  if (!generatePlanTarget.value) return 0
+  // 模拟当前价格
+  return generatePlanTarget.value.currentPrice || 185.50
+})
+
+// 计算盈亏
+const positionPnL = computed(() => {
+  const settings = generatePlanSettings.value
+  if (!settings.hasPosition || !settings.averageCost || settings.averageCost <= 0) {
+    return { value: 0, percent: 0, isProfit: true }
+  }
+  const current = currentStockPrice.value
+  const cost = settings.averageCost
+  const diff = current - cost
+  const percent = ((diff / cost) * 100).toFixed(2)
+  return {
+    value: diff.toFixed(2),
+    percent: percent,
+    isProfit: diff >= 0
+  }
+})
+
+// 风险偏好文本
+const riskPreferenceLabel = computed(() => {
+  const value = generatePlanSettings.value.riskPreference
+  if (value <= 25) return 'Conservative'
+  if (value <= 50) return 'Moderate'
+  if (value <= 75) return 'Growth'
+  return 'Aggressive'
+})
+
 const generatePlanForStrategy = (strategy) => {
-  alert(`Generating plan for ${strategy.symbol}...`)
+  generatePlanTarget.value = strategy
+  // 重置为默认设置或加载保存的默认设置
+  const savedDefaults = localStorage.getItem('plan_default_settings_v2')
+  if (savedDefaults) {
+    const defaults = JSON.parse(savedDefaults)
+    generatePlanSettings.value = { 
+      hasPosition: false,
+      averageCost: null,
+      positionSize: null,
+      ...defaults,
+      saveAsDefault: false
+    }
+  } else {
+    generatePlanSettings.value = {
+      hasPosition: false,
+      averageCost: null,
+      positionSize: null,
+      investmentHorizon: 'medium',
+      riskPreference: 50,
+      saveAsDefault: false
+    }
+  }
+  showGeneratePlanModal.value = true
+}
+
+const closeGeneratePlanModal = () => {
+  showGeneratePlanModal.value = false
+  generatePlanTarget.value = null
+}
+
+const confirmGeneratePlan = () => {
+  if (!generatePlanTarget.value) return
+  
+  const settings = generatePlanSettings.value
+  
+  // 保存为默认设置
+  if (settings.saveAsDefault) {
+    const toSave = {
+      investmentHorizon: settings.investmentHorizon,
+      riskPreference: settings.riskPreference
+    }
+    localStorage.setItem('plan_default_settings_v2', JSON.stringify(toSave))
+  }
+  
+  // 模拟生成计划 - 包含配置信息
+  const positionInfo = settings.hasPosition ? 
+    `Existing position (Cost: $${settings.averageCost || 'N/A'}, Size: ${settings.positionSize || 'N/A'}%)` : 
+    'New position'
+  const horizonMap = { short: 'Short-term', medium: 'Medium-term', long: 'Long-term' }
+  addToast(`Generating ${horizonMap[settings.investmentHorizon]} plan for ${generatePlanTarget.value.symbol} (${positionInfo})...`, 'info')
+  
+  // 更新策略状态
+  const strategy = allSavedStrategies.value.find(s => s.id === generatePlanTarget.value.id)
+  if (strategy) {
+    strategy.hasExecutionPlan = true
+    strategy.planCount = 1
+    strategy.planGeneratingCount = 1
+    strategy.generatingCurrent = 1
+    strategy.generatingProgress = 0
+    
+    // 模拟进度
+    const interval = setInterval(() => {
+      if (strategy.generatingProgress < 100) {
+        strategy.generatingProgress += 10
+      } else {
+        clearInterval(interval)
+        strategy.planGeneratingCount = 0
+        strategy.planUnreadCount = 1
+        addToast(`Execution plan for ${strategy.symbol} generated!`, 'success')
+      }
+    }, 500)
+  }
+  
+  closeGeneratePlanModal()
+}
+
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value)
 }
 
 const goToStockDetail = (symbol) => {
@@ -2440,31 +3234,21 @@ watch(maxConcurrent, () => {
 
 // Mock Progress Simulation
 let progressInterval
+
 onMounted(() => {
   loadSavedStrategies()
   
   // Setup Demo Data for Flow Visualization if on mystrategy tab
   if (activeTab.value === 'mystrategy') {
-     // Reset/Add some tasks to demonstrate flow
-     const demoTasks = [
-        { id: 901, type: 'strategy', title: 'AI Momentum Scan', symbol: 'NVDA', stockName: 'NVIDIA', status: 'processing', progress: 70, timeLeft: '10s', statusText: 'Analyzing patterns...', estTime: '1m' },
-        { id: 902, type: 'plan', title: 'Portfolio Rebalance', symbol: 'SPY', stockName: 'SPDR S&P 500', status: 'pending', estTime: '2m', isNew: true },
-        { id: 903, type: 'strategy', title: 'Crypto Volatility', symbol: 'BTC', stockName: 'Bitcoin', status: 'pending', estTime: '3m' },
-     ]
-     tasks.value = demoTasks
-     
-     // Clear highlight for demo tasks after a delay
-     setTimeout(() => {
-       tasks.value.forEach(t => { if(t.id === 902) t.isNew = false })
-     }, 3000)
+    initDemoTasks()
   }
   
   progressInterval = setInterval(() => {
     tasks.value.forEach(task => {
       if (task.status === 'processing') {
         if (task.progress < 100) {
-          // Speed up for demo
-          task.progress += Math.random() * 2 + 1
+          // Slower progress for better demo experience
+          task.progress += Math.random() * 0.6 + 0.3
           
           if (task.progress >= 100) {
             task.progress = 100
@@ -2966,8 +3750,49 @@ const handleMiniMapStepClick = (step) => {
 }
 
 const selectedCollection = ref('all')
-const smartFiltersEnabled = ref(false) // Toggle for Smart Filters section
+const smartFiltersEnabled = ref(true) // Toggle for Smart Filters section (默认打开)
 const libraryFilter = ref('all') // 'all', 'high-grade', 'no-signal', 'no-opportunity', 'recommend-update'
+
+// Smart Filter 各分类的计数
+// Official 来源只有 High Grade (A/B)，不会有 C/D 或 N/A
+const smartFilterCounts = computed(() => {
+  const strategies = allSavedStrategies.value.filter(s => !s.isArchived)
+  return {
+    'high-grade': strategies.filter(s => ['A', 'B'].includes(s.grade)).length,
+    'recommend-update': strategies.filter(s => s.needsUpdate && s.source !== 'Official').length, // 排除 Official 来源
+    'no-signal': strategies.filter(s => ['C', 'D'].includes(s.grade) && s.source !== 'Official').length, // 排除 Official 来源
+    'no-opportunity': strategies.filter(s => s.grade === 'N/A' && s.source !== 'Official').length // 排除 Official 来源
+  }
+})
+
+// Smart Filter 新数据标记（记录用户已查看的分类）
+const smartFilterViewed = ref({
+  'high-grade': true,
+  'recommend-update': true,
+  'no-signal': true,
+  'no-opportunity': true
+})
+
+// 上次查看时各分类的数量（用于判断是否有新数据）
+// 初始值为0，这样首次加载时所有分类都会显示"新数据"圆点
+const smartFilterLastCounts = ref({
+  'high-grade': 0,
+  'recommend-update': 0,
+  'no-signal': 0,
+  'no-opportunity': 0
+})
+
+// 判断某个分类是否有新数据
+const hasNewData = (filterKey) => {
+  return smartFilterCounts.value[filterKey] > smartFilterLastCounts.value[filterKey]
+}
+
+// 点击分类时标记为已查看
+const selectSmartFilter = (filterKey) => {
+  libraryFilter.value = filterKey
+  smartFilterViewed.value[filterKey] = true
+  smartFilterLastCounts.value[filterKey] = smartFilterCounts.value[filterKey]
+}
 const regeneratingStrategies = ref({}) // Track strategies being regenerated: { strategyId: { progress: 0-100 } }
 const strategySearchQuery = ref('')
 const strategyFilterOption = ref('all') // 'all', 'long', 'short'
@@ -3294,6 +4119,7 @@ const strategyCollections = computed(() => {
   const myCount = allSavedStrategies.value.filter(s => s.source === 'My Strategy').length
   const planCount = allSavedStrategies.value.filter(s => s.hasExecutionPlan).length
   const onlyPlanCount = allSavedStrategies.value.filter(s => s.hasExecutionPlan && !s.hasStrategy).length
+  const noPlanCount = allSavedStrategies.value.filter(s => !s.hasExecutionPlan || s.planCount === 0).length
 
   const preset = [
     { id: 'all', label: 'All Strategies', count: allCount, icon: IconBriefcase },
@@ -3301,6 +4127,7 @@ const strategyCollections = computed(() => {
     { id: 'my', label: 'My Strategies', count: myCount, icon: IconTarget },
     { id: 'plans', label: 'With Execution Plans', count: planCount, icon: IconLightning },
     { id: 'only-plan', label: 'Only Plan', count: onlyPlanCount, icon: IconCalendar, isFixed: true },
+    { id: 'no-plan', label: 'No Plan', count: noPlanCount, icon: IconBan, isFixed: true },
   ]
 
   const custom = customCollections.value.map(c => ({
@@ -3330,22 +4157,25 @@ const displayedStrategies = computed(() => {
     strategies = strategies.filter(s => s.hasExecutionPlan)
   } else if (selectedCollection.value === 'only-plan') {
     strategies = strategies.filter(s => s.hasExecutionPlan && !s.hasStrategy)
+  } else if (selectedCollection.value === 'no-plan') {
+    strategies = strategies.filter(s => !s.hasExecutionPlan || s.planCount === 0)
   } else {
     // Custom Collection
     strategies = strategies.filter(s => s.categoryId === selectedCollection.value)
   }
 
   // 1.5 Filter by Smart Filter (libraryFilter)
+  // Official 来源只有 High Grade，不会有 C/D、N/A 或 needsUpdate
   if (libraryFilter.value === 'high-grade') {
     strategies = strategies.filter(s => ['A', 'B'].includes(s.grade))
   } else if (libraryFilter.value === 'no-signal') {
-    // No Signal Logs: show C and D grade strategies
-    strategies = strategies.filter(s => ['C', 'D'].includes(s.grade))
+    // No Signal Logs: show C and D grade strategies (排除 Official 来源)
+    strategies = strategies.filter(s => ['C', 'D'].includes(s.grade) && s.source !== 'Official')
   } else if (libraryFilter.value === 'no-opportunity') {
-    // No Opportunity Found: show strategies with N/A grade (no opportunity)
-    strategies = strategies.filter(s => s.grade === 'N/A')
+    // No Opportunity Found: show strategies with N/A grade (排除 Official 来源)
+    strategies = strategies.filter(s => s.grade === 'N/A' && s.source !== 'Official')
   } else if (libraryFilter.value === 'recommend-update') {
-    strategies = strategies.filter(s => s.needsUpdate)
+    strategies = strategies.filter(s => s.needsUpdate && s.source !== 'Official') // 排除 Official 来源
   }
 
   // 2. Search
@@ -3411,12 +4241,24 @@ const generateDemoStrategies = () => {
       source: 'Official',
       model: 'Gemini 1.5 Pro',
       hasExecutionPlan: true,
+      hasStrategy: true,
       isWatchlist: false,
       isArchived: false,
       generatedAt: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(),
       savedAt: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(),
       categoryName: 'Tech Stocks',
-      categoryId: 'tech'
+      categoryId: 'tech',
+      // Plan 相关字段
+      planCount: 3,
+      planUnreadCount: 1,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: false,
+      strategyUnread: false,
+      officialUpdating: false,
+      officialUpdated: true  // 官方已更新状态
     },
     {
       id: 'demo-2',
@@ -3426,13 +4268,25 @@ const generateDemoStrategies = () => {
       grade: 'B',
       horizon: 'Medium-term (3-6 months)',
       source: 'Official',
+      model: 'Claude 3.5 Sonnet',
       hasExecutionPlan: false,
+      hasStrategy: true,
       isWatchlist: true,
       isArchived: false,
       generatedAt: new Date(now.getTime() - 5 * 60 * 60 * 1000).toISOString(),
       savedAt: new Date(now.getTime() - 5 * 60 * 60 * 1000).toISOString(),
       categoryName: 'High Risk',
-      categoryId: 'high-risk'
+      categoryId: 'high-risk',
+      planCount: 0,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: false,
+      strategyUnread: true,
+      officialUpdating: true,  // 官方正在更新
+      officialUpdated: false
     },
     {
       id: 'demo-3',
@@ -3442,13 +4296,25 @@ const generateDemoStrategies = () => {
       grade: 'A',
       horizon: 'Long-term (6+ months)',
       source: 'Official',
+      model: 'GPT-4o',
       hasExecutionPlan: true,
+      hasStrategy: true,
       isWatchlist: true,
       isArchived: false,
       generatedAt: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(),
       savedAt: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(),
       categoryName: 'Tech Stocks',
-      categoryId: 'tech'
+      categoryId: 'tech',
+      planCount: 5,
+      planUnreadCount: 2,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: true,
+      strategyNeedsUpdate: false,
+      strategyUnread: false,
+      officialUpdating: false,
+      officialUpdated: true  // 官方已更新
     },
     {
       id: 'demo-4',
@@ -3458,13 +4324,25 @@ const generateDemoStrategies = () => {
       grade: 'A',
       horizon: 'Medium-term (3-6 months)',
       source: 'Official',
-      hasExecutionPlan: false,
+      model: 'Gemini 1.5 Pro',
+      hasExecutionPlan: true,
+      hasStrategy: true,
       isWatchlist: false,
       isArchived: false,
       generatedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
       savedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
       categoryName: 'Tech Stocks',
-      categoryId: 'tech'
+      categoryId: 'tech',
+      planCount: 2,
+      planUnreadCount: 0,
+      planGeneratingCount: 2,
+      generatingCurrent: 1,
+      generatingProgress: 45,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: false,  // Official 来源不需要用户更新
+      strategyUnread: false,
+      officialUpdating: false,
+      officialUpdated: true  // 官方已更新状态
     },
     {
       id: 'demo-5',
@@ -3474,13 +4352,25 @@ const generateDemoStrategies = () => {
       grade: 'B',
       horizon: 'Long-term (6+ months)',
       source: 'Official',
+      model: 'Claude 3.5 Sonnet',
       hasExecutionPlan: false,
+      hasStrategy: true,
       isWatchlist: false,
       isArchived: false,
       generatedAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
       savedAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
       categoryName: 'Tech Stocks',
-      categoryId: 'tech'
+      categoryId: 'tech',
+      planCount: 0,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: false,
+      strategyUnread: false,
+      officialUpdating: false,
+      officialUpdated: true  // 官方已更新状态
     },
     {
       id: 'demo-6',
@@ -3490,13 +4380,23 @@ const generateDemoStrategies = () => {
       grade: 'B',
       horizon: 'Short-term (1-3 months)',
       source: 'My Strategy',
+      model: 'Gemini 1.5 Pro',
       hasExecutionPlan: false,
+      hasStrategy: true,
       isWatchlist: false,
       isArchived: false,
       generatedAt: new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString(),
       savedAt: new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString(),
       categoryName: 'Social Media',
-      categoryId: 'social'
+      categoryId: 'social',
+      planCount: 0,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: false,
+      strategyUnread: false
     },
     {
       id: 'demo-7',
@@ -3506,13 +4406,23 @@ const generateDemoStrategies = () => {
       grade: 'A',
       horizon: 'Medium-term (3-6 months)',
       source: 'My Strategy',
+      model: 'GPT-4o',
       hasExecutionPlan: true,
+      hasStrategy: true,
       isWatchlist: true,
       isArchived: false,
       generatedAt: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
       savedAt: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
       categoryName: 'E-commerce',
-      categoryId: 'ecommerce'
+      categoryId: 'ecommerce',
+      planCount: 4,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: false,
+      strategyUnread: false
     },
     {
       id: 'demo-8',
@@ -3522,13 +4432,23 @@ const generateDemoStrategies = () => {
       grade: 'B',
       horizon: 'Short-term (1-3 months)',
       source: 'My Strategy',
+      model: 'Claude 3.5 Sonnet',
       hasExecutionPlan: false,
+      hasStrategy: true,
       isWatchlist: false,
       isArchived: false,
       generatedAt: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString(),
       savedAt: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString(),
       categoryName: 'Semiconductors',
-      categoryId: 'semi'
+      categoryId: 'semi',
+      planCount: 0,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: false,
+      strategyUnread: false
     },
     {
       id: 'demo-9',
@@ -3538,13 +4458,23 @@ const generateDemoStrategies = () => {
       grade: 'C',
       horizon: 'Short-term (1-3 months)',
       source: 'My Strategy',
+      model: 'Gemini 1.5 Pro',
       hasExecutionPlan: false,
+      hasStrategy: true,
       isWatchlist: false,
       isArchived: true,
       generatedAt: new Date(now.getTime() - 12 * 24 * 60 * 60 * 1000).toISOString(),
       savedAt: new Date(now.getTime() - 12 * 24 * 60 * 60 * 1000).toISOString(),
       categoryName: 'Streaming',
-      categoryId: 'streaming'
+      categoryId: 'streaming',
+      planCount: 0,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: true,  // C/D grade 都需要显示 Update 按钮
+      strategyUnread: false
     },
     {
       id: 'demo-10',
@@ -3554,13 +4484,23 @@ const generateDemoStrategies = () => {
       grade: 'B',
       horizon: 'Long-term (6+ months)',
       source: 'My Strategy',
+      model: 'GPT-4o',
       hasExecutionPlan: false,
+      hasStrategy: true,
       isWatchlist: true,
       isArchived: false,
       generatedAt: new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000).toISOString(),
       savedAt: new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000).toISOString(),
       categoryName: 'Industrial',
-      categoryId: 'industrial'
+      categoryId: 'industrial',
+      planCount: 0,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: false,
+      strategyUnread: false
     },
     {
       id: 'demo-11',
@@ -3569,14 +4509,24 @@ const generateDemoStrategies = () => {
       direction: 'NEUTRAL',
       grade: 'N/A',
       horizon: 'N/A',
-      source: 'Official',
+      source: 'My Strategy',  // N/A grade 不能是 Official 来源
+      model: 'Gemini 1.5 Pro',
       hasExecutionPlan: false,
+      hasStrategy: true,
       isWatchlist: false,
       isArchived: false,
       generatedAt: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
       savedAt: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
       categoryName: 'Semiconductors',
-      categoryId: 'semi'
+      categoryId: 'semi',
+      planCount: 0,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: false,
+      strategyUnread: false
     },
     {
       id: 'demo-12',
@@ -3586,14 +4536,25 @@ const generateDemoStrategies = () => {
       grade: 'B',
       horizon: 'Medium-term (3-6 months)',
       source: 'Official',
-      hasExecutionPlan: false,
+      model: 'Claude 3.5 Sonnet',
+      hasExecutionPlan: true,
+      hasStrategy: true,
       isWatchlist: false,
       isArchived: false,
-      needsUpdate: true,
       generatedAt: new Date(now.getTime() - 45 * 24 * 60 * 60 * 1000).toISOString(),
       savedAt: new Date(now.getTime() - 45 * 24 * 60 * 60 * 1000).toISOString(),
       categoryName: 'Tech Stocks',
-      categoryId: 'tech'
+      categoryId: 'tech',
+      planCount: 2,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: false,  // Official 来源不需要用户更新
+      strategyUnread: false,
+      officialUpdating: false,
+      officialUpdated: true  // 官方已更新状态
     },
     {
       id: 'demo-13',
@@ -3603,14 +4564,187 @@ const generateDemoStrategies = () => {
       grade: 'C',
       horizon: 'Short-term (1-3 months)',
       source: 'My Strategy',
+      model: 'Gemini 1.5 Pro',
       hasExecutionPlan: false,
+      hasStrategy: true,
       isWatchlist: false,
       isArchived: false,
       needsUpdate: true,
       generatedAt: new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000).toISOString(),
       savedAt: new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000).toISOString(),
       categoryName: 'Tech Stocks',
-      categoryId: 'tech'
+      categoryId: 'tech',
+      planCount: 0,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: true,
+      strategyUnread: false
+    },
+    // 更多 needsUpdate 示例数据 (用于展示圆点功能)
+    // 注意：needsUpdate 只适用于非 Official 来源
+    {
+      id: 'demo-update-1',
+      symbol: 'PYPL',
+      stockName: 'PayPal Holdings',
+      direction: 'LONG',
+      grade: 'A',
+      horizon: 'Medium-term (3-6 months)',
+      source: 'My Strategy',  // 改为 My Strategy，才会出现在 Recommended Update 中
+      model: 'Claude 3.5 Sonnet',
+      hasExecutionPlan: true,
+      hasStrategy: true,
+      isWatchlist: false,
+      isArchived: false,
+      needsUpdate: true,
+      generatedAt: new Date(now.getTime() - 35 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 35 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'FinTech',
+      categoryId: 'fintech',
+      planCount: 2,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: true,
+      strategyNeedsUpdate: true,
+      strategyUnread: false
+    },
+    {
+      id: 'demo-update-2',
+      symbol: 'SQ',
+      stockName: 'Block, Inc.',
+      direction: 'LONG',
+      grade: 'B',
+      horizon: 'Short-term (1-3 months)',
+      source: 'My Strategy',
+      model: 'GPT-4o',
+      hasExecutionPlan: false,
+      hasStrategy: true,
+      isWatchlist: true,
+      isArchived: false,
+      needsUpdate: true,
+      generatedAt: new Date(now.getTime() - 40 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 40 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'FinTech',
+      categoryId: 'fintech',
+      planCount: 0,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: true,
+      strategyUnread: false
+    },
+    {
+      id: 'demo-update-3',
+      symbol: 'SHOP',
+      stockName: 'Shopify Inc.',
+      direction: 'LONG',
+      grade: 'A',
+      horizon: 'Long-term (6+ months)',
+      source: 'My Strategy',  // 改为 My Strategy，才会出现在 Recommended Update 中
+      model: 'Gemini 1.5 Pro',
+      hasExecutionPlan: true,
+      hasStrategy: true,
+      isWatchlist: false,
+      isArchived: false,
+      needsUpdate: true,
+      generatedAt: new Date(now.getTime() - 50 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 50 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'E-Commerce',
+      categoryId: 'ecommerce',
+      planCount: 4,
+      planUnreadCount: 1,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: true,
+      strategyNeedsUpdate: true,
+      strategyUnread: false
+    },
+    // 更多 No Signal (C/D grade) 示例数据
+    // 所有 C/D grade 策略都需要显示 Update 按钮
+    {
+      id: 'demo-nosig-1',
+      symbol: 'SNAP',
+      stockName: 'Snap Inc.',
+      direction: 'SHORT',
+      grade: 'C',
+      horizon: 'Short-term (1-3 months)',
+      source: 'My Strategy',
+      model: 'Claude 3.5 Sonnet',
+      hasExecutionPlan: false,
+      hasStrategy: true,
+      isWatchlist: false,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Social Media',
+      categoryId: 'social',
+      planCount: 0,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: true,  // C/D grade 都需要显示 Update 按钮
+      strategyUnread: false
+    },
+    {
+      id: 'demo-nosig-2',
+      symbol: 'PINS',
+      stockName: 'Pinterest, Inc.',
+      direction: 'LONG',
+      grade: 'D',
+      horizon: 'Medium-term (3-6 months)',
+      source: 'My Strategy',  // C/D grade 只能是 My Strategy 来源
+      model: 'GPT-4o',
+      hasExecutionPlan: false,
+      hasStrategy: true,
+      isWatchlist: false,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Social Media',
+      categoryId: 'social',
+      planCount: 0,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: true,  // C/D grade 都需要显示 Update 按钮
+      strategyUnread: false
+    },
+    {
+      id: 'demo-nosig-3',
+      symbol: 'UBER',
+      stockName: 'Uber Technologies',
+      direction: 'SHORT',
+      grade: 'D',
+      horizon: 'Short-term (1-3 months)',
+      source: 'My Strategy',
+      model: 'Gemini 1.5 Pro',
+      hasExecutionPlan: false,
+      hasStrategy: true,
+      isWatchlist: false,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Transportation',
+      categoryId: 'transport',
+      planCount: 0,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: true,  // C/D grade 都需要显示 Update 按钮
+      strategyUnread: false
     },
     // No Opportunity Found 示例数据
     {
@@ -3620,15 +4754,24 @@ const generateDemoStrategies = () => {
       direction: 'NEUTRAL',
       grade: 'N/A',
       horizon: 'N/A',
-      source: 'Official',
+      source: 'My Strategy',  // N/A grade 不能是 Official 来源
       model: 'Gemini 1.5 Pro',
       hasExecutionPlan: false,
+      hasStrategy: true,
       isWatchlist: false,
       isArchived: false,
       generatedAt: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
       savedAt: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
       categoryName: 'Tech Stocks',
-      categoryId: 'tech'
+      categoryId: 'tech',
+      planCount: 0,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: false,
+      strategyUnread: false
     },
     {
       id: 'demo-no-opp-2',
@@ -3640,12 +4783,21 @@ const generateDemoStrategies = () => {
       source: 'My Strategy',
       model: 'Claude 3.5',
       hasExecutionPlan: false,
+      hasStrategy: true,
       isWatchlist: false,
       isArchived: false,
       generatedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
       savedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
       categoryName: 'Tech Stocks',
-      categoryId: 'tech'
+      categoryId: 'tech',
+      planCount: 0,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: false,
+      strategyUnread: false
     },
     {
       id: 'demo-no-opp-3',
@@ -3657,12 +4809,21 @@ const generateDemoStrategies = () => {
       source: 'My Strategy',
       model: 'GPT-4o',
       hasExecutionPlan: false,
+      hasStrategy: true,
       isWatchlist: false,
       isArchived: false,
       generatedAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
       savedAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
       categoryName: null,
-      categoryId: null
+      categoryId: null,
+      planCount: 0,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: false,
+      strategyUnread: false
     },
     {
       id: 'demo-no-opp-4',
@@ -3674,12 +4835,21 @@ const generateDemoStrategies = () => {
       source: 'My Strategy',
       model: 'Gemini 1.5 Pro',
       hasExecutionPlan: false,
+      hasStrategy: true,
       isWatchlist: false,
       isArchived: false,
       generatedAt: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
       savedAt: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
       categoryName: 'High Risk',
-      categoryId: 'high-risk'
+      categoryId: 'high-risk',
+      planCount: 0,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: false,
+      strategyUnread: false
     },
     {
       id: 'demo-no-opp-5',
@@ -3688,70 +4858,104 @@ const generateDemoStrategies = () => {
       direction: 'NEUTRAL',
       grade: 'N/A',
       horizon: 'N/A',
-      source: 'Official',
+      source: 'My Strategy',  // N/A grade 不能是 Official 来源
       model: 'Gemini 1.5 Pro',
       hasExecutionPlan: false,
+      hasStrategy: true,
       isWatchlist: false,
       isArchived: false,
       generatedAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
       savedAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
       categoryName: null,
-      categoryId: null
+      categoryId: null,
+      planCount: 0,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: false,
+      strategyUnread: false
     },
     // Only Plan 示例数据 - 只有执行计划，没有策略报告
+    // 策略相关字段 (direction, grade, horizon, source, generatedAt) 都为空
     {
       id: 'demo-only-plan-1',
       symbol: 'COIN',
       stockName: 'Coinbase Global Inc.',
-      direction: 'LONG',
-      grade: 'B',
-      horizon: 'Short-term (1-3 months)',
-      source: 'My Strategy',
-      model: 'Gemini 1.5 Pro',
+      direction: null,     // Only Plan 没有策略，无方向
+      grade: null,         // Only Plan 没有策略，无评级
+      horizon: null,       // Only Plan 没有策略，无时间范围
+      source: null,        // Only Plan 没有策略，无来源
+      model: null,
       hasExecutionPlan: true,
       hasStrategy: false,
       isWatchlist: false,
       isArchived: false,
-      generatedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      savedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      generatedAt: null,   // Only Plan 没有策略，无创建日期
+      savedAt: null,
       categoryName: 'High Risk',
-      categoryId: 'high-risk'
+      categoryId: 'high-risk',
+      planCount: 2,
+      planUnreadCount: 1,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: false,
+      strategyUnread: false
     },
     {
       id: 'demo-only-plan-2',
-      symbol: 'PLTR',
-      stockName: 'Palantir Technologies',
-      direction: 'LONG',
-      grade: 'A',
-      horizon: 'Medium-term (3-6 months)',
-      source: 'My Strategy',
-      model: 'Claude 3.5',
+      symbol: 'RBLX',
+      stockName: 'Roblox Corporation',
+      direction: null,     // Only Plan 没有策略，无方向
+      grade: null,         // Only Plan 没有策略，无评级
+      horizon: null,       // Only Plan 没有策略，无时间范围
+      source: null,        // Only Plan 没有策略，无来源
+      model: null,
       hasExecutionPlan: true,
       hasStrategy: false,
       isWatchlist: false,
       isArchived: false,
-      generatedAt: new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-      savedAt: new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+      generatedAt: null,   // Only Plan 没有策略，无创建日期
+      savedAt: null,
       categoryName: 'Tech Stocks',
-      categoryId: 'tech'
+      categoryId: 'tech',
+      planCount: 3,
+      planUnreadCount: 0,
+      planGeneratingCount: 1,
+      generatingCurrent: 1,
+      generatingProgress: 60,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: false,
+      strategyUnread: false
     },
     {
       id: 'demo-only-plan-3',
-      symbol: 'SQ',
-      stockName: 'Block Inc.',
-      direction: 'SHORT',
-      grade: 'B',
-      horizon: 'Short-term (1-3 months)',
-      source: 'My Strategy',
-      model: 'GPT-4o',
+      symbol: 'HOOD',
+      stockName: 'Robinhood Markets',
+      direction: null,     // Only Plan 没有策略，无方向
+      grade: null,         // Only Plan 没有策略，无评级
+      horizon: null,       // Only Plan 没有策略，无时间范围
+      source: null,        // Only Plan 没有策略，无来源
+      model: null,
       hasExecutionPlan: true,
       hasStrategy: false,
       isWatchlist: false,
       isArchived: false,
-      generatedAt: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString(),
-      savedAt: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+      generatedAt: null,   // Only Plan 没有策略，无创建日期
+      savedAt: null,
       categoryName: null,
-      categoryId: null
+      categoryId: null,
+      planCount: 1,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: true,
+      strategyNeedsUpdate: false,
+      strategyUnread: false
     }
   ]
 }
@@ -3829,6 +5033,7 @@ const loadSavedStrategies = () => {
     console.error('Failed to load saved strategies:', error)
     allSavedStrategies.value = generateDemoStrategies()
   }
+  
 }
 </script>
 
@@ -3845,6 +5050,57 @@ const loadSavedStrategies = () => {
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+/* Slider Thumb Styles */
+.slider-thumb::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
+  transition: all 0.15s ease;
+}
+.slider-thumb::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.5);
+}
+.slider-thumb::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
+}
+
+/* Slide Fade Transition */
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+.slide-fade-leave-active {
+  transition: all 0.2s ease-in;
+}
+.slide-fade-enter-from {
+  opacity: 0;
+  transform: translateY(-10px);
+  max-height: 0;
+}
+.slide-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+  max-height: 0;
+}
+.slide-fade-enter-to,
+.slide-fade-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+  max-height: 500px;
 }
 
 @keyframes fade-in {
