@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-[#0f0f0f] min-h-screen flex flex-col pb-24">
+  <div class="bg-[#050505] min-h-screen flex flex-col pb-24">
     <!-- 1. Global Navbar -->
     <Navbar />
 
@@ -9,13 +9,13 @@
       <!-- Help Button for Tour -->
       <button 
         @click="startInfoTour"
-        class="fixed top-20 right-6 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-[#1a1a1a] border border-[#333] text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all group shadow-lg"
+        class="fixed top-20 right-6 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-[#0a0a0a] border border-[#222] text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all group shadow-lg"
         title="查看使用引导"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
-        <span class="absolute right-full mr-2 px-2 py-1 text-xs text-white bg-[#222] border border-[#333] rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+        <span class="absolute right-full mr-2 px-2 py-1 text-xs text-white bg-[#111] border border-[#222] rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
           使用引导
         </span>
       </button>
@@ -23,7 +23,7 @@
       <!-- Hero Section (Always visible for all tabs) -->
       <div class="mb-8 text-center py-10">
         <h1 class="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">
-          Discover Your Next <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Winning Trade</span>
+          Discover Your Next <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-600">Winning Trade</span>
         </h1>
         <p class="text-gray-400 max-w-2xl mx-auto text-lg">
           AI-powered insights to help you find high-conviction opportunities in seconds.
@@ -31,11 +31,11 @@
       </div>
 
       <!-- Universal Filter Bar -->
-      <div id="info-filter-bar" class="sticky top-16 z-40 bg-[#0f0f0f]/95 backdrop-blur border-b border-[#333] px-4 lg:px-8 py-3 mb-6 flex flex-wrap items-center justify-between gap-4 transition-all duration-300">
+      <div id="info-filter-bar" class="sticky top-16 z-40 bg-[#050505]/95 backdrop-blur border-b border-[#222] px-4 lg:px-8 py-3 mb-6 flex flex-wrap items-center justify-between gap-4 transition-all duration-300">
         <!-- Left: Filter & Switcher -->
         <div class="flex items-center gap-3">
           <!-- Content Switcher -->
-          <div id="content-switcher" class="bg-[#1a1a1a] border border-[#333] rounded-lg p-1 flex items-center">
+          <div id="content-switcher" class="bg-[#0a0a0a] border border-[#222] rounded-lg p-1 flex items-center">
             <button 
               @click="contentFilter = 'recommended'"
               class="px-3 py-1.5 rounded-md text-xs font-bold transition-all"
@@ -57,123 +57,123 @@
             id="filter-button"
             v-if="activeTab !== 'themes'"
             @click="showFilterModal = true"
-            class="h-9 w-9 bg-[#1a1a1a] hover:bg-[#2a2a2a] border border-[#333] rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+            class="h-8 w-8 bg-[#050505] hover:bg-[#111] border border-[#1a1a1a] rounded flex items-center justify-center text-gray-500 hover:text-white transition-colors"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
           </button>
         </div>
 
         <!-- Right: View Controls -->
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
           <!-- Sort Buttons (Themes only) -->
-          <div v-if="activeTab === 'themes'" class="flex items-center gap-2">
+          <div v-if="activeTab === 'themes'" class="flex items-center gap-1">
             <button 
               @click="setSort('change')"
-              class="flex items-center gap-2 px-3 py-1.5 border rounded-lg text-xs font-medium transition-colors"
-              :class="sortBy === 'change' ? 'bg-[#333] text-white border-gray-500' : 'bg-[#1a1a1a] text-gray-400 border-[#333] hover:text-white hover:border-gray-600'"
+              class="flex items-center gap-1.5 px-2.5 py-1.5 border rounded text-[10px] font-bold uppercase tracking-wide transition-colors"
+              :class="sortBy === 'change' ? 'bg-[#111] text-white border-[#222]' : 'bg-[#050505] text-gray-500 border-[#1a1a1a] hover:text-white hover:border-[#222]'"
             >
-              <span>涨跌幅排序</span>
-              <svg v-if="sortBy === 'change'" class="w-3 h-3 transition-transform duration-300" :class="sortOrder === 'asc' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              <span>涨跌幅</span>
+              <svg v-if="sortBy === 'change'" class="w-2.5 h-2.5 transition-transform duration-200" :class="sortOrder === 'asc' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </button>
             <button 
               @click="setSort('time')"
-              class="flex items-center gap-2 px-3 py-1.5 border rounded-lg text-xs font-medium transition-colors"
-              :class="sortBy === 'time' ? 'bg-[#333] text-white border-gray-500' : 'bg-[#1a1a1a] text-gray-400 border-[#333] hover:text-white hover:border-gray-600'"
+              class="flex items-center gap-1.5 px-2.5 py-1.5 border rounded text-[10px] font-bold uppercase tracking-wide transition-colors"
+              :class="sortBy === 'time' ? 'bg-[#111] text-white border-[#222]' : 'bg-[#050505] text-gray-500 border-[#1a1a1a] hover:text-white hover:border-[#222]'"
             >
-              <span>时间排序</span>
-              <svg v-if="sortBy === 'time'" class="w-3 h-3 transition-transform duration-300" :class="sortOrder === 'asc' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              <span>时间</span>
+              <svg v-if="sortBy === 'time'" class="w-2.5 h-2.5 transition-transform duration-200" :class="sortOrder === 'asc' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </button>
           </div>
 
           <!-- View Switcher (Opportunities only) -->
-          <div v-if="['opportunities'].includes(activeTab)" class="bg-[#1a1a1a] border border-[#333] rounded-lg p-1 flex items-center">
+          <div v-if="['opportunities'].includes(activeTab)" class="bg-[#050505] border border-[#1a1a1a] rounded p-0.5 flex items-center">
             <button 
               @click="viewMode = 'card'"
-              class="p-1.5 rounded-md transition-all"
-              :class="viewMode === 'card' ? 'bg-[#333] text-white shadow-sm' : 'text-gray-500 hover:text-gray-300'"
+              class="p-1.5 rounded transition-all"
+              :class="viewMode === 'card' ? 'bg-[#222] text-white' : 'text-gray-600 hover:text-gray-400'"
               title="Card View"
             >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
             </button>
             <button 
               @click="viewMode = 'list'"
-              class="p-1.5 rounded-md transition-all"
-              :class="viewMode === 'list' ? 'bg-[#333] text-white shadow-sm' : 'text-gray-500 hover:text-gray-300'"
+              class="p-1.5 rounded transition-all"
+              :class="viewMode === 'list' ? 'bg-[#222] text-white' : 'text-gray-600 hover:text-gray-400'"
               title="List View"
             >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Tab: Opportunities (Waterfall) -->
+      <!-- Tab: Opportunities -->
       <div id="opportunities-content" v-if="activeTab === 'opportunities'" class="w-full px-4 lg:px-8">
         <div 
-          :class="viewMode === 'card' ? 'grid gap-6' : 'flex flex-col space-y-4'"
+          :class="viewMode === 'card' ? 'grid gap-4' : 'flex flex-col space-y-3'"
           :style="viewMode === 'card' ? { gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))` } : {}"
         >
-          <!-- Cards (Dark Tech Style) - Only for Card View -->
+          <!-- Cards (Minimalist Dark) -->
           <template v-if="viewMode === 'card'">
             <div 
               v-for="(opp, index) in filteredOpportunities" 
               :key="opp.id + '-' + index" 
               :id="index === 0 ? 'first-opportunity-card' : undefined"
               @click="openStrategyModal(opp)"
-              class="bg-slate-900 rounded-xl shadow-lg p-6 text-center text-white border border-slate-800 hover:border-blue-500/50 transition-all duration-300 cursor-pointer group relative overflow-hidden"
+              class="bg-[#0a0a0a] p-5 text-center text-white border border-[#1a1a1a] hover:border-[#333] transition-all duration-200 cursor-pointer group relative overflow-hidden"
             >
-              <!-- Background decoration -->
-              <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
+              <!-- Subtle top accent on hover -->
+              <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/0 to-transparent group-hover:via-cyan-500/50 transition-all duration-300"></div>
 
               <div class="relative z-10">
-                <div class="flex justify-center mb-4">
-                  <span class="text-[10px] font-mono text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded uppercase tracking-wider">{{ opp.strategy }}</span>
+                <div class="flex justify-center mb-3">
+                  <span class="text-[9px] font-bold text-cyan-500 border border-cyan-500/30 px-1.5 py-0.5 rounded uppercase tracking-wider">{{ opp.strategy }}</span>
                 </div>
                 
-                <h3 class="text-3xl font-bold mb-1 text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-400 group-hover:from-blue-400 group-hover:to-blue-200 transition-all">{{ opp.symbol }}</h3>
-                <p class="text-xs text-slate-400 mb-6 font-mono line-clamp-1">{{ opp.title }}</p>
+                <h3 class="text-2xl font-bold mb-1 text-white group-hover:text-cyan-50 transition-colors">{{ opp.symbol }}</h3>
+                <p class="text-[10px] text-gray-500 mb-5 font-mono line-clamp-1">{{ opp.title }}</p>
                 
-                <div class="grid grid-cols-2 gap-4 mb-6 border-y border-slate-800 py-4">
-                  <div class="text-center border-r border-slate-800">
-                    <div class="text-2xl font-bold text-white">A+</div>
-                    <div class="text-[10px] text-slate-500 uppercase tracking-wider">Rating</div>
+                <div class="grid grid-cols-2 gap-3 mb-5 border-y border-[#1a1a1a] py-3">
+                  <div class="text-center border-r border-[#1a1a1a]">
+                    <div class="text-xl font-bold text-white">A+</div>
+                    <div class="text-[9px] text-gray-600 uppercase tracking-wider">评级</div>
                   </div>
                   <div class="text-center">
-                    <div class="text-2xl font-bold" :class="opp.type === 'Long' ? 'text-emerald-400' : 'text-red-400'">{{ opp.type.toUpperCase() }}</div>
-                    <div class="text-[10px] text-slate-500 uppercase tracking-wider">Direction</div>
+                    <div class="text-xl font-bold" :class="opp.type === 'Long' ? 'text-green-500' : 'text-red-500'">{{ opp.type === 'Long' ? '做多' : '做空' }}</div>
+                    <div class="text-[9px] text-gray-600 uppercase tracking-wider">方向</div>
                   </div>
                 </div>
 
-                <div class="flex justify-between text-[10px] text-slate-400 font-mono">
-                  <span>1-10 DAYS</span>
+                <div class="flex justify-between text-[9px] text-gray-600 font-mono uppercase">
+                  <span>1-10 天</span>
                   <span>GEMINI</span>
-                  <span :class="opp.risk === 'High' ? 'text-red-400' : (opp.risk === 'Med' ? 'text-yellow-400' : 'text-green-400')">{{ opp.risk.toUpperCase() }} RISK</span>
+                  <span :class="opp.risk === 'High' ? 'text-red-500' : (opp.risk === 'Med' ? 'text-yellow-500' : 'text-green-500')">{{ opp.risk === 'High' ? '高' : (opp.risk === 'Med' ? '中' : '低') }}风险</span>
                 </div>
               </div>
             </div>
           </template>
 
-          <!-- List View (Compact Data Row - Dark Mode Adapted) -->
+          <!-- List View (Minimalist) -->
           <template v-else>
             <div 
               v-for="(opp, index) in filteredOpportunities" 
               :key="opp.id + '-' + index" 
               @click="openStrategyModal(opp)"
-              class="bg-[#1a1a1a] rounded-lg border border-[#333] p-4 flex items-center gap-4 hover:border-blue-500 transition-colors cursor-pointer group"
+              class="bg-[#0a0a0a] border border-[#1a1a1a] p-4 flex items-center gap-4 hover:border-[#333] transition-colors cursor-pointer group"
             >
               <!-- Status Bar -->
-              <div class="w-1 h-10 rounded-full" :class="opp.type === 'Long' ? 'bg-emerald-500' : 'bg-red-500'"></div>
+              <div class="w-0.5 h-8" :class="opp.type === 'Long' ? 'bg-green-500' : 'bg-red-500'"></div>
               
               <!-- Symbol -->
               <div class="w-16 flex-shrink-0">
-                <div class="font-bold text-white">{{ opp.symbol }}</div>
+                <div class="font-bold text-white text-sm">{{ opp.symbol }}</div>
                 <div class="text-[10px] text-gray-500">US Stock</div>
               </div>
 
               <!-- Main Info -->
               <div class="flex-1 min-w-0 grid grid-cols-12 gap-4 items-center">
                 <div class="col-span-5">
-                  <div class="font-medium text-gray-200 truncate text-sm group-hover:text-blue-400 transition-colors">{{ opp.title }}</div>
+                  <div class="font-medium text-gray-300 truncate text-sm group-hover:text-cyan-400 transition-colors">{{ opp.title }}</div>
                   <div class="flex items-center gap-2 mt-0.5">
                     <span class="text-[10px] bg-[#333] text-gray-400 px-1.5 rounded">{{ opp.strategy }}</span>
                     <span class="text-[10px] text-gray-500 truncate">{{ opp.tags.join(', ') }}</span>
@@ -194,11 +194,11 @@
                 <div class="col-span-3 flex justify-end items-center gap-3">
                    <!-- Model (Replaces Score) -->
                    <div class="text-right">
-                      <div class="text-[10px] text-gray-500 uppercase">Model</div>
-                      <div class="font-bold text-blue-400">GEMINI</div>
+                      <div class="text-[10px] text-gray-600 uppercase tracking-wide">Model</div>
+                      <div class="font-bold text-cyan-400 text-sm">GEMINI</div>
                    </div>
-                   <div class="w-8 h-8 rounded-full bg-[#222] flex items-center justify-center text-gray-500 group-hover:bg-blue-900/30 group-hover:text-blue-400 transition-colors">
-                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                   <div class="w-7 h-7 rounded-full bg-[#111] flex items-center justify-center text-gray-600 group-hover:bg-cyan-500/10 group-hover:text-cyan-400 transition-colors">
+                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                    </div>
                 </div>
               </div>
@@ -207,77 +207,77 @@
         </div>
 
         <!-- Loading Sentinel -->
-        <div ref="loadSentinel" class="h-20 flex items-center justify-center mt-8">
-          <div v-if="isLoading" class="flex items-center gap-2 text-gray-500">
-            <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-            <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce delay-100"></div>
-            <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce delay-200"></div>
-            <span class="text-sm ml-2">Loading more opportunities...</span>
+        <div ref="loadSentinel" class="h-16 flex items-center justify-center mt-6">
+          <div v-if="isLoading" class="flex items-center gap-1.5 text-gray-600">
+            <div class="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-pulse"></div>
+            <div class="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-pulse delay-75"></div>
+            <div class="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-pulse delay-150"></div>
+            <span class="text-xs ml-2">加载中...</span>
           </div>
         </div>
       </div>
       
-      <!-- Tab: Themes (List View - Simplified Attribution Cards) -->
+      <!-- Tab: Themes (List View - Minimalist) -->
       <div v-else-if="activeTab === 'themes'" class="w-full max-w-7xl mx-auto px-4">
-        <div class="space-y-4">
+        <div class="space-y-3">
           <div 
             v-for="event in allEvents" 
             :key="event.id" 
             @click="openThemeDetailFromEvent(event)"
-            class="bg-[#1a1a1a] border border-[#333] rounded-xl p-6 flex items-center gap-6 hover:border-blue-500/50 hover:bg-[#222] transition-all cursor-pointer group shadow-lg"
+            class="bg-[#0a0a0a] border border-[#1a1a1a] p-5 flex items-center gap-5 hover:border-[#333] hover:bg-[#0f0f0f] transition-all cursor-pointer group"
           >
             <!-- Left: Title & Desc -->
             <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-3 mb-2">
-                <h3 class="text-xl font-bold text-white truncate group-hover:text-blue-400 transition-colors">{{ event.title }}</h3>
-                <span class="text-xs px-2 py-0.5 rounded bg-[#333] text-gray-400 font-mono border border-[#444]">{{ event.time.split(' ')[0] }}</span>
+              <div class="flex items-center gap-3 mb-1.5">
+                <h3 class="text-lg font-bold text-white truncate group-hover:text-cyan-50 transition-colors">{{ event.title }}</h3>
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-[#111] text-gray-500 font-mono">{{ event.time.split(' ')[0] }}</span>
               </div>
-              <p class="text-sm text-gray-400 line-clamp-2 leading-relaxed">{{ event.desc }}</p>
+              <p class="text-xs text-gray-500 line-clamp-1 leading-relaxed group-hover:text-gray-400 transition-colors">{{ event.desc }}</p>
             </div>
 
-            <!-- Middle: Affected Stocks (Attribution Style) -->
-            <div class="flex items-center gap-3 shrink-0">
-              <div v-for="stock in event.stocks.slice(0, 3)" :key="stock.symbol" class="flex items-center gap-3 bg-[#151515] p-2 rounded border border-[#333] min-w-[120px]">
-                <div class="w-8 h-8 rounded bg-[#222] flex items-center justify-center text-xs font-bold text-gray-300 border border-[#333]">
-                  {{ stock.symbol[0] }}
+            <!-- Middle: Affected Stocks -->
+            <div class="flex items-center gap-2 shrink-0">
+              <div v-for="stock in event.stocks.slice(0, 3)" :key="stock.symbol" class="flex items-center gap-2 bg-[#050505] px-2.5 py-1.5 rounded border border-[#1a1a1a]">
+                <div class="w-6 h-6 rounded bg-[#111] flex items-center justify-center text-[10px] font-bold text-gray-500 border border-[#222]">
+                  {{ stock.symbol.slice(0, 2) }}
                 </div>
                 <div>
-                  <div class="font-bold text-gray-200 text-xs">{{ stock.symbol }}</div>
+                  <div class="font-bold text-gray-300 text-[11px]">{{ stock.symbol }}</div>
                   <div class="text-[10px]" :class="stock.change > 0 ? 'text-green-500' : 'text-red-500'">
                     {{ stock.change > 0 ? '+' : '' }}{{ stock.change }}%
                   </div>
                 </div>
               </div>
-              <span v-if="event.stocks.length > 3" class="text-xs text-gray-500 bg-[#151515] px-2 py-1 rounded border border-[#333] h-8 flex items-center">+{{ event.stocks.length - 3 }}</span>
+              <span v-if="event.stocks.length > 3" class="text-[10px] text-gray-600 bg-[#050505] px-2 py-1 rounded border border-[#1a1a1a]">+{{ event.stocks.length - 3 }}</span>
             </div>
 
             <!-- Right: Theme Change -->
-            <div class="text-right min-w-[100px] pl-6 border-l border-[#333]">
-              <div class="text-2xl font-bold font-mono" :class="parseFloat(event.themeChange) > 0 ? 'text-green-500' : 'text-red-500'">
+            <div class="text-right min-w-[90px] pl-5 border-l border-[#1a1a1a]">
+              <div class="text-xl font-bold font-mono" :class="parseFloat(event.themeChange) > 0 ? 'text-green-500' : 'text-red-500'">
                 {{ parseFloat(event.themeChange) > 0 ? '+' : '' }}{{ event.themeChange }}%
               </div>
-              <div class="text-[10px] text-gray-500 uppercase tracking-wider mt-1">Theme Change</div>
+              <div class="text-[9px] text-gray-600 uppercase tracking-wider mt-0.5">涨跌幅</div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Tab: ThemesB (Original Chart & Modal) -->
+      <!-- Tab: ThemesB (Chart View) -->
       <div v-else-if="activeTab === 'themesB'" class="w-full">
         
         <!-- Theme Performance Chart -->
-        <div class="mb-8 bg-[#1a1a1a] border border-[#333] rounded-xl p-4 relative">
+        <div class="mb-6 bg-[#0a0a0a] border border-[#1a1a1a] p-4 relative">
           <div class="flex justify-between items-center mb-4 px-2">
-            <h3 class="text-lg font-bold text-white flex items-center gap-2">
-              <span class="w-1 h-4 bg-blue-500 rounded-full"></span>
-              主题指数走势 (每日涨跌幅)
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <span class="w-0.5 h-4 bg-cyan-500"></span>
+              主题指数走势
             </h3>
-            <div class="flex gap-2">
+            <div class="flex gap-1">
               <button 
                 v-for="period in ['1M', '3M', '6M', 'YTD']" 
                 :key="period"
-                class="px-3 py-1 text-xs font-bold rounded-full transition-colors"
-                :class="selectedChartPeriod === period ? 'bg-blue-600 text-white' : 'bg-[#333] text-gray-400 hover:text-white'"
+                class="px-2.5 py-1 text-[10px] font-bold rounded transition-colors uppercase"
+                :class="selectedChartPeriod === period ? 'bg-cyan-500 text-black' : 'bg-[#111] text-gray-500 hover:text-white'"
                 @click="selectedChartPeriod = period"
               >
                 {{ period }}
@@ -293,81 +293,79 @@
         <!-- Loading Sentinel -->
         <div ref="loadSentinel" class="h-24 flex items-center justify-center mt-8 w-full">
           <div v-if="isLoading" class="flex items-center gap-2 text-gray-500">
-            <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-            <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce delay-100"></div>
-            <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce delay-200"></div>
+            <div class="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-pulse"></div>
+            <div class="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-pulse delay-75"></div>
+            <div class="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-pulse delay-150"></div>
             <span class="text-sm ml-2">Loading more themes...</span>
           </div>
         </div>
       </div>
 
-      <!-- Tab: Attribution (Cyberpunk HUD) -->
+      <!-- Tab: Attribution (Minimalist Dark) -->
       <div v-else-if="activeTab === 'attribution'" class="w-full px-8 pb-8">
-        <div class="space-y-6">
-          <div v-for="event in allAttributionEvents" :key="event.id" class="flex gap-6 items-stretch group">
+        <div class="space-y-4">
+          <div v-for="event in allAttributionEvents" :key="event.id" class="flex gap-5 items-stretch group">
             <!-- Time Column -->
-            <div class="w-24 text-right pt-6 shrink-0">
-              <div class="text-2xl font-bold text-white font-mono">{{ event.time.split(' ')[0] }}</div>
-              <div class="text-sm text-gray-500 font-mono uppercase">{{ event.time.split(' ')[1] || 'AM' }}</div>
+            <div class="w-20 text-right pt-5 shrink-0">
+              <div class="text-lg font-bold text-white font-mono tracking-tight">{{ event.time.split(' ')[0] }}</div>
+              <div class="text-xs text-gray-600 font-mono uppercase">{{ event.time.split(' ')[1] || 'AM' }}</div>
             </div>
             
             <!-- Decoration Line -->
-            <div class="w-px bg-[#333] relative group-hover:bg-cyan-500 transition-colors duration-300">
-              <div class="absolute top-8 -left-[3px] w-1.5 h-1.5 bg-[#111] border border-cyan-500 rounded-full hidden group-hover:block shadow-[0_0_8px_rgba(6,182,212,0.8)]"></div>
+            <div class="w-px bg-[#1a1a1a] relative group-hover:bg-cyan-500/50 transition-colors duration-300">
+              <div class="absolute top-6 -left-1 w-2 h-2 bg-[#050505] border border-[#333] rounded-full group-hover:border-cyan-500 group-hover:shadow-[0_0_6px_rgba(6,182,212,0.6)] transition-all"></div>
             </div>
             
             <!-- Card -->
-            <div class="flex-1 bg-[#151515] border border-[#333] p-1 group-hover:border-cyan-500/50 transition-all relative overflow-hidden shadow-lg">
-              <!-- Corner Accents -->
-              <div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-gray-500 group-hover:border-cyan-500"></div>
-              <div class="absolute top-0 right-0 w-2 h-2 border-t border-r border-gray-500 group-hover:border-cyan-500"></div>
-              <div class="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-gray-500 group-hover:border-cyan-500"></div>
-              <div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-gray-500 group-hover:border-cyan-500"></div>
+            <div class="flex-1 bg-[#0a0a0a] border border-[#1a1a1a] group-hover:border-[#333] transition-all relative overflow-hidden">
+              <!-- Subtle top accent line on hover -->
+              <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/0 to-transparent group-hover:via-cyan-500/50 transition-all duration-500"></div>
 
               <div class="flex h-full">
                 <!-- Image (Left) -->
-                <div class="w-64 relative overflow-hidden border-r border-[#333] shrink-0">
-                  <img :src="event.image" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div class="absolute inset-0 bg-cyan-900/10 mix-blend-overlay"></div>
-                  <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent">
-                    <h3 class="font-bold text-white text-xl leading-tight">{{ event.title }}</h3>
+                <div class="w-56 relative overflow-hidden border-r border-[#1a1a1a] shrink-0">
+                  <img :src="event.image" class="w-full h-full object-cover opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
+                  <div class="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/80 to-transparent"></div>
+                  <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a0a0a] to-transparent">
+                    <div class="text-xs text-cyan-400/80 font-bold uppercase tracking-wider mb-1">主题</div>
                   </div>
                 </div>
 
-                <!-- Content (Middle) - Static -->
-                <div class="flex-1 p-6 flex flex-col justify-center">
-                  <div class="flex items-center gap-4 mb-3">
-                    <h3 class="text-2xl font-bold text-white leading-tight">{{ event.title }}</h3>
-                  </div>
-                  
-                  <p class="text-base text-gray-400 leading-relaxed line-clamp-3 max-w-4xl">{{ event.desc }}</p>
+                <!-- Content (Middle) -->
+                <div class="flex-1 p-5 flex flex-col justify-center">
+                  <h3 class="text-xl font-bold text-white leading-tight mb-2 group-hover:text-cyan-50 transition-colors">{{ event.title }}</h3>
+                  <p class="text-sm text-gray-500 leading-relaxed line-clamp-2 max-w-3xl group-hover:text-gray-400 transition-colors">{{ event.desc }}</p>
                 </div>
 
                 <!-- Stocks List (Right) -->
-                <div class="w-80 bg-[#0a0a0a] border-l border-[#333] flex flex-col shrink-0 relative">
-                  <div class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2" style="max-height: 200px;">
+                <div class="w-72 bg-[#050505] border-l border-[#1a1a1a] flex flex-col shrink-0 relative">
+                  <div class="px-3 py-2 border-b border-[#1a1a1a] flex items-center justify-between">
+                    <span class="text-[10px] text-gray-600 font-bold uppercase tracking-wider">相关标的</span>
+                    <span class="text-[10px] text-gray-600">{{ event.stocks.length }} 只</span>
+                  </div>
+                  <div class="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1" style="max-height: 160px;">
                     <div 
                       v-for="stock in event.stocks" 
                       :key="stock.symbol" 
                       @click.stop="openEventModal(event)"
-                      class="bg-[#1a1a1a] border border-[#333] rounded p-2 flex items-center gap-3 hover:border-blue-500/50 hover:bg-[#222] transition-all cursor-pointer group/stock"
+                      class="bg-[#0a0a0a] border border-[#1a1a1a] rounded px-2.5 py-2 flex items-center gap-2.5 hover:border-[#333] hover:bg-[#111] transition-all cursor-pointer group/stock"
                     >
                       <!-- Icon -->
-                      <div class="w-8 h-8 rounded bg-[#252525] flex items-center justify-center text-xs font-bold text-gray-400 border border-[#333] group-hover/stock:text-white group-hover/stock:border-blue-500 transition-colors shrink-0">
-                        {{ stock.symbol[0] }}
+                      <div class="w-7 h-7 rounded bg-[#111] flex items-center justify-center text-[10px] font-bold text-gray-500 border border-[#222] group-hover/stock:text-cyan-400 group-hover/stock:border-cyan-500/50 transition-colors shrink-0">
+                        {{ stock.symbol.slice(0, 2) }}
                       </div>
                       
                       <!-- Info -->
                       <div class="flex-1 min-w-0">
-                        <div class="text-sm font-bold text-white leading-none mb-1 truncate group-hover/stock:text-blue-400 transition-colors">{{ stock.symbol }}</div>
-                        <div class="text-[10px] text-gray-500 truncate">{{ stock.name }}</div>
+                        <div class="text-xs font-bold text-gray-300 leading-none mb-0.5 truncate group-hover/stock:text-white transition-colors">{{ stock.symbol }}</div>
+                        <div class="text-[10px] text-gray-600 truncate">{{ stock.name }}</div>
                       </div>
                       
                       <!-- Sentiment Label -->
-                      <div class="text-right shrink-0 flex flex-col items-end gap-1">
+                      <div class="shrink-0">
                         <span 
-                          class="text-[10px] font-bold px-1.5 py-0.5 rounded border uppercase tracking-wider"
-                          :class="stock.change > 0 ? 'bg-green-900/30 text-green-400 border-green-800' : (stock.change < 0 ? 'bg-red-900/30 text-red-400 border-red-800' : 'bg-gray-800 text-gray-400 border-gray-700')"
+                          class="text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide"
+                          :class="stock.change > 0 ? 'bg-green-500/10 text-green-500' : (stock.change < 0 ? 'bg-red-500/10 text-red-500' : 'bg-gray-500/10 text-gray-500')"
                         >
                           {{ stock.change > 0 ? '利好' : (stock.change < 0 ? '利空' : '中性') }}
                         </span>
@@ -375,7 +373,7 @@
                     </div>
                   </div>
                   <!-- Scroll Hint Gradient -->
-                  <div class="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-[#0a0a0a] to-transparent pointer-events-none"></div>
+                  <div class="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-[#050505] to-transparent pointer-events-none"></div>
                 </div>
               </div>
             </div>
@@ -383,12 +381,12 @@
         </div>
         
         <!-- Loading Sentinel -->
-        <div ref="loadSentinel" class="h-20 flex items-center justify-center mt-8">
-          <div v-if="isLoading" class="flex items-center gap-2 text-gray-500">
-            <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-            <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce delay-100"></div>
-            <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce delay-200"></div>
-            <span class="text-sm ml-2">Loading more events...</span>
+        <div ref="loadSentinel" class="h-16 flex items-center justify-center mt-6">
+          <div v-if="isLoading" class="flex items-center gap-1.5 text-gray-600">
+            <div class="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-pulse"></div>
+            <div class="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-pulse delay-75"></div>
+            <div class="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-pulse delay-150"></div>
+            <span class="text-xs ml-2">加载中...</span>
           </div>
         </div>
       </div>
@@ -396,15 +394,15 @@
 
     <!-- 3. Floating Tabs (Bottom Center) -->
     <div id="floating-tabs" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-40">
-      <div class="bg-[#1a1a1a]/90 backdrop-blur-xl border border-[#333] rounded-full p-1.5 shadow-2xl flex items-center gap-1">
+      <div class="bg-[#050505]/95 backdrop-blur-xl border border-[#1a1a1a] rounded-full p-1 shadow-2xl flex items-center gap-0.5">
         <button 
           v-for="tab in tabs.filter(t => t.id !== 'themesB')" 
           :key="tab.id"
           @click="switchTab(tab.id)"
-          class="px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2"
-          :class="activeTab === tab.id ? 'bg-white text-black shadow-lg scale-105' : 'text-gray-400 hover:text-white hover:bg-[#333]'"
+          class="px-5 py-2 rounded-full text-xs font-bold transition-all duration-200 flex items-center gap-1.5 uppercase tracking-wide"
+          :class="activeTab === tab.id ? 'bg-white text-black' : 'text-gray-500 hover:text-white hover:bg-[#222]'"
         >
-          <span>{{ tab.icon }}</span>
+          <span class="text-sm">{{ tab.icon }}</span>
           {{ tab.label }}
         </button>
       </div>
@@ -452,9 +450,9 @@
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showFilterModal = false"></div>
         
         <!-- Sidebar Panel -->
-        <div class="relative w-96 h-full bg-[#1a1a1a] border-l border-[#333] shadow-2xl transform transition-transform duration-300 flex flex-col">
+        <div class="relative w-96 h-full bg-[#0a0a0a] border-l border-[#222] shadow-2xl transform transition-transform duration-300 flex flex-col">
           <!-- Header -->
-          <div class="p-6 border-b border-[#333] flex justify-between items-center">
+          <div class="p-6 border-b border-[#222] flex justify-between items-center">
             <h3 class="text-lg font-bold text-white">Filters</h3>
             <button @click="showFilterModal = false" class="text-gray-400 hover:text-white transition-colors">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -476,8 +474,8 @@
                     @click="toggleFilterSource(opt.id)"
                     class="px-3 py-2 rounded-lg text-xs font-medium border transition-all flex items-center gap-2"
                     :class="filters.sources.includes(opt.id) 
-                      ? 'bg-blue-600 border-blue-500 text-white' 
-                      : 'bg-[#222] border-[#333] text-gray-400 hover:border-gray-500 hover:text-gray-200'"
+                      ? 'bg-cyan-600 border-cyan-500 text-white'
+                      : 'bg-[#111] border-[#222] text-gray-400 hover:border-[#333] hover:text-gray-200'"
                   >
                     <span>{{ opt.icon }}</span>
                     {{ opt.label }}
@@ -495,8 +493,8 @@
                     @click="filters.direction = filters.direction === dir ? '' : dir"
                     class="py-2 rounded-lg text-xs font-bold border transition-all text-center"
                     :class="filters.direction === dir 
-                      ? 'bg-blue-600 border-blue-500 text-white' 
-                      : 'bg-[#222] border-[#333] text-gray-400 hover:border-gray-500 hover:text-gray-200'"
+                      ? 'bg-cyan-600 border-cyan-500 text-white'
+                      : 'bg-[#111] border-[#222] text-gray-400 hover:border-[#333] hover:text-gray-200'"
                   >
                     {{ dir }}
                   </button>
@@ -513,8 +511,8 @@
                     @click="filters.duration = filters.duration === dur ? '' : dur"
                     class="py-2 rounded-lg text-xs font-medium border transition-all text-center"
                     :class="filters.duration === dur 
-                      ? 'bg-blue-600 border-blue-500 text-white' 
-                      : 'bg-[#222] border-[#333] text-gray-400 hover:border-gray-500 hover:text-gray-200'"
+                      ? 'bg-cyan-600 border-cyan-500 text-white'
+                      : 'bg-[#111] border-[#222] text-gray-400 hover:border-[#333] hover:text-gray-200'"
                   >
                     {{ dur }}
                   </button>
@@ -531,8 +529,8 @@
                     @click="filters.grade = filters.grade === grade ? '' : grade"
                     class="w-10 h-10 rounded-lg text-xs font-bold border transition-all flex items-center justify-center"
                     :class="filters.grade === grade 
-                      ? 'bg-blue-600 border-blue-500 text-white' 
-                      : 'bg-[#222] border-[#333] text-gray-400 hover:border-gray-500 hover:text-gray-200'"
+                      ? 'bg-cyan-600 border-cyan-500 text-white'
+                      : 'bg-[#111] border-[#222] text-gray-400 hover:border-[#333] hover:text-gray-200'"
                   >
                     {{ grade }}
                   </button>
@@ -549,7 +547,7 @@
                   <span 
                     v-for="(stock, idx) in attributionFilters.stocks" 
                     :key="idx"
-                    class="px-2 py-1 rounded bg-blue-900/30 border border-blue-500/50 text-blue-400 text-xs flex items-center gap-2"
+                    class="px-2 py-1 rounded bg-cyan-900/30 border border-cyan-500/50 text-cyan-400 text-xs flex items-center gap-2"
                   >
                     {{ stock }}
                     <button @click="removeAttributionStock(idx)" class="hover:text-white">×</button>
@@ -561,7 +559,7 @@
                     @keyup.enter="addAttributionStock"
                     type="text" 
                     placeholder="输入代码并回车 (e.g. NVDA)" 
-                    class="w-full bg-[#222] border border-[#333] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
+                    class="w-full bg-[#111] border border-[#222] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors"
                   />
                   <button 
                     @click="addAttributionStock"
@@ -583,8 +581,8 @@
                     @click="attributionFilters.timeRange = range"
                     class="py-2 rounded-lg text-xs font-medium border transition-all text-center"
                     :class="attributionFilters.timeRange === range 
-                      ? 'bg-blue-600 border-blue-500 text-white' 
-                      : 'bg-[#222] border-[#333] text-gray-400 hover:border-gray-500 hover:text-gray-200'"
+                      ? 'bg-cyan-600 border-cyan-500 text-white'
+                      : 'bg-[#111] border-[#222] text-gray-400 hover:border-[#333] hover:text-gray-200'"
                   >
                     {{ range }}
                   </button>
@@ -602,7 +600,7 @@
                     class="px-3 py-2 rounded-lg text-xs font-medium border transition-all flex items-center gap-2"
                     :class="attributionFilters.sentiments.includes(sentiment) 
                       ? (sentiment === 'Bullish' ? 'bg-green-900/50 border-green-500 text-green-400' : (sentiment === 'Bearish' ? 'bg-red-900/50 border-red-500 text-red-400' : 'bg-gray-700 border-gray-500 text-gray-300'))
-                      : 'bg-[#222] border-[#333] text-gray-400 hover:border-gray-500 hover:text-gray-200'"
+                      : 'bg-[#111] border-[#222] text-gray-400 hover:border-[#333] hover:text-gray-200'"
                   >
                     {{ sentiment }}
                   </button>
@@ -613,8 +611,8 @@
           </div>
           
           <!-- Footer -->
-          <div class="p-6 border-t border-[#333]">
-            <button class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg transition-colors">
+          <div class="p-6 border-t border-[#222]">
+            <button class="w-full py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded transition-colors">
               Apply Filters
             </button>
           </div>
@@ -624,10 +622,10 @@
 
     <!-- Event Detail Modal (Attribution) -->
     <div v-if="showEventModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-300" @click.self="closeEventModal">
-      <div class="bg-[#1a1a1a] rounded-2xl border border-[#333] w-[95vw] h-[85vh] overflow-hidden shadow-2xl flex flex-col transform transition-all duration-300 scale-100 animate-modal-in">
+      <div class="bg-[#0a0a0a] rounded-lg border border-[#222] w-[95vw] h-[85vh] overflow-hidden shadow-2xl flex flex-col transform transition-all duration-300 scale-100 animate-modal-in">
         
         <!-- Modal Header -->
-        <div class="px-8 py-5 border-b border-[#2a2a2a] flex justify-between items-center bg-[#1a1a1a]/95 backdrop-blur-xl z-10 shrink-0">
+        <div class="px-8 py-5 border-b border-[#1a1a1a] flex justify-between items-center bg-[#0a0a0a]/95 backdrop-blur-xl z-10 shrink-0">
           <div class="flex items-center gap-4">
             <h2 class="text-xl font-bold text-white">{{ selectedEvent.title }}</h2>
             <span 
@@ -646,22 +644,22 @@
         <!-- Modal Body -->
         <div class="flex flex-1 overflow-hidden">
           <!-- Left: AI Chat (320px) -->
-          <div class="w-[320px] flex flex-col border-r border-[#2a2a2a] bg-[#111] shrink-0 hidden lg:flex">
-            <div class="px-4 py-3 border-b border-[#2a2a2a] bg-[#1a1a1a]">
-               <h3 class="text-sm font-medium text-gray-300 flex items-center gap-2"><i class="fas fa-robot text-blue-500"></i> 事件分析助手</h3>
+          <div class="w-[320px] flex flex-col border-r border-[#1a1a1a] bg-[#0a0a0a] shrink-0 hidden lg:flex">
+            <div class="px-4 py-3 border-b border-[#1a1a1a] bg-[#0a0a0a]">
+               <h3 class="text-sm font-medium text-gray-300 flex items-center gap-2"><i class="fas fa-robot text-cyan-500"></i> 事件分析助手</h3>
             </div>
             <div class="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin">
                <!-- Welcome State -->
                <div class="flex flex-col h-full">
                   <div class="flex-1 flex flex-col items-center justify-center text-center space-y-4 p-4">
-                    <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center mb-2 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
-                      <i class="fas fa-bolt text-blue-400 text-xl"></i>
+                    <div class="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center mb-2 shadow-[0_0_10px_rgba(6,182,212,0.3)]">
+                      <i class="fas fa-bolt text-cyan-400 text-lg"></i>
                     </div>
                     <div>
                       <h4 class="text-white font-medium mb-1">ScaleAlpha Event AI</h4>
                       <p class="text-xs text-gray-500 leading-relaxed px-2">
                         我是您的专属事件分析助手。<br>
-                        已为您深度解析 <span class="text-blue-400">{{ selectedEvent.title }}</span> 的市场影响。
+                        已为您深度解析 <span class="text-cyan-400">{{ selectedEvent.title }}</span> 的市场影响。
                       </p>
                     </div>
                   </div>
@@ -669,36 +667,36 @@
                   <!-- Quick Prompts -->
                   <div class="space-y-2 pb-4">
                     <p class="text-xs text-gray-500 px-1 mb-2">您可以问我：</p>
-                    <button class="w-full text-left px-3 py-2.5 bg-[#1a1a1a] hover:bg-[#222] hover:border-blue-500/30 border border-[#2a2a2a] rounded-lg text-xs text-gray-300 transition-all duration-200 flex items-center justify-between group hover:shadow-lg hover:shadow-blue-900/10">
-                      <span class="group-hover:text-blue-400 transition-colors">该事件对同板块其他股票有何影响？</span>
-                      <i class="fas fa-arrow-right opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-blue-500 transition-all duration-300"></i>
+                    <button class="w-full text-left px-3 py-2.5 bg-[#0a0a0a] hover:bg-[#111] hover:border-cyan-500/30 border border-[#1a1a1a] rounded text-xs text-gray-300 transition-all duration-200 flex items-center justify-between group hover:shadow-lg hover:shadow-cyan-900/10">
+                      <span class="group-hover:text-cyan-400 transition-colors">该事件对同板块其他股票有何影响？</span>
+                      <i class="fas fa-arrow-right opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-cyan-500 transition-all duration-200"></i>
                     </button>
-                    <button class="w-full text-left px-3 py-2.5 bg-[#1a1a1a] hover:bg-[#222] hover:border-blue-500/30 border border-[#2a2a2a] rounded-lg text-xs text-gray-300 transition-all duration-200 flex items-center justify-between group hover:shadow-lg hover:shadow-blue-900/10">
-                      <span class="group-hover:text-blue-400 transition-colors">历史上有哪些相似事件？</span>
-                      <i class="fas fa-arrow-right opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-blue-500 transition-all duration-300"></i>
+                    <button class="w-full text-left px-3 py-2.5 bg-[#0a0a0a] hover:bg-[#111] hover:border-cyan-500/30 border border-[#1a1a1a] rounded text-xs text-gray-300 transition-all duration-200 flex items-center justify-between group hover:shadow-lg hover:shadow-cyan-900/10">
+                      <span class="group-hover:text-cyan-400 transition-colors">历史上有哪些相似事件？</span>
+                      <i class="fas fa-arrow-right opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-cyan-500 transition-all duration-200"></i>
                     </button>
-                    <button class="w-full text-left px-3 py-2.5 bg-[#1a1a1a] hover:bg-[#222] hover:border-blue-500/30 border border-[#2a2a2a] rounded-lg text-xs text-gray-300 transition-all duration-200 flex items-center justify-between group hover:shadow-lg hover:shadow-blue-900/10">
-                      <span class="group-hover:text-blue-400 transition-colors">机构对此事件的最新评级变化？</span>
-                      <i class="fas fa-arrow-right opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-blue-500 transition-all duration-300"></i>
+                    <button class="w-full text-left px-3 py-2.5 bg-[#0a0a0a] hover:bg-[#111] hover:border-cyan-500/30 border border-[#1a1a1a] rounded text-xs text-gray-300 transition-all duration-200 flex items-center justify-between group hover:shadow-lg hover:shadow-cyan-900/10">
+                      <span class="group-hover:text-cyan-400 transition-colors">机构对此事件的最新评级变化？</span>
+                      <i class="fas fa-arrow-right opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-cyan-500 transition-all duration-200"></i>
                     </button>
                   </div>
                </div>
             </div>
-            <div class="p-3 bg-[#1a1a1a] border-t border-[#2a2a2a]">
+            <div class="p-3 bg-[#0a0a0a] border-t border-[#1a1a1a]">
               <div class="relative">
-                <input type="text" placeholder="输入问题..." class="w-full bg-[#0f0f0f] text-white rounded-lg pl-3 pr-10 py-2.5 text-sm border border-[#333] focus:outline-none focus:border-blue-500">
-                <button class="absolute right-2 top-1/2 -translate-y-1/2 text-blue-500"><i class="fas fa-paper-plane"></i></button>
+                <input type="text" placeholder="输入问题..." class="w-full bg-[#050505] text-white rounded pl-3 pr-10 py-2.5 text-sm border border-[#222] focus:outline-none focus:border-cyan-500">
+                <button class="absolute right-2 top-1/2 -translate-y-1/2 text-cyan-500"><i class="fas fa-paper-plane"></i></button>
               </div>
             </div>
           </div>
 
           <!-- Middle: Analysis Content (Flex-1) -->
-          <div class="flex-1 flex flex-col overflow-hidden bg-[#0f0f0f] border-r border-[#2a2a2a]">
+          <div class="flex-1 flex flex-col overflow-hidden bg-[#050505] border-r border-[#1a1a1a]">
             
             <!-- New Top Bar -->
-            <div class="px-8 py-4 border-b border-[#2a2a2a] bg-[#151515] flex justify-between items-center shrink-0">
+            <div class="px-8 py-4 border-b border-[#1a1a1a] bg-[#0a0a0a] flex justify-between items-center shrink-0">
               <div class="text-lg font-bold text-white flex items-center gap-2 truncate">
-                <span class="text-blue-400 truncate max-w-[200px]" :title="selectedEvent.title">{{ selectedEvent.title }}</span>
+                <span class="text-cyan-400 truncate max-w-[200px]" :title="selectedEvent.title">{{ selectedEvent.title }}</span>
                 <span class="text-gray-500 text-sm">对</span>
                 <span class="text-white bg-[#333] px-2 py-0.5 rounded text-sm font-mono">{{ selectedEvent.stocks[0].symbol }}</span>
                 <span class="text-gray-500 text-sm">的影响分析</span>
@@ -708,7 +706,7 @@
                 <button 
                   @click="copyShareLink"
                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all shadow-lg hover:scale-105 border"
-                  :class="isCopied ? 'bg-green-600/20 text-green-400 border-green-600/30' : 'bg-[#333] hover:bg-[#444] text-gray-300 hover:text-white border-[#444]'"
+                  :class="isCopied ? 'bg-green-600/20 text-green-400 border-green-600/30' : 'bg-[#111] hover:bg-[#222] text-gray-300 hover:text-white border-[#222]'"
                   :title="isCopied ? '已复制' : '复制分享链接'"
                 >
                   <svg v-if="!isCopied" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
@@ -717,7 +715,7 @@
                 </button>
                 <button 
                   @click="addToWatchlist(selectedEvent.stocks[0])"
-                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-lg shadow-blue-900/30 hover:scale-105 hover:shadow-blue-500/40 border border-blue-500"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold transition-all border border-cyan-500"
                   title="添加到关注"
                 >
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
@@ -744,18 +742,18 @@
                   <p>
                     该事件对 <span class="text-white font-medium border-b border-white/20 pb-0.5">{{ selectedEvent.stocks[0].symbol }}</span> 构成<span class="text-red-400 font-medium">负面影响</span>。核心在于宏观数据真空导致风险溢价上升。
                   </p>
-                  <div class="pl-4 border-l border-[#333]">
+                  <div class="pl-4 border-l border-[#222]">
                     <h4 class="text-white font-bold mb-2 text-sm uppercase tracking-wider">作用机制</h4>
                     <p>作为高贝塔值的成长型资产，{{ selectedEvent.stocks[0].symbol }} (当前市盈率35.2x) 对利率预期极度敏感。数据的缺失创造了“黑箱效应”，迫使投资者在美联储12月会议前进行防御性定价。</p>
                   </div>
-                  <div class="pl-4 border-l border-[#333]">
+                  <div class="pl-4 border-l border-[#222]">
                     <h4 class="text-white font-bold mb-2 text-sm uppercase tracking-wider">财务路径</h4>
                     <p>虽然不直接影响成分股营收，但信息不确定性增加了隐含的资本成本。期权市场IV期限结构呈现“倒挂”(Backwardation)，表明短期市场压力剧增。</p>
                   </div>
                 </div>
               </div>
 
-              <div class="h-px bg-[#222] w-full"></div>
+              <div class="h-px bg-[#1a1a1a] w-full"></div>
 
               <!-- Prediction Analysis -->
               <div>
@@ -779,7 +777,7 @@
                 </div>
               </div>
 
-              <div class="h-px bg-[#222] w-full"></div>
+              <div class="h-px bg-[#1a1a1a] w-full"></div>
 
               <!-- Backtest -->
               <div>
@@ -789,12 +787,12 @@
                     尽管短期技术面承压，历史数据展示了 {{ selectedEvent.stocks[0].symbol }} 的韧性。在类似下跌后：
                   </p>
                   <div class="grid grid-cols-2 gap-6">
-                    <div class="bg-[#151515] p-4 rounded border border-[#222]">
+                    <div class="bg-[#0a0a0a] p-4 rounded border border-[#1a1a1a]">
                       <div class="text-xs text-gray-500 uppercase mb-1">5天上涨概率</div>
                       <div class="text-2xl font-bold text-green-400">62%</div>
                       <div class="text-xs text-gray-400 mt-1">平均回报 +0.6%</div>
                     </div>
-                    <div class="bg-[#151515] p-4 rounded border border-[#222]">
+                    <div class="bg-[#0a0a0a] p-4 rounded border border-[#1a1a1a]">
                       <div class="text-xs text-gray-500 uppercase mb-1">21天上涨概率</div>
                       <div class="text-2xl font-bold text-green-400">65%</div>
                       <div class="text-xs text-gray-400 mt-1">平均回报 +1.9%</div>
@@ -808,7 +806,7 @@
           </div>
 
           <!-- Right: Original Event (350px) -->
-          <div class="w-[350px] overflow-y-auto p-8 scrollbar-thin bg-[#0f0f0f] shrink-0 hidden xl:block">
+          <div class="w-[350px] overflow-y-auto p-8 scrollbar-thin bg-[#050505] shrink-0 hidden xl:block">
             <div class="space-y-8">
               <!-- Image -->
               <div class="rounded-lg overflow-hidden relative group shadow-lg">
@@ -822,12 +820,12 @@
                 </div>
                 <h3 class="text-2xl font-bold text-white leading-tight mb-3">{{ selectedEvent.title }}</h3>
                 <div class="text-xs text-gray-500 font-mono flex items-center gap-2">
-                  <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                  <span class="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span>
                   {{ selectedEvent.time }}
                 </div>
               </div>
 
-              <div class="h-px bg-[#222] w-full"></div>
+              <div class="h-px bg-[#1a1a1a] w-full"></div>
 
               <!-- Original Text -->
               <div>
@@ -847,16 +845,16 @@
 
     <!-- Strategy Detail Modal (Apple-inspired Minimalist Design) -->
     <div v-if="showStrategyModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-300" @click.self="closeStrategyModal">
-      <div class="bg-[#1a1a1a] rounded-2xl border border-[#333] w-[95vw] h-[85vh] overflow-hidden shadow-2xl flex flex-col transform transition-all duration-300 scale-100 animate-modal-in">
+      <div class="bg-[#0a0a0a] rounded-lg border border-[#222] w-[95vw] h-[85vh] overflow-hidden shadow-2xl flex flex-col transform transition-all duration-300 scale-100 animate-modal-in">
         
         <!-- Modal Header (Sticky) -->
-        <div class="px-8 py-5 border-b border-[#2a2a2a] flex justify-between items-center bg-[#1a1a1a]/95 backdrop-blur-xl z-10 shrink-0">
+        <div class="px-8 py-5 border-b border-[#1a1a1a] flex justify-between items-center bg-[#0a0a0a]/95 backdrop-blur-xl z-10 shrink-0">
           <div class="flex items-center gap-3">
             <!-- Grade Badge -->
             <div class="px-2.5 py-1 rounded-md text-xs font-semibold tracking-wide" 
               :class="{
                 'bg-green-500/10 text-green-400': selectedStrategy.grade === 'A' || selectedStrategy.grade === 'A+',
-                'bg-blue-500/10 text-blue-400': selectedStrategy.grade === 'B',
+                'bg-cyan-500/10 text-cyan-400': selectedStrategy.grade === 'B',
                 'bg-yellow-500/10 text-yellow-400': selectedStrategy.grade === 'C'
               }">
               GRADE {{ selectedStrategy.grade }}
@@ -890,12 +888,12 @@
         <div class="flex flex-1 overflow-hidden">
           
         <!-- Left Area (Chat + Content) -->
-        <div class="flex-1 flex border-r border-[#2a2a2a] relative bg-[#0f0f0f]">
+        <div class="flex-1 flex border-r border-[#1a1a1a] relative bg-[#050505]">
           
           <!-- Chat Sidebar (Left, 320px) -->
-          <div class="w-[320px] flex flex-col border-r border-[#2a2a2a] bg-[#111] shrink-0 hidden lg:flex">
+          <div class="w-[320px] flex flex-col border-r border-[#1a1a1a] bg-[#0a0a0a] shrink-0 hidden lg:flex">
             <!-- Chat Header -->
-            <div class="px-4 py-3 border-b border-[#2a2a2a] flex justify-between items-center bg-[#1a1a1a]">
+            <div class="px-4 py-3 border-b border-[#1a1a1a] flex justify-between items-center bg-[#0a0a0a]">
                <h3 class="text-sm font-medium text-gray-300 flex items-center gap-2">
                  <i class="fas fa-robot text-green-500"></i> AI 策略助手
                </h3>
@@ -922,10 +920,10 @@
                       v-for="(prompt, idx) in quickPrompts" 
                       :key="idx"
                       @click="useQuickPrompt(prompt)"
-                      class="w-full text-left px-3 py-2.5 bg-[#1a1a1a] hover:bg-[#222] hover:border-blue-500/30 border border-[#2a2a2a] rounded-lg text-xs text-gray-300 transition-all duration-200 flex items-center justify-between group hover:shadow-lg hover:shadow-blue-900/10"
+                      class="w-full text-left px-3 py-2.5 bg-[#0a0a0a] hover:bg-[#111] hover:border-cyan-500/30 border border-[#1a1a1a] rounded text-xs text-gray-300 transition-all duration-200 flex items-center justify-between group hover:shadow-lg hover:shadow-cyan-900/10"
                     >
-                      <span class="group-hover:text-blue-400 transition-colors">{{ prompt }}</span>
-                      <i class="fas fa-arrow-right opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-blue-500 transition-all duration-300"></i>
+                      <span class="group-hover:text-cyan-400 transition-colors">{{ prompt }}</span>
+                      <i class="fas fa-arrow-right opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-cyan-500 transition-all duration-300"></i>
                     </button>
                   </div>
                </div>
@@ -935,7 +933,7 @@
                  <div v-for="(msg, index) in chatHistory" :key="index" class="flex gap-3">
                     <!-- Avatar -->
                     <div class="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs"
-                      :class="msg.role === 'user' ? 'bg-blue-600' : 'bg-green-600'">
+                      :class="msg.role === 'user' ? 'bg-cyan-600' : 'bg-green-600'">
                       <i class="fas" :class="msg.role === 'user' ? 'fa-user' : 'fa-robot'"></i>
                     </div>
                     <!-- Message Bubble -->
@@ -943,7 +941,7 @@
                       <div class="text-xs font-medium text-gray-400 mb-1">
                         {{ msg.role === 'user' ? 'You' : 'ScaleAlpha AI' }}
                       </div>
-                      <div class="text-sm text-gray-200 leading-relaxed whitespace-pre-wrap bg-[#222] p-3 rounded-lg border border-[#333]">{{ msg.content }}</div>
+                      <div class="text-sm text-gray-200 leading-relaxed whitespace-pre-wrap bg-[#111] p-3 rounded border border-[#222]">{{ msg.content }}</div>
                     </div>
                  </div>
 
@@ -954,7 +952,7 @@
                     </div>
                     <div class="flex-1">
                        <div class="text-xs font-medium text-gray-400 mb-1">ScaleAlpha AI</div>
-                       <div class="bg-[#222] p-3 rounded-lg border border-[#333] w-16">
+                       <div class="bg-[#111] p-3 rounded border border-[#222] w-16">
                           <div class="flex gap-1 items-center h-4 justify-center">
                             <div class="w-1.5 h-1.5 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
                             <div class="w-1.5 h-1.5 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
@@ -967,18 +965,18 @@
             </div>
 
             <!-- Input Area -->
-            <div class="p-3 bg-[#1a1a1a] border-t border-[#2a2a2a]">
+            <div class="p-3 bg-[#0a0a0a] border-t border-[#1a1a1a]">
               <div class="relative">
                 <input 
                   v-model="chatInput"
                   type="text" 
                   placeholder="输入问题..." 
-                  class="w-full bg-[#0f0f0f] text-white rounded-lg pl-3 pr-10 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 border border-[#333]"
+                  class="w-full bg-[#050505] text-white rounded pl-3 pr-10 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500 border border-[#222]"
                   @keyup.enter="sendChatMessage"
                 >
                 <button 
                   @click="sendChatMessage"
-                  class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-blue-500 hover:text-blue-400 transition-colors"
+                  class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-cyan-500 hover:text-cyan-400 transition-colors"
                   :disabled="!chatInput.trim() || isChatLoading"
                 >
                   <i class="fas fa-paper-plane"></i>
@@ -991,7 +989,7 @@
           <div class="flex-1 flex flex-col overflow-hidden">
             
             <!-- New Top Bar -->
-            <div class="px-6 py-4 border-b border-[#2a2a2a] bg-[#151515] flex justify-between items-center shrink-0">
+            <div class="px-6 py-4 border-b border-[#1a1a1a] bg-[#0a0a0a] flex justify-between items-center shrink-0">
               <!-- Left: Title & Meta -->
               <div class="flex items-center gap-4 overflow-hidden">
                 <h2 class="text-lg font-bold text-white truncate max-w-[300px]" :title="selectedStrategy.title">{{ selectedStrategy.title }}</h2>
@@ -999,12 +997,12 @@
                   <span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wide" 
                     :class="{
                       'bg-green-500/20 text-green-400 border border-green-500/30': selectedStrategy.grade === 'A' || selectedStrategy.grade === 'A+',
-                      'bg-blue-500/20 text-blue-400 border border-blue-500/30': selectedStrategy.grade === 'B',
+                      'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30': selectedStrategy.grade === 'B',
                       'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30': selectedStrategy.grade === 'C'
                     }">
                     GRADE {{ selectedStrategy.grade }}
                   </span>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#333] text-gray-300 border border-[#444]">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#222] text-gray-300 border border-[#333]">
                     {{ selectedStrategy.term }}
                   </span>
                   <span class="text-xs text-gray-500">{{ selectedStrategy.time }}</span>
@@ -1016,7 +1014,7 @@
                 <button 
                   @click="copyShareLink"
                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all shadow-lg hover:scale-105 border"
-                  :class="isCopied ? 'bg-green-600/20 text-green-400 border-green-600/30' : 'bg-[#333] hover:bg-[#444] text-gray-300 hover:text-white border-[#444]'"
+                  :class="isCopied ? 'bg-green-600/20 text-green-400 border-green-600/30' : 'bg-[#222] hover:bg-[#333] text-gray-300 hover:text-white border-[#333]'"
                   :title="isCopied ? '已复制' : '复制分享链接'"
                 >
                   <svg v-if="!isCopied" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
@@ -1026,7 +1024,7 @@
                 <button 
                   @click="toggleStrategyWatchlist"
                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all shadow-lg hover:scale-105 border"
-                  :class="isStrategyWatchlisted ? 'bg-blue-600 text-white border-blue-500 shadow-blue-900/30' : 'bg-[#333] hover:bg-[#444] text-gray-300 hover:text-white border-[#444]'"
+                  :class="isStrategyWatchlisted ? 'bg-cyan-600 text-white border-cyan-500 shadow-cyan-900/30' : 'bg-[#222] hover:bg-[#333] text-gray-300 hover:text-white border-[#333]'"
                 >
                   <svg v-if="!isStrategyWatchlisted" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
                   <svg v-else class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
@@ -1042,7 +1040,7 @@
                 <button 
                   @click="toggleStrategyReport"
                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all shadow-lg hover:scale-105 border"
-                  :class="isStrategyReportSaved ? 'bg-green-600/20 text-green-400 border-green-600/30' : 'bg-[#2a2a2a] hover:bg-[#333] text-gray-300 hover:text-white border-[#444]'"
+                  :class="isStrategyReportSaved ? 'bg-green-600/20 text-green-400 border-green-600/30' : 'bg-[#111] hover:bg-[#222] text-gray-300 hover:text-white border-[#333]'"
                 >
                   <svg v-if="!isStrategyReportSaved" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
                   <svg v-else class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
@@ -1054,7 +1052,7 @@
             <!-- Scrollable Content Area -->
             <div class="flex-1 overflow-y-auto p-6 scrollbar-thin">
               <!-- Strategy Summary Box -->
-              <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-5 mb-8">
+              <div class="bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg p-5 mb-8">
                 <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
                   <i class="fas fa-file-alt"></i>
                   Strategy Summary
@@ -1068,15 +1066,15 @@
               <div class="markdown-content space-y-6 text-gray-300" v-html="renderedStrategyContent"></div>
 
               <!-- Action Buttons -->
-              <div class="flex gap-4 mt-12 pt-8 border-t border-[#2a2a2a]">
+              <div class="flex gap-4 mt-12 pt-8 border-t border-[#1a1a1a]">
                 <button 
                   @click="generatePlanForStrategy(selectedStrategy)"
-                  class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                  class="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white py-3 rounded font-bold transition-colors flex items-center justify-center gap-2"
                 >
                   <i class="fas fa-magic"></i>
                   生成交易计划
                 </button>
-                <button class="px-4 py-3 bg-[#2a2a2a] hover:bg-[#333] text-white rounded-lg transition-colors">
+                <button class="px-4 py-3 bg-[#111] hover:bg-[#222] text-white rounded transition-colors">
                   <i class="fas fa-share-alt"></i>
                 </button>
               </div>
@@ -1085,7 +1083,7 @@
         </div>
 
           <!-- Right: Related Plans (Fixed Width) -->
-          <div class="w-[350px] border-l border-[#2a2a2a] bg-[#0f0f0f] overflow-y-auto px-6 py-6 scrollbar-thin scrollbar-thumb-[#333] scrollbar-track-transparent shrink-0 hidden xl:block">
+          <div class="w-[350px] border-l border-[#1a1a1a] bg-[#050505] overflow-y-auto px-6 py-6 scrollbar-thin scrollbar-thumb-[#222] scrollbar-track-transparent shrink-0 hidden xl:block">
             
             <!-- Plans Header -->
             <div class="mb-5">
@@ -1104,18 +1102,18 @@
               <div 
                 v-for="plan in relatedPlans" 
                 :key="plan.id"
-                class="bg-[#1a1a1a] rounded-lg border border-[#2a2a2a] hover:border-gray-500 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/50 transition-all duration-300 group"
-                :class="{ 'ring-1 ring-blue-500/30 border-blue-500/30': plan.isExpanded }"
+                class="bg-[#0a0a0a] rounded-lg border border-[#1a1a1a] hover:border-[#333] hover:-translate-y-1 hover:shadow-lg hover:shadow-black/50 transition-all duration-300 group"
+                :class="{ 'ring-1 ring-cyan-500/30 border-cyan-500/30': plan.isExpanded }"
               >
                 <!-- Plan Header (Collapsible) -->
                 <button 
                   @click="togglePlanExpand(plan)"
-                  class="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-[#222] transition-colors"
+                  class="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-[#111] transition-colors"
                 >
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 mb-1">
                       <svg 
-                        class="w-3.5 h-3.5 text-gray-500 transition-transform duration-200 group-hover:text-blue-400" 
+                        class="w-3.5 h-3.5 text-gray-500 transition-transform duration-200 group-hover:text-cyan-400" 
                         :class="{ 'rotate-90': plan.isExpanded }"
                         fill="none" 
                         stroke="currentColor" 
@@ -1123,8 +1121,8 @@
                       >
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                       </svg>
-                      <h4 class="text-sm font-medium text-white truncate group-hover:text-blue-400 transition-colors">{{ plan.title }}</h4>
-                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-medium flex-shrink-0">
+                      <h4 class="text-sm font-bold text-white truncate group-hover:text-cyan-400 transition-colors">{{ plan.title }}</h4>
+                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-bold flex-shrink-0">
                         <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
                           <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                         </svg>
@@ -1150,14 +1148,14 @@
 
                 <!-- Plan Details (Expanded) -->
                 <transition name="expand">
-                  <div v-if="plan.isExpanded" class="px-4 pb-4 border-t border-[#2a2a2a] pt-3 space-y-3">
+                  <div v-if="plan.isExpanded" class="px-4 pb-4 border-t border-[#1a1a1a] pt-3 space-y-3">
                     <!-- Plan Metrics -->
                     <div class="grid grid-cols-2 gap-3">
-                      <div class="bg-[#0f0f0f] rounded-lg p-2.5">
+                      <div class="bg-[#050505] rounded p-2.5">
                         <div class="text-xs text-gray-500 mb-0.5">目标收益</div>
-                        <div class="text-sm font-semibold text-green-400">{{ plan.targetReturn }}</div>
+                        <div class="text-sm font-bold text-green-400">{{ plan.targetReturn }}</div>
                       </div>
-                      <div class="bg-[#0f0f0f] rounded-lg p-2.5">
+                      <div class="bg-[#050505] rounded p-2.5">
                         <div class="text-xs text-gray-500 mb-0.5">风险等级</div>
                         <div class="text-sm font-semibold" :class="{
                           'text-green-400': plan.riskLevel === 'low',
@@ -1177,7 +1175,7 @@
                           class="text-xs"
                         >
                           <div class="flex items-start gap-2 text-gray-300">
-                            <span class="text-blue-400 font-medium whitespace-nowrap">{{ position.type }}</span>
+                            <span class="text-cyan-400 font-bold whitespace-nowrap">{{ position.type }}</span>
                             <span>{{ position.symbol }} {{ position.strike }} {{ position.expiry }}</span>
                           </div>
                         </div>
@@ -1185,7 +1183,7 @@
                     </div>
                     
                     <!-- Action Button -->
-                    <button class="w-full py-2 bg-[#222] hover:bg-[#333] text-xs text-gray-300 rounded border border-[#333] transition-colors mt-2">
+                    <button class="w-full py-2 bg-[#111] hover:bg-[#222] text-xs text-gray-300 rounded border border-[#222] transition-colors mt-2">
                       查看详情
                     </button>
                   </div>
@@ -1205,7 +1203,7 @@
 
   <!-- Theme Detail Modal (Large Size) -->
   <div v-if="showThemeDetailModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-300" @click.self="showThemeDetailModal = false">
-    <div class="relative w-full max-w-[90vw] h-[85vh] bg-[#1a1a1a] rounded-xl border border-[#333] shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
+    <div class="relative w-full max-w-[90vw] h-[85vh] bg-[#0a0a0a] rounded-lg border border-[#222] shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
       <!-- Close Button -->
       <button @click="showThemeDetailModal = false" class="absolute top-4 right-4 z-10 text-gray-400 hover:text-white bg-black/50 rounded-full p-1 transition-colors">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -1214,23 +1212,23 @@
       <!-- Content (Optimized Layout) -->
       <div v-if="selectedThemeDetail" class="flex h-full">
          <!-- Left: Title & Desc (30%) -->
-         <div class="w-[30%] border-r border-[#333] bg-gradient-to-br from-[#222] to-[#1a1a1a] flex flex-col p-8 justify-center relative overflow-hidden">
+         <div class="w-[30%] border-r border-[#222] bg-gradient-to-br from-[#111] to-[#0a0a0a] flex flex-col p-8 justify-center relative overflow-hidden">
             <!-- Decorative Elements -->
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500 opacity-50"></div>
-            <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-purple-500 opacity-50"></div>
+            <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none"></div>
             
             <div class="relative z-10">
-               <h2 class="text-3xl font-bold text-white mb-6 leading-tight">{{ selectedThemeDetail.title }}</h2>
-               <div class="w-12 h-1 bg-blue-500 mb-6 rounded-full"></div>
+               <h2 class="text-2xl font-bold text-white mb-6 leading-tight">{{ selectedThemeDetail.title }}</h2>
+               <div class="w-12 h-1 bg-cyan-500 mb-6 rounded-full"></div>
                <p class="text-base text-gray-400 leading-relaxed">{{ selectedThemeDetail.desc }}</p>
             </div>
          </div>
 
          <!-- Right: Stock List (70%) -->
-         <div class="flex-1 bg-[#1a1a1a] flex flex-col min-w-0">
-            <div class="px-8 py-6 border-b border-[#333] flex justify-between items-center bg-[#1a1a1a]/50 backdrop-blur-sm sticky top-0 z-10">
+         <div class="flex-1 bg-[#0a0a0a] flex flex-col min-w-0">
+            <div class="px-8 py-6 border-b border-[#222] flex justify-between items-center bg-[#0a0a0a]/50 backdrop-blur-sm sticky top-0 z-10">
               <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
                 Related Assets
               </h3>
             </div>
@@ -1241,11 +1239,11 @@
                     v-for="item in selectedThemeDetail.items" 
                     :key="item.id" 
                     @click="goToStockDetail(item.title.split(' ')[0], selectedThemeDetail.id)"
-                    class="p-4 flex items-center justify-between hover:bg-[#222] transition-all cursor-pointer rounded-lg border border-[#333] hover:border-blue-500/30 group/item"
+                    class="p-4 flex items-center justify-between hover:bg-[#111] transition-all cursor-pointer rounded border border-[#222] hover:border-cyan-500/30 group/item"
                   >
                     <div class="flex-1 min-w-0 pr-4">
                       <div class="flex items-center gap-3 mb-1">
-                        <span class="font-bold text-base text-white truncate group-hover/item:text-blue-400 transition-colors">{{ item.title }}</span>
+                        <span class="font-bold text-base text-white truncate group-hover/item:text-cyan-400 transition-colors">{{ item.title }}</span>
                       </div>
                       <p class="text-xs text-gray-500 line-clamp-1 group-hover/item:text-gray-400">
                         {{ item.desc }}
@@ -1256,7 +1254,7 @@
                       <span v-if="item.change" class="text-sm font-mono font-bold" :class="item.change > 0 ? 'text-green-500' : 'text-red-500'">
                         {{ item.change > 0 ? '+' : ''}}{{ item.change }}%
                       </span>
-                      <svg class="w-4 h-4 text-gray-600 group-hover/item:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                      <svg class="w-4 h-4 text-gray-600 group-hover/item:text-cyan-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </div>
                   </div>
               </div>
