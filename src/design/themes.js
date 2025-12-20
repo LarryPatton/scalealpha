@@ -107,18 +107,18 @@ export const lightTheme = {
   colors: {
     // 背景色 - 4层系统 (浅色调)
     background: {
-      base: '#f5f5f5',      // Level 0: 页面最底层 (slate-50)
+      base: '#f0f2f5',      // Level 0: 页面最底层 (slightly darker than slate-50)
       surface: '#ffffff',   // Level 1: 主要面板/卡片
-      elevated: '#f1f5f9',  // Level 2: 悬浮元素、输入框 (slate-100)
+      elevated: '#f8fafc',  // Level 2: 悬浮元素、输入框 (slate-50)
       overlay: '#e2e8f0',   // Level 3: 模态框、下拉菜单 (slate-200)
     },
     
     // 边框色 - 4层系统 (浅色调)
     border: {
-      subtle: '#f1f5f9',    // 最浅边框 (slate-100)
-      default: '#e2e8f0',   // 默认边框 (slate-200)
-      strong: '#cbd5e1',    // 强调边框 (slate-300)
-      hover: '#94a3b8',     // 悬停边框 (slate-400)
+      subtle: '#e2e8f0',    // 最浅边框 (slate-200)
+      default: '#cbd5e1',   // 默认边框 (slate-300)
+      strong: '#94a3b8',    // 强调边框 (slate-400)
+      hover: '#64748b',     // 悬停边框 (slate-500)
     },
     
     // 文字颜色 - 5层系统 (深色调)
@@ -132,35 +132,35 @@ export const lightTheme = {
     
     // 强调色 - 稍微调暗以适应浅色背景
     accent: {
-      primary: '#0891b2', // Cyan-600 - 主交互色（稍暗）
-      primaryLight: '#06b6d4',
-      primaryDark: '#0e7490',
-      primaryBg: 'rgba(6, 182, 212, 0.1)',
-      primaryBorder: 'rgba(6, 182, 212, 0.4)',
+      primary: '#0284c7', // Sky-600 - 更鲜艳的蓝色
+      primaryLight: '#0ea5e9', // Sky-500
+      primaryDark: '#0369a1', // Sky-700
+      primaryBg: 'rgba(2, 132, 199, 0.15)',
+      primaryBorder: 'rgba(2, 132, 199, 0.5)',
       
       success: '#059669', // Emerald-600 - 成功/LONG
       successLight: '#10b981',
       successDark: '#047857',
-      successBg: 'rgba(16, 185, 129, 0.1)',
-      successBorder: 'rgba(16, 185, 129, 0.4)',
+      successBg: 'rgba(16, 185, 129, 0.15)',
+      successBorder: 'rgba(16, 185, 129, 0.5)',
       
       warning: '#d97706', // Amber-600 - 警告/待更新
       warningLight: '#f59e0b',
       warningDark: '#b45309',
-      warningBg: 'rgba(245, 158, 11, 0.15)',
-      warningBorder: 'rgba(245, 158, 11, 0.4)',
+      warningBg: 'rgba(245, 158, 11, 0.2)',
+      warningBorder: 'rgba(245, 158, 11, 0.5)',
       
       danger: '#e11d48', // Rose-600 - 危险/SHORT
       dangerLight: '#f43f5e',
       dangerDark: '#be123c',
-      dangerBg: 'rgba(244, 63, 94, 0.1)',
-      dangerBorder: 'rgba(244, 63, 94, 0.4)',
+      dangerBg: 'rgba(244, 63, 94, 0.15)',
+      dangerBorder: 'rgba(244, 63, 94, 0.5)',
       
       info: '#2563eb', // Blue-600 - 信息/B级
       infoLight: '#3b82f6',
       infoDark: '#1d4ed8',
-      infoBg: 'rgba(59, 130, 246, 0.1)',
-      infoBorder: 'rgba(59, 130, 246, 0.4)',
+      infoBg: 'rgba(59, 130, 246, 0.15)',
+      infoBorder: 'rgba(59, 130, 246, 0.5)',
     },
     
     // 语义化颜色别名

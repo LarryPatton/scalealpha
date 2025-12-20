@@ -79,7 +79,7 @@ html {
 }
 
 [data-theme="light"] .text-gray-600 {
-  color: #94a3b8 !important; /* slate-400 */
+  color: #475569 !important; /* slate-600 - Darker for better readability */
 }
 
 /* 浅色模式下的背景色反转 */
@@ -176,12 +176,12 @@ html {
 /* 浅色模式下的 cyan 强调色保持 */
 [data-theme="light"] .text-cyan-400,
 [data-theme="light"] .text-cyan-500 {
-  color: #0891b2 !important; /* cyan-600 更适合浅色背景 */
+  color: #0284c7 !important; /* sky-600 更鲜艳 */
 }
 
 [data-theme="light"] .border-cyan-500\/30,
 [data-theme="light"] .border-cyan-500\/50 {
-  border-color: rgba(8, 145, 178, 0.5) !important;
+  border-color: rgba(2, 132, 199, 0.5) !important;
 }
 
 /* 浅色模式下的成功/错误/警告色调整 */
@@ -240,8 +240,8 @@ html {
 [data-theme="light"] input:focus,
 [data-theme="light"] select:focus,
 [data-theme="light"] textarea:focus {
-  border-color: #0891b2 !important; /* cyan-600 */
-  box-shadow: 0 0 0 2px rgba(8, 145, 178, 0.2) !important;
+  border-color: #0284c7 !important; /* sky-600 */
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2) !important;
 }
 
 [data-theme="light"] input::placeholder {
@@ -256,7 +256,7 @@ html {
    浅色模式下的卡片选中状态
    ============================================ */
 [data-theme="light"] .border-cyan-500 {
-  border-color: #0891b2 !important; /* cyan-600 */
+  border-color: #0284c7 !important; /* sky-600 */
 }
 
 [data-theme="light"] .border-blue-500 {
@@ -271,39 +271,50 @@ html {
   border-color: #ea580c !important; /* orange-600 */
 }
 
-/* 浅色模式下选中卡片的背景色 - 更浅的色调 */
+/* 浅色模式下选中卡片的背景色 - 增加光感和渐变 */
 [data-theme="light"] .bg-cyan-900\/20 {
-  background-color: rgba(8, 145, 178, 0.12) !important;
+  background-color: rgba(2, 132, 199, 0.08) !important;
+  background-image: linear-gradient(135deg, rgba(2, 132, 199, 0.15), rgba(2, 132, 199, 0.02)) !important;
 }
 
 [data-theme="light"] .bg-blue-900\/20 {
-  background-color: rgba(37, 99, 235, 0.12) !important;
+  background-color: rgba(37, 99, 235, 0.08) !important;
+  background-image: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(37, 99, 235, 0.02)) !important;
 }
 
 [data-theme="light"] .bg-orange-900\/20 {
-  background-color: rgba(234, 88, 12, 0.12) !important;
+  background-color: rgba(234, 88, 12, 0.08) !important;
+  background-image: linear-gradient(135deg, rgba(234, 88, 12, 0.15), rgba(234, 88, 12, 0.02)) !important;
 }
 
 [data-theme="light"] .bg-purple-900\/20 {
-  background-color: rgba(124, 58, 237, 0.12) !important;
+  background-color: rgba(124, 58, 237, 0.08) !important;
+  background-image: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(124, 58, 237, 0.02)) !important;
 }
 
-/* 浅色模式下选中状态的 shadow/glow 减弱 */
+/* 浅色模式下增强 Glow 以匹配夜间模式的光感 */
 [data-theme="light"] .shadow-\[0_0_20px_rgba\(6\,182\,212\,0\.3\)\] {
-  box-shadow: 0 2px 8px rgba(8, 145, 178, 0.2) !important;
+  box-shadow: 0 0 15px rgba(2, 132, 199, 0.3), 0 0 4px rgba(2, 132, 199, 0.5) !important;
 }
 
 [data-theme="light"] .shadow-\[0_0_20px_rgba\(59\,130\,246\,0\.3\)\] {
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2) !important;
+  box-shadow: 0 0 15px rgba(37, 99, 235, 0.3), 0 0 4px rgba(37, 99, 235, 0.5) !important;
 }
 
 [data-theme="light"] .shadow-\[0_0_20px_rgba\(249\,115\,22\,0\.3\)\] {
-  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.2) !important;
+  box-shadow: 0 0 15px rgba(234, 88, 12, 0.3), 0 0 4px rgba(234, 88, 12, 0.5) !important;
+}
+
+/* 浅色模式下提示框背景增强 */
+[data-theme="light"] .bg-cyan-900\/10 {
+  background-color: rgba(2, 132, 199, 0.06) !important;
+  border-color: rgba(2, 132, 199, 0.3) !important;
+  box-shadow: 0 0 10px rgba(2, 132, 199, 0.1) !important;
 }
 
 /* 浅色模式下的 ring 颜色 */
 [data-theme="light"] .ring-cyan-500\/50 {
-  --tw-ring-color: rgba(8, 145, 178, 0.3) !important;
+  --tw-ring-color: rgba(2, 132, 199, 0.3) !important;
 }
 
 [data-theme="light"] .ring-blue-500\/50 {
@@ -379,12 +390,16 @@ html {
 }
 
 [data-theme="light"] .text-cyan-200\/70 {
-  color: rgba(8, 145, 178, 0.9) !important; /* cyan-600 with higher opacity */
+  color: rgba(2, 132, 199, 0.9) !important; /* sky-600 with higher opacity */
+}
+
+[data-theme="light"] .text-cyan-200\/80 {
+  color: rgba(2, 132, 199, 0.95) !important; /* sky-600 with higher opacity */
 }
 
 /* 修复浅色模式下 cyan-900 等深色背景转换 */
 [data-theme="light"] .bg-cyan-900\/30 {
-  background-color: rgba(8, 145, 178, 0.15) !important;
+  background-color: rgba(2, 132, 199, 0.2) !important;
 }
 
 /* 修复提示文字颜色 */
@@ -406,7 +421,7 @@ html {
 /* Glow 效果在浅色模式下减弱 */
 [data-theme="light"] .shadow-cyan-500\/20,
 [data-theme="light"] .shadow-cyan-500\/30 {
-  box-shadow: 0 4px 14px -3px rgba(8, 145, 178, 0.25) !important;
+  box-shadow: 0 4px 14px -3px rgba(2, 132, 199, 0.3) !important;
 }
 
 [data-theme="light"] .shadow-blue-500\/20,

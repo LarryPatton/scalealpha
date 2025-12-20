@@ -12,8 +12,8 @@
           
           <!-- Links (Only if logged in) -->
           <div v-if="userEmail" class="hidden md:flex items-center gap-6">
-            <router-link to="/infoB" active-class="font-bold border-b-2 border-blue-500 pb-0.5" :class="isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'" class="font-medium transition-colors" :style="{ color: tokens.colors.text.tertiary }">Info</router-link>
-            <router-link to="/opportunityB" active-class="font-bold border-b-2 border-blue-500 pb-0.5" :class="isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'" class="font-medium transition-colors" :style="{ color: tokens.colors.text.tertiary }">机会发现</router-link>
+            <router-link to="/infoB" active-class="font-bold border-b-2 border-blue-500 pb-0.5" :class="isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'" class="font-medium transition-colors" :style="{ color: tokens.colors.text.tertiary }">{{ $t('nav.info') }}</router-link>
+            <router-link to="/opportunityB" active-class="font-bold border-b-2 border-blue-500 pb-0.5" :class="isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'" class="font-medium transition-colors" :style="{ color: tokens.colors.text.tertiary }">{{ $t('nav.opportunity') }}</router-link>
           </div>
         </div>
 
@@ -33,7 +33,7 @@
                 borderColor: tokens.colors.border.strong,
                 color: tokens.colors.text.primary
               }"
-              placeholder="搜索股票 / 策略 / 主题..." 
+              :placeholder="$t('search.placeholder')" 
             />
             <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
               <span class="text-xs border rounded px-1.5 py-0.5" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default }">Ctrl K</span>
@@ -45,17 +45,20 @@
 
         <!-- Right: User Profile or Login/Register -->
         <div class="flex items-center gap-4">
+          <!-- Language Toggle Button -->
+          <LanguageToggle />
+          
           <!-- Theme Toggle Button -->
           <ThemeToggle />
           
           <!-- Price Button (Always Visible) -->
           <router-link to="/pricing" class="text-sm font-medium transition-colors hidden sm:block" :style="{ color: tokens.colors.text.secondary }" :class="isDark ? 'hover:text-white' : 'hover:text-gray-900'">
-            Price
+            {{ $t('nav.price') }}
           </router-link>
 
           <!-- Watchlist Link (If Logged In) -->
           <button v-if="userEmail" @click="showWatchlistModal = true" class="text-sm font-medium transition-colors hidden sm:block" :style="{ color: tokens.colors.text.secondary }" :class="isDark ? 'hover:text-white' : 'hover:text-gray-900'">
-            我的关注
+            {{ $t('nav.watchlist') }}
           </button>
 
           <!-- User Avatar & Menu (If Logged In) -->
@@ -76,13 +79,13 @@
                 <p class="font-semibold">{{ userEmail }}</p>
               </div>
               <button @click="handleMyInfo" class="w-full text-left px-4 py-2 text-sm text-blue-500 hover:text-blue-400" :style="{ ':hover': { backgroundColor: tokens.colors.background.elevated } }">
-                我的信息
+                {{ $t('nav.myInfo') }}
               </button>
               <button @click="handleResetProgress" class="w-full text-left px-4 py-2 text-sm text-orange-500 hover:text-orange-400">
-                查看进度
+                {{ $t('nav.viewProgress') }}
               </button>
               <button @click="handleLogout" class="w-full text-left px-4 py-2 text-sm text-red-500 hover:text-red-400 border-t rounded-b-lg" :style="{ borderColor: tokens.colors.border.default }">
-                登出
+                {{ $t('nav.logout') }}
               </button>
             </div>
           </div>
@@ -90,7 +93,7 @@
           <!-- Login/Register Button (If Not Logged In) -->
           <div v-else>
             <router-link to="/login" class="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-lg transition-colors shadow-lg shadow-blue-900/20">
-              登录 / 注册
+              {{ $t('nav.login') }}
             </router-link>
           </div>
         </div>
@@ -105,13 +108,16 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useUserProfile } from '../composables/useUserProfile'
 import { useSavedReports } from '../composables/useSavedReports'
 import { useTheme } from '../composables/useTheme'
 import WatchlistModal from './WatchlistModal.vue'
 import ThemeToggle from './ThemeToggle.vue'
+import LanguageToggle from './LanguageToggle.vue'
 
 const router = useRouter()
+const { t } = useI18n()
 const userEmail = ref('')
 const emit = defineEmits(['logout'])
 

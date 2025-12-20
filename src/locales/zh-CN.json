@@ -1,0 +1,320 @@
+{
+  "nav": {
+    "info": "Info",
+    "opportunity": "机会发现",
+    "watchlist": "我的关注",
+    "login": "登录 / 注册",
+    "logout": "登出",
+    "myInfo": "我的信息",
+    "viewProgress": "查看进度",
+    "price": "Price"
+  },
+  "search": {
+    "placeholder": "搜索股票 / 策略 / 主题..."
+  },
+  "opportunity": {
+    "tabs": {
+      "generate": "生成策略",
+      "mystrategy": "我的策略"
+    },
+    "search": {
+      "assetPlaceholder": "搜索股票代码或名称..."
+    },
+    "assetTabs": {
+      "search": "搜索",
+      "watchlist": "自选",
+      "holdings": "持仓",
+      "recommended": "推荐"
+    },
+    "strategyConfig": {
+      "title": "策略配置",
+      "subtitle": "配置您的分析参数",
+      "recommendHint": "使用推荐卡片",
+      "recommendHintDesc": "如果你回答之前的问题，那么推荐来自你的回答；如果你没回答，则交给模型随机判断。",
+      "mainFramework": "推荐配置：主分析框架",
+      "subFramework": "推荐配置：辅助框架",
+      "riskPreference": "风险偏好",
+      "investmentHorizon": "投资期限"
+    },
+    "searchPlaceholder": "SEARCH_ASSET // 输入代码或名称",
+    "selected": "已选择",
+    "none": "无",
+    "generateBtn": "生成策略报告",
+    "generating": "生成中...",
+    "helpGuide": "使用引导",
+    "frameworks": {
+      "auto": { "title": "智能推荐", "desc": "根据市况自动选择" },
+      "tech": { "title": "技术分析", "desc": "图表、指标、趋势" },
+      "fundamental": { "title": "基本面分析", "desc": "财务、估值、增长" },
+      "quant": { "title": "量化模型", "desc": "因子、统计套利" },
+      "event": { "title": "事件驱动", "desc": "并购、财报、政策" },
+      "business": { "title": "商业分析", "desc": "商业模式、竞争优势" },
+      "trend": { "title": "趋势跟踪", "desc": "宏观趋势、行业周期" },
+      "alt": { "title": "另类数据", "desc": "卫星、社交、情绪" }
+    },
+    "periods": {
+      "auto": { "title": "智能推荐", "desc": "根据标的自动选择" },
+      "short": { "title": "短期", "desc": "1-4周" },
+      "shortMid": { "title": "中短期", "desc": "1-3个月" },
+      "mid": { "title": "中期", "desc": "3-6个月" },
+      "long": { "title": "长期", "desc": "6个月以上" }
+    },
+    "risks": {
+      "auto": { "title": "智能推荐", "desc": "根据市况自动调整" },
+      "low": { "title": "保守型", "desc": "低风险、稳健收益" },
+      "medium": { "title": "稳健型", "desc": "适度风险、平衡收益" },
+      "high": { "title": "进取型", "desc": "较高风险、追求收益" },
+      "extreme": { "title": "激进型", "desc": "高风险、高收益" }
+    },
+    "config": {
+      "recommendHintTitle": "使用推荐卡片",
+      "recommendHintDesc": "如果你回答之前的问题，那么推荐来自你的回答；如果你没回答，则交给模型随机判断",
+      "frameworkTitle": "分析框架",
+      "periodTitle": "投资周期",
+      "riskTitle": "风险偏好",
+      "insightsTitle": "个人洞察",
+      "optional": "(可选)",
+      "notePlaceholder": "补充说明",
+      "frameworkNotePlaceholder": "例如：看好AI板块技术突破...",
+      "periodNotePlaceholder": "例如：预计3个月内完成布局...",
+      "riskNotePlaceholder": "例如：单笔仓位不超过10%...",
+      "macroInsight": "宏观市场观点",
+      "macroPlaceholder": "分享您对宏观经济、政策、市场趋势的看法...",
+      "tickerInsight": "标的深度洞察",
+      "tickerPlaceholder": "针对已选标的，分享您的独特见解和分析..."
+    },
+    "footer": {
+      "estTime": "预计耗时",
+      "mins": "分钟",
+      "cost": "消耗",
+      "credits": "积分",
+      "initGeneration": "初始化生成"
+    },
+    "myStrategy": {
+      "title": "我的策略",
+      "subtitle": "管理和查看已保存的策略报告",
+      "empty": "暂无保存的策略",
+      "emptyHint": "前往「生成策略」创建您的第一个策略报告",
+      "goGenerate": "去生成策略",
+      "savedAt": "保存于",
+      "view": "查看",
+      "delete": "删除",
+      "confirmDelete": "确定要删除这个策略吗？"
+    },
+    "filters": {
+      "all": "全部",
+      "strategy": "策略",
+      "plan": "计划"
+    },
+    "minimap": {
+      "title": "MiniMap",
+      "legend": {
+        "done": "已完成",
+        "active": "进行中",
+        "pending": "等待中",
+        "blocked": "受阻"
+      },
+      "steps": {
+        "strategySetup": "策略准备",
+        "opportunityGenerate": "机会生成",
+        "opportunityGate": "机会判定",
+        "planning": "计划生成",
+        "execution": "执行/完成"
+      }
+    },
+    "chat": {
+      "aiAssistant": "AI 策略助手",
+      "aiName": "ScaleAlpha AI 助手",
+      "aiDesc": "基于当前策略报告为您解答",
+      "suggestions": "您可以问我：",
+      "question1": "这个策略的主要风险是什么？",
+      "question2": "基于此策略生成的计划有哪些？",
+      "question3": "如何对冲此策略的下行风险？",
+      "aiResponse": "基于 {symbol} 的策略分析，这是一个很好的问题。通常来说，考虑到当前的市场环境和 {symbol} 的基本面情况，我们需要关注..."
+    },
+    "actions": {
+      "copied": "已复制",
+      "copyLink": "复制分享链接",
+      "share": "分享",
+      "watched": "已关注",
+      "watch": "关注 {symbol}",
+      "details": "详情",
+      "saved": "已保存",
+      "saveReport": "保存报告",
+      "generatePlan": "生成交易计划",
+      "viewGuide": "查看使用引导"
+    },
+    "relatedPlans": {
+      "title": "基于此策略的计划",
+      "count": "已有 {count} 个计划使用此策略",
+      "official": "官方生成",
+      "viewDetails": "查看详情",
+      "empty": "暂无相关计划",
+      "generateNow": "立即生成"
+    },
+    "hints": {
+      "selectAssets": "选择要分析的标的",
+      "defaultParams": "默认推荐参数，等待生成策略",
+      "customParams": "自定义参数，等待生成策略",
+      "waitSelectStrategy": "等待选择策略",
+      "pleaseSelectStrategy": "请选择一个策略",
+      "onlyPlanMode": "仅计划模式",
+      "updating": "正在更新... {progress}%",
+      "generating": "正在生成中...",
+      "waitingGenerate": "等待生成...",
+      "recommendUpdate": "建议更新策略",
+      "strategyGenerated": "策略已生成",
+      "waitStrategyComplete": "等待策略生成完成",
+      "noOpportunityUpdate": "暂无机会，建议更新策略",
+      "gradeAdjustParams": "{grade}级机会，建议调整参数",
+      "gradeOpportunity": "{grade}级机会",
+      "gradeCanGeneratePlan": "{grade}级机会，可生成计划 →",
+      "planGenerated": "计划已生成",
+      "waitGeneratePlan": "等待生成计划",
+      "needOpportunity": "需有策略机会",
+      "needGradeB": "需B级以上机会",
+      "waitOpportunityGate": "等待机会判定",
+      "waitPlanGenerate": "等待计划生成",
+      "canExecuteTrade": "可执行交易"
+    },
+    "toasts": {
+      "selectedWaiting": "已选择 {symbol}，策略等待生成...",
+      "selectedMultipleWaiting": "已选择 {symbol}，共 {count} 个策略等待生成...",
+      "selected": "已选择 {symbol}",
+      "selectedWithStatus": "已选择 {symbol}，策略{status}...",
+      "generating": "正在生成中",
+      "waiting": "等待生成",
+      "strategyComplete": "{symbol} 策略生成完成！"
+    },
+    "activeGeneration": {
+      "title": "生成中任务",
+      "tasks": "个任务",
+      "expand": "展开",
+      "collapse": "收起",
+      "noActiveTasks": "暂无进行中的任务",
+      "processing": "处理中",
+      "pending": "等待中",
+      "calculating": "计算中...",
+      "initializing": "初始化...",
+      "est": "预计",
+      "more": "更多",
+      "selected": "已选择"
+    },
+    "smartFilters": {
+      "title": "智能筛选",
+      "highGrade": "高等级 (A/B)",
+      "recommendedUpdate": "建议更新",
+      "noSignalLogs": "无信号记录",
+      "noOpportunityFound": "暂无机会"
+    },
+    "collections": {
+      "title": "策略集合",
+      "allStrategies": "所有策略",
+      "officialReports": "官方报告",
+      "myStrategies": "我的策略",
+      "withExecutionPlans": "含执行计划",
+      "onlyPlan": "仅计划",
+      "noPlan": "无计划",
+      "techStocks": "科技股",
+      "highRisk": "高风险",
+      "newGroup": "新建分组"
+    },
+    "strategyTable": {
+      "strategiesFound": "个策略",
+      "strategy": "策略",
+      "executionPlan": "执行计划",
+      "ticker": "代码",
+      "name": "名称",
+      "source": "来源",
+      "direction": "方向",
+      "grade": "评级",
+      "horizon": "周期",
+      "created": "创建时间",
+      "update": "更新",
+      "status": "状态",
+      "count": "数量",
+      "unread": "未读",
+      "generating": "生成中",
+      "actions": "操作",
+      "official": "官方",
+      "myStrategy": "我的策略",
+      "long": "做多",
+      "short": "做空",
+      "horizonShort": "短期",
+      "horizonMedium": "中期",
+      "horizonLong": "长期",
+      "updated": "已更新",
+      "updating": "更新中",
+      "retry": "重试",
+      "withPlan": "有计划",
+      "searchPlaceholder": "搜索策略...",
+      "allDirections": "全部方向",
+      "clearAll": "全部清除",
+      "moveToGroup": "移至分组",
+      "noCustomGroups": "暂无自定义分组",
+      "createNewGroup": "新建分组",
+      "view": "查看",
+      "generatePlan": "生成计划",
+      "viewPlans": "查看计划",
+      "delete": "删除",
+      "noStrategiesFound": "未找到策略",
+      "configureParameters": "配置参数"
+    },
+    "generateTour": {
+      "step1": {
+        "title": "选择分析标的",
+        "desc": "从自选股或搜索中选择您想分析的股票"
+      },
+      "step2": {
+        "title": "选择分析框架",
+        "desc": "可以选择智能推荐，也可以手动选择多个分析框架"
+      },
+      "step3": {
+        "title": "设置投资周期",
+        "desc": "根据您的投资策略选择合适的时间周期"
+      },
+      "step4": {
+        "title": "选择风险偏好",
+        "desc": "系统将根据您的风险承受能力调整分析"
+      },
+      "step5": {
+        "title": "开始生成",
+        "desc": "点击按钮开始生成策略报告"
+      }
+    },
+    "strategyTour": {
+      "step1": {
+        "title": "生成任务状态",
+        "desc": "这里显示正在进行的策略生成任务"
+      },
+      "step2": {
+        "title": "智能筛选器",
+        "desc": "使用筛选器快速找到符合条件的策略"
+      },
+      "step3": {
+        "title": "策略集合",
+        "desc": "按分类管理您的策略"
+      },
+      "step4": {
+        "title": "策略列表",
+        "desc": "查看所有策略的详细信息"
+      },
+      "step5": {
+        "title": "操作按钮",
+        "desc": "更新策略、生成计划等操作"
+      }
+    }
+  },
+  "common": {
+    "confirm": "确定",
+    "cancel": "取消",
+    "save": "保存",
+    "delete": "删除",
+    "edit": "编辑",
+    "loading": "加载中...",
+    "success": "成功",
+    "error": "错误",
+    "warning": "警告",
+    "info": "提示"
+  }
+}

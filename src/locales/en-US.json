@@ -1,0 +1,320 @@
+{
+  "nav": {
+    "info": "Info",
+    "opportunity": "Opportunities",
+    "watchlist": "Watchlist",
+    "login": "Login / Register",
+    "logout": "Logout",
+    "myInfo": "My Profile",
+    "viewProgress": "View Progress",
+    "price": "Price"
+  },
+  "search": {
+    "placeholder": "Search stocks / strategies / themes..."
+  },
+  "opportunity": {
+    "tabs": {
+      "generate": "Generate Strategy",
+      "mystrategy": "My Strategies"
+    },
+    "search": {
+      "assetPlaceholder": "Search ticker or name..."
+    },
+    "assetTabs": {
+      "search": "Search",
+      "watchlist": "Watchlist",
+      "holdings": "Holdings",
+      "recommended": "Recommended"
+    },
+    "strategyConfig": {
+      "title": "Strategy Config",
+      "subtitle": "CONFIGURE YOUR ANALYSIS PARAMETERS",
+      "recommendHint": "Use Recommended Cards",
+      "recommendHintDesc": "If you answered previous questions, recommendations come from your answers; otherwise, the model will decide randomly.",
+      "mainFramework": "Recommended: Primary Analysis Framework",
+      "subFramework": "Recommended: Secondary Framework",
+      "riskPreference": "Risk Preference",
+      "investmentHorizon": "Investment Horizon"
+    },
+    "searchPlaceholder": "SEARCH_ASSET // Enter code or name",
+    "selected": "SELECTED",
+    "none": "NONE",
+    "generateBtn": "Generate Strategy Report",
+    "generating": "Generating...",
+    "helpGuide": "User Guide",
+    "frameworks": {
+      "auto": { "title": "Smart Recommendation", "desc": "Auto-select based on market" },
+      "tech": { "title": "Technical Analysis", "desc": "Charts, indicators, trends" },
+      "fundamental": { "title": "Fundamental Analysis", "desc": "Financials, valuation, growth" },
+      "quant": { "title": "Quantitative Model", "desc": "Factors, statistical arbitrage" },
+      "event": { "title": "Event Driven", "desc": "M&A, earnings, policy" },
+      "business": { "title": "Business Analysis", "desc": "Business model, competitive advantage" },
+      "trend": { "title": "Trend Following", "desc": "Macro trends, industry cycles" },
+      "alt": { "title": "Alternative Data", "desc": "Satellite, social, sentiment" }
+    },
+    "periods": {
+      "auto": { "title": "Smart Recommendation", "desc": "Auto-select based on asset" },
+      "short": { "title": "Short-term", "desc": "1-4 weeks" },
+      "shortMid": { "title": "Short-Mid", "desc": "1-3 months" },
+      "mid": { "title": "Mid-term", "desc": "3-6 months" },
+      "long": { "title": "Long-term", "desc": "6+ months" }
+    },
+    "risks": {
+      "auto": { "title": "Smart Recommendation", "desc": "Auto-adjust based on market" },
+      "low": { "title": "Conservative", "desc": "Low risk, stable returns" },
+      "medium": { "title": "Balanced", "desc": "Moderate risk, balanced returns" },
+      "high": { "title": "Aggressive", "desc": "Higher risk, seeking returns" },
+      "extreme": { "title": "Very Aggressive", "desc": "High risk, high reward" }
+    },
+    "config": {
+      "recommendHintTitle": "Use Recommended Cards",
+      "recommendHintDesc": "Recommendations come from your answers; otherwise, the model will decide randomly",
+      "frameworkTitle": "Analysis Framework",
+      "periodTitle": "Investment Period",
+      "riskTitle": "Risk Preference",
+      "insightsTitle": "Personal Insights",
+      "optional": "(Optional)",
+      "notePlaceholder": "Notes",
+      "frameworkNotePlaceholder": "e.g., Bullish on AI sector...",
+      "periodNotePlaceholder": "e.g., Complete layout in 3 months...",
+      "riskNotePlaceholder": "e.g., Max 10% per position...",
+      "macroInsight": "Macro Market View",
+      "macroPlaceholder": "Share your views on macro economy, policies, market trends...",
+      "tickerInsight": "Ticker Deep Insights",
+      "tickerPlaceholder": "Share your unique insights and analysis for selected tickers..."
+    },
+    "footer": {
+      "estTime": "Est. Time",
+      "mins": "mins",
+      "cost": "Cost",
+      "credits": "credits",
+      "initGeneration": "Initialize Generation"
+    },
+    "myStrategy": {
+      "title": "My Strategies",
+      "subtitle": "Manage and view saved strategy reports",
+      "empty": "No saved strategies",
+      "emptyHint": "Go to 'Generate Strategy' to create your first strategy report",
+      "goGenerate": "Generate Strategy",
+      "savedAt": "Saved at",
+      "view": "View",
+      "delete": "Delete",
+      "confirmDelete": "Are you sure you want to delete this strategy?"
+    },
+    "filters": {
+      "all": "All",
+      "strategy": "Strategy",
+      "plan": "Plan"
+    },
+    "minimap": {
+      "title": "MiniMap",
+      "legend": {
+        "done": "Done",
+        "active": "Active",
+        "pending": "Pending",
+        "blocked": "Blocked"
+      },
+      "steps": {
+        "strategySetup": "Strategy Setup",
+        "opportunityGenerate": "Opportunity Generate",
+        "opportunityGate": "Opportunity Gate",
+        "planning": "Planning",
+        "execution": "Execution"
+      }
+    },
+    "chat": {
+      "aiAssistant": "AI Strategy Assistant",
+      "aiName": "ScaleAlpha AI Assistant",
+      "aiDesc": "Answering based on current strategy report",
+      "suggestions": "You can ask me:",
+      "question1": "What are the main risks of this strategy?",
+      "question2": "What plans are generated based on this strategy?",
+      "question3": "How to hedge the downside risk of this strategy?",
+      "aiResponse": "Based on the strategy analysis of {symbol}, this is a great question. Generally speaking, considering the current market environment and the fundamentals of {symbol}, we need to pay attention to..."
+    },
+    "actions": {
+      "copied": "Copied",
+      "copyLink": "Copy Share Link",
+      "share": "Share",
+      "watched": "Watched",
+      "watch": "Watch {symbol}",
+      "details": "Details",
+      "saved": "Saved",
+      "saveReport": "Save Report",
+      "generatePlan": "Generate Trading Plan",
+      "viewGuide": "View User Guide"
+    },
+    "relatedPlans": {
+      "title": "Plans Based on This Strategy",
+      "count": "{count} plans using this strategy",
+      "official": "Official",
+      "viewDetails": "View Details",
+      "empty": "No related plans",
+      "generateNow": "Generate Now"
+    },
+    "hints": {
+      "selectAssets": "Select assets to analyze",
+      "defaultParams": "Default params, waiting to generate",
+      "customParams": "Custom params, waiting to generate",
+      "waitSelectStrategy": "Waiting for strategy selection",
+      "pleaseSelectStrategy": "Please select a strategy",
+      "onlyPlanMode": "Only Plan mode",
+      "updating": "Updating... {progress}%",
+      "generating": "Generating...",
+      "waitingGenerate": "Waiting to generate...",
+      "recommendUpdate": "Recommend updating strategy",
+      "strategyGenerated": "Strategy generated",
+      "waitStrategyComplete": "Waiting for strategy generation",
+      "noOpportunityUpdate": "No opportunity, recommend updating",
+      "gradeAdjustParams": "Grade {grade}, adjust params",
+      "gradeOpportunity": "Grade {grade} opportunity",
+      "gradeCanGeneratePlan": "Grade {grade}, can generate plan →",
+      "planGenerated": "Plan generated",
+      "waitGeneratePlan": "Waiting to generate plan",
+      "needOpportunity": "Need strategy opportunity",
+      "needGradeB": "Need Grade B or above",
+      "waitOpportunityGate": "Waiting for opportunity gate",
+      "waitPlanGenerate": "Waiting for plan generation",
+      "canExecuteTrade": "Ready to execute trade"
+    },
+    "toasts": {
+      "selectedWaiting": "Selected {symbol}, waiting to generate...",
+      "selectedMultipleWaiting": "Selected {symbol}, {count} strategies waiting...",
+      "selected": "Selected {symbol}",
+      "selectedWithStatus": "Selected {symbol}, strategy {status}...",
+      "generating": "generating",
+      "waiting": "waiting",
+      "strategyComplete": "{symbol} strategy completed!"
+    },
+    "activeGeneration": {
+      "title": "Active Generation",
+      "tasks": "TASKS",
+      "expand": "Expand",
+      "collapse": "Collapse",
+      "noActiveTasks": "NO ACTIVE TASKS",
+      "processing": "PROCESSING",
+      "pending": "PENDING",
+      "calculating": "Calculating...",
+      "initializing": "Initializing...",
+      "est": "Est",
+      "more": "more",
+      "selected": "SELECTED"
+    },
+    "smartFilters": {
+      "title": "SMART FILTERS",
+      "highGrade": "High Grade (A/B)",
+      "recommendedUpdate": "Recommended Update",
+      "noSignalLogs": "No Signal Logs",
+      "noOpportunityFound": "No Opportunity Found"
+    },
+    "collections": {
+      "title": "COLLECTIONS",
+      "allStrategies": "All Strategies",
+      "officialReports": "Official Reports",
+      "myStrategies": "My Strategies",
+      "withExecutionPlans": "With Execution Plans",
+      "onlyPlan": "Only Plan",
+      "noPlan": "No Plan",
+      "techStocks": "Tech Stocks",
+      "highRisk": "High Risk",
+      "newGroup": "NEW GROUP"
+    },
+    "strategyTable": {
+      "strategiesFound": "strategies found",
+      "strategy": "STRATEGY",
+      "executionPlan": "EXECUTION PLAN",
+      "ticker": "TICKER",
+      "name": "NAME",
+      "source": "SOURCE",
+      "direction": "DIRECTION",
+      "grade": "GRADE",
+      "horizon": "HORIZON",
+      "created": "CREATED",
+      "update": "UPDATE",
+      "status": "STATUS",
+      "count": "COUNT",
+      "unread": "UNREAD",
+      "generating": "GENERATING",
+      "actions": "ACTIONS",
+      "official": "Official",
+      "myStrategy": "My Strategy",
+      "long": "LONG",
+      "short": "SHORT",
+      "horizonShort": "Short",
+      "horizonMedium": "Medium",
+      "horizonLong": "Long",
+      "updated": "UPDATED",
+      "updating": "UPDATING",
+      "retry": "RETRY",
+      "withPlan": "With Plan",
+      "searchPlaceholder": "Search strategies...",
+      "allDirections": "All Directions",
+      "clearAll": "Clear All",
+      "moveToGroup": "Move to Group",
+      "noCustomGroups": "No custom groups",
+      "createNewGroup": "Create New Group",
+      "view": "View",
+      "generatePlan": "Generate Plan",
+      "viewPlans": "View Plans",
+      "delete": "Delete",
+      "noStrategiesFound": "NO STRATEGIES FOUND",
+      "configureParameters": "CONFIGURE PARAMETERS"
+    },
+    "generateTour": {
+      "step1": {
+        "title": "Select Assets",
+        "desc": "Choose stocks from watchlist or search"
+      },
+      "step2": {
+        "title": "Select Framework",
+        "desc": "Choose smart recommendation or manually select frameworks"
+      },
+      "step3": {
+        "title": "Set Investment Period",
+        "desc": "Select appropriate time horizon for your strategy"
+      },
+      "step4": {
+        "title": "Choose Risk Preference",
+        "desc": "System will adjust analysis based on your risk tolerance"
+      },
+      "step5": {
+        "title": "Start Generation",
+        "desc": "Click button to generate strategy report"
+      }
+    },
+    "strategyTour": {
+      "step1": {
+        "title": "Generation Status",
+        "desc": "Shows ongoing strategy generation tasks"
+      },
+      "step2": {
+        "title": "Smart Filters",
+        "desc": "Use filters to quickly find matching strategies"
+      },
+      "step3": {
+        "title": "Collections",
+        "desc": "Manage strategies by categories"
+      },
+      "step4": {
+        "title": "Strategy List",
+        "desc": "View detailed information of all strategies"
+      },
+      "step5": {
+        "title": "Action Buttons",
+        "desc": "Update strategy, generate plans and more"
+      }
+    }
+  },
+  "common": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "loading": "Loading...",
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info"
+  }
+}

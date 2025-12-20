@@ -45,18 +45,18 @@
           @click="startGenerateTour"
           class="absolute top-2 right-2 z-30 w-8 h-8 flex items-center justify-center rounded-full border hover:text-cyan-400 hover:border-cyan-500/50 transition-all group"
           :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.strong, color: tokens.colors.text.muted }"
-          title="查看使用引导"
+          :title="$t('opportunity.help.viewGuide')"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
           <span class="absolute right-full mr-2 px-2 py-1 text-xs border rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong, color: tokens.colors.text.primary }">
-            使用引导
+            {{ $t('opportunity.help.guide') }}
           </span>
         </button>
         
         <!-- Left Column: Asset Selection -->
-        <div id="asset-selection-panel" class="w-[400px] flex flex-col border overflow-hidden" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+        <div id="asset-selection-panel" class="w-[240px] flex flex-col border overflow-hidden shrink-0" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
           <!-- Search & Filter Header -->
           <div class="p-4 border-b" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
             <div class="flex gap-1 p-1 rounded-sm border" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default }">
@@ -76,7 +76,7 @@
               <input 
                 v-model="searchQuery"
                 type="text" 
-                placeholder="SEARCH_ASSET // 输入代码或名称" 
+                :placeholder="$t('opportunity.search.assetPlaceholder')"
                 class="w-full border text-sm px-4 py-2.5 rounded-sm focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-all font-mono"
                 :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.strong, color: tokens.colors.text.primary }"
               />
@@ -92,32 +92,26 @@
               v-for="stock in currentStockList" 
               :key="stock.symbol"
               @click="toggleStock(stock)"
-              class="group flex items-center justify-between p-3 rounded-sm cursor-pointer border border-transparent transition-all"
+              class="group flex items-center p-2 rounded-sm cursor-pointer border border-transparent transition-all"
               :style="selectedStocks.includes(stock.symbol) 
                 ? { backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.strong, boxShadow: `0 0 0 1px ${tokens.colors.accent.primary}4D` }
                 : {}"
             >
-              <div class="flex items-center gap-3">
+              <div class="flex items-center gap-2">
                 <div 
-                  class="w-4 h-4 border rounded-sm flex items-center justify-center transition-colors"
+                  class="w-4 h-4 border rounded-sm flex items-center justify-center transition-colors shrink-0"
                   :style="selectedStocks.includes(stock.symbol) 
                     ? { backgroundColor: tokens.colors.accent.primary + '33', borderColor: tokens.colors.accent.primary }
                     : { borderColor: tokens.colors.border.strong }"
                 >
                   <div v-if="selectedStocks.includes(stock.symbol)" class="w-2 h-2 rounded-[1px]" :style="{ backgroundColor: tokens.colors.accent.primary }"></div>
                 </div>
-                <div>
-                  <div class="flex items-center gap-2">
-                    <span class="font-mono font-bold" :style="{ color: tokens.colors.text.primary }">{{ stock.symbol }}</span>
-                    <span class="text-xs px-1.5 py-0.5 rounded border" :style="{ color: tokens.colors.text.muted, backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }">{{ stock.market }}</span>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="font-mono font-bold text-sm" :style="{ color: tokens.colors.text.primary }">{{ stock.symbol }}</span>
+                    <span class="text-[10px] px-1 py-0.5 rounded border" :style="{ color: tokens.colors.text.muted, backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }">{{ stock.market }}</span>
                   </div>
-                  <div class="text-xs mt-0.5" :style="{ color: tokens.colors.text.muted }">{{ stock.name }}</div>
-                </div>
-              </div>
-              <div class="text-right">
-                <div class="font-mono text-sm" :style="{ color: tokens.colors.text.primary }">{{ stock.price }}</div>
-                <div class="font-mono text-xs" :style="{ color: stock.change >= 0 ? tokens.colors.semantic.success : tokens.colors.semantic.error }">
-                  {{ stock.change >= 0 ? '+' : '' }}{{ stock.change }}%
+                  <div class="text-xs mt-0.5 truncate" :style="{ color: tokens.colors.text.muted }">{{ stock.name }}</div>
                 </div>
               </div>
             </div>
@@ -139,7 +133,7 @@
             
             <!-- Summary Footer -->
             <div class="p-3 text-xs font-mono" :style="{ color: tokens.colors.text.muted }">
-              <span>SELECTED: <span :style="{ color: tokens.colors.accent.primary }">{{ selectedStocks.length > 0 ? selectedStocks[0] : 'NONE' }}</span></span>
+              <span>{{ $t('opportunity.selected') }}: <span :style="{ color: tokens.colors.accent.primary }">{{ selectedStocks.length > 0 ? selectedStocks[0] : $t('opportunity.none') }}</span></span>
             </div>
           </div>
         </div>
@@ -153,8 +147,8 @@
             <!-- Header - 固定高度区域 -->
             <div class="flex justify-between items-center mb-3 border-b pb-2 shrink-0" :style="{ borderColor: tokens.colors.border.default }">
               <div>
-                <h2 class="text-xl font-bold uppercase tracking-widest mb-1" :style="{ color: tokens.colors.text.primary }">Strategy Config</h2>
-                <p class="text-xs font-mono" :style="{ color: tokens.colors.text.muted }">CONFIGURE YOUR ANALYSIS PARAMETERS</p>
+                <h2 class="text-xl font-bold uppercase tracking-widest mb-1" :style="{ color: tokens.colors.text.primary }">{{ $t('opportunity.strategyConfig.title') }}</h2>
+                <p class="text-xs font-mono" :style="{ color: tokens.colors.text.muted }">{{ $t('opportunity.strategyConfig.subtitle') }}</p>
               </div>
             </div>
 
@@ -164,87 +158,187 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
               </div>
               <p class="text-xs text-cyan-200/80 leading-relaxed">
-                <span class="font-bold text-cyan-400">使用推荐卡片</span> = 如果你回答之前的问题，那么推荐来自你的回答；如果你没回答，则交给模型随机判断。
+                <span class="font-bold text-cyan-400">{{ $t('opportunity.config.recommendHintTitle') }}</span> = {{ $t('opportunity.config.recommendHintDesc') }}
               </p>
             </div>
 
             <!-- Advanced Mode Settings - 弹性区域，均分剩余空间 -->
-            <div class="flex-1 flex flex-col gap-4 animate-fade-in min-h-0">
+            <div class="flex-1 flex flex-col gap-3 animate-fade-in min-h-0">
               
               <!-- 1. Analysis Framework - flex-[2] 因为有2行卡片 -->
               <div id="analysis-frameworks" class="flex-[2] flex flex-col min-h-0">
-                <h3 class="text-sm font-bold text-gray-400 mb-2 flex items-center gap-2 uppercase tracking-wider shrink-0">
-                  <span class="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span> 推荐配置：主分析框架
+                <h3 class="text-xs font-bold text-gray-400 mb-1.5 flex items-center gap-2 uppercase tracking-wider shrink-0">
+                  <span class="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span> {{ $t('opportunity.config.frameworkTitle') }}
                 </h3>
-                <div class="grid grid-cols-4 gap-2 flex-1 auto-rows-fr">
-                  <button 
-                    v-for="framework in frameworks" 
-                    :key="framework.id"
-                    @click="toggleFramework(framework.id)"
-                    class="p-2 border rounded-sm transition-all text-left relative group min-h-[60px] flex flex-col justify-between"
-                    :class="selectedFrameworks.includes(framework.id) ? 'border-cyan-500 bg-cyan-900/20 glow-primary-lg ring-1 ring-cyan-500/50' : 'hover:border-gray-600'"
-                    :style="selectedFrameworks.includes(framework.id) ? {} : { backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.default }"
-                  >
-                    <div class="flex justify-between items-start">
-                      <component v-if="framework.id === 'auto' && selectedFrameworks.includes('auto')" :is="IconAutoFilled" class="w-4 h-4 text-cyan-400 transition-colors" />
-                      <component v-else :is="framework.icon" class="w-4 h-4 text-gray-600 group-hover:text-cyan-400 transition-colors" :class="selectedFrameworks.includes(framework.id) ? 'text-cyan-400' : ''" />
-                      <div class="w-3 h-3 border rounded-[1px] flex items-center justify-center" :class="selectedFrameworks.includes(framework.id) ? 'bg-cyan-500 border-cyan-500' : ''" :style="selectedFrameworks.includes(framework.id) ? {} : { borderColor: tokens.colors.border.strong }">
-                        <svg v-if="selectedFrameworks.includes(framework.id)" class="w-2 h-2 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4"><path d="M5 13l4 4L19 7"></path></svg>
+                <div class="flex gap-3 flex-1 min-h-0">
+                  <!-- 左侧：卡片网格 -->
+                  <div class="flex-[7] grid grid-cols-4 gap-2 auto-rows-fr">
+                    <button 
+                      v-for="framework in frameworks" 
+                      :key="framework.id"
+                      @click="toggleFramework(framework.id)"
+                      class="py-1.5 px-2.5 border rounded transition-all text-left relative group flex items-center gap-3"
+                      :class="selectedFrameworks.includes(framework.id) ? 'border-cyan-500 bg-cyan-900/20 glow-primary-lg ring-1 ring-cyan-500/50' : 'hover:border-gray-600'"
+                      :style="selectedFrameworks.includes(framework.id) ? {} : { backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }"
+                    >
+                      <!-- 左侧：图标 -->
+                      <div class="shrink-0">
+                        <component v-if="framework.id === 'auto' && selectedFrameworks.includes('auto')" :is="IconAutoFilled" class="w-7 h-7 text-cyan-400 transition-colors" />
+                        <component v-else :is="framework.icon" class="w-7 h-7 text-gray-600 group-hover:text-cyan-400 transition-colors" :class="selectedFrameworks.includes(framework.id) ? 'text-cyan-400' : ''" />
                       </div>
+                      <!-- 中间：文字 -->
+                      <div class="flex-1 min-w-0">
+                        <div class="text-sm font-bold text-white leading-tight">{{ framework.title }}</div>
+                        <div class="text-xs text-gray-500 leading-snug truncate">{{ framework.desc }}</div>
+                      </div>
+                      <!-- 右侧：选中框 -->
+                      <div class="w-4 h-4 border rounded-[2px] flex items-center justify-center shrink-0" :class="selectedFrameworks.includes(framework.id) ? 'bg-cyan-500 border-cyan-500' : ''" :style="selectedFrameworks.includes(framework.id) ? {} : { borderColor: tokens.colors.border.strong }">
+                        <svg v-if="selectedFrameworks.includes(framework.id)" class="w-2.5 h-2.5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4"><path d="M5 13l4 4L19 7"></path></svg>
+                      </div>
+                    </button>
+                  </div>
+                  <!-- 右侧：补充说明 -->
+                  <div class="flex-[3] flex flex-col border rounded p-3 transition-all min-h-0"
+                       :style="{ backgroundColor: tokens.colors.background.surface, borderColor: configNotes.framework ? tokens.colors.border.strong : tokens.colors.border.default }">
+                    <div class="flex items-center justify-between mb-1.5 shrink-0">
+                      <span class="text-xs font-bold text-gray-400">{{ $t('opportunity.config.notePlaceholder') }}</span>
+                      <span class="text-[10px] font-mono" :style="{ color: tokens.colors.text.muted }">{{ configNotes.framework.length }}/100</span>
                     </div>
-                    <div>
-                      <div class="text-xs font-bold text-white mb-0.5">{{ framework.title }}</div>
-                      <div class="text-[9px] text-gray-500 leading-tight line-clamp-1">{{ framework.desc }}</div>
-                    </div>
-                  </button>
+                    <textarea 
+                      v-model="configNotes.framework"
+                      :placeholder="$t('opportunity.config.frameworkNotePlaceholder')"
+                      maxlength="100"
+                      class="flex-1 w-full bg-transparent text-xs text-gray-300 placeholder-gray-600 resize-none focus:outline-none leading-relaxed min-h-0"
+                    ></textarea>
+                  </div>
                 </div>
               </div>
 
               <!-- 2. Investment Period - flex-1 均分空间 -->
               <div id="investment-period" class="flex-1 flex flex-col min-h-0">
-                <h3 class="text-sm font-bold text-gray-400 mb-2 flex items-center gap-2 uppercase tracking-wider shrink-0">
-                  <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span> 投资周期
+                <h3 class="text-xs font-bold text-gray-400 mb-1.5 flex items-center gap-2 uppercase tracking-wider shrink-0">
+                  <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span> {{ $t('opportunity.config.periodTitle') }}
                 </h3>
-                <div class="grid grid-cols-5 gap-2 flex-1">
-                  <button 
-                    v-for="period in periods" 
-                    :key="period.id"
-                    @click="selectedPeriod = period.id"
-                    class="p-2 border rounded-sm transition-all text-left relative group min-h-[60px] flex flex-col justify-between"
-                    :class="selectedPeriod === period.id ? 'border-blue-500 bg-blue-900/20 glow-info-lg ring-1 ring-blue-500/50' : 'hover:border-gray-600'"
-                    :style="selectedPeriod === period.id ? {} : { backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.default }"
-                  >
-                    <component v-if="period.id === 'auto' && selectedPeriod === 'auto'" :is="IconAutoFilled" class="w-4 h-4 text-blue-400 transition-colors" />
-                    <component v-else :is="period.icon" class="w-4 h-4 text-gray-600 group-hover:text-blue-400 transition-colors" :class="selectedPeriod === period.id ? 'text-blue-400' : ''" />
-                    <div>
-                      <div class="text-xs font-bold text-white mb-0">{{ period.title }}</div>
-                      <div class="text-[9px] text-gray-500 font-mono line-clamp-1" :class="selectedPeriod === period.id ? 'text-blue-200/70' : ''">{{ period.desc }}</div>
+                <div class="flex gap-3 flex-1 min-h-0">
+                  <!-- 左侧：卡片网格 -->
+                  <div class="flex-[7] grid grid-cols-5 gap-2">
+                    <button 
+                      v-for="period in periods" 
+                      :key="period.id"
+                      @click="selectedPeriod = period.id"
+                      class="py-1.5 px-2.5 border rounded transition-all text-left relative group flex items-center gap-2.5"
+                      :class="selectedPeriod === period.id ? 'border-blue-500 bg-blue-900/20 glow-info-lg ring-1 ring-blue-500/50' : 'hover:border-gray-600'"
+                      :style="selectedPeriod === period.id ? {} : { backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }"
+                    >
+                      <!-- 左侧：图标 -->
+                      <div class="shrink-0">
+                        <component v-if="period.id === 'auto' && selectedPeriod === 'auto'" :is="IconAutoFilled" class="w-6 h-6 text-blue-400 transition-colors" />
+                        <component v-else :is="period.icon" class="w-6 h-6 text-gray-600 group-hover:text-blue-400 transition-colors" :class="selectedPeriod === period.id ? 'text-blue-400' : ''" />
+                      </div>
+                      <!-- 右侧：文字 -->
+                      <div class="flex-1 min-w-0">
+                        <div class="text-sm font-bold text-white leading-tight">{{ period.title }}</div>
+                        <div class="text-xs text-gray-500 font-mono leading-snug truncate" :class="selectedPeriod === period.id ? 'text-blue-200/70' : ''">{{ period.desc }}</div>
+                      </div>
+                    </button>
+                  </div>
+                  <!-- 右侧：补充说明 -->
+                  <div class="flex-[3] flex flex-col border rounded p-3 transition-all min-h-0"
+                       :style="{ backgroundColor: tokens.colors.background.surface, borderColor: configNotes.period ? tokens.colors.border.strong : tokens.colors.border.default }">
+                    <div class="flex items-center justify-between mb-1.5 shrink-0">
+                      <span class="text-xs font-bold text-gray-400">{{ $t('opportunity.config.notePlaceholder') }}</span>
+                      <span class="text-[10px] font-mono" :style="{ color: tokens.colors.text.muted }">{{ configNotes.period.length }}/100</span>
                     </div>
-                  </button>
+                    <textarea 
+                      v-model="configNotes.period"
+                      :placeholder="$t('opportunity.config.periodNotePlaceholder')"
+                      maxlength="100"
+                      class="flex-1 w-full bg-transparent text-xs text-gray-300 placeholder-gray-600 resize-none focus:outline-none leading-relaxed min-h-0"
+                    ></textarea>
+                  </div>
                 </div>
               </div>
 
               <!-- 3. Risk Appetite - flex-1 均分空间 -->
               <div id="risk-appetite" class="flex-1 flex flex-col min-h-0">
-                <h3 class="text-sm font-bold text-gray-400 mb-2 flex items-center gap-2 uppercase tracking-wider shrink-0">
-                  <span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span> 风险偏好
+                <h3 class="text-xs font-bold text-gray-400 mb-1.5 flex items-center gap-2 uppercase tracking-wider shrink-0">
+                  <span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span> {{ $t('opportunity.config.riskTitle') }}
                 </h3>
-                <div class="grid grid-cols-5 gap-2 flex-1">
-                  <button 
-                    v-for="risk in risks" 
-                    :key="risk.id"
-                    @click="selectedRisk = risk.id"
-                    class="p-2 border rounded-sm transition-all text-left relative group min-h-[60px] flex flex-col justify-between"
-                    :class="selectedRisk === risk.id ? 'border-orange-500 bg-orange-900/20 glow-orange-lg ring-1 ring-orange-500/50' : 'hover:border-gray-600'"
-                    :style="selectedRisk === risk.id ? {} : { backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.default }"
-                  >
-                    <component v-if="risk.id === 'auto' && selectedRisk === 'auto'" :is="IconAutoFilled" class="w-4 h-4 text-orange-400 transition-colors" />
-                    <component v-else :is="risk.icon" class="w-4 h-4 text-gray-600 group-hover:text-orange-400 transition-colors" :class="selectedRisk === risk.id ? 'text-orange-400' : ''" />
-                    <div>
-                      <div class="text-xs font-bold text-white mb-0">{{ risk.title }}</div>
-                      <div class="text-[9px] text-gray-500 line-clamp-1" :class="selectedRisk === risk.id ? 'text-orange-200/70' : ''">{{ risk.desc }}</div>
+                <div class="flex gap-3 flex-1 min-h-0">
+                  <!-- 左侧：卡片网格 -->
+                  <div class="flex-[7] grid grid-cols-5 gap-2">
+                    <button 
+                      v-for="risk in risks" 
+                      :key="risk.id"
+                      @click="selectedRisk = risk.id"
+                      class="py-1.5 px-2.5 border rounded transition-all text-left relative group flex items-center gap-2.5"
+                      :class="selectedRisk === risk.id ? 'border-orange-500 bg-orange-900/20 glow-orange-lg ring-1 ring-orange-500/50' : 'hover:border-gray-600'"
+                      :style="selectedRisk === risk.id ? {} : { backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }"
+                    >
+                      <!-- 左侧：图标 -->
+                      <div class="shrink-0">
+                        <component v-if="risk.id === 'auto' && selectedRisk === 'auto'" :is="IconAutoFilled" class="w-6 h-6 text-orange-400 transition-colors" />
+                        <component v-else :is="risk.icon" class="w-6 h-6 text-gray-600 group-hover:text-orange-400 transition-colors" :class="selectedRisk === risk.id ? 'text-orange-400' : ''" />
+                      </div>
+                      <!-- 右侧：文字 -->
+                      <div class="flex-1 min-w-0">
+                        <div class="text-sm font-bold text-white leading-tight">{{ risk.title }}</div>
+                        <div class="text-xs text-gray-500 leading-snug truncate" :class="selectedRisk === risk.id ? 'text-orange-200/70' : ''">{{ risk.desc }}</div>
+                      </div>
+                    </button>
+                  </div>
+                  <!-- 右侧：补充说明 -->
+                  <div class="flex-[3] flex flex-col border rounded p-3 transition-all min-h-0"
+                       :style="{ backgroundColor: tokens.colors.background.surface, borderColor: configNotes.risk ? tokens.colors.border.strong : tokens.colors.border.default }">
+                    <div class="flex items-center justify-between mb-1.5 shrink-0">
+                      <span class="text-xs font-bold text-gray-400">{{ $t('opportunity.config.notePlaceholder') }}</span>
+                      <span class="text-[10px] font-mono" :style="{ color: tokens.colors.text.muted }">{{ configNotes.risk.length }}/100</span>
                     </div>
-                  </button>
+                    <textarea 
+                      v-model="configNotes.risk"
+                      :placeholder="$t('opportunity.config.riskNotePlaceholder')"
+                      maxlength="100"
+                      class="flex-1 w-full bg-transparent text-xs text-gray-300 placeholder-gray-600 resize-none focus:outline-none leading-relaxed min-h-0"
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 4. Personal Insights - 个人洞察输入区 -->
+              <div class="flex-1 flex flex-col min-h-0">
+                <h3 class="text-xs font-bold text-gray-400 mb-1.5 flex items-center gap-2 uppercase tracking-wider shrink-0">
+                  <span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span> {{ $t('opportunity.config.insightsTitle') }}
+                  <span class="text-[9px] font-normal text-gray-600">{{ $t('opportunity.config.optional') }}</span>
+                </h3>
+                <div class="grid grid-cols-2 gap-2 flex-1 min-h-0">
+                  <!-- 宏观市场观点 -->
+                  <div class="flex flex-col border rounded-sm p-2 transition-all min-h-0"
+                       :style="{ backgroundColor: tokens.colors.background.surface, borderColor: userInsights.macro ? tokens.colors.border.strong : tokens.colors.border.default }">
+                    <div class="flex items-center justify-between mb-1 shrink-0">
+                      <span class="text-xs font-bold text-gray-400">{{ $t('opportunity.config.macroInsight') }}</span>
+                      <span class="text-[10px] font-mono" :style="{ color: tokens.colors.text.muted }">{{ userInsights.macro.length }}/200</span>
+                    </div>
+                    <textarea 
+                      v-model="userInsights.macro"
+                      :placeholder="$t('opportunity.config.macroPlaceholder')"
+                      maxlength="200"
+                      class="flex-1 w-full bg-transparent text-xs text-gray-300 placeholder-gray-600 resize-none focus:outline-none leading-relaxed min-h-0"
+                    ></textarea>
+                  </div>
+                  <!-- 标的深度洞察 -->
+                  <div class="flex flex-col border rounded-sm p-2 transition-all min-h-0"
+                       :style="{ backgroundColor: tokens.colors.background.surface, borderColor: userInsights.ticker ? tokens.colors.border.strong : tokens.colors.border.default }">
+                    <div class="flex items-center justify-between mb-1 shrink-0">
+                      <span class="text-xs font-bold text-gray-400">{{ $t('opportunity.config.tickerInsight') }}</span>
+                      <span class="text-[10px] font-mono" :style="{ color: tokens.colors.text.muted }">{{ userInsights.ticker.length }}/200</span>
+                    </div>
+                    <textarea 
+                      v-model="userInsights.ticker"
+                      :placeholder="$t('opportunity.config.tickerPlaceholder')"
+                      maxlength="200"
+                      class="flex-1 w-full bg-transparent text-xs text-gray-300 placeholder-gray-600 resize-none focus:outline-none leading-relaxed min-h-0"
+                    ></textarea>
+                  </div>
                 </div>
               </div>
 
@@ -254,8 +348,8 @@
           <!-- Footer Action Bar -->
           <div class="p-6 border-t flex justify-between items-center" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
             <div class="text-xs text-gray-500 font-mono">
-              <div>EST. TIME: <span class="text-white">~3 MINS</span></div>
-              <div>COST: <span class="text-white">20 CREDITS</span></div>
+              <div>{{ $t('opportunity.footer.estTime') }}: <span class="text-white">~3 {{ $t('opportunity.footer.mins') }}</span></div>
+              <div>{{ $t('opportunity.footer.cost') }}: <span class="text-white">20 {{ $t('opportunity.footer.credits') }}</span></div>
             </div>
             <button 
               id="generate-btn"
@@ -268,7 +362,7 @@
               :style="isGenerationDisabled ? { backgroundColor: tokens.colors.background.overlay } : {}"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-              Initialize Generation
+              {{ $t('opportunity.footer.initGeneration') }}
             </button>
           </div>
 
@@ -283,10 +377,10 @@
              <div class="flex justify-between items-center mb-3">
               <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
                  <span class="w-2 h-2 rounded-full" :class="(pendingTasks.length + processingTasks.length) > 0 ? 'bg-cyan-500 animate-pulse' : 'bg-gray-600'"></span>
-                 Active Generation
+                 {{ $t('opportunity.activeGeneration.title') }}
               </h3>
               <div class="flex items-center gap-2">
-                <span class="text-[10px] font-mono text-gray-600">{{ pendingTasks.length + processingTasks.length }} TASKS</span>
+                <span class="text-[10px] font-mono text-gray-600">{{ pendingTasks.length + processingTasks.length }} {{ $t('opportunity.activeGeneration.tasks') }}</span>
                 <!-- Expand/Collapse Button -->
                 <button 
                   v-if="pendingTasks.length + processingTasks.length > maxVisibleTasks"
@@ -304,14 +398,14 @@
                   >
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                   </svg>
-                  {{ isActiveGenExpanded ? 'Collapse' : 'Expand' }}
+                  {{ isActiveGenExpanded ? $t('opportunity.activeGeneration.collapse') : $t('opportunity.activeGeneration.expand') }}
                 </button>
                 <!-- Help Button for Strategy Tour -->
                 <button 
                   @click="startStrategyTour"
                   class="w-6 h-6 flex items-center justify-center rounded-full border text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all group"
                   :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.strong }"
-                  title="查看使用引导"
+                  :title="$t('opportunity.actions.viewGuide')"
                 >
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -324,7 +418,7 @@
            <div v-if="!isActiveGenExpanded" class="flex gap-3 overflow-hidden min-h-[70px]">
                 <!-- Empty State -->
                 <div v-if="pendingTasks.length === 0 && processingTasks.length === 0" class="w-full flex items-center justify-center text-gray-600 text-xs font-mono border border-dashed rounded-sm" :style="{ borderColor: tokens.colors.border.strong }">
-                  NO ACTIVE TASKS
+                  {{ $t('opportunity.activeGeneration.noActiveTasks') }}
                 </div>
 
                 <!-- Processing Tasks (显示在前面) -->
@@ -344,8 +438,8 @@
                    <div class="flex justify-between items-start mb-2">
                       <div class="flex items-center gap-2">
                          <span class="text-xs font-bold" :style="{ color: tokens.colors.text.primary }">{{ task.symbol }}</span>
-                         <span class="text-[10px] px-1.5 py-0.5 rounded border" :style="{ backgroundColor: tokens.colors.accent.primary + '33', color: tokens.colors.accent.primary, borderColor: tokens.colors.accent.primary + '4D' }">PROCESSING</span>
-                         <span v-if="selectedStrategyId === `temp-${task.id}`" class="text-[10px] px-1.5 py-0.5 rounded border animate-pulse" :style="{ backgroundColor: tokens.colors.semantic.success + '4D', color: tokens.colors.semantic.success, borderColor: tokens.colors.semantic.success + '4D' }">SELECTED</span>
+                         <span class="text-[10px] px-1.5 py-0.5 rounded border" :style="{ backgroundColor: tokens.colors.accent.primary + '33', color: tokens.colors.accent.primary, borderColor: tokens.colors.accent.primary + '4D' }">{{ $t('opportunity.activeGeneration.processing') }}</span>
+                         <span v-if="selectedStrategyId === `temp-${task.id}`" class="text-[10px] px-1.5 py-0.5 rounded border animate-pulse" :style="{ backgroundColor: tokens.colors.semantic.success + '4D', color: tokens.colors.semantic.success, borderColor: tokens.colors.semantic.success + '4D' }">{{ $t('opportunity.activeGeneration.selected') }}</span>
                       </div>
                       <div class="text-[10px]" :style="{ color: tokens.colors.text.muted }">{{ task.timeLeft }}</div>
                    </div>
@@ -372,11 +466,11 @@
                    <div class="flex justify-between items-center mb-1">
                       <div class="flex items-center gap-2">
                         <span class="text-xs font-bold" :style="{ color: selectedStrategyId === `temp-${task.id}` ? tokens.colors.text.primary : tokens.colors.text.tertiary }">{{ task.symbol }}</span>
-                        <span v-if="selectedStrategyId === `temp-${task.id}`" class="text-[10px] px-1.5 py-0.5 rounded border animate-pulse" :style="{ backgroundColor: tokens.colors.semantic.success + '4D', color: tokens.colors.semantic.success, borderColor: tokens.colors.semantic.success + '4D' }">SELECTED</span>
+                        <span v-if="selectedStrategyId === `temp-${task.id}`" class="text-[10px] px-1.5 py-0.5 rounded border animate-pulse" :style="{ backgroundColor: tokens.colors.semantic.success + '4D', color: tokens.colors.semantic.success, borderColor: tokens.colors.semantic.success + '4D' }">{{ $t('opportunity.activeGeneration.selected') }}</span>
                       </div>
-                      <span class="text-[10px]" :style="{ color: tokens.colors.text.muted }">PENDING</span>
+                      <span class="text-[10px]" :style="{ color: tokens.colors.text.muted }">{{ $t('opportunity.activeGeneration.pending') }}</span>
                    </div>
-                   <div class="text-[10px] font-mono" :style="{ color: tokens.colors.text.muted }">Est: {{ task.estTime }}</div>
+                   <div class="text-[10px] font-mono" :style="{ color: tokens.colors.text.muted }">{{ $t('opportunity.activeGeneration.est') }}: {{ task.estTime }}</div>
                 </div>
 
                 <!-- +N More 提示卡片 -->
@@ -387,7 +481,7 @@
                   :style="{ background: `linear-gradient(to bottom right, ${tokens.colors.background.overlay}, ${tokens.colors.background.base})`, borderColor: tokens.colors.accent.primary + '4D' }"
                 >
                   <span class="text-xl font-bold" :style="{ color: tokens.colors.accent.primary }">+{{ hiddenTasksCount }}</span>
-                  <span class="text-[10px] mt-1" :style="{ color: tokens.colors.text.tertiary }">more</span>
+                  <span class="text-[10px] mt-1" :style="{ color: tokens.colors.text.tertiary }">{{ $t('opportunity.activeGeneration.more') }}</span>
                 </div>
            </div>
 
@@ -395,7 +489,7 @@
            <div v-else class="grid grid-cols-4 gap-3 min-h-[70px]">
               <!-- Empty State -->
               <div v-if="pendingTasks.length === 0 && processingTasks.length === 0" class="col-span-4 flex items-center justify-center text-gray-600 text-xs font-mono border border-dashed rounded-sm py-6" :style="{ borderColor: tokens.colors.border.strong }">
-                NO ACTIVE TASKS
+                {{ $t('opportunity.activeGeneration.noActiveTasks') }}
               </div>
 
               <!-- Processing Tasks -->
@@ -415,8 +509,8 @@
                  <div class="flex justify-between items-start mb-2">
                     <div class="flex items-center gap-2">
                        <span class="text-xs font-bold" :style="{ color: tokens.colors.text.primary }">{{ task.symbol }}</span>
-                       <span class="text-[10px] px-1.5 py-0.5 rounded border" :style="{ backgroundColor: tokens.colors.accent.primary + '33', color: tokens.colors.accent.primary, borderColor: tokens.colors.accent.primary + '4D' }">PROCESSING</span>
-                       <span v-if="selectedStrategyId === `temp-${task.id}`" class="text-[10px] px-1.5 py-0.5 rounded border animate-pulse" :style="{ backgroundColor: tokens.colors.semantic.success + '4D', color: tokens.colors.semantic.success, borderColor: tokens.colors.semantic.success + '4D' }">SELECTED</span>
+                       <span class="text-[10px] px-1.5 py-0.5 rounded border" :style="{ backgroundColor: tokens.colors.accent.primary + '33', color: tokens.colors.accent.primary, borderColor: tokens.colors.accent.primary + '4D' }">{{ $t('opportunity.activeGeneration.processing') }}</span>
+                       <span v-if="selectedStrategyId === `temp-${task.id}`" class="text-[10px] px-1.5 py-0.5 rounded border animate-pulse" :style="{ backgroundColor: tokens.colors.semantic.success + '4D', color: tokens.colors.semantic.success, borderColor: tokens.colors.semantic.success + '4D' }">{{ $t('opportunity.activeGeneration.selected') }}</span>
                     </div>
                     <div class="text-[10px]" :style="{ color: tokens.colors.text.muted }">{{ task.timeLeft }}</div>
                  </div>
@@ -440,11 +534,11 @@
                  <div class="flex justify-between items-center mb-1">
                     <div class="flex items-center gap-2">
                       <span class="text-xs font-bold" :style="{ color: selectedStrategyId === `temp-${task.id}` ? tokens.colors.text.primary : tokens.colors.text.tertiary }">{{ task.symbol }}</span>
-                      <span v-if="selectedStrategyId === `temp-${task.id}`" class="text-[10px] px-1.5 py-0.5 rounded border animate-pulse" :style="{ backgroundColor: tokens.colors.semantic.success + '4D', color: tokens.colors.semantic.success, borderColor: tokens.colors.semantic.success + '4D' }">SELECTED</span>
+                      <span v-if="selectedStrategyId === `temp-${task.id}`" class="text-[10px] px-1.5 py-0.5 rounded border animate-pulse" :style="{ backgroundColor: tokens.colors.semantic.success + '4D', color: tokens.colors.semantic.success, borderColor: tokens.colors.semantic.success + '4D' }">{{ $t('opportunity.activeGeneration.selected') }}</span>
                     </div>
-                    <span class="text-[10px]" :style="{ color: tokens.colors.text.muted }">PENDING</span>
+                    <span class="text-[10px]" :style="{ color: tokens.colors.text.muted }">{{ $t('opportunity.activeGeneration.pending') }}</span>
                  </div>
-                 <div class="text-[10px] font-mono" :style="{ color: tokens.colors.text.muted }">Est: {{ task.estTime }}</div>
+                 <div class="text-[10px] font-mono" :style="{ color: tokens.colors.text.muted }">{{ $t('opportunity.activeGeneration.est') }}: {{ task.estTime }}</div>
               </div>
            </div>
         </div>
@@ -456,7 +550,7 @@
                 <!-- Smart Filters Section -->
               <div class="px-3 py-2">
                 <div class="flex items-center justify-between mb-1">
-                  <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Smart Filters</h3>
+                  <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{{ $t('opportunity.smartFilters.title') }}</h3>
                   <!-- Toggle Switch -->
                   <button 
                     @click="smartFiltersEnabled = !smartFiltersEnabled; if(!smartFiltersEnabled) libraryFilter = 'all'"
@@ -479,7 +573,7 @@
                   >
                     <span class="flex items-center gap-1.5">
                       <span v-if="hasNewData('high-grade') && libraryFilter !== 'high-grade'" class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                      High Grade (A/B)
+                      {{ $t('opportunity.smartFilters.highGrade') }}
                     </span>
                     <span class="text-[10px] font-mono" :class="libraryFilter === 'high-grade' ? 'text-cyan-500' : 'text-gray-600'">{{ smartFilterCounts['high-grade'] }}</span>
                   </button>
@@ -491,7 +585,7 @@
                   >
                     <span class="flex items-center gap-1.5">
                       <span v-if="hasNewData('recommend-update') && libraryFilter !== 'recommend-update'" class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                      Recommended Update
+                      {{ $t('opportunity.smartFilters.recommendedUpdate') }}
                     </span>
                     <span class="text-[10px] font-mono" :class="libraryFilter === 'recommend-update' ? 'text-cyan-500' : 'text-gray-600'">{{ smartFilterCounts['recommend-update'] }}</span>
                   </button>
@@ -503,7 +597,7 @@
                   >
                     <span class="flex items-center gap-1.5">
                       <span v-if="hasNewData('no-signal') && libraryFilter !== 'no-signal'" class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                      No Signal Logs
+                      {{ $t('opportunity.smartFilters.noSignalLogs') }}
                     </span>
                     <span class="text-[10px] font-mono" :class="libraryFilter === 'no-signal' ? 'text-cyan-500' : 'text-gray-600'">{{ smartFilterCounts['no-signal'] }}</span>
                   </button>
@@ -515,7 +609,7 @@
                   >
                     <span class="flex items-center gap-1.5">
                       <span v-if="hasNewData('no-opportunity') && libraryFilter !== 'no-opportunity'" class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                      No Opportunity Found
+                      {{ $t('opportunity.smartFilters.noOpportunityFound') }}
                     </span>
                     <span class="text-[10px] font-mono" :class="libraryFilter === 'no-opportunity' ? 'text-cyan-500' : 'text-gray-600'">{{ smartFilterCounts['no-opportunity'] }}</span>
                   </button>
@@ -530,7 +624,7 @@
 
               <!-- Collections Section -->
               <div class="px-3 py-2">
-                 <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Collections</h3>
+                 <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">{{ $t('opportunity.collections.title') }}</h3>
               </div>
             <button 
               v-for="col in strategyCollections" 
@@ -584,7 +678,7 @@
               :style="{ borderColor: tokens.colors.border.strong }"
             >
               <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-              New Group
+              {{ $t('opportunity.collections.newGroup') }}
             </button>
           </div>
         </div>
@@ -604,7 +698,7 @@
                     <button @click="clearStrategySelection()" class="text-xs text-gray-400 hover:text-white flex items-center justify-center w-4 h-4 rounded-full hover:bg-white/10 transition-colors">✕</button>
                   </div>
                 </div>
-                <p class="text-xs text-gray-500 font-mono">{{ displayedStrategies.length }} strategies found</p>
+                <p class="text-xs text-gray-500 font-mono">{{ displayedStrategies.length }} {{ $t('opportunity.strategyTable.strategiesFound') }}</p>
               </div>
               <div class="flex items-center gap-3">
                 <!-- 一键清理 No Opportunity Found 按钮 -->
@@ -615,7 +709,7 @@
                   :style="{ backgroundColor: tokens.colors.semantic.error + '33', borderColor: tokens.colors.semantic.error + '80', color: tokens.colors.semantic.error }"
                 >
                   <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                  Clear All
+                  {{ $t('opportunity.strategyTable.clearAll') }}
                 </button>
                 <!-- Move to Group (Moved from Bulk Action) -->
                 <div class="relative mr-2" v-if="selectedStrategyId">
@@ -625,7 +719,7 @@
                     :style="{ backgroundColor: tokens.colors.accent.primary + '33', borderColor: tokens.colors.accent.primary + '80', color: tokens.colors.accent.primary }"
                   >
                     <component :is="IconBriefcase" class="w-3 h-3" />
-                    Move to Group
+                    {{ $t('opportunity.strategyTable.moveToGroup') }}
                     <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                   </button>
                   
@@ -645,13 +739,13 @@
                         {{ col.label }}
                       </button>
                       <div v-if="customCollections.length === 0" class="px-4 py-2 text-xs text-gray-500 italic">
-                        No custom groups
+                        {{ $t('opportunity.strategyTable.noCustomGroups') }}
                       </div>
                     </div>
                     <div class="border-t p-1" :style="{ borderColor: tokens.colors.border.strong }">
                        <button @click="startCreateGroup(); showMoveMenu = false" class="w-full text-left px-3 py-2 text-xs text-cyan-400 font-bold flex items-center gap-2" :style="{ ':hover': { backgroundColor: tokens.colors.background.overlay } }" @mouseenter="$event.target.style.backgroundColor = tokens.colors.background.overlay" @mouseleave="$event.target.style.backgroundColor = 'transparent'">
                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                         Create New Group
+                         {{ $t('opportunity.strategyTable.createNewGroup') }}
                        </button>
                     </div>
                   </div>
@@ -665,7 +759,7 @@
                   <input 
                     v-model="strategySearchQuery"
                     type="text" 
-                    placeholder="Search strategies..." 
+                    :placeholder="$t('opportunity.strategyTable.searchPlaceholder')" 
                     class="border text-xs px-3 py-1.5 rounded-sm focus:outline-none w-48 font-mono"
                     :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.strong, color: tokens.colors.text.primary }"
                   />
@@ -676,9 +770,9 @@
                 
                 <!-- Filter -->
                 <select v-model="strategyFilterOption" class="border text-xs px-3 py-1.5 rounded-sm focus:outline-none font-mono" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.strong, color: tokens.colors.text.primary }">
-                  <option value="all">All Directions</option>
-                  <option value="long">Long</option>
-                  <option value="short">Short</option>
+                  <option value="all">{{ $t('opportunity.strategyTable.allDirections') }}</option>
+                  <option value="long">{{ $t('opportunity.strategyTable.long') }}</option>
+                  <option value="short">{{ $t('opportunity.strategyTable.short') }}</option>
                 </select>
 
               </div>
@@ -725,7 +819,7 @@
                   <!-- Ticker 独立列 -->
                   <th rowspan="2" @click="handleSort('symbol')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b border-r cursor-pointer hover:text-white transition-colors select-none align-middle" :style="{ color: tokens.colors.text.tertiary, borderBottomColor: tokens.colors.border.default, borderRightColor: tokens.colors.border.strong, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center gap-1">
-                      Ticker
+                      {{ $t('opportunity.strategyTable.ticker') }}
                       <span v-if="strategySortField === 'symbol'" :style="{ color: tokens.colors.accent.primary }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
@@ -733,14 +827,14 @@
                   <th colspan="7" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b border-r text-center" :style="{ color: tokens.colors.accent.primary, borderBottomColor: tokens.colors.border.strong, borderRightColor: tokens.colors.border.strong, background: `linear-gradient(to right, ${tokens.colors.accent.primary}26, ${tokens.colors.accent.primary}1A), ${tokens.colors.background.surface}` }">
                     <div class="flex items-center justify-center gap-2">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                      Strategy
+                      {{ $t('opportunity.strategyTable.strategy') }}
                     </div>
                   </th>
                   <!-- 计划分组 -->
                   <th colspan="6" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center" :style="{ color: tokens.colors.accent.warning, borderBottomColor: tokens.colors.border.strong, background: `linear-gradient(to right, ${tokens.colors.accent.warning}26, ${tokens.colors.accent.warning}1A), ${tokens.colors.background.surface}` }">
                     <div class="flex items-center justify-center gap-2">
                       <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                      Execution Plan
+                      {{ $t('opportunity.strategyTable.executionPlan') }}
                     </div>
                   </th>
                 </tr>
@@ -749,76 +843,76 @@
                   <!-- 策略子列 -->
                   <th @click="handleSort('stockName')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center gap-1">
-                      Name
+                      {{ $t('opportunity.strategyTable.name') }}
                       <span v-if="strategySortField === 'stockName'" :style="{ color: tokens.colors.accent.primary }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
                   <th @click="handleSort('source')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
-                      Source
+                      {{ $t('opportunity.strategyTable.source') }}
                       <span v-if="strategySortField === 'source'" :style="{ color: tokens.colors.accent.primary }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
                   <th @click="handleSort('direction')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
-                      Direction
+                      {{ $t('opportunity.strategyTable.direction') }}
                       <span v-if="strategySortField === 'direction'" :style="{ color: tokens.colors.accent.primary }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
                   <th @click="handleSort('grade')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
-                      Grade
+                      {{ $t('opportunity.strategyTable.grade') }}
                       <span v-if="strategySortField === 'grade'" :style="{ color: tokens.colors.accent.primary }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
                   <th @click="handleSort('horizon')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
-                      Horizon
+                      {{ $t('opportunity.strategyTable.horizon') }}
                       <span v-if="strategySortField === 'horizon'" :style="{ color: tokens.colors.accent.primary }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
                   <th @click="handleSort('generatedAt')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
-                      Created
+                      {{ $t('opportunity.strategyTable.created') }}
                       <span v-if="strategySortField === 'generatedAt'" :style="{ color: tokens.colors.accent.primary }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
                   <th class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b border-r text-center" :style="{ color: tokens.colors.text.muted, borderBottomColor: tokens.colors.border.default, borderRightColor: tokens.colors.border.strong, backgroundColor: tokens.colors.background.surface }">
-                    Update
+                    {{ $t('opportunity.strategyTable.update') }}
                   </th>
                   <!-- 计划子列 -->
                   <th @click="handleSort('hasExecutionPlan')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
-                      Status
+                      {{ $t('opportunity.strategyTable.status') }}
                       <span v-if="strategySortField === 'hasExecutionPlan'" :style="{ color: tokens.colors.semantic.warning }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
                   <th @click="handleSort('planCount')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
-                      Count
+                      {{ $t('opportunity.strategyTable.count') }}
                       <span v-if="strategySortField === 'planCount'" :style="{ color: tokens.colors.semantic.warning }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
                   <th @click="handleSort('planUnreadCount')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
-                      Unread
+                      {{ $t('opportunity.strategyTable.unread') }}
                       <span v-if="strategySortField === 'planUnreadCount'" :style="{ color: tokens.colors.semantic.warning }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
                   <th @click="handleSort('planGeneratingCount')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
-                      Generating
+                      {{ $t('opportunity.strategyTable.generating') }}
                       <span v-if="strategySortField === 'planGeneratingCount'" :style="{ color: tokens.colors.semantic.warning }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
                   <th @click="handleSort('planNeedsUpdate')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
-                      Update
+                      {{ $t('opportunity.strategyTable.update') }}
                       <span v-if="strategySortField === 'planNeedsUpdate'" :style="{ color: tokens.colors.semantic.warning }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
                   <th class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
-                    Actions
+                    {{ $t('opportunity.strategyTable.actions') }}
                   </th>
                 </tr>
               </thead>
@@ -892,7 +986,7 @@
                         class="text-[10px] font-bold uppercase tracking-wider border px-2 py-0.5 rounded whitespace-nowrap hover:border-opacity-50 transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
                         :style="{ color: tokens.colors.accent.primary, borderColor: tokens.colors.accent.primary + '4D', backgroundColor: tokens.colors.background.surface + 'E6' }"
                       >
-                        View
+                        {{ $t('opportunity.strategyTable.view') }}
                       </button>
                     </div>
                   </td>
@@ -907,7 +1001,7 @@
                         'text-violet-400 border-violet-500/30 bg-violet-900/10': strategy.source === 'Import'
                       }"
                     >
-                      {{ strategy.source }}
+                      {{ strategy.source === 'Official' ? $t('opportunity.strategyTable.official') : strategy.source === 'My Strategy' ? $t('opportunity.strategyTable.myStrategy') : strategy.source }}
                     </span>
                     <span v-else class="text-xs text-gray-500 tracking-wider">— — —</span>
                   </td>
@@ -920,7 +1014,7 @@
                         ? { color: tokens.colors.semantic.success, borderColor: tokens.colors.semantic.success + '4D', backgroundColor: tokens.colors.semantic.success + '1A' }
                         : { color: tokens.colors.semantic.error, borderColor: tokens.colors.semantic.error + '4D', backgroundColor: tokens.colors.semantic.error + '1A' }"
                     >
-                      {{ strategy.direction }}
+                      {{ strategy.direction === 'LONG' ? $t('opportunity.strategyTable.long') : $t('opportunity.strategyTable.short') }}
                     </span>
                     <span v-else class="text-xs tracking-wider" :style="{ color: tokens.colors.text.muted }">— — —</span>
                   </td>
@@ -951,7 +1045,7 @@
                         : { color: tokens.colors.semantic.warning, borderColor: tokens.colors.semantic.warning + '4D', backgroundColor: tokens.colors.semantic.warning + '1A' }"
                       :title="strategy.horizon"
                     >
-                      {{ strategy.horizon.includes('Long') ? 'Long' : strategy.horizon.includes('Medium') ? 'Medium' : 'Short' }}
+                      {{ strategy.horizon.includes('Long') ? $t('opportunity.strategyTable.horizonLong') : strategy.horizon.includes('Medium') ? $t('opportunity.strategyTable.horizonMedium') : $t('opportunity.strategyTable.horizonShort') }}
                     </span>
                     <span v-else class="text-xs tracking-wider" :style="{ color: tokens.colors.text.muted }">— — —</span>
                   </td>
@@ -968,7 +1062,7 @@
                         class="px-2.5 py-1 bg-cyan-500/30 border border-cyan-400/60 text-cyan-300 rounded text-[10px] font-bold uppercase tracking-wider mx-auto"
                         title="Official is updating"
                       >
-                        Updating
+                        {{ $t('opportunity.strategyTable.updating') }}
                       </span>
                       <span 
                         v-else-if="strategy.officialUpdated"
@@ -976,7 +1070,7 @@
                         :style="{ backgroundColor: tokens.colors.semantic.success + '4D', borderColor: tokens.colors.semantic.success + '99', color: tokens.colors.semantic.success }"
                         title="Official has updated"
                       >
-                        Updated
+                        {{ $t('opportunity.strategyTable.updated') }}
                       </span>
                       <span v-else class="text-xs tracking-wider" :style="{ color: tokens.colors.text.muted }">— — —</span>
                     </template>
@@ -992,7 +1086,7 @@
                         :style="{ backgroundColor: tokens.colors.accent.secondary + '4D', borderColor: tokens.colors.accent.secondary + '99', color: tokens.colors.accent.secondary }"
                         title="Change parameters and retry"
                       >
-                        Retry
+                        {{ $t('opportunity.strategyTable.retry') }}
                       </button>
                     </template>
                     <!-- 非 Official 来源：可点击更新 -->
@@ -1004,14 +1098,14 @@
                         :style="{ backgroundColor: tokens.colors.semantic.warning + '4D', borderColor: tokens.colors.semantic.warning + '99', color: tokens.colors.semantic.warning }"
                         title="Click to update"
                       >
-                        Update
+                        {{ $t('opportunity.strategyTable.update') }}
                       </button>
                       <span 
                         v-else 
                         class="px-2.5 py-1 border rounded text-[10px] font-bold uppercase tracking-wider mx-auto"
                         :style="{ backgroundColor: tokens.colors.semantic.success + '4D', borderColor: tokens.colors.semantic.success + '99', color: tokens.colors.semantic.success }"
                       >
-                        Updated
+                        {{ $t('opportunity.strategyTable.updated') }}
                       </span>
                     </template>
                   </td>
@@ -1023,7 +1117,7 @@
                       :style="{ color: tokens.colors.accent.secondary, borderColor: tokens.colors.accent.secondary + '4D', backgroundColor: tokens.colors.accent.secondary + '1A' }"
                       title="Only Plan - No Strategy Report"
                     >
-                      Only Plan
+                      {{ $t('opportunity.collections.onlyPlan') }}
                     </span>
                     <span 
                       v-else-if="strategy.hasExecutionPlan"
@@ -1031,7 +1125,7 @@
                       :style="{ color: tokens.colors.semantic.success, borderColor: tokens.colors.semantic.success + '4D', backgroundColor: tokens.colors.semantic.success + '1A' }"
                       title="Has Execution Plan"
                     >
-                      With Plan
+                      {{ $t('opportunity.strategyTable.withPlan') }}
                     </span>
                     <span v-else class="text-xs tracking-wider" :style="{ color: tokens.colors.text.muted }">— — —</span>
                   </td>
@@ -1080,7 +1174,7 @@
                       title="Plan needs update"
                     >
                       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                      Update
+                      {{ $t('opportunity.strategyTable.update') }}
                     </button>
                     <span v-else class="text-xs text-gray-500 tracking-wider">— — —</span>
                   </td>
@@ -1093,7 +1187,7 @@
                         @click.stop="generatePlanForStrategy(strategy)"
                         class="p-1.5 border rounded transition-colors"
                         :style="{ backgroundColor: tokens.colors.semantic.success + '33', borderColor: tokens.colors.semantic.success + '66', color: tokens.colors.semantic.success }"
-                        title="Generate Plan"
+                        :title="$t('opportunity.strategyTable.generatePlan')"
                       >
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                       </button>
@@ -1103,7 +1197,7 @@
                         @click.stop="viewPlanDetail(strategy)"
                         class="p-1.5 border rounded transition-colors"
                         :style="{ backgroundColor: tokens.colors.accent.primary + '33', borderColor: tokens.colors.accent.primary + '66', color: tokens.colors.accent.primary }"
-                        title="View Plans"
+                        :title="$t('opportunity.strategyTable.viewPlans')"
                       >
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                       </button>
@@ -1112,7 +1206,7 @@
                         @click.stop="deleteStrategy(strategy)"
                         class="p-1.5 border rounded transition-colors"
                         :style="{ backgroundColor: tokens.colors.semantic.error + '33', borderColor: tokens.colors.semantic.error + '66', color: tokens.colors.semantic.error }"
-                        title="Delete"
+                        :title="$t('opportunity.strategyTable.delete')"
                       >
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                       </button>
@@ -1125,7 +1219,7 @@
             <!-- Empty State -->
             <div v-if="displayedStrategies.length === 0" class="flex flex-col items-center justify-center h-64 text-gray-500">
               <svg class="w-12 h-12 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-              <p class="text-sm font-mono">NO STRATEGIES FOUND</p>
+              <p class="text-sm font-mono">{{ $t('opportunity.strategyTable.noStrategiesFound') }}</p>
             </div>
           </div>
         </div>
@@ -1141,10 +1235,10 @@
             <div class="flex items-center gap-3">
               <div class="px-2.5 py-1 rounded text-xs font-semibold tracking-wide uppercase" :style="{ backgroundColor: tokens.colors.accent.primary + '1A', color: tokens.colors.accent.primary }">
                 <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                Execution Plan
+                {{ $t('opportunity.strategyTable.executionPlan') }}
               </div>
               <div class="h-4 w-px" :style="{ backgroundColor: tokens.colors.border.strong }"></div>
-              <span class="text-xs font-mono" :style="{ color: tokens.colors.text.muted }">CONFIGURE PARAMETERS</span>
+              <span class="text-xs font-mono" :style="{ color: tokens.colors.text.muted }">{{ $t('opportunity.strategyTable.configureParameters') }}</span>
             </div>
             <button 
               @click="closeGeneratePlanModal" 
@@ -1539,7 +1633,7 @@
               <!-- Chat Header -->
               <div class="px-4 py-3 border-b flex justify-between items-center" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.overlay }">
                  <h3 class="text-sm font-medium flex items-center gap-2" :style="{ color: tokens.colors.text.secondary }">
-                   <i class="fas fa-robot" :style="{ color: tokens.colors.semantic.success }"></i> AI 策略助手
+                   <i class="fas fa-robot" :style="{ color: tokens.colors.semantic.success }"></i> {{ $t('opportunity.chat.aiAssistant') }}
                  </h3>
               </div>
 
@@ -1552,14 +1646,14 @@
                         <i class="fas fa-robot text-xl" :style="{ color: tokens.colors.semantic.success }"></i>
                       </div>
                       <div>
-                        <h4 class="font-medium mb-1" :style="{ color: tokens.colors.text.primary }">ScaleAlpha AI 助手</h4>
-                        <p class="text-xs" :style="{ color: tokens.colors.text.muted }">基于当前策略报告为您解答</p>
+                        <h4 class="font-medium mb-1" :style="{ color: tokens.colors.text.primary }">{{ $t('opportunity.chat.aiName') }}</h4>
+                        <p class="text-xs" :style="{ color: tokens.colors.text.muted }">{{ $t('opportunity.chat.aiDesc') }}</p>
                       </div>
                     </div>
                     
                     <!-- Quick Prompts -->
                     <div class="space-y-2 pb-4">
-                      <p class="text-xs px-1 mb-2" :style="{ color: tokens.colors.text.muted }">您可以问我：</p>
+                      <p class="text-xs px-1 mb-2" :style="{ color: tokens.colors.text.muted }">{{ $t('opportunity.chat.suggestions') }}</p>
                       <button 
                         v-for="(prompt, idx) in quickPrompts" 
                         :key="idx"
@@ -1615,7 +1709,7 @@
                   <input 
                     v-model="chatInput"
                     type="text" 
-                    placeholder="输入问题..." 
+                    :placeholder="$t('opportunity.chat.inputPlaceholder')"
                     class="w-full rounded pl-3 pr-10 py-2.5 text-sm focus:outline-none focus:ring-1 border"
                     :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.strong, color: tokens.colors.text.primary }"
                     @keyup.enter="sendChatMessage"
@@ -1662,11 +1756,11 @@
                     @click="copyShareLink"
                     class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold transition-all border"
                     :style="isCopied ? { backgroundColor: tokens.colors.semantic.success + '33', color: tokens.colors.semantic.success, borderColor: tokens.colors.semantic.success + '4D' } : { backgroundColor: tokens.colors.border.strong, color: tokens.colors.text.secondary, borderColor: tokens.colors.border.strong }"
-                    :title="isCopied ? '已复制' : '复制分享链接'"
+                    :title="isCopied ? $t('opportunity.actions.copied') : $t('opportunity.actions.copyLink')"
                   >
                     <svg v-if="!isCopied" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
                     <svg v-else class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                    {{ isCopied ? '已复制' : '分享' }}
+                    {{ isCopied ? $t('opportunity.actions.copied') : $t('opportunity.actions.share') }}
                   </button>
                   <button 
                     @click="toggleStrategyWatchlist"
@@ -1675,7 +1769,7 @@
                   >
                     <svg v-if="!isStrategyWatchlisted" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
                     <svg v-else class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                    {{ isStrategyWatchlisted ? '已关注' : `关注 ${selectedStrategy.symbol || 'MSFT'}` }}
+                    {{ isStrategyWatchlisted ? $t('opportunity.actions.watched') : $t('opportunity.actions.watch', { symbol: selectedStrategy.symbol || 'MSFT' }) }}
                   </button>
                   <button 
                     @click="goToStockDetail(selectedStrategy.symbol || 'MSFT')"
@@ -1683,7 +1777,7 @@
                     :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }"
                   >
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                    {{ selectedStrategy.symbol || 'MSFT' }} 详情
+                    {{ selectedStrategy.symbol || 'MSFT' }} {{ $t('opportunity.actions.details') }}
                   </button>
                   <button 
                     @click="toggleStrategyReport"
@@ -1692,7 +1786,7 @@
                   >
                     <svg v-if="!isStrategyReportSaved" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
                     <svg v-else class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                    {{ isStrategyReportSaved ? '已保存' : '保存报告' }}
+                    {{ isStrategyReportSaved ? $t('opportunity.actions.saved') : $t('opportunity.actions.saveReport') }}
                   </button>
                 </div>
               </div>
@@ -1721,7 +1815,7 @@
                     :style="{ backgroundColor: tokens.colors.accent.secondary }"
                   >
                     <i class="fas fa-magic"></i>
-                    生成交易计划
+                    {{ $t('opportunity.actions.generatePlan') }}
                   </button>
                   <button class="px-4 py-3 text-white rounded transition-colors" :style="{ backgroundColor: tokens.colors.border.strong }">
                     <i class="fas fa-share-alt"></i>
@@ -1740,10 +1834,10 @@
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" :style="{ color: tokens.colors.text.muted }">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
                   </svg>
-                  <h3 class="text-sm font-semibold" :style="{ color: tokens.colors.text.primary }">基于此策略的计划</h3>
+                  <h3 class="text-sm font-semibold" :style="{ color: tokens.colors.text.primary }">{{ $t('opportunity.relatedPlans.title') }}</h3>
                   <span class="text-xs" :style="{ color: tokens.colors.text.muted }">({{ relatedPlans.length }})</span>
                 </div>
-                <p class="text-xs" :style="{ color: tokens.colors.text.muted }">已有 {{ relatedPlans.length }} 个计划使用此策略</p>
+                <p class="text-xs" :style="{ color: tokens.colors.text.muted }">{{ $t('opportunity.relatedPlans.count', { count: relatedPlans.length }) }}</p>
               </div>
 
               <!-- Plans List -->
@@ -1775,7 +1869,7 @@
                           <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                           </svg>
-                          官方生成
+                          {{ $t('opportunity.relatedPlans.official') }}
                         </span>
                       </div>
                       <div class="flex items-center gap-3 text-xs ml-5" :style="{ color: tokens.colors.text.muted }">
@@ -1817,7 +1911,7 @@
                       </div>
                     </div>
                     <button class="w-full py-2 border rounded text-xs font-bold transition-colors" :style="{ backgroundColor: tokens.colors.accent.primary + '33', color: tokens.colors.accent.primary, borderColor: tokens.colors.accent.primary + '4D' }">
-                      查看详情
+                      {{ $t('opportunity.relatedPlans.viewDetails') }}
                     </button>
                   </div>
                 </div>
@@ -1830,13 +1924,13 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                   </svg>
                 </div>
-                <p class="text-xs">暂无相关计划</p>
+                <p class="text-xs">{{ $t('opportunity.relatedPlans.empty') }}</p>
                 <button 
                   @click="generatePlanForStrategy(selectedStrategy)"
                   class="mt-3 text-xs font-medium"
                   :style="{ color: tokens.colors.accent.primary }"
                 >
-                  立即生成
+                  {{ $t('opportunity.relatedPlans.generateNow') }}
                 </button>
               </div>
 
@@ -1928,7 +2022,7 @@
         <div class="p-3">
           <!-- Header -->
           <div class="flex items-center justify-between mb-3 pb-2 border-b" :style="{ borderColor: tokens.colors.border.default }">
-            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">流程导航</span>
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{{ $t('opportunity.minimap.title') }}</span>
             <button 
               @click="isMiniMapExpanded = false"
               class="w-5 h-5 rounded-full flex items-center justify-center text-gray-500 hover:text-white transition-colors"
@@ -2031,29 +2125,29 @@
           <div class="mt-4 pt-3 border-t flex flex-wrap gap-x-3 gap-y-1.5 text-[10px] text-gray-600" :style="{ borderColor: tokens.colors.border.default }">
             <div class="flex items-center gap-1">
               <div class="w-2 h-2 rounded-full bg-cyan-500"></div>
-              <span>进行中</span>
+              <span>{{ $t('opportunity.minimap.legend.active') }}</span>
             </div>
             <div class="flex items-center gap-1">
               <div class="w-2 h-2 rounded-full" :style="{ backgroundColor: tokens.colors.border.hover }"></div>
-              <span>已跳过</span>
+              <span>{{ $t('opportunity.minimap.legend.skipped') }}</span>
             </div>
             <div class="flex items-center gap-1">
               <div class="w-2 h-2 rounded-full bg-cyan-900"></div>
-              <span>已完成</span>
+              <span>{{ $t('opportunity.minimap.legend.done') }}</span>
             </div>
             <div class="flex items-center gap-1">
               <div class="w-2 h-2 rounded-full bg-amber-500"></div>
-              <span>阻塞</span>
+              <span>{{ $t('opportunity.minimap.legend.blocked') }}</span>
             </div>
             <div class="flex items-center gap-1">
               <div class="w-2 h-2 rounded-full" :style="{ backgroundColor: tokens.colors.border.strong }"></div>
-              <span>待进行</span>
+              <span>{{ $t('opportunity.minimap.legend.pending') }}</span>
             </div>
           </div>
 
           <!-- Selected Strategy Info -->
           <div v-if="selectedStrategy && selectedStrategy.id" class="mt-3 pt-3 border-t" :style="{ borderColor: tokens.colors.border.default }">
-            <div class="text-[10px] mb-1" :style="{ color: tokens.colors.text.muted }">当前策略</div>
+            <div class="text-[10px] mb-1" :style="{ color: tokens.colors.text.muted }">{{ $t('opportunity.minimap.currentStrategy') }}</div>
             <div class="flex items-center gap-2">
               <span class="text-xs font-bold" :style="{ color: tokens.colors.text.primary }">{{ selectedStrategy.symbol }}</span>
               <span 
@@ -2077,6 +2171,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch, h, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import Navbar from '../components/Navbar.vue'
@@ -2085,6 +2180,9 @@ import { useTheme } from '../composables/useTheme'
 
 // 使用主题系统
 const { tokens, isDark, toggleTheme } = useTheme()
+
+// 使用国际化
+const { t, locale } = useI18n()
 
 
 // Icons components (Simple SVG wrappers)
@@ -2099,6 +2197,10 @@ const IconTrending = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'cur
 const IconDatabase = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('ellipse', { cx: '12', cy: '5', rx: '9', ry: '3' }), h('path', { d: 'M21 12c0 1.66-4 3-9 3s-9-1.34-9-3' }), h('path', { d: 'M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5' })])
 const IconClock = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('circle', { cx: '12', cy: '12', r: '10' }), h('path', { d: 'M12 6v6l4 2' })])
 const IconCalendar = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('rect', { x: '3', y: '4', width: '18', height: '18', rx: '2', ry: '2' }), h('path', { d: 'M16 2v4' }), h('path', { d: 'M8 2v4' }), h('path', { d: 'M3 10h18' })])
+// 投资周期额外图标
+const IconHourglass = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('path', { d: 'M5 22h14' }), h('path', { d: 'M5 2h14' }), h('path', { d: 'M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22' }), h('path', { d: 'M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2' })])
+const IconTimeline = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('path', { d: 'M3 12h18' }), h('circle', { cx: '6', cy: '12', r: '2' }), h('circle', { cx: '12', cy: '12', r: '2' }), h('circle', { cx: '18', cy: '12', r: '2' })])
+const IconSandglass = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('path', { d: 'M6 2h12v4a6 6 0 0 1-6 6 6 6 0 0 1-6-6V2z' }), h('path', { d: 'M6 22h12v-4a6 6 0 0 0-6-6 6 6 0 0 0-6 6v4z' })])
 const IconBan = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('circle', { cx: '12', cy: '12', r: '10' }), h('path', { d: 'M4.93 4.93l14.14 14.14' })])
 const IconShield = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('path', { d: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z' })])
 const IconScale = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, [h('path', { d: 'M12 3v19' }), h('path', { d: 'M5 8h14' }), h('path', { d: 'M2 14h6' }), h('path', { d: 'M16 14h6' })])
@@ -2112,10 +2214,14 @@ const router = useRouter()
 const route = useRoute()
 
 const activeTab = ref('generate')
-const tabs = [
-  { id: 'generate', label: '生成策略' },
-  { id: 'mystrategy', label: '策略库' }
-]
+const tabs = computed(() => {
+  // 依赖 locale 以确保语言切换时重新计算
+  const _ = locale.value
+  return [
+    { id: 'generate', label: t('opportunity.tabs.generate') },
+    { id: 'mystrategy', label: t('opportunity.tabs.mystrategy') }
+  ]
+})
 
 const switchTab = (tabId) => {
   activeTab.value = tabId
@@ -2124,10 +2230,14 @@ const switchTab = (tabId) => {
 
 // --- Asset Selection Logic ---
 const currentAssetTab = ref('watchlist')
-const assetTabs = [
-  { id: 'watchlist', label: '我的关注' },
-  { id: 'search', label: '搜索' }
-]
+const assetTabs = computed(() => {
+  // 依赖 locale 以确保语言切换时重新计算
+  const _ = locale.value
+  return [
+    { id: 'watchlist', label: t('opportunity.assetTabs.watchlist') },
+    { id: 'search', label: t('opportunity.assetTabs.search') }
+  ]
+})
 
 const searchQuery = ref('')
 const selectedStocks = ref([])
@@ -2184,32 +2294,57 @@ const selectedFrameworks = ref(['auto'])
 const selectedPeriod = ref('auto')
 const selectedRisk = ref('auto')
 
-const frameworks = [
-  { id: 'auto', title: '智能推荐', desc: 'AI根据市场环境自动选择最佳分析框架', icon: IconAuto },
-  { id: 'tech', title: '技术分析', desc: '基于图表、趋势和技术指标进行分析', icon: IconChart },
-  { id: 'fundamental', title: '基本面分析', desc: '分析公司财务报表、盈利能力和估值', icon: IconDocument },
-  { id: 'quant', title: '量化分析', desc: '使用数学模型和统计方法评估机会', icon: IconMath },
-  { id: 'event', title: '事件驱动', desc: '基于公司事件、新闻和催化剂分析', icon: IconLightning },
-  { id: 'business', title: '商业分析', desc: '分析商业模式、竞争优势和市场趋势', icon: IconBriefcase },
-  { id: 'trend', title: '趋势分析', desc: '捕捉市场动量和价格趋势机会', icon: IconTrending },
-  { id: 'alt', title: '另类数据', desc: '利用非传统数据源进行深度分析', icon: IconDatabase },
-]
+// 用户个人洞察输入
+const userInsights = ref({
+  macro: '',  // 宏观市场观点
+  ticker: ''  // 标的深度洞察
+})
 
-const periods = [
-  { id: 'auto', title: '智能推荐', desc: 'AI自动匹配最佳周期', icon: IconAuto },
-  { id: 'short', title: '短期', desc: '1-5天', icon: IconClock },
-  { id: 'short-mid', title: '短中期', desc: '1天-1个月', icon: IconCalendar },
-  { id: 'mid', title: '中长期', desc: '1-6个月', icon: IconCalendar },
-  { id: 'long', title: '长期', desc: '6个月以上', icon: IconCalendar },
-]
+// 配置区行内补充说明
+const configNotes = ref({
+  framework: '',  // 分析框架补充说明
+  period: '',     // 投资周期补充说明
+  risk: ''        // 风险偏好补充说明
+})
 
-const risks = [
-  { id: 'auto', title: '智能推荐', desc: 'AI自动调整风险偏好', icon: IconAuto, intensity: 50 },
-  { id: 'low', title: '低风险', desc: '稳健保守，重视资本保护', icon: IconShield, intensity: 25 },
-  { id: 'medium', title: '中等风险', desc: '平衡收益与风险', icon: IconScale, intensity: 50 },
-  { id: 'high', title: '高风险', desc: '追求高收益，接受较高波动', icon: IconFire, intensity: 75 },
-  { id: 'extreme', title: '极高风险', desc: '激进策略，追求最大收益', icon: IconSkull, intensity: 100 },
-]
+const frameworks = computed(() => {
+  // 依赖 locale 以确保语言切换时重新计算
+  const _ = locale.value
+  return [
+    { id: 'auto', title: t('opportunity.frameworks.auto.title'), desc: t('opportunity.frameworks.auto.desc'), icon: IconAuto },
+    { id: 'tech', title: t('opportunity.frameworks.tech.title'), desc: t('opportunity.frameworks.tech.desc'), icon: IconChart },
+    { id: 'fundamental', title: t('opportunity.frameworks.fundamental.title'), desc: t('opportunity.frameworks.fundamental.desc'), icon: IconDocument },
+    { id: 'quant', title: t('opportunity.frameworks.quant.title'), desc: t('opportunity.frameworks.quant.desc'), icon: IconMath },
+    { id: 'event', title: t('opportunity.frameworks.event.title'), desc: t('opportunity.frameworks.event.desc'), icon: IconLightning },
+    { id: 'business', title: t('opportunity.frameworks.business.title'), desc: t('opportunity.frameworks.business.desc'), icon: IconBriefcase },
+    { id: 'trend', title: t('opportunity.frameworks.trend.title'), desc: t('opportunity.frameworks.trend.desc'), icon: IconTrending },
+    { id: 'alt', title: t('opportunity.frameworks.alt.title'), desc: t('opportunity.frameworks.alt.desc'), icon: IconDatabase },
+  ]
+})
+
+const periods = computed(() => {
+  // 依赖 locale 以确保语言切换时重新计算
+  const _ = locale.value
+  return [
+    { id: 'auto', title: t('opportunity.periods.auto.title'), desc: t('opportunity.periods.auto.desc'), icon: IconAuto },
+    { id: 'short', title: t('opportunity.periods.short.title'), desc: t('opportunity.periods.short.desc'), icon: IconClock },
+    { id: 'short-mid', title: t('opportunity.periods.shortMid.title'), desc: t('opportunity.periods.shortMid.desc'), icon: IconHourglass },
+    { id: 'mid', title: t('opportunity.periods.mid.title'), desc: t('opportunity.periods.mid.desc'), icon: IconTimeline },
+    { id: 'long', title: t('opportunity.periods.long.title'), desc: t('opportunity.periods.long.desc'), icon: IconCalendar },
+  ]
+})
+
+const risks = computed(() => {
+  // 依赖 locale 以确保语言切换时重新计算
+  const _ = locale.value
+  return [
+    { id: 'auto', title: t('opportunity.risks.auto.title'), desc: t('opportunity.risks.auto.desc'), icon: IconAuto, intensity: 50 },
+    { id: 'low', title: t('opportunity.risks.low.title'), desc: t('opportunity.risks.low.desc'), icon: IconShield, intensity: 25 },
+    { id: 'medium', title: t('opportunity.risks.medium.title'), desc: t('opportunity.risks.medium.desc'), icon: IconScale, intensity: 50 },
+    { id: 'high', title: t('opportunity.risks.high.title'), desc: t('opportunity.risks.high.desc'), icon: IconFire, intensity: 75 },
+    { id: 'extreme', title: t('opportunity.risks.extreme.title'), desc: t('opportunity.risks.extreme.desc'), icon: IconSkull, intensity: 100 },
+  ]
+})
 
 const toggleFramework = (id) => {
   if (id === 'auto') {
@@ -2282,9 +2417,9 @@ const handleInitializeGeneration = () => {
     
     // 显示选中提示
     if (newTasks.length === 1) {
-      addToast(`已选择 ${firstTask.symbol}，策略等待生成...`, 'info')
+      addToast(t('opportunity.toasts.selectedWaiting', { symbol: firstTask.symbol }), 'info')
     } else {
-      addToast(`已选择 ${firstTask.symbol}，共 ${newTasks.length} 个策略等待生成...`, 'info')
+      addToast(t('opportunity.toasts.selectedMultipleWaiting', { symbol: firstTask.symbol, count: newTasks.length }), 'info')
     }
   }
 
@@ -2304,8 +2439,8 @@ const startGenerateTour = () => {
       { 
         element: '#asset-selection-panel', 
         popover: { 
-          title: '1. 选择分析对象', 
-          description: '从您的自选股 (Watchlist) 中选择，或通过搜索添加您感兴趣的股票/加密货币。',
+          title: t('opportunity.tour.step1.title'), 
+          description: t('opportunity.tour.step1.desc'),
           side: "right", 
           align: 'start' 
         } 
@@ -2313,8 +2448,8 @@ const startGenerateTour = () => {
       { 
         element: '#analysis-frameworks', 
         popover: { 
-          title: '2. 定制分析视角', 
-          description: '想看基本面还是技术面？选择 AI 分析的侧重点。如果不确定，保持"智能推荐"即可。',
+          title: t('opportunity.tour.step2.title'), 
+          description: t('opportunity.tour.step2.desc'),
           side: "left", 
           align: 'start' 
         } 
@@ -2322,8 +2457,8 @@ const startGenerateTour = () => {
       { 
         element: '#investment-period', 
         popover: { 
-          title: '3. 设定周期', 
-          description: '告诉 AI 您的持仓周期预期，生成的策略将为您量身定制。',
+          title: t('opportunity.tour.step3.title'), 
+          description: t('opportunity.tour.step3.desc'),
           side: "left", 
           align: 'start' 
         } 
@@ -2331,8 +2466,8 @@ const startGenerateTour = () => {
       { 
         element: '#risk-appetite', 
         popover: { 
-          title: '4. 风险偏好', 
-          description: '设置您的风险承受能力，从低风险到极高风险。',
+          title: t('opportunity.tour.step4.title'), 
+          description: t('opportunity.tour.step4.desc'),
           side: "left", 
           align: 'start' 
         } 
@@ -2340,8 +2475,8 @@ const startGenerateTour = () => {
       { 
         element: '#generate-btn', 
         popover: { 
-          title: '5. 一键生成', 
-          description: '准备好后，点击这里。AI 将在后台为您运行复杂的分析模型。',
+          title: t('opportunity.tour.step5.title'), 
+          description: t('opportunity.tour.step5.desc'),
           side: "top", 
           align: 'center' 
         } 
@@ -2358,8 +2493,8 @@ const startStrategyTour = () => {
       { 
         element: '#active-generation-panel', 
         popover: { 
-          title: '实时任务监控', 
-          description: '这里显示正在生成或排队中的策略任务。您可以实时查看生成进度和预计剩余时间。',
+          title: t('opportunity.strategyTour.step1.title'), 
+          description: t('opportunity.strategyTour.step1.desc'),
           side: "bottom", 
           align: 'start' 
         } 
@@ -2367,8 +2502,8 @@ const startStrategyTour = () => {
       { 
         element: '#strategy-list-container', 
         popover: { 
-          title: '您的策略知识库', 
-          description: '所有保存的策略都在这里。您可以查看 AI 给出的评级 (Grade)、方向 (Long/Short) 和所用模型。',
+          title: t('opportunity.strategyTour.step2.title'), 
+          description: t('opportunity.strategyTour.step2.desc'),
           side: "left", 
           align: 'start' 
         } 
@@ -2376,8 +2511,8 @@ const startStrategyTour = () => {
       { 
         element: '#strategy-toolbar', 
         popover: { 
-          title: '搜索与筛选', 
-          description: '使用搜索框快速查找策略，或通过筛选器按方向、来源等条件过滤显示的策略。',
+          title: t('opportunity.strategyTour.step3.title'), 
+          description: t('opportunity.strategyTour.step3.desc'),
           side: "bottom", 
           align: 'center' 
         } 
@@ -2385,8 +2520,8 @@ const startStrategyTour = () => {
       { 
         element: '#strategy-sidebar', 
         popover: { 
-          title: '分类与归档', 
-          description: '创建文件夹来整理您的思路，或使用智能过滤器快速查找高分策略。',
+          title: t('opportunity.strategyTour.step4.title'), 
+          description: t('opportunity.strategyTour.step4.desc'),
           side: "right", 
           align: 'start' 
         } 
@@ -2394,11 +2529,11 @@ const startStrategyTour = () => {
       { 
         element: '#first-strategy-row', 
         popover: { 
-          title: '打开策略详情', 
-          description: '点击任意策略行，即可打开详细的策略报告。在报告中您可以查看完整的投资逻辑、历史表现，还可以与 AI 对话来进一步提问。',
+          title: t('opportunity.strategyTour.step5.title'), 
+          description: t('opportunity.strategyTour.step5.desc'),
           side: "bottom", 
           align: 'center' 
-        } 
+        }
       }
     ]
   });
@@ -2407,7 +2542,7 @@ const startStrategyTour = () => {
 
 // Initialize from URL query
 onMounted(() => {
-  if (route.query.tab && tabs.some(t => t.id === route.query.tab)) {
+  if (route.query.tab && tabs.value.some(t => t.id === route.query.tab)) {
     activeTab.value = route.query.tab
   }
 
@@ -2423,7 +2558,7 @@ onMounted(() => {
 })
 
 watch(() => route.query.tab, (newTab) => {
-  if (newTab && tabs.some(t => t.id === newTab)) {
+  if (newTab && tabs.value.some(t => t.id === newTab)) {
     activeTab.value = newTab
   }
 })
@@ -2446,9 +2581,9 @@ watch(activeTab, (newTab) => {
 // --- Queue Logic ---
 const currentQueueFilter = ref('all')
 const queueFilters = [
-  { id: 'all', label: '全部' },
-  { id: 'strategy', label: '策略' },
-  { id: 'plan', label: '计划' }
+  { id: 'all', label: computed(() => t('opportunity.filters.all')) },
+  { id: 'strategy', label: computed(() => t('opportunity.filters.strategy')) },
+  { id: 'plan', label: computed(() => t('opportunity.filters.plan')) }
 ]
 
 const tasks = ref([
@@ -2574,9 +2709,9 @@ const toggleStrategyReport = () => {
 }
 
 const quickPrompts = [
-  "这个策略的主要风险是什么？",
-  "基于此策略生成的计划有哪些？",
-  "如何对冲此策略的下行风险？"
+  t('opportunity.chat.question1'),
+  t('opportunity.chat.question2'),
+  t('opportunity.chat.question3')
 ]
 
 // Select a strategy by task (from Active Generation cards) - 只选中，不弹窗
@@ -2596,7 +2731,7 @@ const selectTaskStrategy = (task) => {
       timeAgo: existingStrategy.generatedAt ? new Date(existingStrategy.generatedAt).toLocaleDateString() : '2h ago',
     }
     switchTab('mystrategy')
-    addToast(`已选择 ${existingStrategy.symbol}`, 'info')
+    addToast(t('opportunity.toasts.selected', { symbol: existingStrategy.symbol }), 'info')
   } else {
     // If no existing strategy, create a temporary placeholder
     selectedStrategyId.value = `temp-${task.id}`
@@ -2612,7 +2747,7 @@ const selectTaskStrategy = (task) => {
       generatedAt: null
     }
     switchTab('mystrategy')
-    addToast(`已选择 ${task.symbol}，策略${task.status === 'processing' ? '正在生成中' : '等待生成'}...`, 'info')
+    addToast(t('opportunity.toasts.selectedWithStatus', { symbol: task.symbol, status: task.status === 'processing' ? t('opportunity.toasts.generating') : t('opportunity.toasts.waiting') }), 'info')
   }
 }
 
@@ -2697,7 +2832,7 @@ const sendChatMessage = async () => {
   
   chatHistory.value.push({
     role: 'assistant',
-    content: `基于 ${selectedStrategy.value.symbol} 的策略分析，这是一个很好的问题。通常来说，考虑到当前的市场环境和 ${selectedStrategy.value.symbol} 的基本面情况，我们需要关注...`
+    content: t('opportunity.chat.aiResponse', { symbol: selectedStrategy.value.symbol })
   })
   isChatLoading.value = false
 }
@@ -3035,7 +3170,7 @@ onMounted(() => {
                   term: existingStrategy.horizon || 'Short Term',
                   timeAgo: existingStrategy.generatedAt ? new Date(existingStrategy.generatedAt).toLocaleDateString() : 'Just now',
                 }
-                addToast(`${task.symbol} 策略生成完成！`, 'success')
+                addToast(t('opportunity.toasts.strategyComplete', { symbol: task.symbol }), 'success')
               } else {
                 // 如果没有保存的策略（可能是模拟），更新状态为已完成
                 selectedStrategy.value = {
@@ -3045,7 +3180,7 @@ onMounted(() => {
                   isPending: false,
                   grade: task.foundOpportunity ? 'A' : 'N/A'
                 }
-                addToast(`${task.symbol} 策略生成完成！`, 'success')
+                addToast(t('opportunity.toasts.strategyComplete', { symbol: task.symbol }), 'success')
               }
             }
             
@@ -3248,14 +3383,14 @@ const miniMapSteps = computed(() => {
   // --- Step 1: 策略准备（选择资产 + 配置参数） ---
   // 只在 generate tab 中可以被激活
   let step1Status = 'pending'
-  let step1Hint = '选择要分析的标的'
+  let step1Hint = t('opportunity.hints.selectAssets')
   
   if (hasSelectedStocks) {
     step1Status = 'done'
     if (isUsingDefaultParams()) {
-      step1Hint = '默认推荐参数，等待生成策略'
+      step1Hint = t('opportunity.hints.defaultParams')
     } else {
-      step1Hint = '自定义参数，等待生成策略'
+      step1Hint = t('opportunity.hints.customParams')
     }
   } else if (isGenerateTab) {
     // 只在 generate tab 时激活
@@ -3265,7 +3400,7 @@ const miniMapSteps = computed(() => {
   // --- Step 2: 机会生成 ---
   // 只在 mystrategy tab 中选中策略后才激活
   let step2Status = 'pending'
-  let step2Hint = '等待选择策略'
+  let step2Hint = t('opportunity.hints.waitSelectStrategy')
   let step2Blocked = false
   
   // Check if selected strategy is generating or pending
@@ -3279,37 +3414,37 @@ const miniMapSteps = computed(() => {
   if (!isMyStrategyTab) {
     // 不在 mystrategy tab 时，保持 pending 状态
     step2Status = 'pending'
-    step2Hint = '等待选择策略'
+    step2Hint = t('opportunity.hints.waitSelectStrategy')
   } else if (!hasSelectedStrategy) {
     // 在 mystrategy tab 但未选中策略
     step2Status = 'pending'
-    step2Hint = '请选择一个策略'
+    step2Hint = t('opportunity.hints.pleaseSelectStrategy')
   } else if (isOnlyPlan) {
     // Only Plan 策略，跳过机会生成步骤
     step2Status = 'skipped'
-    step2Hint = '仅计划模式'
+    step2Hint = t('opportunity.hints.onlyPlanMode')
   } else if (isStrategyUpdating) {
     // 选中的策略正在更新中
     step2Status = 'active'
     const progress = Math.round(regeneratingStrategies.value[strategy.id]?.progress || 0)
-    step2Hint = `正在更新... ${progress}%`
+    step2Hint = t('opportunity.hints.updating', { progress })
   } else if (isStrategyGenerating) {
     // 选中的策略正在生成中
     step2Status = 'active'
-    step2Hint = '正在生成中...'
+    step2Hint = t('opportunity.hints.generating')
   } else if (isStrategyPending) {
     // 选中的策略等待生成
     step2Status = 'active'
-    step2Hint = '等待生成...'
+    step2Hint = t('opportunity.hints.waitingGenerate')
   } else {
     // 在 mystrategy tab 且选中了已生成的策略
     if (needsUpdate) {
       step2Status = 'active'
-      step2Hint = '建议更新策略'
+      step2Hint = t('opportunity.hints.recommendUpdate')
       step2Blocked = true
     } else {
       step2Status = 'done'
-      step2Hint = '策略已生成'
+      step2Hint = t('opportunity.hints.strategyGenerated')
     }
   }
   
@@ -3320,42 +3455,42 @@ const miniMapSteps = computed(() => {
   // --- Step 3: 机会判定 ---
   // 只在 mystrategy tab 中选中策略后才激活，且步骤2必须完成
   let step3Status = 'pending'
-  let step3Hint = '等待选择策略'
+  let step3Hint = t('opportunity.hints.waitSelectStrategy')
   let step3Blocked = false
   
   if (!isMyStrategyTab) {
     // 不在 mystrategy tab 时，保持 pending 状态
     step3Status = 'pending'
-    step3Hint = '等待选择策略'
+    step3Hint = t('opportunity.hints.waitSelectStrategy')
   } else if (!hasSelectedStrategy) {
     // 在 mystrategy tab 但未选中策略
     step3Status = 'pending'
-    step3Hint = '请选择一个策略'
+    step3Hint = t('opportunity.hints.pleaseSelectStrategy')
   } else if (isOnlyPlan) {
     // Only Plan 策略，跳过机会判定步骤
     step3Status = 'skipped'
-    step3Hint = '仅计划模式'
+    step3Hint = t('opportunity.hints.onlyPlanMode')
   } else if (isStep2InProgress) {
     // 步骤2还在进行中，步骤3保持灰色
     step3Status = 'pending'
-    step3Hint = '等待策略生成完成'
+    step3Hint = t('opportunity.hints.waitStrategyComplete')
   } else {
     // 步骤2已完成，根据 grade 判断步骤3状态
     if (noOpportunity) {
       step3Status = 'active'
-      step3Hint = '暂无机会，建议更新策略'
+      step3Hint = t('opportunity.hints.noOpportunityUpdate')
       step3Blocked = true
     } else if (gradeBelowB) {
       step3Status = 'active'
-      step3Hint = `${strategyGrade}级机会，建议调整参数`
+      step3Hint = t('opportunity.hints.gradeAdjustParams', { grade: strategyGrade })
       step3Blocked = true
     } else if (gradeAboveB) {
       if (hasPlan) {
         step3Status = 'done'
-        step3Hint = `${strategyGrade}级机会`
+        step3Hint = t('opportunity.hints.gradeOpportunity', { grade: strategyGrade })
       } else {
         step3Status = 'active'
-        step3Hint = `${strategyGrade}级机会，可生成计划 →`
+        step3Hint = t('opportunity.hints.gradeCanGeneratePlan', { grade: strategyGrade })
       }
     }
   }
@@ -3369,54 +3504,54 @@ const miniMapSteps = computed(() => {
   // --- Step 4: 计划生成 ---
   // 只在 mystrategy tab 中选中策略后才激活，且步骤3必须通过
   let step4Status = 'pending'
-  let step4Hint = '等待选择策略'
+  let step4Hint = t('opportunity.hints.waitSelectStrategy')
   let step4Blocked = false
   
   if (!isMyStrategyTab) {
     // 不在 mystrategy tab 时，保持 pending 状态
     step4Status = 'pending'
-    step4Hint = '等待选择策略'
+    step4Hint = t('opportunity.hints.waitSelectStrategy')
   } else if (!hasSelectedStrategy) {
     // 在 mystrategy tab 但未选中策略
     step4Status = 'pending'
-    step4Hint = '请选择一个策略'
+    step4Hint = t('opportunity.hints.pleaseSelectStrategy')
   } else if (isStep2InProgress) {
     // 步骤2还在进行中，步骤4保持灰色
     step4Status = 'pending'
-    step4Hint = '等待策略生成完成'
+    step4Hint = t('opportunity.hints.waitStrategyComplete')
   } else if (isOnlyPlan) {
     // Only Plan 模式，直接显示计划状态
     if (hasPlan) {
       step4Status = 'done'
-      step4Hint = '计划已生成'
+      step4Hint = t('opportunity.hints.planGenerated')
     } else {
       step4Status = 'active'
-      step4Hint = '等待生成计划'
+      step4Hint = t('opportunity.hints.waitGeneratePlan')
     }
   } else if (step3Blocked) {
     // 步骤3被阻塞，步骤4也被阻塞
     if (noOpportunity) {
       step4Status = 'blocked'
-      step4Hint = '需有策略机会'
+      step4Hint = t('opportunity.hints.needOpportunity')
       step4Blocked = true
     } else if (gradeBelowB) {
       step4Status = 'blocked'
-      step4Hint = '需B级以上机会'
+      step4Hint = t('opportunity.hints.needGradeB')
       step4Blocked = true
     }
   } else if (isStep3Passed) {
     // 步骤3通过，根据计划状态判断
     if (hasPlan) {
       step4Status = 'done'
-      step4Hint = '计划已生成'
+      step4Hint = t('opportunity.hints.planGenerated')
     } else {
       step4Status = 'active'
-      step4Hint = '等待生成计划'
+      step4Hint = t('opportunity.hints.waitGeneratePlan')
     }
   } else {
     // 步骤3未完成
     step4Status = 'pending'
-    step4Hint = '等待机会判定'
+    step4Hint = t('opportunity.hints.waitOpportunityGate')
   }
   
   // 判断步骤4是否完成
@@ -3425,45 +3560,45 @@ const miniMapSteps = computed(() => {
   // --- Step 5: 执行/完成 ---
   // 只在 mystrategy tab 中选中策略后才激活，且步骤4必须完成
   let step5Status = 'pending'
-  let step5Hint = '等待选择策略'
+  let step5Hint = t('opportunity.hints.waitSelectStrategy')
   
   if (!isMyStrategyTab) {
     // 不在 mystrategy tab 时，保持 pending 状态
     step5Status = 'pending'
-    step5Hint = '等待选择策略'
+    step5Hint = t('opportunity.hints.waitSelectStrategy')
   } else if (!hasSelectedStrategy) {
     // 在 mystrategy tab 但未选中策略
     step5Status = 'pending'
-    step5Hint = '请选择一个策略'
+    step5Hint = t('opportunity.hints.pleaseSelectStrategy')
   } else if (isStep2InProgress) {
     // 步骤2还在进行中，步骤5保持灰色
     step5Status = 'pending'
-    step5Hint = '等待策略生成完成'
+    step5Hint = t('opportunity.hints.waitStrategyComplete')
   } else if (step4Blocked) {
     // 步骤4被阻塞，步骤5保持灰色
     step5Status = 'pending'
-    step5Hint = '等待计划生成'
+    step5Hint = t('opportunity.hints.waitPlanGenerate')
   } else if (isStep4Done) {
     // 步骤4完成，可以执行
     step5Status = 'active'
-    step5Hint = '可执行交易'
+    step5Hint = t('opportunity.hints.canExecuteTrade')
   } else {
     // 步骤4未完成
     step5Status = 'pending'
-    step5Hint = '等待计划生成'
+    step5Hint = t('opportunity.hints.waitPlanGenerate')
   }
   
   return [
     {
       key: 'strategy_setup',
-      title: '策略准备',
+      title: t('opportunity.minimap.steps.strategySetup'),
       hint: step1Hint,
       status: step1Status,
       action: () => { switchTab('generate') }
     },
     {
       key: 'opportunity_generate',
-      title: '机会生成',
+      title: t('opportunity.minimap.steps.opportunityGenerate'),
       hint: step2Hint,
       status: step2Status,
       blocked: step2Blocked,
@@ -3471,7 +3606,7 @@ const miniMapSteps = computed(() => {
     },
     {
       key: 'opportunity_gate',
-      title: '机会判定',
+      title: t('opportunity.minimap.steps.opportunityGate'),
       hint: step3Hint,
       status: step3Status,
       blocked: step3Blocked,
@@ -3479,7 +3614,7 @@ const miniMapSteps = computed(() => {
     },
     {
       key: 'planning',
-      title: '计划生成',
+      title: t('opportunity.minimap.steps.planning'),
       hint: step4Hint,
       status: step4Status,
       blocked: step4Blocked,
@@ -3490,7 +3625,7 @@ const miniMapSteps = computed(() => {
     },
     {
       key: 'execution',
-      title: '执行/完成',
+      title: t('opportunity.minimap.steps.execution'),
       hint: step5Hint,
       status: step5Status,
       action: hasSelectedStrategy && hasPlan ? () => {
@@ -3885,12 +4020,12 @@ const strategyCollections = computed(() => {
   const noPlanCount = allSavedStrategies.value.filter(s => !s.hasExecutionPlan || s.planCount === 0).length
 
   const preset = [
-    { id: 'all', label: 'All Strategies', count: allCount, icon: IconBriefcase },
-    { id: 'official', label: 'Official Reports', count: officialCount, icon: IconDocument },
-    { id: 'my', label: 'My Strategies', count: myCount, icon: IconTarget },
-    { id: 'plans', label: 'With Execution Plans', count: planCount, icon: IconLightning },
-    { id: 'only-plan', label: 'Only Plan', count: onlyPlanCount, icon: IconCalendar, isFixed: true },
-    { id: 'no-plan', label: 'No Plan', count: noPlanCount, icon: IconBan, isFixed: true },
+    { id: 'all', label: t('opportunity.collections.allStrategies'), count: allCount, icon: IconBriefcase },
+    { id: 'official', label: t('opportunity.collections.officialReports'), count: officialCount, icon: IconDocument },
+    { id: 'my', label: t('opportunity.collections.myStrategies'), count: myCount, icon: IconTarget },
+    { id: 'plans', label: t('opportunity.collections.withExecutionPlans'), count: planCount, icon: IconLightning },
+    { id: 'only-plan', label: t('opportunity.collections.onlyPlan'), count: onlyPlanCount, icon: IconCalendar, isFixed: true },
+    { id: 'no-plan', label: t('opportunity.collections.noPlan'), count: noPlanCount, icon: IconBan, isFixed: true },
   ]
 
   const custom = customCollections.value.map(c => ({
