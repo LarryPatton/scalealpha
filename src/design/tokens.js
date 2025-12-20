@@ -227,9 +227,10 @@ export const spacing = {
 // ============================================
 
 export const borderRadius = {
-  sharp: '2px',    // 按钮、输入框 - 硬朗专业感
-  rounded: '8px',  // 卡片、面板
-  full: '9999px',  // 头像、圆点、徽章
+  none: '0px',     // 卡片、面板 - 极简风格
+  sharp: '2px',    // 按钮、输入框 - 硬朗专业感 (对应 Tailwind rounded-sm)
+  soft: '4px',     // 标签、徽章、小组件 (对应 Tailwind rounded)
+  full: '9999px',  // 浮动导航、头像、圆点 (对应 Tailwind rounded-full)
 }
 
 // ============================================
@@ -237,18 +238,98 @@ export const borderRadius = {
 // ============================================
 
 export const shadows = {
-  // 静态阴影
+  // 静态阴影 (Standard Shadows)
   subtle: '0 1px 3px rgba(0, 0, 0, 0.3)',
   medium: '0 4px 12px rgba(0, 0, 0, 0.4)',
   strong: '0 8px 30px rgba(0, 0, 0, 0.5)',
   
-  // 发光效果 (仅用于特定场景)
+  // 发光效果 (Glow Effects)
+  // 3×5 矩阵: 3个尺寸 (sm/md/lg) × 5种颜色
   glow: {
-    primary: '0 0 20px rgba(6, 182, 212, 0.3)',
-    success: '0 0 20px rgba(16, 185, 129, 0.3)',
-    warning: '0 0 20px rgba(245, 158, 11, 0.3)',
-    danger: '0 0 20px rgba(244, 63, 94, 0.3)',
+    // Primary (Cyan) - 主交互色
+    primary: {
+      sm: '0 0 8px rgba(6, 182, 212, 0.4)',     // 小型指示器、hover态
+      md: '0 0 15px rgba(6, 182, 212, 0.3)',    // 选中态（默认）
+      lg: '0 0 25px rgba(6, 182, 212, 0.35)',   // 强调态、活跃按钮
+    },
+    
+    // Info (Blue) - 信息/B级
+    info: {
+      sm: '0 0 8px rgba(59, 130, 246, 0.4)',
+      md: '0 0 15px rgba(59, 130, 246, 0.3)',
+      lg: '0 0 25px rgba(59, 130, 246, 0.35)',
+    },
+    
+    // Success (Emerald) - 成功/LONG
+    success: {
+      sm: '0 0 8px rgba(16, 185, 129, 0.4)',
+      md: '0 0 15px rgba(16, 185, 129, 0.3)',
+      lg: '0 0 25px rgba(16, 185, 129, 0.35)',
+    },
+    
+    // Warning (Amber) - 警告/待更新
+    warning: {
+      sm: '0 0 8px rgba(245, 158, 11, 0.4)',
+      md: '0 0 15px rgba(245, 158, 11, 0.3)',
+      lg: '0 0 25px rgba(245, 158, 11, 0.35)',
+    },
+    
+    // Danger (Rose) - 危险/SHORT
+    danger: {
+      sm: '0 0 8px rgba(244, 63, 94, 0.4)',
+      md: '0 0 15px rgba(244, 63, 94, 0.3)',
+      lg: '0 0 25px rgba(244, 63, 94, 0.35)',
+    },
+    
+    // Orange (专用于风险等级)
+    orange: {
+      sm: '0 0 8px rgba(249, 115, 22, 0.4)',
+      md: '0 0 15px rgba(249, 115, 22, 0.3)',
+      lg: '0 0 25px rgba(249, 115, 22, 0.35)',
+    },
   },
+  
+  // 浅色主题发光效果 (更柔和)
+  glowLight: {
+    primary: {
+      sm: '0 0 6px rgba(8, 145, 178, 0.25)',
+      md: '0 0 12px rgba(8, 145, 178, 0.2)',
+      lg: '0 0 20px rgba(8, 145, 178, 0.25)',
+    },
+    info: {
+      sm: '0 0 6px rgba(37, 99, 235, 0.25)',
+      md: '0 0 12px rgba(37, 99, 235, 0.2)',
+      lg: '0 0 20px rgba(37, 99, 235, 0.25)',
+    },
+    success: {
+      sm: '0 0 6px rgba(5, 150, 105, 0.25)',
+      md: '0 0 12px rgba(5, 150, 105, 0.2)',
+      lg: '0 0 20px rgba(5, 150, 105, 0.25)',
+    },
+    warning: {
+      sm: '0 0 6px rgba(217, 119, 6, 0.25)',
+      md: '0 0 12px rgba(217, 119, 6, 0.2)',
+      lg: '0 0 20px rgba(217, 119, 6, 0.25)',
+    },
+    danger: {
+      sm: '0 0 6px rgba(225, 29, 72, 0.25)',
+      md: '0 0 12px rgba(225, 29, 72, 0.2)',
+      lg: '0 0 20px rgba(225, 29, 72, 0.25)',
+    },
+    orange: {
+      sm: '0 0 6px rgba(234, 88, 12, 0.25)',
+      md: '0 0 12px rgba(234, 88, 12, 0.2)',
+      lg: '0 0 20px rgba(234, 88, 12, 0.25)',
+    },
+  },
+}
+
+// 获取主题对应的 glow 阴影
+export const getThemeShadows = (theme = 'dark') => {
+  return {
+    ...shadows,
+    glow: theme === 'light' ? shadows.glowLight : shadows.glow,
+  }
 }
 
 // ============================================

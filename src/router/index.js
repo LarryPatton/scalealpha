@@ -11,16 +11,13 @@ import FixedLayout from '../layouts/FixedLayout.vue'
 
 // Pages
 import HomePage from '../pages/HomePage.vue'
-import RevenuePage from '../pages/RevenuePage.vue'
 import RevenueBPage from '../pages/RevenueBPage.vue'
 import DemoPage from '../pages/DemoPage.vue'
-import InfoPage2 from '../pages/InfoPage2.vue'
 import AllOpportunitiesPage from '../pages/AllOpportunitiesPage.vue'
 import AllMarketThemesPage from '../pages/AllMarketThemesPage.vue'
 import AllStockAttributionPage from '../pages/AllStockAttributionPage.vue'
 import StockAttributionDetailPage from '../pages/StockAttributionDetailPage.vue'
 import LoginPage from '../pages/LoginPage.vue'
-import InfoPage from '../pages/InfoPage.vue'
 import InfoPageB from '../pages/InfoPageB.vue'
 import InfoPageWaterfall from '../pages/InfoPageWaterfall.vue'
 import InfoPageKanban from '../pages/InfoPageKanban.vue'
@@ -39,7 +36,6 @@ import EventPage from '../pages/EventPage.vue'
 import BacktestPage from '../pages/BacktestPage.vue'
 import BlogPage from '../pages/BlogPage.vue'
 import PingPingPage from '../pages/PingPingPage.vue'
-import OpportunityPage from '../pages/OpportunityPage.vue'
 import OpportunityPageB from '../pages/OpportunityPageB.vue'
 import OpportunityReportDetail from '../pages/OpportunityReportDetail.vue'
 import CardDesignPage from '../pages/CardDesignPage.vue'
@@ -52,6 +48,8 @@ import OpportunityCardDesignPage from '../pages/OpportunityCardDesignPage.vue';
 import FlowDesignPage from '../pages/FlowDesignPage.vue';
 import ThemesLifecyclePage from '../pages/ThemesLifecyclePage.vue';
 import DesignSystemPage from '../pages/DesignSystemPage.vue';
+import UIComponentsPage from '../pages/UIComponentsPage.vue';
+import DevToolsPage from '../pages/DevToolsPage.vue';
 
 const routes = [
   // Root redirect - automatically redirect to Home page
@@ -68,87 +66,101 @@ const routes = [
     meta: { layout: AppLayout }
   },
   {
-    path: '/revenue',
-    name: 'Revenue',
-    component: RevenuePage,
-    meta: { layout: AppLayout }
-  },
-  {
     path: '/revenueB',
     name: 'RevenueB',
     component: RevenueBPage,
     meta: { layout: FixedLayout }
   },
+  // ========== Dev Tools Routes (Internal Only) ==========
   {
-    path: '/card-design',
-    name: 'CardDesign',
-    component: CardDesignPage,
+    path: '/dev',
+    name: 'DevTools',
+    component: DevToolsPage,
     meta: { layout: BlankLayout }
   },
   {
-    path: '/theme-viz-design',
-    name: 'ThemeVizDesign',
-    component: ThemeVizDesignPage,
+    path: '/dev/components',
+    name: 'DevComponents',
+    component: UIComponentsPage,
     meta: { layout: BlankLayout }
   },
   {
-    path: '/timeline-design',
-    name: 'TimelineDesign',
-    component: TimelineDesignPage,
-    meta: { layout: BlankLayout }
-  },
-  {
-    path: '/analysis-design',
-    name: 'AnalysisDesign',
-    component: AnalysisDesignPage,
-    meta: { layout: BlankLayout }
-  },
-  {
-    path: '/theme-card-variations',
-    name: 'ThemeCardVariations',
-    component: ThemeCardVariationsPage,
-    meta: { layout: BlankLayout }
-  },
-  {
-    path: '/opportunity-card-design',
-    name: 'OpportunityCardDesign',
-    component: OpportunityCardDesignPage,
-    meta: { layout: BlankLayout }
-  },
-  {
-    path: '/flow-design',
-    name: 'FlowDesign',
-    component: FlowDesignPage,
-    meta: { layout: BlankLayout }
-  },
-  {
-    path: '/themes-lifecycle',
-    name: 'ThemesLifecycle',
-    component: ThemesLifecyclePage,
-    meta: { layout: BlankLayout }
-  },
-  {
-    path: '/design-system',
-    name: 'DesignSystem',
+    path: '/dev/design-system',
+    name: 'DevDesignSystem',
     component: DesignSystemPage,
     meta: { layout: BlankLayout }
   },
   {
-    path: '/plan-status-demo',
-    name: 'PlanStatusDemo',
+    path: '/dev/card-design',
+    name: 'DevCardDesign',
+    component: CardDesignPage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/dev/theme-viz',
+    name: 'DevThemeViz',
+    component: ThemeVizDesignPage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/dev/timeline',
+    name: 'DevTimeline',
+    component: TimelineDesignPage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/dev/analysis',
+    name: 'DevAnalysis',
+    component: AnalysisDesignPage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/dev/theme-cards',
+    name: 'DevThemeCards',
+    component: ThemeCardVariationsPage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/dev/opportunity-cards',
+    name: 'DevOpportunityCards',
+    component: OpportunityCardDesignPage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/dev/flow',
+    name: 'DevFlow',
+    component: FlowDesignPage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/dev/lifecycle',
+    name: 'DevLifecycle',
+    component: ThemesLifecyclePage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/dev/plan-status',
+    name: 'DevPlanStatus',
     component: PlanStatusDemo,
     meta: { layout: BlankLayout }
   },
+  
+  // Legacy redirects (keep old URLs working)
+  { path: '/card-design', redirect: '/dev/card-design' },
+  { path: '/theme-viz-design', redirect: '/dev/theme-viz' },
+  { path: '/timeline-design', redirect: '/dev/timeline' },
+  { path: '/analysis-design', redirect: '/dev/analysis' },
+  { path: '/theme-card-variations', redirect: '/dev/theme-cards' },
+  { path: '/opportunity-card-design', redirect: '/dev/opportunity-cards' },
+  { path: '/flow-design', redirect: '/dev/flow' },
+  { path: '/themes-lifecycle', redirect: '/dev/lifecycle' },
+  { path: '/design-system', redirect: '/dev/design-system' },
+  { path: '/ui-components', redirect: '/dev/components' },
+  { path: '/plan-status-demo', redirect: '/dev/plan-status' },
   {
     path: '/demo',
     name: 'Demo',
     component: DemoPage,
-    meta: { layout: AppLayout }
-  },
-  {
-    path: '/info2',
-    name: 'Info2',
-    component: InfoPage,
     meta: { layout: AppLayout }
   },
   {
@@ -185,12 +197,6 @@ const routes = [
   },
 
   // App Routes (Info Hub)
-  {
-    path: '/info',
-    name: 'Info',
-    component: InfoPage2,
-    meta: { layout: AppLayout }
-  },
   {
     path: '/infoB',
     name: 'InfoB',
@@ -257,12 +263,6 @@ const routes = [
     path: '/portfolio',
     name: 'Portfolio',
     component: PortfolioPage,
-    meta: { layout: AppLayout }
-  },
-  {
-    path: '/opportunity',
-    name: 'Opportunity',
-    component: OpportunityPage,
     meta: { layout: AppLayout }
   },
   {

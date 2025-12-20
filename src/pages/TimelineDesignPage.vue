@@ -173,7 +173,7 @@
               
               <!-- Decoration Line -->
               <div class="w-px bg-[#333] relative group-hover:bg-cyan-500 transition-colors duration-300">
-                <div class="absolute top-8 -left-[3px] w-1.5 h-1.5 bg-[#111] border border-cyan-500 rounded-full hidden group-hover:block shadow-[0_0_8px_rgba(6,182,212,0.8)]"></div>
+                <div class="absolute top-8 -left-[3px] w-1.5 h-1.5 bg-[#111] border border-cyan-500 rounded-full hidden group-hover:block glow-primary-sm"></div>
               </div>
               
               <!-- Card -->
@@ -282,7 +282,7 @@
           <div class="space-y-3 py-12">
             <div v-for="(event, index) in extendedEvents" :key="event.id" class="relative flex items-center justify-between group mb-12">
               <!-- Center Node -->
-              <div class="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 bg-[#0f0f0f] border-2 border-cyan-900 flex items-center justify-center z-10 group-hover:border-cyan-400 transition-colors shadow-[0_0_20px_rgba(8,145,178,0.3)] rounded-full">
+              <div class="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 bg-[#0f0f0f] border-2 border-cyan-900 flex items-center justify-center z-10 group-hover:border-cyan-400 transition-colors glow-primary-lg rounded-full">
                 <div class="w-3 h-3 bg-cyan-500 rounded-full animate-pulse"></div>
               </div>
 
@@ -293,7 +293,7 @@
                   <div class="absolute top-1/2 -right-16 w-16 h-px bg-cyan-900 group-hover:bg-cyan-500 transition-colors"></div>
                   
                   <!-- Card -->
-                  <div class="bg-[#111] border border-[#333] p-1 relative group-hover:border-cyan-500/50 transition-all hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] hover:-translate-y-1 duration-300">
+                  <div class="bg-[#111] border border-[#333] p-1 relative group-hover:border-cyan-500/50 transition-all hover:glow-primary-lg hover:-translate-y-1 duration-300">
                     <!-- HUD Corners -->
                     <div class="absolute -top-px -left-px w-4 h-4 border-t-2 border-l-2 border-cyan-700"></div>
                     <div class="absolute -bottom-px -right-px w-4 h-4 border-b-2 border-r-2 border-cyan-700"></div>
@@ -348,7 +348,7 @@
                   <div class="absolute top-1/2 -left-16 w-16 h-px bg-cyan-900 group-hover:bg-cyan-500 transition-colors"></div>
                   
                   <!-- Card -->
-                  <div class="bg-[#111] border border-[#333] p-1 relative group-hover:border-cyan-500/50 transition-all hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] hover:-translate-y-1 duration-300">
+                  <div class="bg-[#111] border border-[#333] p-1 relative group-hover:border-cyan-500/50 transition-all hover:glow-primary-lg hover:-translate-y-1 duration-300">
                     <!-- HUD Corners -->
                     <div class="absolute -top-px -left-px w-4 h-4 border-t-2 border-l-2 border-cyan-700"></div>
                     <div class="absolute -bottom-px -right-px w-4 h-4 border-b-2 border-r-2 border-cyan-700"></div>
@@ -406,7 +406,7 @@
               
               <!-- Left: Time & Status Strip -->
               <div class="w-12 bg-[#0a0a0a] border-r border-[#333] flex flex-col items-center py-4 shrink-0">
-                <div class="w-2 h-2 bg-cyan-500 rounded-full mb-2 shadow-[0_0_8px_rgba(6,182,212,0.8)]"></div>
+                <div class="w-2 h-2 bg-cyan-500 rounded-full mb-2 glow-primary-sm"></div>
                 <div class="flex-1 w-px bg-gradient-to-b from-cyan-900 to-transparent"></div>
               </div>
 

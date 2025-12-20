@@ -140,7 +140,7 @@
                   <div 
                     class="w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-300"
                     :class="[
-                      getStepStatus(index).status === 'active' ? 'border-cyan-500 bg-cyan-900/20 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.4)] scale-110' : 
+                      getStepStatus(index).status === 'active' ? 'border-cyan-500 bg-cyan-900/20 text-cyan-400 glow-primary-md scale-110' : 
                       getStepStatus(index).status === 'done' ? 'border-cyan-900 bg-cyan-900 text-cyan-200' : 
                       getStepStatus(index).status === 'blocked' ? 'border-amber-500/50 bg-amber-900/20 text-amber-500' :
                       'border-[#333] bg-[#111] text-gray-600'

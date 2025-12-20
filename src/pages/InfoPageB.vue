@@ -39,14 +39,14 @@
           <div id="content-switcher" class="border p-1 flex items-center" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
             <button 
               @click="contentFilter = 'recommended'"
-              class="px-3 py-1.5 rounded text-xs font-bold transition-all"
+              class="px-3 py-1.5 rounded-sm text-xs font-bold transition-all"
               :style="contentFilter === 'recommended' ? { backgroundColor: tokens.colors.border.strong, color: tokens.colors.text.primary } : { color: tokens.colors.text.muted }"
             >
               Recommended
             </button>
             <button 
               @click="contentFilter = 'following'"
-              class="px-3 py-1.5 rounded text-xs font-bold transition-all"
+              class="px-3 py-1.5 rounded-sm text-xs font-bold transition-all"
               :style="contentFilter === 'following' ? { backgroundColor: isDark ? '#ffffff' : tokens.colors.background.elevated, color: isDark ? '#000000' : tokens.colors.text.primary } : { color: tokens.colors.text.muted }"
             >
               Following
@@ -58,7 +58,7 @@
             id="filter-button"
             v-if="activeTab !== 'themes'"
             @click="showFilterModal = true"
-            class="h-8 w-8 border rounded flex items-center justify-center transition-colors"
+            class="h-8 w-8 border rounded-sm flex items-center justify-center transition-colors"
             :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle, color: tokens.colors.text.muted }"
           >
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
@@ -71,7 +71,7 @@
           <div v-if="activeTab === 'themes'" class="flex items-center gap-1">
             <button 
               @click="setSort('change')"
-              class="flex items-center gap-1.5 px-2.5 py-1.5 border rounded text-[10px] font-bold uppercase tracking-wide transition-colors"
+              class="flex items-center gap-1.5 px-2.5 py-1.5 border rounded-sm text-[10px] font-bold uppercase tracking-wide transition-colors"
               :style="sortBy === 'change' ? { backgroundColor: tokens.colors.background.elevated, color: tokens.colors.text.primary, borderColor: tokens.colors.border.default } : { backgroundColor: tokens.colors.background.base, color: tokens.colors.text.muted, borderColor: tokens.colors.border.subtle }"
             >
               <span>涨跌幅</span>
@@ -79,7 +79,7 @@
             </button>
             <button 
               @click="setSort('time')"
-              class="flex items-center gap-1.5 px-2.5 py-1.5 border rounded text-[10px] font-bold uppercase tracking-wide transition-colors"
+              class="flex items-center gap-1.5 px-2.5 py-1.5 border rounded-sm text-[10px] font-bold uppercase tracking-wide transition-colors"
               :style="sortBy === 'time' ? { backgroundColor: tokens.colors.background.elevated, color: tokens.colors.text.primary, borderColor: tokens.colors.border.default } : { backgroundColor: tokens.colors.background.base, color: tokens.colors.text.muted, borderColor: tokens.colors.border.subtle }"
             >
               <span>时间</span>
@@ -88,10 +88,10 @@
           </div>
 
           <!-- View Switcher (Opportunities only) -->
-          <div v-if="['opportunities'].includes(activeTab)" class="border rounded p-0.5 flex items-center" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle }">
+          <div v-if="['opportunities'].includes(activeTab)" class="border rounded-sm p-0.5 flex items-center" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle }">
             <button 
               @click="viewMode = 'card'"
-              class="p-1.5 rounded transition-all"
+              class="p-1.5 rounded-sm transition-all"
               :style="viewMode === 'card' ? { backgroundColor: tokens.colors.border.default, color: tokens.colors.text.primary } : { color: tokens.colors.text.disabled }"
               title="Card View"
             >
@@ -99,7 +99,7 @@
             </button>
             <button 
               @click="viewMode = 'list'"
-              class="p-1.5 rounded transition-all"
+              class="p-1.5 rounded-sm transition-all"
               :style="viewMode === 'list' ? { backgroundColor: tokens.colors.border.default, color: tokens.colors.text.primary } : { color: tokens.colors.text.disabled }"
               title="List View"
             >
@@ -130,7 +130,7 @@
 
               <div class="relative z-10">
                 <div class="flex justify-center mb-3">
-                  <span class="text-[9px] font-bold text-cyan-500 border border-cyan-500/30 px-1.5 py-0.5 rounded uppercase tracking-wider">{{ opp.strategy }}</span>
+                  <span class="text-[9px] font-bold text-cyan-500 border border-cyan-500/30 px-1.5 py-0.5 rounded-sm uppercase tracking-wider">{{ opp.strategy }}</span>
                 </div>
                 
                 <h3 class="text-2xl font-bold mb-1 group-hover:text-cyan-50 transition-colors" :style="{ color: tokens.colors.text.primary }">{{ opp.symbol }}</h3>
@@ -179,7 +179,7 @@
                 <div class="col-span-5">
                   <div class="font-medium truncate text-sm group-hover:text-cyan-400 transition-colors" :style="{ color: tokens.colors.text.secondary }">{{ opp.title }}</div>
                   <div class="flex items-center gap-2 mt-0.5">
-                    <span class="text-[10px] px-1.5 rounded" :style="{ backgroundColor: tokens.colors.border.strong, color: tokens.colors.text.tertiary }">{{ opp.strategy }}</span>
+                    <span class="text-[10px] px-1.5 rounded-sm" :style="{ backgroundColor: tokens.colors.border.strong, color: tokens.colors.text.tertiary }">{{ opp.strategy }}</span>
                     <span class="text-[10px] truncate" :style="{ color: tokens.colors.text.muted }">{{ opp.tags.join(', ') }}</span>
                   </div>
                 </div>
@@ -235,15 +235,15 @@
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-3 mb-1.5">
                 <h3 class="text-lg font-bold truncate group-hover:text-cyan-50 transition-colors" :style="{ color: tokens.colors.text.primary }">{{ event.title }}</h3>
-                <span class="text-[10px] px-1.5 py-0.5 rounded font-mono" :style="{ backgroundColor: tokens.colors.background.elevated, color: tokens.colors.text.muted }">{{ event.time.split(' ')[0] }}</span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded-sm font-mono" :style="{ backgroundColor: tokens.colors.background.elevated, color: tokens.colors.text.muted }">{{ event.time.split(' ')[0] }}</span>
               </div>
               <p class="text-xs line-clamp-1 leading-relaxed transition-colors" :style="{ color: tokens.colors.text.muted }" :class="{ 'group-hover:opacity-80': true }">{{ event.desc }}</p>
             </div>
 
             <!-- Middle: Affected Stocks -->
             <div class="flex items-center gap-2 shrink-0">
-              <div v-for="stock in event.stocks.slice(0, 3)" :key="stock.symbol" class="flex items-center gap-2 px-2.5 py-1.5 rounded border" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle }">
-                <div class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold border" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default, color: tokens.colors.text.muted }">
+              <div v-for="stock in event.stocks.slice(0, 3)" :key="stock.symbol" class="flex items-center gap-2 px-2.5 py-1.5 rounded-sm border" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle }">
+                <div class="w-6 h-6 rounded-sm flex items-center justify-center text-[10px] font-bold border" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default, color: tokens.colors.text.muted }">
                   {{ stock.symbol.slice(0, 2) }}
                 </div>
                 <div>
@@ -253,7 +253,7 @@
                   </div>
                 </div>
               </div>
-              <span v-if="event.stocks.length > 3" class="text-[10px] px-2 py-1 rounded border" :style="{ color: tokens.colors.text.disabled, backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle }">+{{ event.stocks.length - 3 }}</span>
+              <span v-if="event.stocks.length > 3" class="text-[10px] px-2 py-1 rounded-sm border" :style="{ color: tokens.colors.text.disabled, backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle }">+{{ event.stocks.length - 3 }}</span>
             </div>
 
             <!-- Right: Theme Change -->
@@ -281,7 +281,7 @@
               <button 
                 v-for="period in ['1M', '3M', '6M', 'YTD']" 
                 :key="period"
-                class="px-2.5 py-1 text-[10px] font-bold rounded transition-colors uppercase"
+                class="px-2.5 py-1 text-[10px] font-bold rounded-sm transition-colors uppercase"
                 :style="selectedChartPeriod === period ? { backgroundColor: tokens.colors.accent.primary, color: '#000000' } : { backgroundColor: tokens.colors.background.elevated, color: tokens.colors.text.muted }"
                 @click="selectedChartPeriod = period"
               >
@@ -318,7 +318,7 @@
             
             <!-- Decoration Line -->
             <div class="w-px relative group-hover:bg-cyan-500/50 transition-colors duration-300" :style="{ backgroundColor: tokens.colors.border.subtle }">
-              <div class="absolute top-6 -left-1 w-2 h-2 rounded-full group-hover:border-cyan-500 group-hover:shadow-[0_0_6px_rgba(6,182,212,0.6)] transition-all" :style="{ backgroundColor: tokens.colors.background.base, borderWidth: '1px', borderStyle: 'solid', borderColor: tokens.colors.border.strong }"></div>
+              <div class="absolute top-6 -left-1 w-2 h-2 rounded-full group-hover:border-cyan-500 group-hover:glow-primary-sm transition-all" :style="{ backgroundColor: tokens.colors.background.base, borderWidth: '1px', borderStyle: 'solid', borderColor: tokens.colors.border.strong }"></div>
             </div>
             
             <!-- Card -->
@@ -353,11 +353,11 @@
                       v-for="stock in event.stocks" 
                       :key="stock.symbol" 
                       @click.stop="openEventModal(event)"
-                      class="border rounded px-2.5 py-2 flex items-center gap-2.5 transition-all cursor-pointer group/stock"
+                      class="border rounded-sm px-2.5 py-2 flex items-center gap-2.5 transition-all cursor-pointer group/stock"
                       :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle }"
                     >
                       <!-- Icon -->
-                      <div class="w-7 h-7 rounded flex items-center justify-center text-[10px] font-bold border group-hover/stock:text-cyan-400 group-hover/stock:border-cyan-500/50 transition-colors shrink-0" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default, color: tokens.colors.text.muted }">
+                      <div class="w-7 h-7 rounded-sm flex items-center justify-center text-[10px] font-bold border group-hover/stock:text-cyan-400 group-hover/stock:border-cyan-500/50 transition-colors shrink-0" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default, color: tokens.colors.text.muted }">
                         {{ stock.symbol.slice(0, 2) }}
                       </div>
                       
@@ -370,7 +370,7 @@
                       <!-- Sentiment Label -->
                       <div class="shrink-0">
                         <span 
-                          class="text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide"
+                          class="text-[9px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wide"
                           :style="{ backgroundColor: stock.change > 0 ? tokens.colors.accent.successBg : (stock.change < 0 ? tokens.colors.accent.dangerBg : 'rgba(107, 114, 128, 0.1)'), color: stock.change > 0 ? tokens.colors.accent.success : (stock.change < 0 ? tokens.colors.accent.danger : tokens.colors.text.muted) }"
                         >
                           {{ stock.change > 0 ? '利好' : (stock.change < 0 ? '利空' : '中性') }}
@@ -484,8 +484,8 @@
                     v-for="opt in filterOptions.sources" 
                     :key="opt.id"
                     @click="toggleFilterSource(opt.id)"
-                    class="px-3 py-2 rounded text-xs font-medium border transition-all flex items-center gap-2"
-                    :style="filters.sources.includes(opt.id) 
+                    class="px-3 py-2 rounded-sm text-xs font-medium border transition-all flex items-center gap-2"
+                    :style="filters.sources.includes(opt.id)
                       ? { backgroundColor: tokens.colors.accent.primaryDark, borderColor: tokens.colors.accent.primary, color: tokens.colors.text.primary }
                       : { backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default, color: tokens.colors.text.tertiary }"
                   >
@@ -503,8 +503,8 @@
                     v-for="dir in filterOptions.directions" 
                     :key="dir"
                     @click="filters.direction = filters.direction === dir ? '' : dir"
-                    class="py-2 rounded text-xs font-bold border transition-all text-center"
-                    :style="filters.direction === dir 
+                    class="py-2 rounded-sm text-xs font-bold border transition-all text-center"
+                    :style="filters.direction === dir
                       ? { backgroundColor: tokens.colors.accent.primaryDark, borderColor: tokens.colors.accent.primary, color: tokens.colors.text.primary }
                       : { backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default, color: tokens.colors.text.tertiary }"
                   >
@@ -521,8 +521,8 @@
                     v-for="dur in filterOptions.durations" 
                     :key="dur"
                     @click="filters.duration = filters.duration === dur ? '' : dur"
-                    class="py-2 rounded text-xs font-medium border transition-all text-center"
-                    :style="filters.duration === dur 
+                    class="py-2 rounded-sm text-xs font-medium border transition-all text-center"
+                    :style="filters.duration === dur
                       ? { backgroundColor: tokens.colors.accent.primaryDark, borderColor: tokens.colors.accent.primary, color: tokens.colors.text.primary }
                       : { backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default, color: tokens.colors.text.tertiary }"
                   >
@@ -539,8 +539,8 @@
                     v-for="grade in filterOptions.grades" 
                     :key="grade"
                     @click="filters.grade = filters.grade === grade ? '' : grade"
-                    class="w-10 h-10 rounded text-xs font-bold border transition-all flex items-center justify-center"
-                    :style="filters.grade === grade 
+                    class="w-10 h-10 rounded-sm text-xs font-bold border transition-all flex items-center justify-center"
+                    :style="filters.grade === grade
                       ? { backgroundColor: tokens.colors.accent.primaryDark, borderColor: tokens.colors.accent.primary, color: tokens.colors.text.primary }
                       : { backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default, color: tokens.colors.text.tertiary }"
                   >
@@ -559,7 +559,7 @@
                   <span 
                     v-for="(stock, idx) in attributionFilters.stocks" 
                     :key="idx"
-                    class="px-2 py-1 rounded border text-xs flex items-center gap-2"
+                    class="px-2 py-1 rounded-sm border text-xs flex items-center gap-2"
                     :style="{ backgroundColor: tokens.colors.accent.primaryBg, borderColor: tokens.colors.accent.primary + '80', color: tokens.colors.accent.primary }"
                   >
                     {{ stock }}
@@ -572,7 +572,7 @@
                     @keyup.enter="addAttributionStock"
                     type="text" 
                     placeholder="输入代码并回车 (e.g. NVDA)" 
-                    class="w-full rounded px-3 py-2 text-sm focus:outline-none transition-colors"
+                    class="w-full rounded-sm px-3 py-2 text-sm focus:outline-none transition-colors"
                     :style="{ backgroundColor: tokens.colors.background.elevated, borderWidth: '1px', borderStyle: 'solid', borderColor: tokens.colors.border.default, color: tokens.colors.text.primary }"
                   />
                   <button 
@@ -594,8 +594,8 @@
                     v-for="range in ['Last 24h', 'Last 3 Days', 'Last Week', 'Last Month']" 
                     :key="range"
                     @click="attributionFilters.timeRange = range"
-                    class="py-2 rounded text-xs font-medium border transition-all text-center"
-                    :style="attributionFilters.timeRange === range 
+                    class="py-2 rounded-sm text-xs font-medium border transition-all text-center"
+                    :style="attributionFilters.timeRange === range
                       ? { backgroundColor: tokens.colors.accent.primaryDark, borderColor: tokens.colors.accent.primary, color: tokens.colors.text.primary }
                       : { backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default, color: tokens.colors.text.tertiary }"
                   >
@@ -612,8 +612,8 @@
                     v-for="sentiment in ['Bullish', 'Bearish', 'Neutral']" 
                     :key="sentiment"
                     @click="toggleAttributionSentiment(sentiment)"
-                    class="px-3 py-2 rounded text-xs font-medium border transition-all flex items-center gap-2"
-                    :style="attributionFilters.sentiments.includes(sentiment) 
+                    class="px-3 py-2 rounded-sm text-xs font-medium border transition-all flex items-center gap-2"
+                    :style="attributionFilters.sentiments.includes(sentiment)
                       ? (sentiment === 'Bullish' ? { backgroundColor: tokens.colors.accent.successBg, borderColor: tokens.colors.accent.success, color: tokens.colors.accent.success } : (sentiment === 'Bearish' ? { backgroundColor: tokens.colors.accent.dangerBg, borderColor: tokens.colors.accent.danger, color: tokens.colors.accent.danger } : { backgroundColor: tokens.colors.border.strong, borderColor: tokens.colors.text.muted, color: tokens.colors.text.secondary }))
                       : { backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default, color: tokens.colors.text.tertiary }"
                   >
@@ -627,7 +627,7 @@
           
           <!-- Footer -->
           <div class="p-6 border-t" :style="{ borderColor: tokens.colors.border.default }">
-            <button class="w-full py-3 font-bold rounded transition-colors" :style="{ backgroundColor: tokens.colors.accent.primaryDark, color: tokens.colors.text.primary }">
+            <button class="w-full py-3 font-bold rounded-sm transition-colors" :style="{ backgroundColor: tokens.colors.accent.primaryDark, color: tokens.colors.text.primary }">
               Apply Filters
             </button>
           </div>
@@ -644,7 +644,7 @@
           <div class="flex items-center gap-4">
             <h2 class="text-xl font-bold" :style="{ color: tokens.colors.text.primary }">{{ selectedEvent.title }}</h2>
             <span 
-              class="text-xs font-bold px-2.5 py-1 rounded border uppercase tracking-wider"
+              class="text-xs font-bold px-2.5 py-1 rounded-sm border uppercase tracking-wider"
               :style="selectedEvent.stocks[0].change >= 0 ? { backgroundColor: tokens.colors.accent.successBg, color: tokens.colors.accent.success, borderColor: tokens.colors.accent.success + '40' } : { backgroundColor: tokens.colors.accent.dangerBg, color: tokens.colors.accent.danger, borderColor: tokens.colors.accent.danger + '40' }"
             >
               {{ selectedEvent.stocks[0].change >= 0 ? 'Bullish' : 'Bearish' }}
@@ -667,7 +667,7 @@
                <!-- Welcome State -->
                <div class="flex flex-col h-full">
                   <div class="flex-1 flex flex-col items-center justify-center text-center space-y-4 p-4">
-                    <div class="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center mb-2 shadow-[0_0_10px_rgba(6,182,212,0.3)]">
+                    <div class="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center mb-2 glow-primary-sm">
                       <i class="fas fa-bolt text-cyan-400 text-lg"></i>
                     </div>
                     <div>
@@ -682,15 +682,15 @@
                   <!-- Quick Prompts -->
                   <div class="space-y-2 pb-4">
                     <p class="text-xs px-1 mb-2" :style="{ color: tokens.colors.text.muted }">您可以问我：</p>
-                    <button class="w-full text-left px-3 py-2.5 hover:border-cyan-500/30 border rounded text-xs transition-all duration-200 flex items-center justify-between group hover:shadow-lg hover:shadow-cyan-900/10" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle, color: tokens.colors.text.secondary }">
+                    <button class="w-full text-left px-3 py-2.5 hover:border-cyan-500/30 border rounded-sm text-xs transition-all duration-200 flex items-center justify-between group hover:shadow-lg hover:shadow-cyan-900/10" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle, color: tokens.colors.text.secondary }">
                       <span class="group-hover:text-cyan-400 transition-colors">该事件对同板块其他股票有何影响？</span>
                       <i class="fas fa-arrow-right opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-cyan-500 transition-all duration-200"></i>
                     </button>
-                    <button class="w-full text-left px-3 py-2.5 hover:border-cyan-500/30 border rounded text-xs transition-all duration-200 flex items-center justify-between group hover:shadow-lg hover:shadow-cyan-900/10" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle, color: tokens.colors.text.secondary }">
+                    <button class="w-full text-left px-3 py-2.5 hover:border-cyan-500/30 border rounded-sm text-xs transition-all duration-200 flex items-center justify-between group hover:shadow-lg hover:shadow-cyan-900/10" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle, color: tokens.colors.text.secondary }">
                       <span class="group-hover:text-cyan-400 transition-colors">历史上有哪些相似事件？</span>
                       <i class="fas fa-arrow-right opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-cyan-500 transition-all duration-200"></i>
                     </button>
-                    <button class="w-full text-left px-3 py-2.5 hover:border-cyan-500/30 border rounded text-xs transition-all duration-200 flex items-center justify-between group hover:shadow-lg hover:shadow-cyan-900/10" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle, color: tokens.colors.text.secondary }">
+                    <button class="w-full text-left px-3 py-2.5 hover:border-cyan-500/30 border rounded-sm text-xs transition-all duration-200 flex items-center justify-between group hover:shadow-lg hover:shadow-cyan-900/10" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle, color: tokens.colors.text.secondary }">
                       <span class="group-hover:text-cyan-400 transition-colors">机构对此事件的最新评级变化？</span>
                       <i class="fas fa-arrow-right opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-cyan-500 transition-all duration-200"></i>
                     </button>
@@ -699,7 +699,7 @@
             </div>
             <div class="p-3 border-t" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle }">
               <div class="relative">
-                <input type="text" placeholder="输入问题..." class="w-full rounded pl-3 pr-10 py-2.5 text-sm border focus:outline-none focus:border-cyan-500" :style="{ backgroundColor: tokens.colors.background.base, color: tokens.colors.text.primary, borderColor: tokens.colors.border.default }">
+                <input type="text" placeholder="输入问题..." class="w-full rounded-sm pl-3 pr-10 py-2.5 text-sm border focus:outline-none focus:border-cyan-500" :style="{ backgroundColor: tokens.colors.background.base, color: tokens.colors.text.primary, borderColor: tokens.colors.border.default }">
                 <button class="absolute right-2 top-1/2 -translate-y-1/2 text-cyan-500"><i class="fas fa-paper-plane"></i></button>
               </div>
             </div>
@@ -713,14 +713,14 @@
               <div class="text-lg font-bold flex items-center gap-2 truncate" :style="{ color: tokens.colors.text.primary }">
                 <span class="text-cyan-400 truncate max-w-[200px]" :title="selectedEvent.title">{{ selectedEvent.title }}</span>
                 <span class="text-sm" :style="{ color: tokens.colors.text.muted }">对</span>
-                <span class="px-2 py-0.5 rounded text-sm font-mono" :style="{ color: tokens.colors.text.primary, backgroundColor: tokens.colors.border.strong }">{{ selectedEvent.stocks[0].symbol }}</span>
+                <span class="px-2 py-0.5 rounded-sm text-sm font-mono" :style="{ color: tokens.colors.text.primary, backgroundColor: tokens.colors.border.strong }">{{ selectedEvent.stocks[0].symbol }}</span>
                 <span class="text-sm" :style="{ color: tokens.colors.text.muted }">的影响分析</span>
               </div>
               
               <div class="flex items-center gap-3 shrink-0">
                 <button 
                   @click="copyShareLink"
-                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold transition-all border"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-bold transition-all border"
                   :style="isCopied ? { backgroundColor: tokens.colors.accent.successBg, color: tokens.colors.accent.success, borderColor: tokens.colors.accent.success + '4d' } : { backgroundColor: tokens.colors.background.elevated, color: tokens.colors.text.secondary, borderColor: tokens.colors.border.default }"
                   :title="isCopied ? '已复制' : '复制分享链接'"
                 >
@@ -730,7 +730,7 @@
                 </button>
                 <button 
                   @click="addToWatchlist(selectedEvent.stocks[0])"
-                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold transition-all border"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-bold transition-all border"
                   :style="{ backgroundColor: tokens.colors.accent.primaryDark, color: tokens.colors.text.primary, borderColor: tokens.colors.accent.primary }"
                   title="添加到关注"
                 >
@@ -739,7 +739,7 @@
                 </button>
                 <button 
                   @click="goToStockDetail(selectedEvent.stocks[0].symbol)"
-                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold transition-all border"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-bold transition-all border"
                   :style="{ backgroundColor: tokens.colors.border.default, color: tokens.colors.text.primary, borderColor: tokens.colors.border.strong }"
                   title="查看详情"
                 >
@@ -804,12 +804,12 @@
                     尽管短期技术面承压，历史数据展示了 {{ selectedEvent.stocks[0].symbol }} 的韧性。在类似下跌后：
                   </p>
                   <div class="grid grid-cols-2 gap-6">
-                    <div class="p-4 rounded border" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle }">
+                    <div class="p-4 border" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle }">
                       <div class="text-xs uppercase mb-1" :style="{ color: tokens.colors.text.muted }">5天上涨概率</div>
                       <div class="text-2xl font-bold" :style="{ color: tokens.colors.accent.success }">62%</div>
                       <div class="text-xs mt-1" :style="{ color: tokens.colors.text.tertiary }">平均回报 +0.6%</div>
                     </div>
-                    <div class="p-4 rounded border" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle }">
+                    <div class="p-4 border" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle }">
                       <div class="text-xs uppercase mb-1" :style="{ color: tokens.colors.text.muted }">21天上涨概率</div>
                       <div class="text-2xl font-bold" :style="{ color: tokens.colors.accent.success }">65%</div>
                       <div class="text-xs mt-1" :style="{ color: tokens.colors.text.tertiary }">平均回报 +1.9%</div>
@@ -868,7 +868,7 @@
         <div class="px-8 py-5 border-b flex justify-between items-center backdrop-blur-xl z-10 shrink-0" :style="{ borderColor: tokens.colors.border.subtle, backgroundColor: tokens.colors.background.surface + 'f2' }">
           <div class="flex items-center gap-3">
             <!-- Grade Badge -->
-            <div class="px-2.5 py-1 rounded text-xs font-semibold tracking-wide"
+            <div class="px-2.5 py-1 rounded-sm text-xs font-semibold tracking-wide"
               :style="{
                 backgroundColor: (selectedStrategy.grade === 'A' || selectedStrategy.grade === 'A+') ? tokens.colors.accent.successBg : (selectedStrategy.grade === 'B' ? tokens.colors.accent.primaryBg : 'rgba(234, 179, 8, 0.1)'),
                 color: (selectedStrategy.grade === 'A' || selectedStrategy.grade === 'A+') ? tokens.colors.accent.success : (selectedStrategy.grade === 'B' ? tokens.colors.accent.primary : '#facc15')
@@ -876,7 +876,7 @@
               GRADE {{ selectedStrategy.grade }}
             </div>
             <!-- Direction Badge -->
-            <div class="flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-semibold"
+            <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold"
               :style="{
                 backgroundColor: selectedStrategy.direction === 'LONG' ? tokens.colors.accent.successBg : (selectedStrategy.direction === 'SHORT' ? tokens.colors.accent.dangerBg : 'rgba(107, 114, 128, 0.1)'),
                 color: selectedStrategy.direction === 'LONG' ? tokens.colors.accent.success : (selectedStrategy.direction === 'SHORT' ? tokens.colors.accent.danger : tokens.colors.text.tertiary)
@@ -936,7 +936,7 @@
                       v-for="(prompt, idx) in quickPrompts" 
                       :key="idx"
                       @click="useQuickPrompt(prompt)"
-                      class="w-full text-left px-3 py-2.5 hover:border-cyan-500/30 border rounded text-xs transition-all duration-200 flex items-center justify-between group hover:shadow-lg hover:shadow-cyan-900/10"
+                      class="w-full text-left px-3 py-2.5 hover:border-cyan-500/30 border rounded-sm text-xs transition-all duration-200 flex items-center justify-between group hover:shadow-lg hover:shadow-cyan-900/10"
                       :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle, color: tokens.colors.text.secondary }"
                     >
                       <span class="group-hover:text-cyan-400 transition-colors">{{ prompt }}</span>
@@ -958,7 +958,7 @@
                       <div class="text-xs font-medium mb-1" :style="{ color: tokens.colors.text.tertiary }">
                         {{ msg.role === 'user' ? 'You' : 'ScaleAlpha AI' }}
                       </div>
-                      <div class="text-sm leading-relaxed whitespace-pre-wrap p-3 rounded border" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default, color: tokens.colors.text.secondary }">{{ msg.content }}</div>
+                      <div class="text-sm leading-relaxed whitespace-pre-wrap p-3 border" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default, color: tokens.colors.text.secondary }">{{ msg.content }}</div>
                     </div>
                  </div>
 
@@ -969,7 +969,7 @@
                     </div>
                     <div class="flex-1">
                        <div class="text-xs font-medium mb-1" :style="{ color: tokens.colors.text.tertiary }">ScaleAlpha AI</div>
-                       <div class="p-3 rounded border w-16" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default }">
+                       <div class="p-3 border w-16" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default }">
                           <div class="flex gap-1 items-center h-4 justify-center">
                             <div class="w-1.5 h-1.5 rounded-full animate-bounce" style="animation-delay: 0ms" :style="{ backgroundColor: tokens.colors.text.muted }"></div>
                             <div class="w-1.5 h-1.5 rounded-full animate-bounce" style="animation-delay: 150ms" :style="{ backgroundColor: tokens.colors.text.muted }"></div>
@@ -988,7 +988,7 @@
                   v-model="chatInput"
                   type="text" 
                   placeholder="输入问题..." 
-                  class="w-full rounded pl-3 pr-10 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500 border"
+                  class="w-full rounded-sm pl-3 pr-10 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500 border"
                   :style="{ backgroundColor: tokens.colors.background.base, color: tokens.colors.text.primary, borderColor: tokens.colors.border.default }"
                   @keyup.enter="sendChatMessage"
                 >

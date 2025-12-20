@@ -639,7 +639,7 @@
                       <div class="flex items-center gap-2 min-w-0 flex-1">
                         <template v-if="item.hasStrategy">
                           <span v-if="item.strategyUnread" 
-                                class="w-2 h-2 bg-blue-500 rounded-full shadow-[0_0_6px_rgba(59,130,246,0.6)] shrink-0"></span>
+                                class="w-2 h-2 bg-blue-500 rounded-full glow-info-sm shrink-0"></span>
                           <span v-else 
                                 class="w-2 h-2 bg-gray-600 rounded-full shrink-0"></span>
                           <span class="text-sm truncate"
@@ -653,7 +653,7 @@
                         </template>
                       </div>
                       <button v-if="item.hasStrategy"
-                              class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider border border-cyan-500/30 px-2 py-1 rounded bg-[#0a0a0a]/90 whitespace-nowrap shadow-[0_0_8px_rgba(6,182,212,0.2)] hover:bg-cyan-900/30 hover:border-cyan-500/50 transition-colors cursor-pointer opacity-0 group-hover:opacity-100 shrink-0">
+                              class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider border border-cyan-500/30 px-2 py-1 rounded bg-[#0a0a0a]/90 whitespace-nowrap glow-primary-sm hover:bg-cyan-900/30 hover:border-cyan-500/50 transition-colors cursor-pointer opacity-0 group-hover:opacity-100 shrink-0">
                         <svg class="w-3 h-3 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                         View
                       </button>

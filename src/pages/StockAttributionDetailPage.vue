@@ -212,7 +212,7 @@
             @click="toggleThemeExpand(theme)"
             class="bg-[#1a1a1a] rounded-xl border p-5 transition-all group relative cursor-pointer"
             :class="[
-              theme.id === highlightedThemeId ? 'border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'border-[#333] hover:border-gray-500'
+              theme.id === highlightedThemeId ? 'border-blue-500 glow-info-md' : 'border-[#333] hover:border-gray-500'
             ]"
           >
             <div class="flex flex-col md:flex-row gap-6">
@@ -447,7 +447,7 @@
             @click="openStrategyDetail(strategy)"
             class="bg-[#1a1a1a] rounded-xl border p-5 hover:border-blue-500 transition-all group cursor-pointer"
             :class="strategy.id === highlightedStrategyId 
-              ? 'border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.5)] bg-[#1a2740]' 
+              ? 'border-blue-500 glow-info-lg bg-[#1a2740]' 
               : 'border-[#333]'"
           >
             <div class="flex items-start gap-4">

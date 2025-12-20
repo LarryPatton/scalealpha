@@ -2,7 +2,7 @@
   <div class="h-screen font-sans selection:bg-cyan-500/30 overflow-hidden flex flex-col" :style="{ backgroundColor: tokens.colors.background.base, color: tokens.colors.text.secondary }">
     <Navbar />
     
-    <main class="flex-1 pt-16 px-4 lg:px-8 max-w-[2200px] mx-auto w-full flex flex-col overflow-hidden relative">
+    <main class="flex-1 pt-5 px-4 lg:px-8 max-w-[2200px] mx-auto w-full flex flex-col overflow-hidden relative">
       <!-- Toast Notifications -->
       <div class="fixed top-20 right-8 z-50 flex flex-col gap-2 pointer-events-none">
         <TransitionGroup name="toast">
@@ -109,7 +109,7 @@
                 <div>
                   <div class="flex items-center gap-2">
                     <span class="font-mono font-bold" :style="{ color: tokens.colors.text.primary }">{{ stock.symbol }}</span>
-                    <span class="text-xs px-1.5 py-0.5 rounded-sm border" :style="{ color: tokens.colors.text.muted, backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }">{{ stock.market }}</span>
+                    <span class="text-xs px-1.5 py-0.5 rounded border" :style="{ color: tokens.colors.text.muted, backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }">{{ stock.market }}</span>
                   </div>
                   <div class="text-xs mt-0.5" :style="{ color: tokens.colors.text.muted }">{{ stock.name }}</div>
                 </div>
@@ -182,7 +182,7 @@
                     :key="framework.id"
                     @click="toggleFramework(framework.id)"
                     class="p-2 border rounded-sm transition-all text-left relative group min-h-[60px] flex flex-col justify-between"
-                    :class="selectedFrameworks.includes(framework.id) ? 'border-cyan-500 bg-cyan-900/20 shadow-[0_0_20px_rgba(6,182,212,0.3)] ring-1 ring-cyan-500/50' : 'hover:border-gray-600'"
+                    :class="selectedFrameworks.includes(framework.id) ? 'border-cyan-500 bg-cyan-900/20 glow-primary-lg ring-1 ring-cyan-500/50' : 'hover:border-gray-600'"
                     :style="selectedFrameworks.includes(framework.id) ? {} : { backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.default }"
                   >
                     <div class="flex justify-between items-start">
@@ -211,7 +211,7 @@
                     :key="period.id"
                     @click="selectedPeriod = period.id"
                     class="p-2 border rounded-sm transition-all text-left relative group min-h-[60px] flex flex-col justify-between"
-                    :class="selectedPeriod === period.id ? 'border-blue-500 bg-blue-900/20 shadow-[0_0_20px_rgba(59,130,246,0.3)] ring-1 ring-blue-500/50' : 'hover:border-gray-600'"
+                    :class="selectedPeriod === period.id ? 'border-blue-500 bg-blue-900/20 glow-info-lg ring-1 ring-blue-500/50' : 'hover:border-gray-600'"
                     :style="selectedPeriod === period.id ? {} : { backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.default }"
                   >
                     <component v-if="period.id === 'auto' && selectedPeriod === 'auto'" :is="IconAutoFilled" class="w-4 h-4 text-blue-400 transition-colors" />
@@ -235,7 +235,7 @@
                     :key="risk.id"
                     @click="selectedRisk = risk.id"
                     class="p-2 border rounded-sm transition-all text-left relative group min-h-[60px] flex flex-col justify-between"
-                    :class="selectedRisk === risk.id ? 'border-orange-500 bg-orange-900/20 shadow-[0_0_20px_rgba(249,115,22,0.3)] ring-1 ring-orange-500/50' : 'hover:border-gray-600'"
+                    :class="selectedRisk === risk.id ? 'border-orange-500 bg-orange-900/20 glow-orange-lg ring-1 ring-orange-500/50' : 'hover:border-gray-600'"
                     :style="selectedRisk === risk.id ? {} : { backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.default }"
                   >
                     <component v-if="risk.id === 'auto' && selectedRisk === 'auto'" :is="IconAutoFilled" class="w-4 h-4 text-orange-400 transition-colors" />
@@ -264,7 +264,7 @@
               class="px-8 py-3 font-bold text-sm tracking-widest uppercase rounded-sm transition-all flex items-center gap-2"
               :class="isGenerationDisabled 
                 ? 'text-gray-600 cursor-not-allowed' 
-                : 'bg-cyan-600 hover:bg-cyan-500 text-white shadow-[0_0_20px_rgba(8,145,178,0.3)] hover:shadow-[0_0_30px_rgba(8,145,178,0.5)]'"
+                : 'bg-cyan-600 hover:bg-cyan-500 text-white glow-primary-lg hover:glow-primary-lg'"
               :style="isGenerationDisabled ? { backgroundColor: tokens.colors.background.overlay } : {}"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
@@ -276,11 +276,11 @@
       </div>
 
         <!-- My Strategy Tab Content -->
-        <div v-else-if="activeTab === 'mystrategy'" class="flex-1 flex flex-col min-h-0 mt-0 pb-20 animate-fade-in relative">
+        <div v-else-if="activeTab === 'mystrategy'" class="flex-1 flex flex-col min-h-0 mt-0 pb-24 animate-fade-in relative">
           
           <!-- Active Tasks Section (Zone A) -->
-          <div id="active-generation-panel" class="w-full mb-2 border p-3 shrink-0" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
-             <div class="flex justify-between items-center mb-2">
+          <div id="active-generation-panel" class="w-full mb-3 border p-4 shrink-0" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+             <div class="flex justify-between items-center mb-3">
               <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
                  <span class="w-2 h-2 rounded-full" :class="(pendingTasks.length + processingTasks.length) > 0 ? 'bg-cyan-500 animate-pulse' : 'bg-gray-600'"></span>
                  Active Generation
@@ -335,7 +335,7 @@
                   :style="{ backgroundColor: tokens.colors.background.base }"
                   :class="[
                     selectedStrategyId === `temp-${task.id}` 
-                      ? 'border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.3)] ring-2 ring-cyan-500/30 selected-task-glow' 
+                      ? 'border-cyan-500 glow-primary-md ring-2 ring-cyan-500/30 selected-task-glow' 
                       : 'border-cyan-900/30 hover:border-cyan-500/50'
                   ]"
                   @click="selectTaskStrategy(task)"
@@ -362,7 +362,7 @@
                   class="min-w-[200px] max-w-[200px] border rounded-sm p-3 flex flex-col justify-center cursor-pointer transition-all relative overflow-hidden shrink-0"
                   :class="[
                     selectedStrategyId === `temp-${task.id}` 
-                      ? 'border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.3)] ring-2 ring-cyan-500/30 opacity-100 selected-task-glow' 
+                      ? 'border-cyan-500 glow-primary-md ring-2 ring-cyan-500/30 opacity-100 selected-task-glow' 
                       : 'hover:border-gray-500 opacity-70 hover:opacity-100'
                   ]"
                   :style="{ backgroundColor: tokens.colors.background.base, borderColor: selectedStrategyId === `temp-${task.id}` ? undefined : tokens.colors.border.default }"
@@ -405,7 +405,7 @@
                 class="border rounded-sm p-3 relative overflow-hidden group cursor-pointer transition-all"
                 :class="[
                   selectedStrategyId === `temp-${task.id}` 
-                    ? 'border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.3)] ring-2 ring-cyan-500/30 selected-task-glow' 
+                    ? 'border-cyan-500 glow-primary-md ring-2 ring-cyan-500/30 selected-task-glow' 
                     : 'border-cyan-900/30 hover:border-cyan-500/50'
                 ]"
                 :style="{ backgroundColor: tokens.colors.background.base }"
@@ -723,21 +723,21 @@
                     </div>
                   </th>
                   <!-- Ticker 独立列 -->
-                  <th rowspan="2" @click="handleSort('symbol')" class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider border-b border-r cursor-pointer hover:text-white transition-colors select-none align-middle" :style="{ color: tokens.colors.text.tertiary, borderBottomColor: tokens.colors.border.default, borderRightColor: tokens.colors.border.strong, backgroundColor: tokens.colors.background.surface }">
+                  <th rowspan="2" @click="handleSort('symbol')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b border-r cursor-pointer hover:text-white transition-colors select-none align-middle" :style="{ color: tokens.colors.text.tertiary, borderBottomColor: tokens.colors.border.default, borderRightColor: tokens.colors.border.strong, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center gap-1">
                       Ticker
                       <span v-if="strategySortField === 'symbol'" :style="{ color: tokens.colors.accent.primary }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
                   <!-- 策略分组 -->
-                  <th colspan="7" class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider border-b border-r text-center" :style="{ color: tokens.colors.accent.primary, borderBottomColor: tokens.colors.border.strong, borderRightColor: tokens.colors.border.strong, background: `linear-gradient(to right, ${tokens.colors.accent.primary}26, ${tokens.colors.accent.primary}1A), ${tokens.colors.background.surface}` }">
+                  <th colspan="7" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b border-r text-center" :style="{ color: tokens.colors.accent.primary, borderBottomColor: tokens.colors.border.strong, borderRightColor: tokens.colors.border.strong, background: `linear-gradient(to right, ${tokens.colors.accent.primary}26, ${tokens.colors.accent.primary}1A), ${tokens.colors.background.surface}` }">
                     <div class="flex items-center justify-center gap-2">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                       Strategy
                     </div>
                   </th>
                   <!-- 计划分组 -->
-                  <th colspan="6" class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider border-b text-center" :style="{ color: tokens.colors.accent.warning, borderBottomColor: tokens.colors.border.strong, background: `linear-gradient(to right, ${tokens.colors.accent.warning}26, ${tokens.colors.accent.warning}1A), ${tokens.colors.background.surface}` }">
+                  <th colspan="6" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center" :style="{ color: tokens.colors.accent.warning, borderBottomColor: tokens.colors.border.strong, background: `linear-gradient(to right, ${tokens.colors.accent.warning}26, ${tokens.colors.accent.warning}1A), ${tokens.colors.background.surface}` }">
                     <div class="flex items-center justify-center gap-2">
                       <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                       Execution Plan
@@ -747,77 +747,77 @@
                 <!-- 子表头行 -->
                 <tr :style="{ backgroundColor: tokens.colors.background.surface }">
                   <!-- 策略子列 -->
-                  <th @click="handleSort('stockName')" class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th @click="handleSort('stockName')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center gap-1">
                       Name
                       <span v-if="strategySortField === 'stockName'" :style="{ color: tokens.colors.accent.primary }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th @click="handleSort('source')" class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th @click="handleSort('source')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
                       Source
                       <span v-if="strategySortField === 'source'" :style="{ color: tokens.colors.accent.primary }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th @click="handleSort('direction')" class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th @click="handleSort('direction')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
                       Direction
                       <span v-if="strategySortField === 'direction'" :style="{ color: tokens.colors.accent.primary }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th @click="handleSort('grade')" class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th @click="handleSort('grade')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
                       Grade
                       <span v-if="strategySortField === 'grade'" :style="{ color: tokens.colors.accent.primary }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th @click="handleSort('horizon')" class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th @click="handleSort('horizon')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
                       Horizon
                       <span v-if="strategySortField === 'horizon'" :style="{ color: tokens.colors.accent.primary }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th @click="handleSort('generatedAt')" class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th @click="handleSort('generatedAt')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
                       Created
                       <span v-if="strategySortField === 'generatedAt'" :style="{ color: tokens.colors.accent.primary }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider border-b border-r text-center" :style="{ color: tokens.colors.text.muted, borderBottomColor: tokens.colors.border.default, borderRightColor: tokens.colors.border.strong, backgroundColor: tokens.colors.background.surface }">
+                  <th class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b border-r text-center" :style="{ color: tokens.colors.text.muted, borderBottomColor: tokens.colors.border.default, borderRightColor: tokens.colors.border.strong, backgroundColor: tokens.colors.background.surface }">
                     Update
                   </th>
                   <!-- 计划子列 -->
-                  <th @click="handleSort('hasExecutionPlan')" class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th @click="handleSort('hasExecutionPlan')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
                       Status
                       <span v-if="strategySortField === 'hasExecutionPlan'" :style="{ color: tokens.colors.semantic.warning }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th @click="handleSort('planCount')" class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th @click="handleSort('planCount')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
                       Count
                       <span v-if="strategySortField === 'planCount'" :style="{ color: tokens.colors.semantic.warning }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th @click="handleSort('planUnreadCount')" class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th @click="handleSort('planUnreadCount')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
                       Unread
                       <span v-if="strategySortField === 'planUnreadCount'" :style="{ color: tokens.colors.semantic.warning }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th @click="handleSort('planGeneratingCount')" class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th @click="handleSort('planGeneratingCount')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
                       Generating
                       <span v-if="strategySortField === 'planGeneratingCount'" :style="{ color: tokens.colors.semantic.warning }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th @click="handleSort('planNeedsUpdate')" class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th @click="handleSort('planNeedsUpdate')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
                       Update
                       <span v-if="strategySortField === 'planNeedsUpdate'" :style="{ color: tokens.colors.semantic.warning }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider border-b text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     Actions
                   </th>
                 </tr>
@@ -915,7 +915,7 @@
                   <td class="px-3 py-3 whitespace-nowrap text-center">
                     <span 
                       v-if="strategy.direction === 'LONG' || strategy.direction === 'SHORT'"
-                      class="px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-wider border"
+                      class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border"
                       :style="strategy.direction === 'LONG' 
                         ? { color: tokens.colors.semantic.success, borderColor: tokens.colors.semantic.success + '4D', backgroundColor: tokens.colors.semantic.success + '1A' }
                         : { color: tokens.colors.semantic.error, borderColor: tokens.colors.semantic.error + '4D', backgroundColor: tokens.colors.semantic.error + '1A' }"
@@ -928,7 +928,7 @@
                   <td class="px-3 py-3 whitespace-nowrap text-center">
                     <div 
                       v-if="strategy.grade && strategy.grade !== 'N/A'"
-                      class="w-6 h-6 flex items-center justify-center rounded-sm font-bold text-xs border mx-auto"
+                      class="w-6 h-6 flex items-center justify-center rounded font-bold text-xs border mx-auto"
                       :style="strategy.grade === 'A' 
                         ? { borderColor: tokens.colors.semantic.success + '4D', backgroundColor: tokens.colors.semantic.success + '1A', color: tokens.colors.semantic.success }
                         : strategy.grade === 'B' 
@@ -1139,7 +1139,7 @@
           <!-- Modal Header -->
           <div class="px-6 py-4 border-b flex justify-between items-center" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
             <div class="flex items-center gap-3">
-              <div class="px-2.5 py-1 rounded-sm text-xs font-semibold tracking-wide uppercase" :style="{ backgroundColor: tokens.colors.accent.primary + '1A', color: tokens.colors.accent.primary }">
+              <div class="px-2.5 py-1 rounded text-xs font-semibold tracking-wide uppercase" :style="{ backgroundColor: tokens.colors.accent.primary + '1A', color: tokens.colors.accent.primary }">
                 <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                 Execution Plan
               </div>
@@ -1166,7 +1166,7 @@
             <div class="flex-1"></div>
             <span 
               v-if="generatePlanTarget.direction"
-              class="px-2 py-0.5 rounded-sm text-xs font-bold"
+              class="px-2 py-0.5 rounded text-xs font-bold"
               :style="{ 
                 backgroundColor: generatePlanTarget.direction === 'LONG' ? tokens.colors.semantic.success + '4D' : tokens.colors.semantic.error + '4D',
                 color: generatePlanTarget.direction === 'LONG' ? tokens.colors.semantic.success : tokens.colors.semantic.error
@@ -1176,7 +1176,7 @@
             </span>
             <span 
               v-if="generatePlanTarget.grade"
-              class="px-2 py-0.5 rounded-sm text-xs font-bold"
+              class="px-2 py-0.5 rounded text-xs font-bold"
               :style="{ 
                 backgroundColor: (generatePlanTarget.grade === 'A' || generatePlanTarget.grade === 'A+') ? tokens.colors.semantic.success + '4D' : generatePlanTarget.grade === 'B' ? tokens.colors.accent.primary + '4D' : tokens.colors.semantic.warning + '4D',
                 color: (generatePlanTarget.grade === 'A' || generatePlanTarget.grade === 'A+') ? tokens.colors.semantic.success : generatePlanTarget.grade === 'B' ? tokens.colors.accent.primary : tokens.colors.semantic.warning
@@ -1290,7 +1290,7 @@
                         <span class="text-xs font-bold font-mono" :style="{ color: positionPnL.isProfit ? tokens.colors.semantic.success : tokens.colors.semantic.error }">
                           {{ positionPnL.isProfit ? '+' : '' }}${{ positionPnL.value }}
                         </span>
-                        <span class="text-[10px] px-1.5 py-0.5 rounded-sm" :style="{ backgroundColor: (positionPnL.isProfit ? tokens.colors.semantic.success : tokens.colors.semantic.error) + '33', color: positionPnL.isProfit ? tokens.colors.semantic.success : tokens.colors.semantic.error }">
+                        <span class="text-[10px] px-1.5 py-0.5 rounded" :style="{ backgroundColor: (positionPnL.isProfit ? tokens.colors.semantic.success : tokens.colors.semantic.error) + '33', color: positionPnL.isProfit ? tokens.colors.semantic.success : tokens.colors.semantic.error }">
                           {{ positionPnL.isProfit ? '+' : '' }}{{ positionPnL.percent }}%
                         </span>
                       </div>
@@ -1357,7 +1357,7 @@
                   <div class="flex items-center justify-between mb-2">
                     <label class="text-[10px] font-medium uppercase tracking-wider" :style="{ color: tokens.colors.text.muted }">Risk Level</label>
                     <span 
-                      class="text-[10px] font-bold px-1.5 py-0.5 rounded-sm"
+                      class="text-[10px] font-bold px-1.5 py-0.5 rounded"
                       :style="riskLevelStyle"
                     >
                       {{ riskPreferenceLabel }}
@@ -1397,9 +1397,9 @@
           <!-- Modal Footer -->
           <div class="px-6 py-4 border-t flex justify-between items-center" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.base }">
             <div class="flex items-center gap-2 text-[10px] font-mono" :style="{ color: tokens.colors.text.muted }">
-              <span class="px-1.5 py-0.5 border rounded-sm" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default }">{{ generatePlanSettings.hasPosition ? 'EXISTING' : 'NEW' }}</span>
-              <span class="px-1.5 py-0.5 border rounded-sm uppercase" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default }">{{ generatePlanSettings.investmentHorizon }}</span>
-              <span class="px-1.5 py-0.5 rounded-sm border" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default }">{{ riskPreferenceLabel.toUpperCase() }}</span>
+              <span class="px-1.5 py-0.5 border rounded" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default }">{{ generatePlanSettings.hasPosition ? 'EXISTING' : 'NEW' }}</span>
+              <span class="px-1.5 py-0.5 border rounded uppercase" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default }">{{ generatePlanSettings.investmentHorizon }}</span>
+              <span class="px-1.5 py-0.5 rounded border" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default }">{{ riskPreferenceLabel.toUpperCase() }}</span>
             </div>
             <div class="flex gap-3">
               <button 
@@ -1874,7 +1874,7 @@
       @touchstart="startDragMiniMap"
     >
       <div 
-        class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500/20 to-cyan-900/40 backdrop-blur-xl border border-cyan-500/30 shadow-[0_0_20px_rgba(6,182,212,0.3)] flex items-center justify-center transition-all hover:scale-110 hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] group"
+        class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500/20 to-cyan-900/40 backdrop-blur-xl border border-cyan-500/30 glow-primary-lg flex items-center justify-center transition-all hover:scale-110 hover:glow-primary-lg group"
         @click="handleMiniMapDotClick"
       >
         <!-- 进度环 -->
@@ -1962,8 +1962,8 @@
                 <div 
                   class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all text-[9px] font-bold relative"
                   :class="[
-                    step.status === 'active' && !step.blocked ? 'border-cyan-500 bg-cyan-900/30 text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.3)] scale-110' : 
-                    step.status === 'active' && step.blocked ? 'border-amber-500 bg-amber-900/30 text-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.3)] scale-110' :
+                    step.status === 'active' && !step.blocked ? 'border-cyan-500 bg-cyan-900/30 text-cyan-400 glow-primary-sm scale-110' : 
+                    step.status === 'active' && step.blocked ? 'border-amber-500 bg-amber-900/30 text-amber-400 glow-warning-sm scale-110' :
                     step.status === 'done' ? 'border-cyan-700 bg-cyan-900/20 text-cyan-500' : 
                     step.status === 'blocked' ? 'border-amber-500/50 bg-amber-900/20 text-amber-500' :
                     step.status === 'skipped' ? 'text-gray-500' :
@@ -1998,7 +1998,7 @@
               <!-- Labels -->
               <div class="flex-1 pt-0">
                 <div 
-                  class="text-[11px] font-medium transition-colors leading-tight"
+                  class="text-[10px] font-medium transition-colors leading-tight"
                   :class="[
                     step.status === 'active' && !step.blocked ? 'text-white' : 
                     step.status === 'active' && step.blocked ? 'text-amber-300' :

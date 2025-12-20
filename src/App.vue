@@ -5,7 +5,9 @@
     </template>
     <router-view v-slot="{ Component }">
       <transition name="fade" mode="out-in">
-        <component :is="Component" />
+        <div v-if="Component" :key="$route.path" class="transition-wrapper">
+          <component :is="Component" />
+        </div>
       </transition>
     </router-view>
   </component>

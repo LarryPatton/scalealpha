@@ -4,12 +4,12 @@
     <div class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity"></div>
 
     <!-- Modal Content -->
-    <div class="relative w-full max-w-lg bg-[#121212] border border-[#333] rounded-xl shadow-[0_0_50px_-12px_rgba(59,130,246,0.2)] overflow-hidden transform transition-all animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[80vh]">
+    <div class="relative w-full max-w-lg bg-[#121212] border border-[#333] rounded-xl glow-info-xl overflow-hidden transform transition-all animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[80vh]">
       
       <!-- Header -->
       <div class="px-6 py-4 border-b border-[#222] flex justify-between items-center bg-[#1a1a1a] shrink-0">
         <h3 class="text-lg font-bold text-white flex items-center gap-2">
-          <span class="w-1 h-5 bg-blue-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.8)]"></span>
+          <span class="w-1 h-5 bg-blue-500 rounded-full glow-info-sm"></span>
           我的关注
         </h3>
         <button @click="$emit('close')" class="text-gray-500 hover:text-white transition-colors">

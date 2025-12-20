@@ -23,7 +23,7 @@
                 class="w-32 h-10 rounded-lg flex items-center justify-center transition-all duration-500 border"
                 :class="[
                   activeStep1 >= index 
-                    ? 'bg-blue-500/20 border-blue-500 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.5)]' 
+                    ? 'bg-blue-500/20 border-blue-500 text-blue-400 glow-info-md' 
                     : 'bg-[#1a1a1a] border-gray-600 text-gray-500'
                 ]"
               >
@@ -89,7 +89,7 @@
                  class="w-32 h-10 rounded-lg flex items-center justify-center transition-all duration-300 border"
                  :class="[
                    progress3 >= (index / (steps.length - 1)) * 100 
-                     ? 'bg-[#1a1a1a] border-green-500 text-green-400 shadow-[0_0_10px_rgba(34,197,94,0.3)]' 
+                     ? 'bg-[#1a1a1a] border-green-500 text-green-400 glow-success-sm' 
                      : 'bg-[#1a1a1a] border-gray-600 text-gray-500'
                  ]"
                >

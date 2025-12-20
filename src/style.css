@@ -65,3 +65,158 @@ body {
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
+
+/* ============================================
+ * Glow Shadow System - 发光阴影系统
+ * 命名规则: glow-{color}-{size}
+ * Colors: primary(cyan), info(blue), success(green), warning(amber), danger(rose), orange
+ * Sizes: sm (8px), md (15px), lg (25px)
+ * ============================================ */
+
+/* Primary (Cyan) - 主交互色 */
+.glow-primary-sm { box-shadow: 0 0 8px rgba(6, 182, 212, 0.4); }
+.glow-primary-md, .glow-primary { box-shadow: 0 0 15px rgba(6, 182, 212, 0.3); }
+.glow-primary-lg { box-shadow: 0 0 25px rgba(6, 182, 212, 0.35); }
+
+/* Info (Blue) - 信息/B级 */
+.glow-info-sm { box-shadow: 0 0 8px rgba(59, 130, 246, 0.4); }
+.glow-info-md, .glow-info { box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); }
+.glow-info-lg { box-shadow: 0 0 25px rgba(59, 130, 246, 0.35); }
+
+/* Success (Emerald) - 成功/LONG */
+.glow-success-sm { box-shadow: 0 0 8px rgba(16, 185, 129, 0.4); }
+.glow-success-md, .glow-success { box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); }
+.glow-success-lg { box-shadow: 0 0 25px rgba(16, 185, 129, 0.35); }
+
+/* Warning (Amber) - 警告/待更新 */
+.glow-warning-sm { box-shadow: 0 0 8px rgba(245, 158, 11, 0.4); }
+.glow-warning-md, .glow-warning { box-shadow: 0 0 15px rgba(245, 158, 11, 0.3); }
+.glow-warning-lg { box-shadow: 0 0 25px rgba(245, 158, 11, 0.35); }
+
+/* Danger (Rose) - 危险/SHORT */
+.glow-danger-sm { box-shadow: 0 0 8px rgba(244, 63, 94, 0.4); }
+.glow-danger-md, .glow-danger { box-shadow: 0 0 15px rgba(244, 63, 94, 0.3); }
+.glow-danger-lg { box-shadow: 0 0 25px rgba(244, 63, 94, 0.35); }
+
+/* Orange - 风险等级 */
+.glow-orange-sm { box-shadow: 0 0 8px rgba(249, 115, 22, 0.4); }
+.glow-orange-md, .glow-orange { box-shadow: 0 0 15px rgba(249, 115, 22, 0.3); }
+.glow-orange-lg { box-shadow: 0 0 25px rgba(249, 115, 22, 0.35); }
+
+/* Hover variants */
+.hover\:glow-primary-sm:hover { box-shadow: 0 0 8px rgba(6, 182, 212, 0.4); }
+.hover\:glow-primary-md:hover, .hover\:glow-primary:hover { box-shadow: 0 0 15px rgba(6, 182, 212, 0.3); }
+.hover\:glow-primary-lg:hover { box-shadow: 0 0 25px rgba(6, 182, 212, 0.35); }
+
+.hover\:glow-info-sm:hover { box-shadow: 0 0 8px rgba(59, 130, 246, 0.4); }
+.hover\:glow-info-md:hover, .hover\:glow-info:hover { box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); }
+.hover\:glow-info-lg:hover { box-shadow: 0 0 25px rgba(59, 130, 246, 0.35); }
+
+/* Light theme overrides - 浅色主题覆盖 */
+:root[data-theme="light"] .glow-primary-sm,
+.theme-light .glow-primary-sm { box-shadow: 0 0 6px rgba(8, 145, 178, 0.25); }
+:root[data-theme="light"] .glow-primary-md,
+:root[data-theme="light"] .glow-primary,
+.theme-light .glow-primary-md,
+.theme-light .glow-primary { box-shadow: 0 0 12px rgba(8, 145, 178, 0.2); }
+:root[data-theme="light"] .glow-primary-lg,
+.theme-light .glow-primary-lg { box-shadow: 0 0 20px rgba(8, 145, 178, 0.25); }
+
+:root[data-theme="light"] .glow-info-sm,
+.theme-light .glow-info-sm { box-shadow: 0 0 6px rgba(37, 99, 235, 0.25); }
+:root[data-theme="light"] .glow-info-md,
+:root[data-theme="light"] .glow-info,
+.theme-light .glow-info-md,
+.theme-light .glow-info { box-shadow: 0 0 12px rgba(37, 99, 235, 0.2); }
+:root[data-theme="light"] .glow-info-lg,
+.theme-light .glow-info-lg { box-shadow: 0 0 20px rgba(37, 99, 235, 0.25); }
+
+:root[data-theme="light"] .glow-success-sm,
+.theme-light .glow-success-sm { box-shadow: 0 0 6px rgba(5, 150, 105, 0.25); }
+:root[data-theme="light"] .glow-success-md,
+:root[data-theme="light"] .glow-success,
+.theme-light .glow-success-md,
+.theme-light .glow-success { box-shadow: 0 0 12px rgba(5, 150, 105, 0.2); }
+:root[data-theme="light"] .glow-success-lg,
+.theme-light .glow-success-lg { box-shadow: 0 0 20px rgba(5, 150, 105, 0.25); }
+
+:root[data-theme="light"] .glow-warning-sm,
+.theme-light .glow-warning-sm { box-shadow: 0 0 6px rgba(217, 119, 6, 0.25); }
+:root[data-theme="light"] .glow-warning-md,
+:root[data-theme="light"] .glow-warning,
+.theme-light .glow-warning-md,
+.theme-light .glow-warning { box-shadow: 0 0 12px rgba(217, 119, 6, 0.2); }
+:root[data-theme="light"] .glow-warning-lg,
+.theme-light .glow-warning-lg { box-shadow: 0 0 20px rgba(217, 119, 6, 0.25); }
+
+:root[data-theme="light"] .glow-danger-sm,
+.theme-light .glow-danger-sm { box-shadow: 0 0 6px rgba(225, 29, 72, 0.25); }
+:root[data-theme="light"] .glow-danger-md,
+:root[data-theme="light"] .glow-danger,
+.theme-light .glow-danger-md,
+.theme-light .glow-danger { box-shadow: 0 0 12px rgba(225, 29, 72, 0.2); }
+:root[data-theme="light"] .glow-danger-lg,
+.theme-light .glow-danger-lg { box-shadow: 0 0 20px rgba(225, 29, 72, 0.25); }
+
+:root[data-theme="light"] .glow-orange-sm,
+.theme-light .glow-orange-sm { box-shadow: 0 0 6px rgba(234, 88, 12, 0.25); }
+:root[data-theme="light"] .glow-orange-md,
+:root[data-theme="light"] .glow-orange,
+.theme-light .glow-orange-md,
+.theme-light .glow-orange { box-shadow: 0 0 12px rgba(234, 88, 12, 0.2); }
+:root[data-theme="light"] .glow-orange-lg,
+.theme-light .glow-orange-lg { box-shadow: 0 0 20px rgba(234, 88, 12, 0.25); }
+
+/* Combined state classes - 组合状态类 (选中态) */
+.state-selected-primary {
+  border-color: rgb(6, 182, 212);
+  background-color: rgba(6, 182, 212, 0.1);
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+}
+
+.state-selected-info {
+  border-color: rgb(59, 130, 246);
+  background-color: rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+
+.state-selected-orange {
+  border-color: rgb(249, 115, 22);
+  background-color: rgba(249, 115, 22, 0.1);
+  box-shadow: 0 0 15px rgba(249, 115, 22, 0.3);
+}
+
+.state-selected-warning {
+  border-color: rgb(245, 158, 11);
+  background-color: rgba(245, 158, 11, 0.1);
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+}
+
+.state-selected-success {
+  border-color: rgb(16, 185, 129);
+  background-color: rgba(16, 185, 129, 0.1);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+}
+
+.state-selected-danger {
+  border-color: rgb(244, 63, 94);
+  background-color: rgba(244, 63, 94, 0.1);
+  box-shadow: 0 0 15px rgba(244, 63, 94, 0.3);
+}
+
+/* Active/Step state with scale */
+.state-active-primary {
+  border-color: rgb(6, 182, 212);
+  background-color: rgba(6, 182, 212, 0.2);
+  color: rgb(6, 182, 212);
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+  transform: scale(1.1);
+}
+
+.state-active-warning {
+  border-color: rgb(245, 158, 11);
+  background-color: rgba(245, 158, 11, 0.2);
+  color: rgb(245, 158, 11);
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+  transform: scale(1.1);
+}

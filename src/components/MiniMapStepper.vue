@@ -70,7 +70,7 @@
           :class="[
             getNodeSizeClass(step),
             getNodeColorClass(step),
-            step.status === 'active' ? 'shadow-[0_0_15px_rgba(6,182,212,0.4)]' : '',
+            step.status === 'active' ? 'glow-primary-md' : '',
             isClickable(step) ? 'cursor-pointer hover:scale-110' : 'cursor-default'
           ]"
         >
