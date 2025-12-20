@@ -69,7 +69,7 @@ const routes = [
     path: '/revenueB',
     name: 'RevenueB',
     component: RevenueBPage,
-    meta: { layout: FixedLayout }
+    meta: { layout: FixedLayout, hideFooter: true }
   },
   // ========== Dev Tools Routes (Internal Only) ==========
   {

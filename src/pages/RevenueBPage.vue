@@ -1,15 +1,18 @@
 <template>
+  <!-- 使用 calc(100vh - 导航栏高度) 替代 h-full，因为父容器没有明确高度 -->
   <div 
-    class="h-full w-full overflow-hidden p-4 flex flex-col transition-colors duration-300" 
+    class="w-full min-h-0 overflow-hidden p-4 flex flex-col transition-colors duration-300" 
     :style="{ 
+      height: 'calc(100vh - 56px)',
+      maxHeight: 'calc(100vh - 56px)',
       backgroundColor: theme.background.base,
       '--scrollbar-track': isDarkMode ? '#1e293b' : '#f1f5f9',
       '--scrollbar-thumb': isDarkMode ? '#475569' : '#cbd5e1',
       '--scrollbar-thumb-hover': isDarkMode ? '#64748b' : '#94a3b8'
     }"
   >
-    <!-- Unified Dashboard Container -->
-    <div class="flex-1 border overflow-hidden flex flex-col transition-colors duration-300" :style="{ backgroundColor: theme.background.surface, borderColor: theme.border.default }">
+    <!-- 主容器 -->
+    <div class="flex-1 min-h-0 border overflow-hidden flex flex-col transition-colors duration-300" :style="{ backgroundColor: theme.background.surface, borderColor: theme.border.default }">
       
       <!-- 1. Metrics & Controls Row -->
       <div 
@@ -154,16 +157,17 @@
         </div>
       </div>
 
-      <!-- 3. Main Content Grid (Vertical Layout) -->
-      <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- 主内容区域 -->
+      <div class="flex-1 flex flex-col overflow-hidden min-h-0">
         
-        <!-- Top: Chart & Holdings (Flex Row) -->
+        <!-- 图表+持仓区域 -->
         <div 
-          class="flex-[2] flex overflow-hidden relative min-h-0"
+          class="flex overflow-hidden relative min-h-0"
+          :class="isAllModelsView ? 'flex-[7]' : 'flex-[6]'"
           :style="{ backgroundColor: theme.background.surface, borderBottomWidth: '1px', borderBottomColor: theme.border.default }"
         >
-          <!-- Chart Section (Flex 1) -->
-          <div class="flex-1 flex flex-col min-h-0 relative">
+          <!-- 图表区域 -->
+          <div class="flex-1 flex flex-col min-h-0 min-w-0 relative">
             <div class="absolute top-4 left-4 z-10 flex items-center gap-2">
               <h2 
                 class="text-sm font-bold flex items-center backdrop-blur px-2 py-1 rounded border shadow-sm"
@@ -177,8 +181,8 @@
                 净值曲线
               </h2>
             </div>
-            <div class="flex-1 p-4 pb-0 w-full h-full">
-              <div ref="chartRef" class="w-full h-full"></div>
+            <div class="flex-1 p-4 pb-0 w-full min-h-0 overflow-hidden">
+              <div ref="chartRef" class="w-full h-full min-h-0"></div>
             </div>
           </div>
 
@@ -228,8 +232,12 @@
           </div>
         </div>
 
-        <!-- Bottom: Details (Full Width, 40% Height, Split Left/Right) -->
-        <div class="flex-1 flex overflow-hidden min-h-0" :style="{ borderColor: theme.border.default }">
+        <!-- Bottom: Details (Full Width, Split Left/Right) - Dynamic Height based on view mode -->
+        <div 
+          class="flex overflow-hidden min-h-0 border-t"
+          :class="isAllModelsView ? 'flex-[3]' : 'flex-[4]'"
+          :style="{ borderColor: theme.border.default }"
+        >
             
             <!-- Left: Strategy (70%) -->
             <div 
