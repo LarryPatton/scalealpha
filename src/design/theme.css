@@ -67,15 +67,15 @@ html {
 }
 
 [data-theme="light"] .text-gray-300 {
-  color: #475569 !important; /* slate-600 */
+  color: #334155 !important; /* slate-700 - Darker for better readability */
 }
 
 [data-theme="light"] .text-gray-400 {
-  color: #64748b !important; /* slate-500 */
+  color: #475569 !important; /* slate-600 - Darker for better readability */
 }
 
 [data-theme="light"] .text-gray-500 {
-  color: #64748b !important; /* slate-500 */
+  color: #475569 !important; /* slate-600 - Darker for better readability */
 }
 
 [data-theme="light"] .text-gray-600 {

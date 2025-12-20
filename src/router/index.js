@@ -50,6 +50,8 @@ import ThemesLifecyclePage from '../pages/ThemesLifecyclePage.vue';
 import DesignSystemPage from '../pages/DesignSystemPage.vue';
 import UIComponentsPage from '../pages/UIComponentsPage.vue';
 import DevToolsPage from '../pages/DevToolsPage.vue';
+import ColorSchemesPage from '../pages/ColorSchemesPage.vue';
+import ButtonSchemesPage from '../pages/ButtonSchemesPage.vue';
 
 const routes = [
   // Root redirect - automatically redirect to Home page
@@ -142,6 +144,18 @@ const routes = [
     path: '/dev/plan-status',
     name: 'DevPlanStatus',
     component: PlanStatusDemo,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/dev/color-schemes',
+    name: 'DevColorSchemes',
+    component: ColorSchemesPage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/dev/button-schemes',
+    name: 'DevButtonSchemes',
+    component: ButtonSchemesPage,
     meta: { layout: BlankLayout }
   },
   

@@ -109,7 +109,6 @@
                 <div class="min-w-0">
                   <div class="flex items-center gap-1.5">
                     <span class="font-mono font-bold text-sm" :style="{ color: tokens.colors.text.primary }">{{ stock.symbol }}</span>
-                    <span class="text-[10px] px-1 py-0.5 rounded border" :style="{ color: tokens.colors.text.muted, backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }">{{ stock.market }}</span>
                   </div>
                   <div class="text-xs mt-0.5 truncate" :style="{ color: tokens.colors.text.muted }">{{ stock.name }}</div>
                 </div>
@@ -177,23 +176,29 @@
                       v-for="framework in frameworks" 
                       :key="framework.id"
                       @click="toggleFramework(framework.id)"
-                      class="py-1.5 px-2.5 border rounded transition-all text-left relative group flex items-center gap-3"
-                      :class="selectedFrameworks.includes(framework.id) ? 'border-cyan-500 bg-cyan-900/20 glow-primary-lg ring-1 ring-cyan-500/50' : 'hover:border-gray-600'"
-                      :style="selectedFrameworks.includes(framework.id) ? {} : { backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }"
+                      class="py-1.5 px-2.5 border rounded-lg transition-all text-left relative group flex items-center gap-3 overflow-hidden"
+                      :class="selectedFrameworks.includes(framework.id) 
+                        ? (isDark ? 'border-cyan-500 bg-cyan-900/20 glow-primary-lg ring-1 ring-cyan-500/50' : 'shadow-sm') 
+                        : (isDark ? 'hover:border-gray-600' : 'hover:border-slate-300')"
+                      :style="selectedFrameworks.includes(framework.id) 
+                        ? (isDark ? {} : { backgroundColor: '#ffffff', borderColor: '#e5e7eb', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }) 
+                        : { backgroundColor: isDark ? tokens.colors.background.surface : '#F7F8FA', borderColor: isDark ? tokens.colors.border.default : '#e5e7eb' }"
                     >
+                      <!-- 左侧色条 (日间模式) -->
+                      <div v-if="!isDark && selectedFrameworks.includes(framework.id)" class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
                       <!-- 左侧：图标 -->
-                      <div class="shrink-0">
-                        <component v-if="framework.id === 'auto' && selectedFrameworks.includes('auto')" :is="IconAutoFilled" class="w-7 h-7 text-cyan-400 transition-colors" />
-                        <component v-else :is="framework.icon" class="w-7 h-7 text-gray-600 group-hover:text-cyan-400 transition-colors" :class="selectedFrameworks.includes(framework.id) ? 'text-cyan-400' : ''" />
+                      <div class="shrink-0" :class="!isDark && selectedFrameworks.includes(framework.id) ? 'pl-2' : ''">
+                        <component v-if="framework.id === 'auto' && selectedFrameworks.includes('auto')" :is="IconAutoFilled" class="w-7 h-7 transition-colors" :class="isDark ? 'text-cyan-400' : 'text-blue-500'" />
+                        <component v-else :is="framework.icon" class="w-7 h-7 transition-colors" :class="selectedFrameworks.includes(framework.id) ? (isDark ? 'text-cyan-400' : 'text-blue-500') : (isDark ? 'text-gray-600 group-hover:text-cyan-400' : 'text-gray-400 group-hover:text-blue-500')" />
                       </div>
                       <!-- 中间：文字 -->
                       <div class="flex-1 min-w-0">
-                        <div class="text-sm font-bold text-white leading-tight">{{ framework.title }}</div>
-                        <div class="text-xs text-gray-500 leading-snug truncate">{{ framework.desc }}</div>
+                        <div class="text-sm font-bold leading-tight" :style="{ color: isDark ? '#ffffff' : '#1e293b' }">{{ framework.title }}</div>
+                        <div class="text-xs leading-snug truncate" :style="{ color: isDark ? '#6b7280' : '#64748b' }">{{ framework.desc }}</div>
                       </div>
                       <!-- 右侧：选中框 -->
-                      <div class="w-4 h-4 border rounded-[2px] flex items-center justify-center shrink-0" :class="selectedFrameworks.includes(framework.id) ? 'bg-cyan-500 border-cyan-500' : ''" :style="selectedFrameworks.includes(framework.id) ? {} : { borderColor: tokens.colors.border.strong }">
-                        <svg v-if="selectedFrameworks.includes(framework.id)" class="w-2.5 h-2.5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4"><path d="M5 13l4 4L19 7"></path></svg>
+                      <div class="w-4 h-4 border rounded-[2px] flex items-center justify-center shrink-0" :class="selectedFrameworks.includes(framework.id) ? (isDark ? 'bg-cyan-500 border-cyan-500' : 'bg-blue-500 border-blue-500') : ''" :style="selectedFrameworks.includes(framework.id) ? {} : { borderColor: isDark ? tokens.colors.border.strong : '#cbd5e1' }">
+                        <svg v-if="selectedFrameworks.includes(framework.id)" class="w-2.5 h-2.5" :class="isDark ? 'text-black' : 'text-white'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4"><path d="M5 13l4 4L19 7"></path></svg>
                       </div>
                     </button>
                   </div>
@@ -226,19 +231,25 @@
                       v-for="period in periods" 
                       :key="period.id"
                       @click="selectedPeriod = period.id"
-                      class="py-1.5 px-2.5 border rounded transition-all text-left relative group flex items-center gap-2.5"
-                      :class="selectedPeriod === period.id ? 'border-blue-500 bg-blue-900/20 glow-info-lg ring-1 ring-blue-500/50' : 'hover:border-gray-600'"
-                      :style="selectedPeriod === period.id ? {} : { backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }"
+                      class="py-1.5 px-2.5 border rounded-lg transition-all text-left relative group flex items-center gap-2.5 overflow-hidden"
+                      :class="selectedPeriod === period.id 
+                        ? (isDark ? 'border-blue-500 bg-blue-900/20 glow-info-lg ring-1 ring-blue-500/50' : 'shadow-sm') 
+                        : (isDark ? 'hover:border-gray-600' : 'hover:border-slate-300')"
+                      :style="selectedPeriod === period.id 
+                        ? (isDark ? {} : { backgroundColor: '#ffffff', borderColor: '#e5e7eb', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }) 
+                        : { backgroundColor: isDark ? tokens.colors.background.surface : '#F7F8FA', borderColor: isDark ? tokens.colors.border.default : '#e5e7eb' }"
                     >
+                      <!-- 左侧色条 (日间模式) -->
+                      <div v-if="!isDark && selectedPeriod === period.id" class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
                       <!-- 左侧：图标 -->
-                      <div class="shrink-0">
-                        <component v-if="period.id === 'auto' && selectedPeriod === 'auto'" :is="IconAutoFilled" class="w-6 h-6 text-blue-400 transition-colors" />
-                        <component v-else :is="period.icon" class="w-6 h-6 text-gray-600 group-hover:text-blue-400 transition-colors" :class="selectedPeriod === period.id ? 'text-blue-400' : ''" />
+                      <div class="shrink-0" :class="!isDark && selectedPeriod === period.id ? 'pl-2' : ''">
+                        <component v-if="period.id === 'auto' && selectedPeriod === 'auto'" :is="IconAutoFilled" class="w-6 h-6 transition-colors" :class="isDark ? 'text-blue-400' : 'text-blue-500'" />
+                        <component v-else :is="period.icon" class="w-6 h-6 transition-colors" :class="selectedPeriod === period.id ? (isDark ? 'text-blue-400' : 'text-blue-500') : (isDark ? 'text-gray-600 group-hover:text-blue-400' : 'text-gray-400 group-hover:text-blue-500')" />
                       </div>
                       <!-- 右侧：文字 -->
                       <div class="flex-1 min-w-0">
-                        <div class="text-sm font-bold text-white leading-tight">{{ period.title }}</div>
-                        <div class="text-xs text-gray-500 font-mono leading-snug truncate" :class="selectedPeriod === period.id ? 'text-blue-200/70' : ''">{{ period.desc }}</div>
+                        <div class="text-sm font-bold leading-tight" :style="{ color: isDark ? '#ffffff' : '#1e293b' }">{{ period.title }}</div>
+                        <div class="text-xs font-mono leading-snug truncate" :style="{ color: selectedPeriod === period.id ? (isDark ? 'rgba(191, 219, 254, 0.7)' : '#3b82f6') : (isDark ? '#6b7280' : '#64748b') }">{{ period.desc }}</div>
                       </div>
                     </button>
                   </div>
@@ -271,19 +282,25 @@
                       v-for="risk in risks" 
                       :key="risk.id"
                       @click="selectedRisk = risk.id"
-                      class="py-1.5 px-2.5 border rounded transition-all text-left relative group flex items-center gap-2.5"
-                      :class="selectedRisk === risk.id ? 'border-orange-500 bg-orange-900/20 glow-orange-lg ring-1 ring-orange-500/50' : 'hover:border-gray-600'"
-                      :style="selectedRisk === risk.id ? {} : { backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }"
+                      class="py-1.5 px-2.5 border rounded-lg transition-all text-left relative group flex items-center gap-2.5 overflow-hidden"
+                      :class="selectedRisk === risk.id 
+                        ? (isDark ? 'border-orange-500 bg-orange-900/20 glow-orange-lg ring-1 ring-orange-500/50' : 'shadow-sm') 
+                        : (isDark ? 'hover:border-gray-600' : 'hover:border-slate-300')"
+                      :style="selectedRisk === risk.id 
+                        ? (isDark ? {} : { backgroundColor: '#ffffff', borderColor: '#e5e7eb', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }) 
+                        : { backgroundColor: isDark ? tokens.colors.background.surface : '#F7F8FA', borderColor: isDark ? tokens.colors.border.default : '#e5e7eb' }"
                     >
+                      <!-- 左侧色条 (日间模式) -->
+                      <div v-if="!isDark && selectedRisk === risk.id" class="absolute left-0 top-0 bottom-0 w-1 bg-amber-500"></div>
                       <!-- 左侧：图标 -->
-                      <div class="shrink-0">
-                        <component v-if="risk.id === 'auto' && selectedRisk === 'auto'" :is="IconAutoFilled" class="w-6 h-6 text-orange-400 transition-colors" />
-                        <component v-else :is="risk.icon" class="w-6 h-6 text-gray-600 group-hover:text-orange-400 transition-colors" :class="selectedRisk === risk.id ? 'text-orange-400' : ''" />
+                      <div class="shrink-0" :class="!isDark && selectedRisk === risk.id ? 'pl-2' : ''">
+                        <component v-if="risk.id === 'auto' && selectedRisk === 'auto'" :is="IconAutoFilled" class="w-6 h-6 transition-colors" :class="isDark ? 'text-orange-400' : 'text-amber-500'" />
+                        <component v-else :is="risk.icon" class="w-6 h-6 transition-colors" :class="selectedRisk === risk.id ? (isDark ? 'text-orange-400' : 'text-amber-500') : (isDark ? 'text-gray-600 group-hover:text-orange-400' : 'text-gray-400 group-hover:text-amber-500')" />
                       </div>
                       <!-- 右侧：文字 -->
                       <div class="flex-1 min-w-0">
-                        <div class="text-sm font-bold text-white leading-tight">{{ risk.title }}</div>
-                        <div class="text-xs text-gray-500 leading-snug truncate" :class="selectedRisk === risk.id ? 'text-orange-200/70' : ''">{{ risk.desc }}</div>
+                        <div class="text-sm font-bold leading-tight" :style="{ color: isDark ? '#ffffff' : '#1e293b' }">{{ risk.title }}</div>
+                        <div class="text-xs leading-snug truncate" :style="{ color: selectedRisk === risk.id ? (isDark ? 'rgba(254, 215, 170, 0.7)' : '#f59e0b') : (isDark ? '#6b7280' : '#64748b') }">{{ risk.desc }}</div>
                       </div>
                     </button>
                   </div>
@@ -841,31 +858,31 @@
                 <!-- 子表头行 -->
                 <tr :style="{ backgroundColor: tokens.colors.background.surface }">
                   <!-- 策略子列 -->
-                  <th @click="handleSort('stockName')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th @click="handleSort('stockName')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.tertiary, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center gap-1">
                       {{ $t('opportunity.strategyTable.name') }}
                       <span v-if="strategySortField === 'stockName'" :style="{ color: tokens.colors.accent.primary }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th @click="handleSort('source')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th @click="handleSort('source')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.tertiary, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
                       {{ $t('opportunity.strategyTable.source') }}
                       <span v-if="strategySortField === 'source'" :style="{ color: tokens.colors.accent.primary }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th @click="handleSort('direction')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th @click="handleSort('direction')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.tertiary, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
                       {{ $t('opportunity.strategyTable.direction') }}
                       <span v-if="strategySortField === 'direction'" :style="{ color: tokens.colors.accent.primary }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th @click="handleSort('grade')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th @click="handleSort('grade')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.tertiary, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
                       {{ $t('opportunity.strategyTable.grade') }}
                       <span v-if="strategySortField === 'grade'" :style="{ color: tokens.colors.accent.primary }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th @click="handleSort('horizon')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th @click="handleSort('horizon')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b cursor-pointer hover:text-white transition-colors select-none text-center" :style="{ color: tokens.colors.text.tertiary, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
                       {{ $t('opportunity.strategyTable.horizon') }}
                       <span v-if="strategySortField === 'horizon'" :style="{ color: tokens.colors.accent.primary }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>

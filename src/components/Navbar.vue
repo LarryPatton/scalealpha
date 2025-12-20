@@ -12,8 +12,8 @@
           
           <!-- Links (Only if logged in) -->
           <div v-if="userEmail" class="hidden md:flex items-center gap-6">
-            <router-link to="/infoB" active-class="font-bold border-b-2 border-blue-500 pb-0.5" :class="isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'" class="font-medium transition-colors" :style="{ color: tokens.colors.text.tertiary }">{{ $t('nav.info') }}</router-link>
-            <router-link to="/opportunityB" active-class="font-bold border-b-2 border-blue-500 pb-0.5" :class="isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'" class="font-medium transition-colors" :style="{ color: tokens.colors.text.tertiary }">{{ $t('nav.opportunity') }}</router-link>
+            <router-link to="/infoB" active-class="font-bold border-b-2 border-blue-500 pb-0.5" :class="isDark ? 'text-gray-400 hover:text-white' : 'text-slate-700 hover:text-slate-900'" class="font-medium transition-colors" :style="{ color: isDark ? tokens.colors.text.tertiary : '#334155' }">{{ $t('nav.info') }}</router-link>
+            <router-link to="/opportunityB" active-class="font-bold border-b-2 border-blue-500 pb-0.5" :class="isDark ? 'text-gray-400 hover:text-white' : 'text-slate-700 hover:text-slate-900'" class="font-medium transition-colors" :style="{ color: isDark ? tokens.colors.text.tertiary : '#334155' }">{{ $t('nav.opportunity') }}</router-link>
           </div>
         </div>
 
