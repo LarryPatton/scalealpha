@@ -67,40 +67,97 @@
 
         <!-- Right: View Controls -->
         <div class="flex items-center gap-2">
-          <!-- Sort Buttons (Themes only) -->
-          <div v-if="activeTab === 'themes'" class="flex items-center gap-1">
-            <button 
-              @click="setSort('change')"
-              class="flex items-center gap-1.5 px-2.5 py-1.5 border rounded-sm text-[10px] font-bold uppercase tracking-wide transition-colors"
-              :style="sortBy === 'change' ? { backgroundColor: tokens.colors.background.elevated, color: tokens.colors.text.primary, borderColor: tokens.colors.border.default } : { backgroundColor: tokens.colors.background.base, color: tokens.colors.text.muted, borderColor: tokens.colors.border.subtle }"
-            >
-              <span>涨跌幅</span>
-              <svg v-if="sortBy === 'change'" class="w-2.5 h-2.5 transition-transform duration-200" :class="sortOrder === 'asc' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-            </button>
-            <button 
-              @click="setSort('time')"
-              class="flex items-center gap-1.5 px-2.5 py-1.5 border rounded-sm text-[10px] font-bold uppercase tracking-wide transition-colors"
-              :style="sortBy === 'time' ? { backgroundColor: tokens.colors.background.elevated, color: tokens.colors.text.primary, borderColor: tokens.colors.border.default } : { backgroundColor: tokens.colors.background.base, color: tokens.colors.text.muted, borderColor: tokens.colors.border.subtle }"
-            >
-              <span>时间</span>
-              <svg v-if="sortBy === 'time'" class="w-2.5 h-2.5 transition-transform duration-200" :class="sortOrder === 'asc' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-            </button>
+          <!-- Sort & Filter Buttons (Themes only) -->
+          <div v-if="activeTab === 'themes'" class="flex items-center gap-2">
+            <!-- Stage Filter Dropdown -->
+            <div class="relative">
+              <button 
+                @click="showStageFilter = !showStageFilter"
+                class="flex items-center gap-1.5 px-2.5 py-1.5 border rounded-sm text-[10px] font-bold uppercase tracking-wide transition-colors"
+                :style="selectedStages.length > 0 ? { backgroundColor: tokens.colors.background.elevated, color: tokens.colors.text.primary, borderColor: tokens.colors.border.default } : { backgroundColor: tokens.colors.background.base, color: tokens.colors.text.muted, borderColor: tokens.colors.border.subtle }"
+              >
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                <span>阶段{{ selectedStages.length > 0 ? ` (${selectedStages.length})` : '' }}</span>
+                <svg class="w-2.5 h-2.5 transition-transform duration-200" :class="showStageFilter ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+              <!-- Dropdown Panel -->
+              <div 
+                v-if="showStageFilter" 
+                class="absolute top-full left-0 mt-1 w-44 border rounded-sm shadow-xl z-50 py-1"
+                :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }"
+              >
+                <div 
+                  v-for="stage in lifecycleStages" 
+                  :key="stage.key"
+                  @click="toggleStageFilter(stage.key)"
+                  class="flex items-center gap-2 px-3 py-2 cursor-pointer transition-colors hover:bg-white/5"
+                >
+                  <div class="w-4 h-4 border rounded-sm flex items-center justify-center" :style="{ borderColor: selectedStages.includes(stage.key) ? tokens.colors.accent.primary : tokens.colors.border.default, backgroundColor: selectedStages.includes(stage.key) ? tokens.colors.accent.primary : 'transparent' }">
+                    <svg v-if="selectedStages.includes(stage.key)" class="w-3 h-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                  </div>
+                  <span class="text-[11px] font-medium" :class="stage.textClass">{{ stage.label }}</span>
+                </div>
+                <div v-if="selectedStages.length > 0" class="border-t mt-1 pt-1" :style="{ borderColor: tokens.colors.border.subtle }">
+                  <button @click="clearStageFilter" class="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wide transition-colors hover:bg-white/5" :style="{ color: tokens.colors.text.muted }">清除筛选</button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Sort Buttons -->
+            <div class="flex items-center gap-1">
+              <button 
+                @click="setSort('change30d')"
+                class="flex items-center gap-1.5 px-2.5 py-1.5 border rounded-sm text-[10px] font-bold uppercase tracking-wide transition-colors"
+                :style="sortBy === 'change30d' ? { backgroundColor: tokens.colors.background.elevated, color: tokens.colors.text.primary, borderColor: tokens.colors.border.default } : { backgroundColor: tokens.colors.background.base, color: tokens.colors.text.muted, borderColor: tokens.colors.border.subtle }"
+              >
+                <span>30D</span>
+                <svg v-if="sortBy === 'change30d'" class="w-2.5 h-2.5 transition-transform duration-200" :class="sortOrder === 'asc' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+              <button 
+                @click="setSort('change1y')"
+                class="flex items-center gap-1.5 px-2.5 py-1.5 border rounded-sm text-[10px] font-bold uppercase tracking-wide transition-colors"
+                :style="sortBy === 'change1y' ? { backgroundColor: tokens.colors.background.elevated, color: tokens.colors.text.primary, borderColor: tokens.colors.border.default } : { backgroundColor: tokens.colors.background.base, color: tokens.colors.text.muted, borderColor: tokens.colors.border.subtle }"
+              >
+                <span>1Y</span>
+                <svg v-if="sortBy === 'change1y'" class="w-2.5 h-2.5 transition-transform duration-200" :class="sortOrder === 'asc' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+              <button 
+                @click="setSort('time')"
+                class="flex items-center gap-1.5 px-2.5 py-1.5 border rounded-sm text-[10px] font-bold uppercase tracking-wide transition-colors"
+                :style="sortBy === 'time' ? { backgroundColor: tokens.colors.background.elevated, color: tokens.colors.text.primary, borderColor: tokens.colors.border.default } : { backgroundColor: tokens.colors.background.base, color: tokens.colors.text.muted, borderColor: tokens.colors.border.subtle }"
+              >
+                <span>时间</span>
+                <svg v-if="sortBy === 'time'" class="w-2.5 h-2.5 transition-transform duration-200" :class="sortOrder === 'asc' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+            </div>
           </div>
 
-          <!-- View Switcher (Opportunities only) -->
-          <div v-if="['opportunities'].includes(activeTab)" class="border rounded-sm p-0.5 flex items-center" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle }">
+          <!-- Progress Bar Toggle (Themes Card View only) -->
+          <button 
+            v-if="activeTab === 'themes' && themesViewMode === 'card'"
+            @click="showProgressBar = !showProgressBar"
+            class="flex items-center gap-1.5 px-2.5 py-1.5 border rounded-sm text-[10px] font-bold uppercase tracking-wide transition-colors"
+            :style="showProgressBar ? { backgroundColor: tokens.colors.background.elevated, color: tokens.colors.text.primary, borderColor: tokens.colors.border.default } : { backgroundColor: tokens.colors.background.base, color: tokens.colors.text.muted, borderColor: tokens.colors.border.subtle }"
+            title="切换进度条显示"
+          >
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <span>进度</span>
+          </button>
+
+          <!-- View Switcher (Opportunities and Themes) -->
+          <div v-if="['opportunities', 'themes'].includes(activeTab)" class="border rounded-sm p-0.5 flex items-center" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle }">
             <button 
-              @click="viewMode = 'card'"
+              @click="activeTab === 'themes' ? themesViewMode = 'card' : viewMode = 'card'"
               class="p-1.5 rounded-sm transition-all"
-              :style="viewMode === 'card' ? { backgroundColor: tokens.colors.border.default, color: tokens.colors.text.primary } : { color: tokens.colors.text.disabled }"
+              :style="(activeTab === 'themes' ? themesViewMode : viewMode) === 'card' ? { backgroundColor: tokens.colors.border.default, color: tokens.colors.text.primary } : { color: tokens.colors.text.disabled }"
               title="Card View"
             >
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
             </button>
             <button 
-              @click="viewMode = 'list'"
+              @click="activeTab === 'themes' ? themesViewMode = 'list' : viewMode = 'list'"
               class="p-1.5 rounded-sm transition-all"
-              :style="viewMode === 'list' ? { backgroundColor: tokens.colors.border.default, color: tokens.colors.text.primary } : { color: tokens.colors.text.disabled }"
+              :style="(activeTab === 'themes' ? themesViewMode : viewMode) === 'list' ? { backgroundColor: tokens.colors.border.default, color: tokens.colors.text.primary } : { color: tokens.colors.text.disabled }"
               title="List View"
             >
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -221,18 +278,94 @@
         </div>
       </div>
       
-      <!-- Tab: Themes (List View - Minimalist) -->
-      <div v-else-if="activeTab === 'themes'" class="w-full max-w-7xl mx-auto px-4">
-        <div class="space-y-3">
+      <!-- Tab: Themes (List/Card View with Toggle) -->
+      <div v-else-if="activeTab === 'themes'" :class="themesViewMode === 'card' ? 'w-full px-4 lg:px-8' : 'w-full px-8 pb-8'">
+        <!-- Card View (like opportunities) -->
+        <div 
+          v-if="themesViewMode === 'card'" 
+          class="grid gap-4"
+          :style="{ gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))` }"
+        >
           <div 
             v-for="event in allEvents" 
             :key="event.id" 
             @click="openThemeDetailFromEvent(event)"
-            class="border p-5 flex items-center gap-5 transition-all cursor-pointer group"
+            class="p-5 border transition-all cursor-pointer group flex flex-col relative overflow-hidden"
             :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle }"
           >
-            <!-- Left: Title & Desc -->
-            <div class="flex-1 min-w-0">
+            <!-- Subtle top accent on hover -->
+            <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/0 to-transparent group-hover:via-cyan-500/50 transition-all duration-300"></div>
+
+            <!-- Header: Badge + Progress (only when showProgressBar is true) -->
+            <div v-if="showProgressBar" class="flex items-center gap-3 mb-4">
+              <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm shrink-0" :class="getStageConfig(event.state).badgeClass">{{ getStageConfig(event.state).label }}</span>
+              <div class="flex-1 flex items-center gap-0.5">
+                <template v-for="(stage, index) in lifecycleStages" :key="stage.key">
+                  <div class="h-1 flex-1 rounded-full" :class="getSegmentClass(event.state, index)"></div>
+                </template>
+              </div>
+            </div>
+            
+            <!-- Body: Title + Description -->
+            <h3 class="text-base font-bold mb-2 line-clamp-2 leading-snug transition-colors group-hover:text-cyan-50" :style="{ color: tokens.colors.text.primary }">{{ event.title }}</h3>
+            <p class="text-[10px] mb-4 line-clamp-2 flex-1" :style="{ color: tokens.colors.text.muted }">{{ event.desc }}</p>
+            
+            <!-- Tickers -->
+            <div class="flex flex-wrap gap-1.5 mb-4">
+              <span v-for="stock in event.stocks.slice(0, 4)" :key="stock.symbol" class="px-1.5 py-0.5 text-[10px] font-mono font-bold border transition-colors" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle, color: tokens.colors.text.secondary }">{{ stock.symbol }}</span>
+              <span v-if="event.stocks.length > 4" class="px-1.5 py-0.5 text-[10px] font-mono border" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle, color: tokens.colors.text.disabled }">+{{ event.stocks.length - 4 }}</span>
+            </div>
+
+            <!-- Footer: 30D & 1Y Change + Time + Stage Badge (when progress bar hidden) -->
+            <div class="flex items-center justify-between pt-3 border-t" :style="{ borderColor: tokens.colors.border.subtle }">
+              <div class="flex items-center gap-3">
+                <div class="flex items-center gap-1">
+                  <span class="text-[9px] font-bold uppercase" :style="{ color: tokens.colors.text.disabled }">30D</span>
+                  <span class="text-[11px] font-bold tabular-nums" style="font-variant-numeric: tabular-nums;" :style="{ color: parseFloat(event.change30d) > 0 ? tokens.colors.accent.success : tokens.colors.accent.danger }">{{ parseFloat(event.change30d) > 0 ? '+' : '' }}{{ event.change30d }}%</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <span class="text-[9px] font-bold uppercase" :style="{ color: tokens.colors.text.disabled }">1Y</span>
+                  <span class="text-[11px] font-bold tabular-nums" style="font-variant-numeric: tabular-nums;" :style="{ color: parseFloat(event.change1y) > 0 ? tokens.colors.accent.success : tokens.colors.accent.danger }">{{ parseFloat(event.change1y) > 0 ? '+' : '' }}{{ event.change1y }}%</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <!-- Stage Badge (only when progress bar is hidden) -->
+                <span v-if="!showProgressBar" class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm" :class="getStageConfig(event.state).badgeClass">{{ getStageConfig(event.state).label }}</span>
+                <span class="text-[9px] font-mono uppercase" :style="{ color: tokens.colors.text.disabled }">{{ event.time.split(' ')[0] }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- List View (like attribution) -->
+        <div v-else class="space-y-4">
+          <div 
+            v-for="event in allEvents" 
+            :key="event.id" 
+            @click="openThemeDetailFromEvent(event)"
+            class="border overflow-hidden flex items-stretch transition-all cursor-pointer group relative"
+            :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle }"
+          >
+            <!-- Subtle top accent line on hover -->
+            <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/0 to-transparent group-hover:via-cyan-500/50 transition-all duration-500"></div>
+
+            <!-- Left: Lifecycle Progress -->
+            <div class="w-20 shrink-0 border-r p-3 flex flex-col items-center justify-center" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle }">
+              <div class="flex items-center gap-0.5 mb-1.5 w-full">
+                <template v-for="(stage, index) in lifecycleStages.slice(0, 4)" :key="stage.key">
+                  <div class="h-1 flex-1 rounded-full" :class="getSegmentClass(event.state, index)"></div>
+                </template>
+              </div>
+              <div class="flex items-center gap-0.5 mb-2 w-full">
+                <template v-for="(stage, index) in lifecycleStages.slice(4, 8)" :key="stage.key">
+                  <div class="h-1 flex-1 rounded-full" :class="getSegmentClass(event.state, index + 4)"></div>
+                </template>
+              </div>
+              <span class="text-[10px] font-bold uppercase tracking-wider" :class="getStageConfig(event.state).textClass">{{ getStageConfig(event.state).label }}</span>
+            </div>
+
+            <!-- Middle: Title & Desc -->
+            <div class="flex-1 min-w-0 p-5">
               <div class="flex items-center gap-3 mb-1.5">
                 <h3 class="text-lg font-bold truncate group-hover:text-cyan-50 transition-colors" :style="{ color: tokens.colors.text.primary }">{{ event.title }}</h3>
                 <span class="text-[10px] px-1.5 py-0.5 rounded-sm font-mono" :style="{ backgroundColor: tokens.colors.background.elevated, color: tokens.colors.text.muted }">{{ event.time.split(' ')[0] }}</span>
@@ -240,28 +373,33 @@
               <p class="text-xs line-clamp-1 leading-relaxed transition-colors" :style="{ color: tokens.colors.text.muted }" :class="{ 'group-hover:opacity-80': true }">{{ event.desc }}</p>
             </div>
 
-            <!-- Middle: Affected Stocks -->
-            <div class="flex items-center gap-2 shrink-0">
-              <div v-for="stock in event.stocks.slice(0, 3)" :key="stock.symbol" class="flex items-center gap-2 px-2.5 py-1.5 rounded-sm border" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle }">
-                <div class="w-6 h-6 rounded-sm flex items-center justify-center text-[10px] font-bold border" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default, color: tokens.colors.text.muted }">
+            <!-- Right: Affected Stocks -->
+            <div class="flex items-center gap-2 shrink-0 p-5">
+              <div v-for="stock in event.stocks.slice(0, 3)" :key="stock.symbol" class="flex items-center gap-2 px-2.5 py-1.5 rounded-md border" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle }">
+                <div class="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold border" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default, color: tokens.colors.text.muted }">
                   {{ stock.symbol.slice(0, 2) }}
                 </div>
-                <div>
-                  <div class="font-bold text-[11px]" :style="{ color: tokens.colors.text.secondary }">{{ stock.symbol }}</div>
-                  <div class="text-[10px]" :style="{ color: stock.change > 0 ? tokens.colors.accent.success : tokens.colors.accent.danger }">
-                    {{ stock.change > 0 ? '+' : '' }}{{ stock.change }}%
-                  </div>
-                </div>
+                <div class="font-bold text-[11px]" :style="{ color: tokens.colors.text.secondary }">{{ stock.symbol }}</div>
               </div>
-              <span v-if="event.stocks.length > 3" class="text-[10px] px-2 py-1 rounded-sm border" :style="{ color: tokens.colors.text.disabled, backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle }">+{{ event.stocks.length - 3 }}</span>
+              <span v-if="event.stocks.length > 3" class="text-[10px] px-2 py-1 rounded-md border" :style="{ color: tokens.colors.text.disabled, backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle }">+{{ event.stocks.length - 3 }}</span>
             </div>
 
-            <!-- Right: Theme Change -->
-            <div class="text-right min-w-[90px] pl-5 border-l" :style="{ borderColor: tokens.colors.border.subtle }">
-              <div class="text-xl font-bold font-mono" :style="{ color: parseFloat(event.themeChange) > 0 ? tokens.colors.accent.success : tokens.colors.accent.danger }">
-                {{ parseFloat(event.themeChange) > 0 ? '+' : '' }}{{ event.themeChange }}%
+            <!-- Far Right: Theme Change (30D & 1Y side by side) -->
+            <div class="border-l flex items-stretch" :style="{ borderColor: tokens.colors.border.subtle }">
+              <!-- 30D Column -->
+              <div class="w-[72px] px-3 flex flex-col items-center justify-center border-r" :style="{ borderColor: tokens.colors.border.subtle }">
+                <div class="text-[9px] font-bold uppercase tracking-wider mb-1" :style="{ color: tokens.colors.text.disabled }">30D</div>
+                <div class="text-sm font-bold tabular-nums text-right w-full" style="font-variant-numeric: tabular-nums;" :style="{ color: parseFloat(event.change30d) > 0 ? tokens.colors.accent.success : tokens.colors.accent.danger }">
+                  {{ parseFloat(event.change30d) > 0 ? '+' : '' }}{{ event.change30d }}%
+                </div>
               </div>
-              <div class="text-[9px] uppercase tracking-wider mt-0.5" :style="{ color: tokens.colors.text.disabled }">涨跌幅</div>
+              <!-- 1Y Column -->
+              <div class="w-[72px] px-3 flex flex-col items-center justify-center">
+                <div class="text-[9px] font-bold uppercase tracking-wider mb-1" :style="{ color: tokens.colors.text.disabled }">1Y</div>
+                <div class="text-sm font-bold tabular-nums text-right w-full" style="font-variant-numeric: tabular-nums;" :style="{ color: parseFloat(event.change1y) > 0 ? tokens.colors.accent.success : tokens.colors.accent.danger }">
+                  {{ parseFloat(event.change1y) > 0 ? '+' : '' }}{{ event.change1y }}%
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -420,7 +558,7 @@
     <!-- (Removed Bottom Right Floating Buttons) -->
 
     <!-- 5. Grid Control (Bottom Left) -->
-    <div id="grid-control" v-if="activeTab === 'opportunities' && viewMode === 'card'" class="fixed bottom-8 left-8 z-50 flex items-center transition-all duration-300">
+    <div id="grid-control" v-if="(activeTab === 'opportunities' && viewMode === 'card') || (activeTab === 'themes' && themesViewMode === 'card')" class="fixed bottom-8 left-8 z-50 flex items-center transition-all duration-300">
       <!-- Expanded State -->
       <div 
         v-if="isGridControlExpanded"
@@ -1227,66 +1365,107 @@
     </div>
   </div>
 
-  <!-- Theme Detail Modal (Large Size) -->
-  <div v-if="showThemeDetailModal" class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm p-4 transition-opacity duration-300" :style="{ backgroundColor: isDark ? 'rgba(0,0,0,0.8)' : 'rgba(0,0,0,0.5)' }" @click.self="showThemeDetailModal = false">
-    <div class="relative w-full max-w-[90vw] h-[85vh] border shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+  <!-- Theme Detail Modal (Lifecycle Style) -->
+  <div v-if="showThemeDetailModal && selectedThemeDetail" class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm p-4" :style="{ backgroundColor: isDark ? 'rgba(0,0,0,0.85)' : 'rgba(0,0,0,0.6)' }" @click.self="showThemeDetailModal = false">
+    <div class="relative w-full max-w-[90vw] h-[90vh] border shadow-2xl overflow-hidden flex flex-col" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
       <!-- Close Button -->
-      <button @click="showThemeDetailModal = false" class="absolute top-4 right-4 z-10 rounded-full p-1 transition-colors" :style="{ backgroundColor: tokens.colors.background.overlay + '80', color: tokens.colors.text.tertiary }">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      <button @click="showThemeDetailModal = false" class="absolute top-4 right-4 z-10 p-2 transition-colors" :style="{ backgroundColor: tokens.colors.background.overlay + '80', color: tokens.colors.text.muted }">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
 
-      <!-- Content (Optimized Layout) -->
-      <div v-if="selectedThemeDetail" class="flex h-full">
-         <!-- Left: Title & Desc (30%) -->
-         <div class="w-[30%] border-r flex flex-col p-8 justify-center relative overflow-hidden" :style="{ borderColor: tokens.colors.border.default, background: `linear-gradient(to bottom right, ${tokens.colors.background.elevated}, ${tokens.colors.background.surface})` }">
-            <!-- Decorative Elements -->
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-purple-500 opacity-50"></div>
-            <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none"></div>
-            
-            <div class="relative z-10">
-               <h2 class="text-2xl font-bold mb-6 leading-tight" :style="{ color: tokens.colors.text.primary }">{{ selectedThemeDetail.title }}</h2>
-               <div class="w-12 h-0.5 bg-cyan-500 mb-6"></div>
-               <p class="text-base leading-relaxed" :style="{ color: tokens.colors.text.tertiary }">{{ selectedThemeDetail.desc }}</p>
+      <!-- Top: Lifecycle Progress Bar -->
+      <div class="shrink-0 border-b px-8 py-6" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default }">
+        <h4 class="text-xs font-bold uppercase tracking-wider mb-5" :style="{ color: tokens.colors.text.disabled }">Lifecycle Stages</h4>
+        <div class="flex items-center justify-between relative">
+          <!-- Connection Line -->
+          <div class="absolute top-4 left-8 right-8 h-0.5" :style="{ backgroundColor: tokens.colors.border.default }"></div>
+          <!-- Stage Dots -->
+          <template v-for="(stage, index) in lifecycleStages" :key="stage.key">
+            <div class="flex flex-col items-center relative z-10 flex-1">
+              <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold mb-2 transition-all" :class="getModalStageClass(selectedThemeDetail.state, stage.key, index)">
+                {{ index + 1 }}
+              </div>
+              <span class="text-[11px] font-medium" :class="selectedThemeDetail.state === stage.key ? getStageConfig(stage.key).textClass : 'text-gray-500'">{{ stage.label }}</span>
             </div>
-         </div>
+          </template>
+        </div>
+      </div>
 
-         <!-- Right: Stock List (70%) -->
-         <div class="flex-1 flex flex-col min-w-0" :style="{ backgroundColor: tokens.colors.background.surface }">
-            <div class="px-8 py-6 border-b flex justify-between items-center backdrop-blur-sm sticky top-0 z-10" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface + '80' }">
-              <h3 class="text-lg font-bold flex items-center gap-2" :style="{ color: tokens.colors.text.primary }">
-                <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
-                Related Assets
-              </h3>
-            </div>
-            
-            <div class="flex-1 overflow-y-auto custom-scrollbar p-8">
-              <div class="grid grid-cols-1 gap-3">
-                 <div 
-                    v-for="item in selectedThemeDetail.items" 
-                    :key="item.id" 
-                    @click="goToStockDetail(item.title.split(' ')[0], selectedThemeDetail.id)"
-                    class="p-4 flex items-center justify-between transition-all cursor-pointer rounded border hover:border-cyan-500/30 group/item"
-                    :style="{ borderColor: tokens.colors.border.default }"
-                  >
-                    <div class="flex-1 min-w-0 pr-4">
-                      <div class="flex items-center gap-3 mb-1">
-                        <span class="font-bold text-base truncate group-hover/item:text-cyan-400 transition-colors" :style="{ color: tokens.colors.text.primary }">{{ item.title }}</span>
-                      </div>
-                      <p class="text-xs line-clamp-1" :style="{ color: tokens.colors.text.muted }" :class="{ 'group-hover/item:opacity-80': true }">
-                        {{ item.desc }}
-                      </p>
-                    </div>
-                    
-                    <div class="flex items-center gap-4 shrink-0">
-                      <span v-if="item.change" class="text-sm font-mono font-bold" :style="{ color: item.change > 0 ? tokens.colors.accent.success : tokens.colors.accent.danger }">
-                        {{ item.change > 0 ? '+' : ''}}{{ item.change }}%
-                      </span>
-                      <svg class="w-4 h-4 group-hover/item:text-cyan-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" :style="{ color: tokens.colors.text.tertiary }"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    </div>
-                  </div>
+      <!-- Main Content -->
+      <div class="flex-1 overflow-y-auto p-8">
+        <!-- Header -->
+        <div class="mb-8">
+          <div class="flex items-start justify-between gap-6 mb-3">
+            <h2 class="text-2xl font-bold" :style="{ color: tokens.colors.text.primary }">{{ selectedThemeDetail.name || selectedThemeDetail.title }}</h2>
+            <!-- 30D & 1Y Change -->
+            <div class="flex items-center gap-4 shrink-0 border px-4 py-2" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.default }">
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] font-bold uppercase" :style="{ color: tokens.colors.text.disabled }">30D</span>
+                <span class="text-base font-bold tabular-nums" :style="{ color: parseFloat(selectedThemeDetail.change30d || 0) >= 0 ? tokens.colors.accent.success : tokens.colors.accent.danger }">{{ parseFloat(selectedThemeDetail.change30d || 0) >= 0 ? '+' : '' }}{{ selectedThemeDetail.change30d || '0.00' }}%</span>
+              </div>
+              <div class="w-px h-5" :style="{ backgroundColor: tokens.colors.border.default }"></div>
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] font-bold uppercase" :style="{ color: tokens.colors.text.disabled }">1Y</span>
+                <span class="text-base font-bold tabular-nums" :style="{ color: parseFloat(selectedThemeDetail.change1y || 0) >= 0 ? tokens.colors.accent.success : tokens.colors.accent.danger }">{{ parseFloat(selectedThemeDetail.change1y || 0) >= 0 ? '+' : '' }}{{ selectedThemeDetail.change1y || '0.00' }}%</span>
               </div>
             </div>
-         </div>
+          </div>
+          <p class="text-sm leading-relaxed max-w-4xl" :style="{ color: tokens.colors.text.muted }">{{ selectedThemeDetail.description || selectedThemeDetail.desc }}</p>
+        </div>
+
+        <!-- AI Analysis -->
+        <div class="grid grid-cols-2 gap-6 mb-6">
+          <div class="border p-5" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.default }">
+            <h4 class="text-sm font-bold mb-3" :style="{ color: tokens.colors.text.primary }">🤖 AI 投资论点</h4>
+            <p class="text-sm leading-relaxed" :style="{ color: tokens.colors.text.secondary }">{{ selectedThemeDetail.llm_validation?.thesis || '暂无' }}</p>
+          </div>
+          <div class="border p-5" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.default }">
+            <h4 class="text-sm font-bold mb-3" :style="{ color: tokens.colors.text.primary }">💡 催化剂</h4>
+            <p class="text-sm leading-relaxed" :style="{ color: tokens.colors.text.secondary }">{{ selectedThemeDetail.llm_validation?.catalyst || '暂无' }}</p>
+          </div>
+        </div>
+
+        <!-- Risks -->
+        <div class="border p-5 mb-6" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.default }">
+          <h4 class="text-sm font-bold mb-3" :style="{ color: tokens.colors.text.primary }">⚠️ 风险因素</h4>
+          <ul class="space-y-2">
+            <li v-for="(risk, i) in selectedThemeDetail.llm_validation?.risks || []" :key="i" class="text-sm flex items-start gap-2" :style="{ color: tokens.colors.text.secondary }">
+              <span class="text-red-500 mt-0.5">•</span><span>{{ risk }}</span>
+            </li>
+            <li v-if="!selectedThemeDetail.llm_validation?.risks?.length" class="text-sm" :style="{ color: tokens.colors.text.disabled }">暂无风险分析</li>
+          </ul>
+        </div>
+
+        <!-- Stocks - Grouped Tags -->
+        <div class="border p-5" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.default }">
+          <h4 class="text-sm font-bold mb-5" :style="{ color: tokens.colors.text.primary }">📋 成分股 ({{ (selectedThemeDetail.primary_tickers?.length || 0) + (selectedThemeDetail.secondary_tickers?.length || 0) }})</h4>
+          
+          <!-- Primary Tickers -->
+          <div class="mb-6">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+              <span class="text-xs font-bold uppercase tracking-wider" :style="{ color: tokens.colors.text.disabled }">Primary ({{ selectedThemeDetail.primary_tickers?.length || 0 }})</span>
+              <div class="flex-1 h-px" :style="{ backgroundColor: tokens.colors.border.default }"></div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span v-for="ticker in selectedThemeDetail.primary_tickers" :key="ticker" @click.stop="goToStockDetail(ticker)" class="px-3 py-1.5 text-sm font-mono font-bold border cursor-pointer transition-all bg-blue-900/20 border-blue-700/50 text-blue-400 hover:bg-blue-900/40 hover:border-blue-500">{{ ticker }}</span>
+              <span v-if="!selectedThemeDetail.primary_tickers?.length" class="text-sm" :style="{ color: tokens.colors.text.disabled }">暂无</span>
+            </div>
+          </div>
+
+          <!-- Secondary Tickers -->
+          <div>
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-2 h-2 rounded-full" :style="{ backgroundColor: tokens.colors.text.disabled }"></div>
+              <span class="text-xs font-bold uppercase tracking-wider" :style="{ color: tokens.colors.text.disabled }">Secondary ({{ selectedThemeDetail.secondary_tickers?.length || 0 }})</span>
+              <div class="flex-1 h-px" :style="{ backgroundColor: tokens.colors.border.default }"></div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span v-for="ticker in selectedThemeDetail.secondary_tickers" :key="ticker" @click.stop="goToStockDetail(ticker)" class="px-3 py-1.5 text-sm font-mono border cursor-pointer transition-all hover:text-white" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default, color: tokens.colors.text.muted }">{{ ticker }}</span>
+              <span v-if="!selectedThemeDetail.secondary_tickers?.length" class="text-sm" :style="{ color: tokens.colors.text.disabled }">暂无</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1310,6 +1489,8 @@ const showBackToTop = ref(false)
 const showFilterModal = ref(false)
 const contentFilter = ref('recommended') // 'recommended' or 'following'
 const viewMode = ref('card') // 'card' or 'list'
+const themesViewMode = ref('list') // 'card' or 'list' for themes tab
+const showProgressBar = ref(true) // Toggle for progress bar display in card view
 
 // Filter State
 const filters = ref({
@@ -1361,6 +1542,56 @@ const filterOptions = {
   directions: ['LONG', 'SHORT', 'WAIT'],
   durations: ['Short', 'Medium', 'Long'],
   grades: ['A+', 'A', 'A-', 'B+', 'B', 'C']
+}
+
+// Lifecycle Stages Configuration
+const lifecycleStages = [
+  { key: 'watch', label: 'Watch', dotClass: 'bg-slate-600 border-slate-500 text-white', textClass: 'text-slate-400' },
+  { key: 'emerging', label: 'Emerging', dotClass: 'bg-emerald-600 border-emerald-500 text-white', textClass: 'text-emerald-400' },
+  { key: 'growing', label: 'Growing', dotClass: 'bg-green-600 border-green-500 text-white', textClass: 'text-green-400' },
+  { key: 'mature', label: 'Mature', dotClass: 'bg-blue-600 border-blue-500 text-white', textClass: 'text-blue-400' },
+  { key: 'fading', label: 'Fading', dotClass: 'bg-yellow-600 border-yellow-500 text-white', textClass: 'text-yellow-400' },
+  { key: 'declining', label: 'Declining', dotClass: 'bg-orange-600 border-orange-500 text-white', textClass: 'text-orange-400' },
+  { key: 'defunct', label: 'Defunct', dotClass: 'bg-red-600 border-red-500 text-white', textClass: 'text-red-400' },
+  { key: 'dormant', label: 'Dormant', dotClass: 'bg-gray-600 border-gray-500 text-white', textClass: 'text-gray-400' }
+]
+
+const stageConfigs = {
+  watch: { label: 'Watch', bgClass: 'bg-slate-500', textClass: 'text-slate-400', badgeClass: 'bg-slate-900/50 text-slate-400 border border-slate-700' },
+  emerging: { label: 'Emerging', bgClass: 'bg-emerald-500', textClass: 'text-emerald-400', badgeClass: 'bg-emerald-900/50 text-emerald-400 border border-emerald-700' },
+  growing: { label: 'Growing', bgClass: 'bg-green-500', textClass: 'text-green-400', badgeClass: 'bg-green-900/50 text-green-400 border border-green-700' },
+  mature: { label: 'Mature', bgClass: 'bg-blue-500', textClass: 'text-blue-400', badgeClass: 'bg-blue-900/50 text-blue-400 border border-blue-700' },
+  fading: { label: 'Fading', bgClass: 'bg-yellow-500', textClass: 'text-yellow-400', badgeClass: 'bg-yellow-900/50 text-yellow-400 border border-yellow-700' },
+  declining: { label: 'Declining', bgClass: 'bg-orange-500', textClass: 'text-orange-400', badgeClass: 'bg-orange-900/50 text-orange-400 border border-orange-700' },
+  defunct: { label: 'Defunct', bgClass: 'bg-red-500', textClass: 'text-red-400', badgeClass: 'bg-red-900/50 text-red-400 border border-red-700' },
+  dormant: { label: 'Dormant', bgClass: 'bg-gray-500', textClass: 'text-gray-400', badgeClass: 'bg-gray-800/50 text-gray-400 border border-gray-600' }
+}
+
+const getStageConfig = (state) => stageConfigs[state] || stageConfigs.watch
+const getStageIndex = (state) => lifecycleStages.findIndex(s => s.key === state)
+
+const getSegmentClass = (themeState, segmentIndex) => {
+  const themeIndex = getStageIndex(themeState)
+  const config = getStageConfig(themeState)
+  if (segmentIndex < themeIndex) return `${config.bgClass} opacity-60`
+  if (segmentIndex === themeIndex) return `${config.bgClass} shadow-lg`
+  return 'bg-[#333]'
+}
+
+const getModalStageClass = (themeState, stageKey, index) => {
+  const themeIndex = getStageIndex(themeState)
+  const stage = lifecycleStages.find(s => s.key === stageKey)
+  if (themeState === stageKey) {
+    // Current stage - use stage's color with filled background
+    return stage.dotClass
+  }
+  if (themeIndex > index) {
+    // Passed stages - use their own color (slightly dimmed)
+    const passedStage = lifecycleStages[index]
+    return passedStage.dotClass + ' opacity-70'
+  }
+  // Future stages - dark/empty
+  return 'bg-[#1a1a1a] border-[#333] text-gray-600'
 }
 
 const toggleFilterSource = (id) => {
@@ -1628,15 +1859,28 @@ watch(selectedChartPeriod, () => {
 
 // --- Attribution Logic ---
 const allAttributionEvents = ref([])
-const sortBy = ref('change') // 'change' | 'time'
+const sortBy = ref('change30d') // 'change30d' | 'change1y' | 'time'
 const sortOrder = ref('desc') // 'desc' | 'asc'
+const selectedStages = ref([]) // Array of selected stage keys for filtering
+const showStageFilter = ref(false)
 
 const allEvents = computed(() => {
-  const events = [...allAttributionEvents.value]
+  let events = [...allAttributionEvents.value]
+  
+  // Apply stage filter
+  if (selectedStages.value.length > 0) {
+    events = events.filter(e => selectedStages.value.includes(e.state))
+  }
+  
+  // Apply sorting
   return events.sort((a, b) => {
-    if (sortBy.value === 'change') {
-      const changeA = parseFloat(a.themeChange || 0)
-      const changeB = parseFloat(b.themeChange || 0)
+    if (sortBy.value === 'change30d') {
+      const changeA = parseFloat(a.change30d || 0)
+      const changeB = parseFloat(b.change30d || 0)
+      return sortOrder.value === 'desc' ? changeB - changeA : changeA - changeB
+    } else if (sortBy.value === 'change1y') {
+      const changeA = parseFloat(a.change1y || 0)
+      const changeB = parseFloat(b.change1y || 0)
       return sortOrder.value === 'desc' ? changeB - changeA : changeA - changeB
     } else {
       // Sort by time (Mock time string "HH:MM AM/PM")
@@ -1664,32 +1908,50 @@ const setSort = (type) => {
   }
 }
 
+const toggleStageFilter = (stageKey) => {
+  const index = selectedStages.value.indexOf(stageKey)
+  if (index === -1) {
+    selectedStages.value.push(stageKey)
+  } else {
+    selectedStages.value.splice(index, 1)
+  }
+}
+
+const clearStageFilter = () => {
+  selectedStages.value = []
+  showStageFilter.value = false
+}
+
 const openThemeDetailFromEvent = (event) => {
-  // Map event to theme detail structure
+  // Map event to theme detail structure (Lifecycle modal format)
   selectedThemeDetail.value = {
     id: event.id,
+    // Support both naming conventions
+    name: event.title,
     title: event.title,
+    description: event.desc,
     desc: event.desc,
-    image: event.image || 'https://images.unsplash.com/photo-1611974765270-ca1258634369?q=80&w=1964&auto=format&fit=crop',
-    sentiment: 'Neutral', // Default, or derive from stocks
-    heat: Math.floor(Math.random() * 40) + 60,
-    stats: {
-      upRatio: 60,
-      downRatio: 40,
-      upCount: event.stocks.filter(s => s.change > 0).length,
-      downCount: event.stocks.filter(s => s.change <= 0).length
+    // Lifecycle stage
+    state: event.state || 'emerging',
+    // LLM validation data
+    llm_validation: event.llm_validation || {
+      thesis: `This theme shows significant co-movement driven by market conditions and sector-specific catalysts. The correlation strength suggests shared fundamental drivers across the constituent stocks.`,
+      catalyst: `Key market events and sector developments driving price action. Monitor for continued momentum signals.`,
+      risks: [
+        '**Market Volatility:** Broader market conditions could affect theme coherence.',
+        '**Sector Rotation:** Capital flows may shift to other sectors.',
+        '**Regulatory Changes:** Policy shifts could impact theme constituents.'
+      ]
     },
-    relatedStocks: event.stocks.map(s => ({
-      symbol: s.symbol,
-      change: s.change
-    })),
-    items: event.stocks.map(s => ({
-      id: s.symbol,
-      title: `${s.symbol} Analysis`,
-      desc: s.reason || `Detailed impact analysis for ${s.symbol}.`,
-      change: s.change,
-      image: null
-    }))
+    // Ticker lists
+    primary_tickers: event.stocks?.slice(0, Math.ceil(event.stocks.length * 0.6)).map(s => s.symbol) || [],
+    secondary_tickers: event.stocks?.slice(Math.ceil(event.stocks.length * 0.6)).map(s => s.symbol) || [],
+    // Price change data
+    change30d: event.change30d || '0.00',
+    change1y: event.change1y || '0.00',
+    // Keep legacy fields for compatibility
+    image: event.image || 'https://images.unsplash.com/photo-1611974765270-ca1258634369?q=80&w=1964&auto=format&fit=crop',
+    stocks: event.stocks
   }
   showThemeDetailModal.value = true
 }
@@ -1815,21 +2077,30 @@ const generateEvents = (marketId, count, startIndex) => {
 
   const marketTemplates = templates[marketId] || templates['us']
   
+  // Lifecycle states for random assignment
+  const lifecycleStatesKeys = ['watch', 'emerging', 'growing', 'mature', 'fading', 'declining', 'defunct', 'dormant']
+  
   return Array.from({ length: count }).map((_, i) => {
     const template = marketTemplates[(startIndex + i) % marketTemplates.length]
     const date = new Date()
     date.setMinutes(date.getMinutes() - (startIndex + i) * 15)
     const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     
+    // Assign a random lifecycle state
+    const randomState = lifecycleStatesKeys[Math.floor(Math.random() * lifecycleStatesKeys.length)]
+    
     return {
       id: `${marketId}-${startIndex + i}`,
       time: timeStr,
       ...template,
+      state: randomState, // Lifecycle state
       stocks: template.stocks.map(s => ({
         ...s,
         change: parseFloat((s.change + (Math.random() - 0.5)).toFixed(2))
       })),
-      themeChange: (Math.random() * 6 - 3).toFixed(2) // Persistent theme change for sorting
+      themeChange: (Math.random() * 6 - 3).toFixed(2), // Persistent theme change for sorting
+      change30d: (Math.random() * 30 - 10).toFixed(2), // 30-day change: -10% to +20%
+      change1y: (Math.random() * 80 - 20).toFixed(2)   // 1-year change: -20% to +60%
     }
   })
 }
@@ -2131,10 +2402,18 @@ const startInfoTour = () => {
   driverObj.drive();
 }
 
+// Close stage filter dropdown when clicking outside
+const handleClickOutside = (event) => {
+  if (showStageFilter.value && !event.target.closest('.relative')) {
+    showStageFilter.value = false
+  }
+}
+
 // Lifecycle
 onMounted(() => {
   setupObserver()
   window.addEventListener('scroll', handleWindowScroll)
+  document.addEventListener('click', handleClickOutside)
   
   // Init chart if starting on themesB tab
   if (activeTab.value === 'themesB') {
@@ -2155,6 +2434,7 @@ onMounted(() => {
 onUnmounted(() => {
   if (observer) observer.disconnect()
   window.removeEventListener('scroll', handleWindowScroll)
+  document.removeEventListener('click', handleClickOutside)
 })
 
 // Watch tab change to reset observer and update URL

@@ -805,18 +805,18 @@
               <colgroup>
                 <col style="width: 40px;" />  <!-- Radio -->
                 <col style="width: 75px;" />  <!-- Ticker -->
-                <col style="width: 170px;" /> <!-- Name -->
+                <col :style="{ width: isExecutionPlanExpanded ? '170px' : '400px' }" /> <!-- Name - 折叠时变宽 -->
                 <col style="width: 80px;" />  <!-- Source -->
                 <col style="width: 80px;" />  <!-- Direction -->
                 <col style="width: 55px;" />  <!-- Grade -->
                 <col style="width: 75px;" />  <!-- Horizon -->
                 <col style="width: 90px;" />  <!-- Created -->
                 <col style="width: 80px;" />  <!-- Strategy Update -->
-                <col style="width: 85px;" />  <!-- Plan Status -->
-                <col style="width: 60px;" />  <!-- Plan Count -->
-                <col style="width: 60px;" />  <!-- Unread -->
-                <col style="width: 100px;" /> <!-- Generating -->
-                <col style="width: 85px;" />  <!-- Plan Update -->
+                <col v-if="isExecutionPlanExpanded" style="width: 85px;" />  <!-- Plan Status -->
+                <col v-if="isExecutionPlanExpanded" style="width: 60px;" />  <!-- Plan Count -->
+                <col v-if="isExecutionPlanExpanded" style="width: 60px;" />  <!-- Unread -->
+                <col v-if="isExecutionPlanExpanded" style="width: 100px;" /> <!-- Generating -->
+                <col v-if="isExecutionPlanExpanded" style="width: 85px;" />  <!-- Plan Update -->
                 <col style="width: 90px;" />  <!-- Actions -->
               </colgroup>
               <thead class="sticky top-0 z-20">
@@ -848,10 +848,11 @@
                     </div>
                   </th>
                   <!-- 计划分组 -->
-                  <th colspan="6" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center" :style="{ color: tokens.colors.accent.warning, borderBottomColor: tokens.colors.border.strong, background: `linear-gradient(to right, ${tokens.colors.accent.warning}26, ${tokens.colors.accent.warning}1A), ${tokens.colors.background.surface}` }">
+                  <th :colspan="isExecutionPlanExpanded ? 6 : 1" @click="toggleExecutionPlanExpand" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer select-none transition-all hover:brightness-110" :style="{ color: tokens.colors.accent.warning, borderBottomColor: tokens.colors.border.strong, background: `linear-gradient(to right, ${tokens.colors.accent.warning}26, ${tokens.colors.accent.warning}1A), ${tokens.colors.background.surface}` }">
                     <div class="flex items-center justify-center gap-2">
                       <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                       {{ $t('opportunity.strategyTable.executionPlan') }}
+                      <svg class="w-3 h-3 transition-transform duration-200" :class="isExecutionPlanExpanded ? 'rotate-0' : '-rotate-90'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </div>
                   </th>
                 </tr>
@@ -898,31 +899,31 @@
                     {{ $t('opportunity.strategyTable.update') }}
                   </th>
                   <!-- 计划子列 -->
-                  <th @click="handleSort('hasExecutionPlan')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th v-if="isExecutionPlanExpanded" @click="handleSort('hasExecutionPlan')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
                       {{ $t('opportunity.strategyTable.status') }}
                       <span v-if="strategySortField === 'hasExecutionPlan'" :style="{ color: tokens.colors.semantic.warning }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th @click="handleSort('planCount')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th v-if="isExecutionPlanExpanded" @click="handleSort('planCount')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
                       {{ $t('opportunity.strategyTable.count') }}
                       <span v-if="strategySortField === 'planCount'" :style="{ color: tokens.colors.semantic.warning }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th @click="handleSort('planUnreadCount')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th v-if="isExecutionPlanExpanded" @click="handleSort('planUnreadCount')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
                       {{ $t('opportunity.strategyTable.unread') }}
                       <span v-if="strategySortField === 'planUnreadCount'" :style="{ color: tokens.colors.semantic.warning }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th @click="handleSort('planGeneratingCount')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th v-if="isExecutionPlanExpanded" @click="handleSort('planGeneratingCount')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
                       {{ $t('opportunity.strategyTable.generating') }}
                       <span v-if="strategySortField === 'planGeneratingCount'" :style="{ color: tokens.colors.semantic.warning }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th @click="handleSort('planNeedsUpdate')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th v-if="isExecutionPlanExpanded" @click="handleSort('planNeedsUpdate')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
                       {{ $t('opportunity.strategyTable.update') }}
                       <span v-if="strategySortField === 'planNeedsUpdate'" :style="{ color: tokens.colors.semantic.warning }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
@@ -934,15 +935,15 @@
                 </tr>
               </thead>
               <tbody>
+                <template v-for="(strategy, index) in displayedStrategies" :key="strategy.id">
                 <tr 
-                  v-for="(strategy, index) in displayedStrategies" 
-                  :key="strategy.id"
                   :id="index === 0 ? 'first-strategy-row' : undefined"
                   class="border-b transition-colors group cursor-pointer relative"
                   :class="[
                     selectedStrategyId === strategy.id ? 'border-l-2' : '',
                     strategy.grade === 'N/A' ? 'opacity-50 grayscale' : '',
-                    regeneratingStrategies[strategy.id] ? 'pointer-events-none' : ''
+                    regeneratingStrategies[strategy.id] ? 'pointer-events-none' : '',
+                    isStrategyExpanded(strategy.id) ? 'border-b-0' : ''
                   ]"
                   :style="{ 
                     borderBottomColor: tokens.colors.border.subtle,
@@ -989,12 +990,12 @@
                     <span class="font-mono font-bold text-sm" :style="{ color: tokens.colors.text.primary }">{{ strategy.symbol }}</span>
                   </td>
                   <!-- Name + View Button -->
-                  <td class="px-3 py-3 whitespace-nowrap">
+                  <td class="px-3 py-3 whitespace-nowrap" :class="isExecutionPlanExpanded ? '' : 'w-auto'">
                     <div class="flex items-center justify-between gap-2">
                       <div class="flex items-center gap-2">
                         <!-- 未读策略标记 -->
                         <span v-if="strategy.strategyUnread" class="w-2 h-2 rounded-full animate-pulse flex-shrink-0" :style="{ backgroundColor: tokens.colors.accent.primary }" title="Unread Strategy"></span>
-                        <span class="text-xs truncate max-w-[90px]" :style="{ color: tokens.colors.text.secondary }" :title="strategy.stockName">{{ strategy.stockName }}</span>
+                        <span class="text-xs truncate transition-all duration-200" :class="isExecutionPlanExpanded ? 'max-w-[90px]' : 'max-w-[300px]'" :style="{ color: tokens.colors.text.secondary }" :title="strategy.stockName">{{ strategy.stockName }}</span>
                       </div>
                       <!-- View Button (hover) -->
                       <button 
@@ -1127,7 +1128,7 @@
                     </template>
                   </td>
                   <!-- Plan Status -->
-                  <td class="px-3 py-3 whitespace-nowrap text-center">
+                  <td v-if="isExecutionPlanExpanded" class="px-3 py-3 whitespace-nowrap text-center">
                     <span 
                       v-if="strategy.hasStrategy === false && strategy.hasExecutionPlan"
                       class="px-2 py-0.5 rounded text-[10px] font-bold border"
@@ -1147,12 +1148,12 @@
                     <span v-else class="text-xs tracking-wider" :style="{ color: tokens.colors.text.muted }">— — —</span>
                   </td>
                   <!-- Plan Count -->
-                  <td class="px-3 py-3 whitespace-nowrap text-center">
+                  <td v-if="isExecutionPlanExpanded" class="px-3 py-3 whitespace-nowrap text-center">
                     <span v-if="strategy.planCount > 0" class="text-sm font-mono" :style="{ color: tokens.colors.text.secondary }">{{ strategy.planCount }}</span>
                     <span v-else class="text-xs tracking-wider" :style="{ color: tokens.colors.text.muted }">— — —</span>
                   </td>
                   <!-- Unread Count -->
-                  <td class="px-3 py-3 whitespace-nowrap text-center">
+                  <td v-if="isExecutionPlanExpanded" class="px-3 py-3 whitespace-nowrap text-center">
                     <span 
                       v-if="strategy.planUnreadCount > 0" 
                       class="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full text-xs font-bold"
@@ -1163,7 +1164,7 @@
                     <span v-else class="text-xs tracking-wider" :style="{ color: tokens.colors.text.muted }">— — —</span>
                   </td>
                   <!-- Generating (带进度条) -->
-                  <td class="px-3 py-3 whitespace-nowrap text-center">
+                  <td v-if="isExecutionPlanExpanded" class="px-3 py-3 whitespace-nowrap text-center">
                     <div v-if="strategy.planGeneratingCount > 0" class="flex flex-col items-center gap-1">
                       <div class="flex items-center gap-1.5">
                         <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24" :style="{ color: tokens.colors.accent.primary }">
@@ -1182,7 +1183,7 @@
                     <span v-else class="text-xs text-gray-500 tracking-wider">— — —</span>
                   </td>
                   <!-- Plan Update -->
-                  <td class="px-3 py-3 whitespace-nowrap text-center">
+                  <td v-if="isExecutionPlanExpanded" class="px-3 py-3 whitespace-nowrap text-center">
                     <button 
                       v-if="strategy.planNeedsUpdate"
                       @click.stop
@@ -1200,7 +1201,7 @@
                     <div class="flex items-center justify-center gap-1">
                       <!-- Generate Plan -->
                       <button 
-                        v-if="strategy.hasExecutionPlan === false && strategy.grade !== 'N/A'"
+                        v-if="strategy.grade !== 'N/A'"
                         @click.stop="generatePlanForStrategy(strategy)"
                         class="p-1.5 border rounded transition-colors"
                         :style="{ backgroundColor: tokens.colors.semantic.success + '33', borderColor: tokens.colors.semantic.success + '66', color: tokens.colors.semantic.success }"
@@ -1211,12 +1212,15 @@
                       <!-- View Plans -->
                       <button 
                         v-if="strategy.hasExecutionPlan"
-                        @click.stop="viewPlanDetail(strategy)"
+                        @click.stop="toggleStrategyExpand(strategy.id)"
                         class="p-1.5 border rounded transition-colors"
-                        :style="{ backgroundColor: tokens.colors.accent.primary + '33', borderColor: tokens.colors.accent.primary + '66', color: tokens.colors.accent.primary }"
-                        :title="$t('opportunity.strategyTable.viewPlans')"
+                        :style="isStrategyExpanded(strategy.id) 
+                          ? { backgroundColor: tokens.colors.accent.primary, borderColor: tokens.colors.accent.primary, color: tokens.colors.background.base }
+                          : { backgroundColor: tokens.colors.accent.primary + '33', borderColor: tokens.colors.accent.primary + '66', color: tokens.colors.accent.primary }"
+                        :title="isStrategyExpanded(strategy.id) ? '收起计划' : $t('opportunity.strategyTable.viewPlans')"
                       >
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        <svg v-if="!isStrategyExpanded(strategy.id)" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        <svg v-else class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
                       </button>
                       <!-- Delete -->
                       <button 
@@ -1230,6 +1234,116 @@
                     </div>
                   </td>
                 </tr>
+                <!-- 展开的执行计划子表格 -->
+                <tr v-if="isStrategyExpanded(strategy.id) && strategy.hasExecutionPlan" class="bg-opacity-50">
+                  <td :colspan="isExecutionPlanExpanded ? 15 : 10" class="p-0">
+                    <div 
+                      class="mx-4 my-3 border rounded-lg overflow-hidden"
+                      :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.accent.primary + '4D' }"
+                    >
+                      <!-- 子表格头部 -->
+                      <div 
+                        class="px-4 py-2.5 flex items-center justify-between border-b"
+                        :style="{ backgroundColor: tokens.colors.accent.primary + '1A', borderColor: tokens.colors.accent.primary + '33' }"
+                      >
+                        <div class="flex items-center gap-2">
+                          <svg class="w-4 h-4" :style="{ color: tokens.colors.accent.primary }" fill="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                          <span class="text-sm font-bold" :style="{ color: tokens.colors.accent.primary }">执行计划</span>
+                          <span class="text-xs px-1.5 py-0.5 rounded-full" :style="{ backgroundColor: tokens.colors.accent.primary, color: tokens.colors.background.base }">{{ strategy.planCount }}</span>
+                        </div>
+                        <button 
+                          @click.stop="toggleStrategyExpand(strategy.id)"
+                          class="text-xs flex items-center gap-1 px-2 py-1 rounded transition-colors hover:bg-white/10"
+                          :style="{ color: tokens.colors.text.muted }"
+                        >
+                          收起
+                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                        </button>
+                      </div>
+                      <!-- 子表格内容 -->
+                      <table class="w-full text-left">
+                        <thead>
+                          <tr :style="{ backgroundColor: tokens.colors.background.surface }">
+                            <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider" :style="{ color: tokens.colors.text.muted }">计划名称</th>
+                            <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-center" :style="{ color: tokens.colors.text.muted }">状态</th>
+                            <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-center" :style="{ color: tokens.colors.text.muted }">入场价</th>
+                            <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-center" :style="{ color: tokens.colors.text.muted }">目标价</th>
+                            <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-center" :style="{ color: tokens.colors.text.muted }">止损价</th>
+                            <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-center" :style="{ color: tokens.colors.text.muted }">创建时间</th>
+                            <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-center" :style="{ color: tokens.colors.text.muted }">操作</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr 
+                            v-for="plan in getStrategyPlans(strategy)" 
+                            :key="plan.id"
+                            class="border-t transition-colors hover:bg-white/5"
+                            :style="{ borderColor: tokens.colors.border.subtle }"
+                          >
+                            <td class="px-4 py-2.5">
+                              <div class="flex items-center gap-2">
+                                <span v-if="plan.isUnread" class="w-1.5 h-1.5 rounded-full animate-pulse" :style="{ backgroundColor: tokens.colors.accent.primary }"></span>
+                                <span class="text-sm font-medium" :style="{ color: tokens.colors.text.primary }">{{ plan.name }}</span>
+                              </div>
+                            </td>
+                            <td class="px-4 py-2.5 text-center">
+                              <span 
+                                class="px-2 py-0.5 rounded text-[10px] font-bold border"
+                                :style="plan.status === 'executing' 
+                                  ? { color: tokens.colors.semantic.success, borderColor: tokens.colors.semantic.success + '4D', backgroundColor: tokens.colors.semantic.success + '1A' }
+                                  : plan.status === 'pending'
+                                  ? { color: tokens.colors.semantic.warning, borderColor: tokens.colors.semantic.warning + '4D', backgroundColor: tokens.colors.semantic.warning + '1A' }
+                                  : plan.status === 'completed'
+                                  ? { color: tokens.colors.accent.primary, borderColor: tokens.colors.accent.primary + '4D', backgroundColor: tokens.colors.accent.primary + '1A' }
+                                  : { color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }"
+                              >
+                                {{ plan.statusLabel }}
+                              </span>
+                            </td>
+                            <td class="px-4 py-2.5 text-center">
+                              <span class="text-sm font-mono" :style="{ color: tokens.colors.text.secondary }">${{ plan.entryPrice }}</span>
+                            </td>
+                            <td class="px-4 py-2.5 text-center">
+                              <span class="text-sm font-mono" :style="{ color: tokens.colors.semantic.success }">${{ plan.targetPrice }}</span>
+                            </td>
+                            <td class="px-4 py-2.5 text-center">
+                              <span class="text-sm font-mono" :style="{ color: tokens.colors.semantic.error }">${{ plan.stopLoss }}</span>
+                            </td>
+                            <td class="px-4 py-2.5 text-center">
+                              <span class="text-xs" :style="{ color: tokens.colors.text.muted }">{{ plan.createdAt }}</span>
+                            </td>
+                            <td class="px-4 py-2.5 text-center">
+                              <div class="flex items-center justify-center gap-1">
+                                <button 
+                                  class="p-1 border rounded transition-colors hover:bg-white/10"
+                                  :style="{ borderColor: tokens.colors.border.default, color: tokens.colors.text.muted }"
+                                  title="查看详情"
+                                >
+                                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                </button>
+                                <button 
+                                  class="p-1 border rounded transition-colors hover:bg-white/10"
+                                  :style="{ borderColor: tokens.colors.border.default, color: tokens.colors.text.muted }"
+                                  title="编辑"
+                                >
+                                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                </button>
+                                <button 
+                                  class="p-1 border rounded transition-colors hover:bg-white/10"
+                                  :style="{ borderColor: tokens.colors.semantic.error + '4D', color: tokens.colors.semantic.error }"
+                                  title="删除"
+                                >
+                                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </td>
+                </tr>
+                </template>
               </tbody>
             </table>
             
@@ -3728,6 +3842,61 @@ const removeToast = (id) => {
 }
 const strategySortField = ref('generatedAt')
 const strategySortDirection = ref('desc')
+
+// 执行计划列折叠状态
+const isExecutionPlanExpanded = ref(true)
+const toggleExecutionPlanExpand = () => {
+  isExecutionPlanExpanded.value = !isExecutionPlanExpanded.value
+}
+
+// 策略行展开状态（用于显示执行计划子表格）
+const expandedStrategyIds = ref(new Set())
+const toggleStrategyExpand = (strategyId) => {
+  if (expandedStrategyIds.value.has(strategyId)) {
+    expandedStrategyIds.value.delete(strategyId)
+  } else {
+    expandedStrategyIds.value.add(strategyId)
+  }
+  // 触发响应式更新
+  expandedStrategyIds.value = new Set(expandedStrategyIds.value)
+}
+const isStrategyExpanded = (strategyId) => {
+  return expandedStrategyIds.value.has(strategyId)
+}
+
+// 获取策略的执行计划列表（模拟数据）
+const getStrategyPlans = (strategy) => {
+  if (!strategy.hasExecutionPlan || strategy.planCount === 0) return []
+  
+  // 模拟生成执行计划数据
+  const plans = []
+  const planCount = strategy.planCount || 0
+  const statuses = ['executing', 'pending', 'draft', 'completed']
+  const statusLabels = {
+    executing: '执行中',
+    pending: '待执行',
+    draft: '草稿',
+    completed: '已完成'
+  }
+  
+  for (let i = 1; i <= planCount; i++) {
+    const status = statuses[Math.floor(Math.random() * statuses.length)]
+    const basePrice = 150 + Math.random() * 50
+    plans.push({
+      id: `${strategy.id}-plan-${i}`,
+      name: i === 1 ? '建仓计划' : i === 2 ? '加仓计划' : i === 3 ? '止盈计划' : `计划 #${i}`,
+      status: status,
+      statusLabel: statusLabels[status],
+      entryPrice: basePrice.toFixed(2),
+      targetPrice: (basePrice * (1 + 0.05 + Math.random() * 0.1)).toFixed(2),
+      stopLoss: (basePrice * (1 - 0.03 - Math.random() * 0.05)).toFixed(2),
+      createdAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }),
+      isUnread: Math.random() > 0.7
+    })
+  }
+  return plans
+}
+
 const strategyViewMode = ref('table') // 'table', 'grid'
 
 const handleSort = (field) => {

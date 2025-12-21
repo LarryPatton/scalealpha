@@ -2,6 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+ * 动态根字体系统 - 多分辨率屏幕适配
+ * 1K (1920px): 14px
+ * 2K (2560px): 16px (基准)
+ * 4K (3840px): 20px
+ * ============================================ */
+html {
+  /* 使用 clamp 实现流体字体：最小14px，最大20px，中间按视口宽度线性缩放 */
+  /* 计算公式: 14px + (20-14) * ((100vw - 1920px) / (3840 - 1920)) */
+  font-size: clamp(14px, calc(12px + 0.208vw), 20px);
+}
+
+/* 精确断点控制（备用方案，可与 clamp 配合使用） */
+@media (max-width: 1920px) {
+  html { font-size: 14px; }  /* 1K 及以下屏幕 */
+}
+
+@media (min-width: 1921px) and (max-width: 2559px) {
+  html { font-size: 16px; }  /* 2K 屏幕 */
+}
+
+@media (min-width: 2560px) and (max-width: 3839px) {
+  html { font-size: 18px; }  /* 2K+ 屏幕 */
+}
+
+@media (min-width: 3840px) {
+  html { font-size: 20px; }  /* 4K 及以上屏幕 */
+}
+
 * {
   margin: 0;
   padding: 0;

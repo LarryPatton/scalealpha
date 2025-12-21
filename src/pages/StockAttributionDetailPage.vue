@@ -1,12 +1,12 @@
 <template>
-  <div class="bg-[#0f0f0f] min-h-screen pt-24 pb-20 px-4 sm:px-6 lg:px-8">
+  <div class="theme-bg-base min-h-screen pt-24 pb-20 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto">
 
       <!-- Top Search Bar -->
       <div class="flex flex-col items-center justify-center mb-4 animate-fade-in-down">
         <div class="relative group w-full max-w-md">
           <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <svg class="h-4 w-4 text-gray-500 group-focus-within:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="h-4 w-4 theme-text-muted group-focus-within:theme-accent-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
@@ -15,30 +15,30 @@
             @keyup.enter="handleSearch"
             type="text" 
             placeholder="Search to jump to another stock (e.g. NVDA)..." 
-            class="w-full bg-[#1a1a1a]/80 backdrop-blur border border-[#333] text-white text-sm pl-10 pr-4 py-2.5 rounded-full focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all shadow-lg placeholder-gray-500 hover:border-gray-600"
+            class="theme-input w-full backdrop-blur text-sm pl-10 pr-4 py-2.5 rounded-full focus:ring-1 focus:ring-[var(--color-accent-primary)] transition-all theme-shadow-medium"
           />
           <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-            <span class="text-[10px] text-gray-600 border border-[#333] rounded px-1.5 py-0.5 bg-[#111]">Enter</span>
+            <span class="text-[10px] theme-text-disabled border theme-border-strong rounded px-1.5 py-0.5 theme-bg-elevated">Enter</span>
           </div>
         </div>
       </div>
 
       <!-- Stock Basic Info Card -->
-      <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-6 mb-8 relative">
+      <div class="theme-card p-6 mb-8 relative">
         <div class="flex items-start justify-between">
           <!-- Left Section: Company Info & Price -->
           <div class="flex-1">
             <!-- Company Name & Symbol -->
             <div class="flex items-center gap-3 mb-4">
-              <div class="w-10 h-10 bg-green-600 rounded flex items-center justify-center text-white font-bold">
+              <div class="w-10 h-10 bg-[var(--color-accent-success,#10b981)] rounded flex items-center justify-center theme-text-primary font-bold">
                 {{ stockInfo.symbol.charAt(0) }}
               </div>
               <div>
-                <h1 class="text-xl font-bold text-white flex items-center gap-2">
+                <h1 class="text-xl font-bold theme-text-primary flex items-center gap-2">
                   {{ stockInfo.companyName }} ({{ stockInfo.symbol }})
-                  <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                  <svg class="w-4 h-4 theme-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </h1>
-                <div class="flex items-center gap-3 text-xs text-gray-500 mt-1">
+                <div class="flex items-center gap-3 text-xs theme-text-muted mt-1">
                   <span class="flex items-center gap-1">
                     <img src="https://flagcdn.com/w20/us.png" alt="US" class="w-4 h-3">
                     纳斯达克
@@ -53,32 +53,32 @@
             <!-- Current Price & Change -->
             <div class="flex items-end gap-6 mb-4">
               <div>
-                <div class="text-4xl font-bold text-white">{{ stockInfo.currentPrice }}</div>
+                <div class="text-4xl font-bold theme-text-primary">{{ stockInfo.currentPrice }}</div>
                 <div class="flex items-center gap-2 mt-1">
-                  <span class="text-sm font-medium" :class="stockInfo.changePercent >= 0 ? 'text-green-500' : 'text-red-500'">
+                  <span class="text-sm font-medium" :class="stockInfo.changePercent >= 0 ? 'theme-accent-success' : 'theme-accent-danger'">
                     {{ stockInfo.changePercent >= 0 ? '+' : '' }}{{ stockInfo.changeAmount }} ({{ stockInfo.changePercent >= 0 ? '+' : '' }}{{ stockInfo.changePercent }}%)
                   </span>
-                  <span class="text-sm" :class="stockInfo.changePercent >= 0 ? 'text-green-500' : 'text-red-500'">
+                  <span class="text-sm" :class="stockInfo.changePercent >= 0 ? 'theme-accent-success' : 'theme-accent-danger'">
                     {{ stockInfo.changePercent >= 0 ? '▲' : '▼' }}
                   </span>
                 </div>
               </div>
 
               <!-- Pre-market Data -->
-              <div class="border-l border-[#333] pl-6">
-                <div class="flex items-center gap-2 text-xs text-gray-500 mb-1">
+              <div class="border-l theme-border-strong pl-6">
+                <div class="flex items-center gap-2 text-xs theme-text-muted mb-1">
                   <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                   盘前 · {{ stockInfo.preMarket.time }}
                 </div>
                 <div class="flex items-center gap-2">
-                  <span class="text-sm font-medium" :class="stockInfo.preMarket.changePercent >= 0 ? 'text-green-500' : 'text-red-500'">
+                  <span class="text-sm font-medium" :class="stockInfo.preMarket.changePercent >= 0 ? 'theme-accent-success' : 'theme-accent-danger'">
                     {{ stockInfo.preMarket.changePercent >= 0 ? '▲' : '▼' }}
                   </span>
-                  <span class="text-lg font-bold text-white">{{ stockInfo.preMarket.price }}</span>
-                  <span class="text-sm" :class="stockInfo.preMarket.changePercent >= 0 ? 'text-green-500' : 'text-red-500'">
+                  <span class="text-lg font-bold theme-text-primary">{{ stockInfo.preMarket.price }}</span>
+                  <span class="text-sm" :class="stockInfo.preMarket.changePercent >= 0 ? 'theme-accent-success' : 'theme-accent-danger'">
                     {{ stockInfo.preMarket.changePercent >= 0 ? '+' : '' }}{{ stockInfo.preMarket.changeAmount }} ({{ stockInfo.preMarket.changePercent >= 0 ? '+' : '' }}{{ stockInfo.preMarket.changePercent }}%)
                   </span>
-                  <span class="text-xs text-gray-500">{{ stockInfo.preMarket.time }}</span>
+                  <span class="text-xs theme-text-muted">{{ stockInfo.preMarket.time }}</span>
                 </div>
               </div>
             </div>
@@ -89,15 +89,15 @@
             <!-- Fair Value -->
             <div>
               <div class="flex items-center justify-between mb-2">
-                <span class="text-xs text-gray-500">公允价格</span>
-                <svg class="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span class="text-xs theme-text-muted">公允价格</span>
+                <svg class="w-3 h-3 theme-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
               </div>
               <div class="relative">
-                <div class="flex justify-between text-xs text-gray-500 mb-1">
+                <div class="flex justify-between text-xs theme-text-muted mb-1">
                   <span>{{ stockInfo.fairValue.low }}</span>
                   <span>{{ stockInfo.fairValue.high }}</span>
                 </div>
-                <div class="h-2 bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 rounded-full relative">
+                <div class="h-2 bg-gradient-to-r from-[var(--color-accent-danger,#f43f5e)] via-[var(--color-accent-warning,#f59e0b)] to-[var(--color-accent-success,#10b981)] rounded-full relative">
                   <div class="absolute top-1/2 -translate-y-1/2 w-1 h-4 bg-white rounded" :style="{ left: stockInfo.fairValue.position + '%' }"></div>
                 </div>
               </div>
@@ -106,16 +106,16 @@
             <!-- Day Range -->
             <div>
               <div class="flex items-center justify-between mb-2">
-                <span class="text-xs text-gray-500">当日幅度</span>
+                <span class="text-xs theme-text-muted">当日幅度</span>
               </div>
               <div class="relative">
                 <div class="flex justify-between text-xs mb-1">
-                  <span class="text-gray-400">{{ stockInfo.dayRange.low }}</span>
-                  <span class="text-gray-400">{{ stockInfo.dayRange.high }}</span>
+                  <span class="theme-text-tertiary">{{ stockInfo.dayRange.low }}</span>
+                  <span class="theme-text-tertiary">{{ stockInfo.dayRange.high }}</span>
                 </div>
-                <div class="h-1.5 bg-gray-700 rounded-full relative overflow-hidden">
-                  <div class="absolute left-0 h-full bg-gray-500 rounded-full" :style="{ width: stockInfo.dayRange.position + '%' }"></div>
-                  <div class="absolute top-1/2 -translate-y-1/2 w-0.5 h-3 bg-white" :style="{ left: stockInfo.dayRange.position + '%' }"></div>
+                <div class="h-1.5 theme-bg-elevated rounded-full relative overflow-hidden">
+                  <div class="absolute left-0 h-full theme-bg-overlay rounded-full" :style="{ width: stockInfo.dayRange.position + '%' }"></div>
+                  <div class="absolute top-1/2 -translate-y-1/2 w-0.5 h-3 theme-bg-surface" :style="{ left: stockInfo.dayRange.position + '%' }" style="background-color: var(--color-text-primary)"></div>
                 </div>
               </div>
             </div>
@@ -123,16 +123,16 @@
             <!-- 52 Week Range -->
             <div>
               <div class="flex items-center justify-between mb-2">
-                <span class="text-xs text-gray-500">52周范围</span>
+                <span class="text-xs theme-text-muted">52周范围</span>
               </div>
               <div class="relative">
                 <div class="flex justify-between text-xs mb-1">
-                  <span class="text-gray-400">{{ stockInfo.week52Range.low }}</span>
-                  <span class="text-gray-400">{{ stockInfo.week52Range.high }}</span>
+                  <span class="theme-text-tertiary">{{ stockInfo.week52Range.low }}</span>
+                  <span class="theme-text-tertiary">{{ stockInfo.week52Range.high }}</span>
                 </div>
-                <div class="h-1.5 bg-gray-700 rounded-full relative overflow-hidden">
-                  <div class="absolute left-0 h-full bg-gray-500 rounded-full" :style="{ width: stockInfo.week52Range.position + '%' }"></div>
-                  <div class="absolute top-1/2 -translate-y-1/2 w-0.5 h-3 bg-white" :style="{ left: stockInfo.week52Range.position + '%' }"></div>
+                <div class="h-1.5 theme-bg-elevated rounded-full relative overflow-hidden">
+                  <div class="absolute left-0 h-full theme-bg-overlay rounded-full" :style="{ width: stockInfo.week52Range.position + '%' }"></div>
+                  <div class="absolute top-1/2 -translate-y-1/2 w-0.5 h-3" :style="{ left: stockInfo.week52Range.position + '%' }" style="background-color: var(--color-text-primary)"></div>
                 </div>
               </div>
             </div>
@@ -141,32 +141,32 @@
       </div>
 
       <!-- Tabs -->
-      <div class="grid grid-cols-4 border-b border-[#333] mb-8">
+      <div class="grid grid-cols-4 border-b theme-border-strong mb-8">
         <button 
           @click="activeTab = 'price'"
-          class="px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap text-center"
-          :class="activeTab === 'price' ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-300'"
+          class="theme-tab px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap text-center"
+          :class="activeTab === 'price' ? 'active' : ''"
         >
           价格走势 (Price Trend)
         </button>
         <button 
           @click="activeTab = 'themes'"
-          class="px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap text-center"
-          :class="activeTab === 'themes' ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-300'"
+          class="theme-tab px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap text-center"
+          :class="activeTab === 'themes' ? 'active' : ''"
         >
           相关主题 (Related Themes)
         </button>
         <button 
           @click="activeTab = 'attribution'"
-          class="px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap text-center"
-          :class="activeTab === 'attribution' ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-300'"
+          class="theme-tab px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap text-center"
+          :class="activeTab === 'attribution' ? 'active' : ''"
         >
           事件分析 (Event Analysis)
         </button>
         <button 
           @click="activeTab = 'strategies'"
-          class="px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap text-center"
-          :class="activeTab === 'strategies' ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-300'"
+          class="theme-tab px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap text-center"
+          :class="activeTab === 'strategies' ? 'active' : ''"
         >
           个股相关策略 (Strategies)
         </button>
@@ -1102,6 +1102,87 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { marked } from 'marked'
+import { useTheme } from '@/composables/useTheme'
+
+// ============================================
+// 主题系统集成 (Theme System Integration)
+// ============================================
+const { theme, colors, isDark, tokens } = useTheme()
+
+/**
+ * 设计规范 CSS 变量映射表
+ * 用于将硬编码颜色值逐步迁移到统一的设计系统
+ * 
+ * 背景色层级:
+ *   --color-bg-base     (#050505) → 页面最底层
+ *   --color-bg-surface  (#0a0a0a) → 主要面板/卡片
+ *   --color-bg-elevated (#111111) → 悬浮元素、输入框
+ *   --color-bg-overlay  (#1a1a1a) → 模态框、下拉菜单
+ * 
+ * 边框色层级:
+ *   --color-border-subtle  (#1a1a1a) → 最浅边框
+ *   --color-border-default (#222222) → 默认边框
+ *   --color-border-strong  (#333333) → 强调边框
+ *   --color-border-hover   (#444444) → 悬停边框
+ * 
+ * 文字色层级:
+ *   --color-text-primary   (#ffffff) → 主标题
+ *   --color-text-secondary (#d1d5db) → 次要文字
+ *   --color-text-tertiary  (#9ca3af) → 第三层文字
+ *   --color-text-muted     (#6b7280) → 弱化文字
+ *   --color-text-disabled  (#4b5563) → 禁用文字
+ * 
+ * 强调色/语义色:
+ *   accent.primary (#06b6d4) → Cyan 主交互色
+ *   accent.success (#10b981) → Emerald 成功/LONG
+ *   accent.warning (#f59e0b) → Amber 警告
+ *   accent.danger  (#f43f5e) → Rose 危险/SHORT
+ *   accent.info    (#3b82f6) → Blue 信息
+ */
+
+// 主题感知的样式类映射 - 便于模板中使用
+const themeStyles = computed(() => ({
+  // 背景色
+  bgBase: 'bg-[var(--color-bg-base)]',
+  bgSurface: 'bg-[var(--color-bg-surface)]',
+  bgElevated: 'bg-[var(--color-bg-elevated)]',
+  bgOverlay: 'bg-[var(--color-bg-overlay)]',
+  
+  // 边框色
+  borderSubtle: 'border-[var(--color-border-subtle)]',
+  borderDefault: 'border-[var(--color-border-default)]',
+  borderStrong: 'border-[var(--color-border-strong)]',
+  borderHover: 'border-[var(--color-border-hover)]',
+  
+  // 文字色
+  textPrimary: 'text-[var(--color-text-primary)]',
+  textSecondary: 'text-[var(--color-text-secondary)]',
+  textTertiary: 'text-[var(--color-text-tertiary)]',
+  textMuted: 'text-[var(--color-text-muted)]',
+  textDisabled: 'text-[var(--color-text-disabled)]',
+}))
+
+// 语义化颜色 computed - 便于动态绑定
+const accentColors = computed(() => ({
+  primary: colors.value.accent.primary,
+  primaryBg: colors.value.accent.primaryBg,
+  primaryBorder: colors.value.accent.primaryBorder,
+  success: colors.value.accent.success,
+  successBg: colors.value.accent.successBg,
+  successBorder: colors.value.accent.successBorder,
+  warning: colors.value.accent.warning,
+  warningBg: colors.value.accent.warningBg,
+  warningBorder: colors.value.accent.warningBorder,
+  danger: colors.value.accent.danger,
+  dangerBg: colors.value.accent.dangerBg,
+  dangerBorder: colors.value.accent.dangerBorder,
+  info: colors.value.accent.info,
+  infoBg: colors.value.accent.infoBg,
+  infoBorder: colors.value.accent.infoBorder,
+}))
+
+// 阴影系统 computed
+const themeShadows = computed(() => theme.value.shadows)
 
 // 配置 marked 选项
 marked.setOptions({
@@ -3243,6 +3324,252 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* ============================================
+   设计系统规范化样式 (Design System Normalization)
+   使用 CSS 变量实现主题感知
+   ============================================ */
+
+/* --- 背景色工具类 (Background Colors) --- */
+.theme-bg-base {
+  background-color: var(--color-bg-base);
+}
+.theme-bg-surface {
+  background-color: var(--color-bg-surface);
+}
+.theme-bg-elevated {
+  background-color: var(--color-bg-elevated);
+}
+.theme-bg-overlay {
+  background-color: var(--color-bg-overlay);
+}
+
+/* --- 边框色工具类 (Border Colors) --- */
+.theme-border-subtle {
+  border-color: var(--color-border-subtle);
+}
+.theme-border-default {
+  border-color: var(--color-border-default);
+}
+.theme-border-strong {
+  border-color: var(--color-border-strong);
+}
+.theme-border-hover:hover {
+  border-color: var(--color-border-hover);
+}
+
+/* --- 文字色工具类 (Text Colors) --- */
+.theme-text-primary {
+  color: var(--color-text-primary);
+}
+.theme-text-secondary {
+  color: var(--color-text-secondary);
+}
+.theme-text-tertiary {
+  color: var(--color-text-tertiary);
+}
+.theme-text-muted {
+  color: var(--color-text-muted);
+}
+.theme-text-disabled {
+  color: var(--color-text-disabled);
+}
+
+/* --- 强调色/语义色工具类 (Accent/Semantic Colors) --- */
+.theme-accent-primary {
+  color: var(--color-accent-primary);
+}
+.theme-accent-success {
+  color: #10b981; /* Emerald - 深色模式 */
+}
+.theme-accent-warning {
+  color: #f59e0b; /* Amber */
+}
+.theme-accent-danger {
+  color: #f43f5e; /* Rose */
+}
+.theme-accent-info {
+  color: #3b82f6; /* Blue */
+}
+
+/* 浅色模式下的强调色调整 */
+[data-theme="light"] .theme-accent-success {
+  color: #059669;
+}
+[data-theme="light"] .theme-accent-warning {
+  color: #d97706;
+}
+[data-theme="light"] .theme-accent-danger {
+  color: #e11d48;
+}
+[data-theme="light"] .theme-accent-info {
+  color: #2563eb;
+}
+
+/* --- 阴影系统 (Shadows) --- */
+.theme-shadow-subtle {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+.theme-shadow-medium {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+.theme-shadow-strong {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* 浅色模式阴影调整 */
+[data-theme="light"] .theme-shadow-subtle {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+[data-theme="light"] .theme-shadow-medium {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+[data-theme="light"] .theme-shadow-strong {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Glow 发光效果 (Glow Effects) --- */
+.glow-primary-sm { box-shadow: 0 0 8px rgba(6, 182, 212, 0.4); }
+.glow-primary-md { box-shadow: 0 0 15px rgba(6, 182, 212, 0.3); }
+.glow-primary-lg { box-shadow: 0 0 25px rgba(6, 182, 212, 0.35); }
+
+.glow-success-sm { box-shadow: 0 0 8px rgba(16, 185, 129, 0.4); }
+.glow-success-md { box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); }
+.glow-success-lg { box-shadow: 0 0 25px rgba(16, 185, 129, 0.35); }
+
+.glow-warning-sm { box-shadow: 0 0 8px rgba(245, 158, 11, 0.4); }
+.glow-warning-md { box-shadow: 0 0 15px rgba(245, 158, 11, 0.3); }
+.glow-warning-lg { box-shadow: 0 0 25px rgba(245, 158, 11, 0.35); }
+
+.glow-danger-sm { box-shadow: 0 0 8px rgba(244, 63, 94, 0.4); }
+.glow-danger-md { box-shadow: 0 0 15px rgba(244, 63, 94, 0.3); }
+.glow-danger-lg { box-shadow: 0 0 25px rgba(244, 63, 94, 0.35); }
+
+.glow-info-sm { box-shadow: 0 0 8px rgba(59, 130, 246, 0.4); }
+.glow-info-md { box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); }
+.glow-info-lg { box-shadow: 0 0 25px rgba(59, 130, 246, 0.35); }
+
+/* 浅色模式 Glow 减弱 */
+[data-theme="light"] .glow-primary-sm { box-shadow: 0 0 6px rgba(8, 145, 178, 0.25); }
+[data-theme="light"] .glow-primary-md { box-shadow: 0 0 12px rgba(8, 145, 178, 0.2); }
+[data-theme="light"] .glow-primary-lg { box-shadow: 0 0 20px rgba(8, 145, 178, 0.25); }
+
+[data-theme="light"] .glow-info-sm { box-shadow: 0 0 6px rgba(37, 99, 235, 0.25); }
+[data-theme="light"] .glow-info-md { box-shadow: 0 0 12px rgba(37, 99, 235, 0.2); }
+[data-theme="light"] .glow-info-lg { box-shadow: 0 0 20px rgba(37, 99, 235, 0.25); }
+
+/* --- 卡片基础样式 (Card Base) --- */
+.theme-card {
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 2px; /* sharp: 2px */
+  transition: all 0.2s ease;
+}
+.theme-card:hover {
+  border-color: var(--color-border-hover);
+}
+
+/* --- 输入框基础样式 (Input Base) --- */
+.theme-input {
+  background-color: var(--color-bg-elevated);
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text-primary);
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+.theme-input:focus {
+  border-color: var(--color-accent-primary);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2);
+}
+.theme-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* --- 按钮基础样式 (Button Base) --- */
+.theme-btn-primary {
+  background-color: #06b6d4;
+  color: #000;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+.theme-btn-primary:hover {
+  background-color: #22d3ee;
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+}
+
+.theme-btn-secondary {
+  background-color: transparent;
+  color: var(--color-accent-primary);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+.theme-btn-secondary:hover {
+  background-color: rgba(6, 182, 212, 0.1);
+}
+
+.theme-btn-ghost {
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+.theme-btn-ghost:hover {
+  background-color: var(--color-bg-elevated);
+  color: var(--color-text-primary);
+}
+
+/* --- 标签/徽章样式 (Badge Base) --- */
+.theme-badge {
+  border-radius: 4px; /* soft: 4px */
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+}
+
+/* --- Tab 导航样式 (Tab Navigation) --- */
+.theme-tab {
+  color: var(--color-text-muted);
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+.theme-tab:hover {
+  color: var(--color-text-secondary);
+}
+.theme-tab.active {
+  color: var(--color-accent-primary);
+  border-bottom-color: var(--color-accent-primary);
+}
+
+/* --- 模态框样式 (Modal Base) --- */
+.theme-modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+}
+.theme-modal {
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 2px;
+}
+
+/* --- 圆角规范化工具类 (Border Radius Normalization) --- */
+/* 覆盖 Tailwind 默认圆角，统一为设计规范 */
+.radius-none { border-radius: 0; }
+.radius-sharp { border-radius: 2px; }  /* 卡片、按钮、面板 */
+.radius-soft { border-radius: 4px; }   /* 标签、徽章、小元素 */
+.radius-full { border-radius: 9999px; } /* 头像、浮动导航、圆形按钮 */
+
+/* --- 排版规范化工具类 (Typography Normalization) --- */
+.text-display { font-size: 20px; line-height: 1.4; font-weight: 700; }
+.text-title { font-size: 16px; line-height: 1.5; font-weight: 600; }
+.text-body { font-size: 14px; line-height: 1.6; font-weight: 400; }
+.text-caption { font-size: 12px; line-height: 1.5; font-weight: 400; }
+.text-micro { font-size: 10px; line-height: 1.4; font-weight: 500; }
+
+/* --- 间距规范化 (Spacing) --- */
+/* 基于 tokens: xs:4px, sm:8px, md:12px, lg:16px, xl:24px, 2xl:32px */
+/* Tailwind 原生间距已基本符合，保持使用 p-1(4px), p-2(8px), p-3(12px), p-4(16px), p-6(24px), p-8(32px) */
+
 /* Modal Animation */
 @keyframes modalIn {
   from {
@@ -3275,7 +3602,7 @@ onMounted(() => {
   overflow: hidden;
 }
 
-/* Custom Scrollbar for Webkit browsers */
+/* Custom Scrollbar for Webkit browsers - 主题感知 */
 .scrollbar-thin::-webkit-scrollbar {
   width: 6px;
 }
@@ -3285,29 +3612,29 @@ onMounted(() => {
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #333;
+  background: var(--color-border-strong);
   border-radius: 3px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #444;
+  background: var(--color-border-hover);
 }
 
-/* Markdown Content Styling */
+/* Markdown Content Styling - 主题感知 */
 .markdown-content :deep(h2) {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--color-text-primary);
   margin-top: 2rem;
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid #2a2a2a;
+  border-bottom: 1px solid var(--color-border-default);
 }
 
 .markdown-content :deep(h3) {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #e5e5e5;
+  color: var(--color-text-primary);
   margin-top: 1.5rem;
   margin-bottom: 0.75rem;
 }
@@ -3315,7 +3642,7 @@ onMounted(() => {
 .markdown-content :deep(h4) {
   font-size: 1rem;
   font-weight: 600;
-  color: #d4d4d4;
+  color: var(--color-text-secondary);
   margin-top: 1.25rem;
   margin-bottom: 0.5rem;
 }
@@ -3323,14 +3650,14 @@ onMounted(() => {
 .markdown-content :deep(p) {
   margin-bottom: 1rem;
   line-height: 1.7;
-  color: #d1d5db;
+  color: var(--color-text-secondary);
 }
 
 .markdown-content :deep(ul),
 .markdown-content :deep(ol) {
   margin-bottom: 1rem;
   padding-left: 1.5rem;
-  color: #d1d5db;
+  color: var(--color-text-secondary);
 }
 
 .markdown-content :deep(li) {
@@ -3340,27 +3667,27 @@ onMounted(() => {
 
 .markdown-content :deep(strong) {
   font-weight: 600;
-  color: #fff;
+  color: var(--color-text-primary);
 }
 
 .markdown-content :deep(em) {
   font-style: italic;
-  color: #9ca3af;
+  color: var(--color-text-tertiary);
 }
 
 .markdown-content :deep(code) {
-  background: #1a1a1a;
+  background: var(--color-bg-overlay);
   padding: 0.2em 0.4em;
-  border-radius: 0.25rem;
+  border-radius: 4px;
   font-size: 0.9em;
-  color: #60a5fa;
+  color: var(--color-accent-primary);
   font-family: 'Courier New', monospace;
 }
 
 .markdown-content :deep(pre) {
-  background: #1a1a1a;
-  border: 1px solid #2a2a2a;
-  border-radius: 0.5rem;
+  background: var(--color-bg-overlay);
+  border: 1px solid var(--color-border-default);
+  border-radius: 4px;
   padding: 1rem;
   margin-bottom: 1rem;
   overflow-x: auto;
@@ -3369,7 +3696,7 @@ onMounted(() => {
 .markdown-content :deep(pre code) {
   background: transparent;
   padding: 0;
-  color: #d1d5db;
+  color: var(--color-text-secondary);
 }
 
 .markdown-content :deep(table) {
@@ -3380,51 +3707,52 @@ onMounted(() => {
 }
 
 .markdown-content :deep(thead) {
-  background: #1a1a1a;
-  border-bottom: 2px solid #2a2a2a;
+  background: var(--color-bg-overlay);
+  border-bottom: 2px solid var(--color-border-default);
 }
 
 .markdown-content :deep(th) {
   padding: 0.75rem 1rem;
   text-align: left;
   font-weight: 600;
-  color: #fff;
-  border: 1px solid #2a2a2a;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-default);
 }
 
 .markdown-content :deep(td) {
   padding: 0.75rem 1rem;
-  border: 1px solid #2a2a2a;
-  color: #d1d5db;
+  border: 1px solid var(--color-border-default);
+  color: var(--color-text-secondary);
 }
 
 .markdown-content :deep(tbody tr:hover) {
-  background: #1a1a1a;
+  background: var(--color-bg-elevated);
 }
 
 .markdown-content :deep(blockquote) {
-  border-left: 3px solid #3b82f6;
+  border-left: 3px solid var(--color-accent-primary);
   padding-left: 1rem;
   margin-left: 0;
   margin-bottom: 1rem;
-  color: #9ca3af;
+  color: var(--color-text-tertiary);
   font-style: italic;
 }
 
 .markdown-content :deep(hr) {
   border: none;
-  border-top: 1px solid #2a2a2a;
+  border-top: 1px solid var(--color-border-default);
   margin: 2rem 0;
 }
 
 .markdown-content :deep(a) {
-  color: #60a5fa;
+  color: var(--color-accent-primary);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .markdown-content :deep(a:hover) {
-  color: #93c5fd;
+  color: var(--color-accent-primary);
+  opacity: 0.8;
   text-decoration: underline;
 }
 </style>
