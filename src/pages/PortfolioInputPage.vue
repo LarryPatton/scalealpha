@@ -1,16 +1,17 @@
 <template>
-  <div class="min-h-screen bg-[#1a1a1a] py-8">
+  <div class="min-h-screen py-8" :class="themeClasses.pageBg">
     <div class="max-w-5xl mx-auto px-6">
       <!-- Header -->
       <div class="mb-8">
         <div class="flex items-center justify-between">
           <div>
-            <h1 class="text-3xl font-bold text-white mb-2">我的投资信息</h1>
-            <p class="text-gray-400">完善您的个人信息，为您生成更精准的投资组合建议</p>
+            <h1 class="text-xl font-bold mb-2" :class="themeClasses.textPrimary">我的投资信息</h1>
+            <p class="text-sm" :class="themeClasses.textMuted">完善您的个人信息，为您生成更精准的投资组合建议</p>
           </div>
           <button
             @click="fillDemoData"
-            class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium transition-all flex items-center gap-2"
+            class="px-4 py-2 rounded-sm text-sm font-medium transition-all flex items-center gap-2"
+            :class="themeClasses.btnSecondary"
           >
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
@@ -21,16 +22,16 @@
       </div>
 
       <!-- Module 0: Progress Overview -->
-      <div class="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-xl p-6 mb-8">
+      <div class="p-6 mb-8 border" :class="[themeClasses.cardBg, themeClasses.progressBorder]">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold text-white">完成度</h2>
-          <span class="text-2xl font-bold text-white">{{ completionPercentage }}%</span>
+          <h2 class="text-base font-bold" :class="themeClasses.textPrimary">完成度</h2>
+          <span class="text-xl font-bold text-cyan-500">{{ completionPercentage }}%</span>
         </div>
         
         <!-- Progress Bar -->
-        <div class="w-full bg-[#1f1f1f] rounded-full h-3 mb-4">
+        <div class="w-full h-2 rounded-sm mb-4" :class="themeClasses.progressBg">
           <div 
-            class="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500"
+            class="h-2 rounded-sm transition-all duration-500 bg-gradient-to-r from-cyan-500 to-blue-500"
             :style="{ width: `${completionPercentage}%` }"
           ></div>
         </div>
@@ -40,90 +41,90 @@
           <div class="flex items-center gap-2 text-sm">
             <div :class="[
               'w-5 h-5 rounded-full flex items-center justify-center',
-              moduleStatus.riskAssessment ? 'bg-green-500' : 'bg-gray-600'
+              moduleStatus.riskAssessment ? 'bg-emerald-500' : themeClasses.checkBgInactive
             ]">
               <svg v-if="moduleStatus.riskAssessment" class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
               </svg>
             </div>
-            <span class="text-gray-300">风险偏好</span>
+            <span :class="themeClasses.textSecondary">风险偏好</span>
           </div>
           
           <div class="flex items-center gap-2 text-sm">
             <div :class="[
               'w-5 h-5 rounded-full flex items-center justify-center',
-              moduleStatus.holdings ? 'bg-green-500' : 'bg-gray-600'
+              moduleStatus.holdings ? 'bg-emerald-500' : themeClasses.checkBgInactive
             ]">
               <svg v-if="moduleStatus.holdings" class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
               </svg>
             </div>
-            <span class="text-gray-300">持仓信息 <span class="text-red-400">*</span></span>
+            <span :class="themeClasses.textSecondary">持仓信息 <span class="text-rose-500">*</span></span>
           </div>
           
           <div class="flex items-center gap-2 text-sm">
             <div :class="[
               'w-5 h-5 rounded-full flex items-center justify-center',
-              moduleStatus.knowledge ? 'bg-green-500' : 'bg-gray-600'
+              moduleStatus.knowledge ? 'bg-emerald-500' : themeClasses.checkBgInactive
             ]">
               <svg v-if="moduleStatus.knowledge" class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
               </svg>
             </div>
-            <span class="text-gray-300">知识库</span>
+            <span :class="themeClasses.textSecondary">知识库</span>
           </div>
         </div>
       </div>
 
       <!-- Module 1: Risk Assessment -->
-      <div class="bg-[#2a2a2a] border border-[#404040] rounded-xl p-6 mb-6">
+      <div class="p-6 mb-6 border" :class="[themeClasses.cardBg, themeClasses.cardBorder]">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-semibold text-white">1. 风险偏好评估</h2>
+          <h2 class="text-base font-bold" :class="themeClasses.textPrimary">1. 风险偏好评估</h2>
           <button
             @click="openRiskAssessment"
-            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition-colors"
+            class="px-4 py-2 rounded-sm text-sm font-medium transition-colors bg-cyan-500 text-black hover:bg-cyan-400"
           >
             {{ riskAssessmentResult ? '重新评估' : '开始评估' }}
           </button>
         </div>
         
-        <div v-if="riskAssessmentResult" class="bg-[#1f1f1f] border border-[#404040] rounded-lg p-4">
+        <div v-if="riskAssessmentResult" class="p-4 border" :class="[themeClasses.progressBg, themeClasses.cardBorder]">
           <div class="flex items-center gap-3">
-            <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <div class="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
               </svg>
             </div>
             <div>
-              <div class="font-medium text-white">评估完成</div>
-              <div class="text-sm text-gray-400">
-                风险等级: <span :class="getRiskLevelColor(riskAssessmentResult.riskLevel)" class="font-semibold">{{ getRiskLevelLabel(riskAssessmentResult.riskLevel) }}</span>
+              <div class="font-medium text-sm" :class="themeClasses.textPrimary">评估完成</div>
+              <div class="text-xs" :class="themeClasses.textMuted">
+                风险等级: <span :class="getRiskLevelColor(riskAssessmentResult.riskLevel)" class="font-bold">{{ getRiskLevelLabel(riskAssessmentResult.riskLevel) }}</span>
               </div>
             </div>
           </div>
         </div>
-        <p v-else class="text-gray-400 text-sm">通过5道问题了解您的投资偏好和风险承受能力</p>
+        <p v-else class="text-sm" :class="themeClasses.textMuted">通过5道问题了解您的投资偏好和风险承受能力</p>
       </div>
 
       <!-- Module 2: Holdings Information -->
-      <div class="bg-[#2a2a2a] border border-[#404040] rounded-xl p-6 mb-6">
+      <div class="p-6 mb-6 border" :class="[themeClasses.cardBg, themeClasses.cardBorder]">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-semibold text-white">
-            2. 持仓信息 <span class="text-red-400 text-sm">*必填</span>
+          <h2 class="text-base font-bold" :class="themeClasses.textPrimary">
+            2. 持仓信息 <span class="text-rose-500 text-xs">*必填</span>
           </h2>
         </div>
 
         <!-- Input Method Tabs -->
-        <div class="flex gap-2 mb-6 border-b border-[#404040]">
+        <div class="flex gap-2 mb-6 border-b" :class="themeClasses.cardBorder">
           <button
             v-for="method in inputMethods"
             :key="method.value"
             @click="currentInputMethod = method.value"
             :class="[
-              'px-4 py-2 text-sm font-medium transition-colors border-b-2',
+              'px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px',
               currentInputMethod === method.value
-                ? 'text-blue-400 border-blue-500'
-                : 'text-gray-400 border-transparent hover:text-gray-300'
+                ? 'text-cyan-500 border-cyan-500'
+                : themeClasses.textMuted + ' border-transparent hover:text-cyan-400'
             ]"
           >
             {{ method.label }}
@@ -375,15 +376,15 @@
       </div>
 
       <!-- Module 3: Knowledge Base -->
-      <div class="bg-[#2a2a2a] border border-[#404040] rounded-xl p-6 mb-6">
+      <div class="p-6 mb-6 border" :class="[themeClasses.cardBg, themeClasses.cardBorder]">
         <div class="flex items-center justify-between mb-4">
           <div>
-            <h2 class="text-xl font-semibold text-white">3. 知识库 <span class="text-gray-500 text-sm">(可选)</span></h2>
-            <p class="text-sm text-gray-400 mt-1">上传您的研究报告、投资笔记等文档，帮助AI更好地理解您的投资逻辑</p>
+            <h2 class="text-base font-bold" :class="themeClasses.textPrimary">3. 知识库 <span class="text-xs" :class="themeClasses.textMuted">(可选)</span></h2>
+            <p class="text-xs mt-1" :class="themeClasses.textMuted">上传您的研究报告、投资笔记等文档，帮助AI更好地理解您的投资逻辑</p>
           </div>
         </div>
 
-        <div class="border-2 border-dashed border-[#404040] rounded-lg p-6">
+        <div class="border-2 border-dashed p-6" :class="themeClasses.cardBorder">
           <input
             ref="knowledgeFileInput"
             type="file"
@@ -394,38 +395,40 @@
           />
           <button
             @click="$refs.knowledgeFileInput.click()"
-            class="w-full flex flex-col items-center gap-2 text-gray-400 hover:text-gray-300 transition-colors"
+            class="w-full flex flex-col items-center gap-2 transition-colors"
+            :class="themeClasses.textMuted"
           >
-            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
             </svg>
-            <span>点击上传文档</span>
-            <span class="text-xs">支持 PDF / TXT / Markdown 格式</span>
+            <span class="text-sm">点击上传文档</span>
+            <span class="text-[10px]">支持 PDF / TXT / Markdown 格式</span>
           </button>
         </div>
 
         <!-- Uploaded Files -->
         <div v-if="knowledgeFiles.length > 0" class="mt-4 space-y-2">
-          <div class="text-sm font-medium text-gray-400 mb-2">已上传文档 ({{ knowledgeFiles.length }})</div>
+          <div class="text-xs font-medium mb-2" :class="themeClasses.textMuted">已上传文档 ({{ knowledgeFiles.length }})</div>
           <div
             v-for="(file, index) in knowledgeFiles"
             :key="index"
-            class="flex items-center justify-between bg-[#1f1f1f] rounded-lg p-3"
+            class="flex items-center justify-between p-3 border"
+            :class="[themeClasses.progressBg, themeClasses.cardBorder]"
           >
             <div class="flex items-center gap-3">
-              <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-4 h-4 text-cyan-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
               </svg>
               <div>
-                <div class="text-sm text-white">{{ file.name }}</div>
-                <div class="text-xs text-gray-500">{{ formatFileSize(file.size) }}</div>
+                <div class="text-xs" :class="themeClasses.textPrimary">{{ file.name }}</div>
+                <div class="text-[10px]" :class="themeClasses.textMuted">{{ formatFileSize(file.size) }}</div>
               </div>
             </div>
             <button
               @click="removeKnowledgeFile(index)"
-              class="text-red-400 hover:text-red-300 transition-colors"
+              class="text-rose-500 hover:text-rose-400 transition-colors"
             >
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
               </svg>
             </button>
@@ -435,10 +438,11 @@
 
       <!-- CTA Buttons -->
       <div class="flex justify-between items-center pt-4">
-        <div class="flex gap-4">
+        <div class="flex gap-3">
           <button
             @click="handleReset"
-            class="px-6 py-3 bg-[#3a3a3a] hover:bg-[#404040] text-gray-300 rounded-lg transition-colors"
+            class="px-5 py-2.5 rounded-sm text-sm transition-colors"
+            :class="themeClasses.btnSecondary"
           >
             重置全部
           </button>
@@ -446,31 +450,31 @@
           <!-- 保存草稿按钮 -->
           <button
             @click="handleSaveDraft"
-            class="px-6 py-3 bg-[#2a4a2a] hover:bg-[#2f552f] text-green-300 rounded-lg transition-colors flex items-center gap-2"
+            class="px-5 py-2.5 rounded-sm text-sm transition-colors flex items-center gap-2 bg-emerald-500/10 text-emerald-500 border border-emerald-500/30 hover:bg-emerald-500/20"
           >
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z"/>
             </svg>
             <span>保存草稿</span>
           </button>
         </div>
         
-        <div class="flex gap-4">
+        <div class="flex gap-3">
           <!-- 提交信息按钮 -->
           <button
             @click="handleSubmitInfo"
             :disabled="!isFormValid || isSubmitted"
             :class="[
-              'px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2',
+              'px-5 py-2.5 rounded-sm text-sm font-medium transition-all duration-200 flex items-center gap-2',
               isFormValid && !isSubmitted
-                ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/30'
-                : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                ? 'bg-cyan-500 text-black hover:bg-cyan-400'
+                : themeClasses.checkBgInactive + ' ' + themeClasses.textMuted + ' cursor-not-allowed'
             ]"
           >
-            <svg v-if="!isSubmitted" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <svg v-if="!isSubmitted" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
             </svg>
-            <svg v-else class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+            <svg v-else class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
             </svg>
             <span>{{ isSubmitted ? '已提交信息' : '提交信息' }}</span>
@@ -481,14 +485,14 @@
             @click="handleNext"
             :disabled="!isSubmitted"
             :class="[
-              'px-8 py-3 rounded-lg font-medium text-lg transition-all duration-200 flex items-center gap-2',
+              'px-6 py-2.5 rounded-sm text-sm font-bold transition-all duration-200 flex items-center gap-2',
               isSubmitted
-                ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg shadow-blue-500/50'
-                : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                ? 'bg-cyan-500 text-black hover:bg-cyan-400'
+                : themeClasses.checkBgInactive + ' ' + themeClasses.textMuted + ' cursor-not-allowed'
             ]"
           >
             <span>下一步：机会发现</span>
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
             </svg>
           </button>
@@ -496,7 +500,7 @@
       </div>
 
       <!-- Info Note -->
-      <div class="mt-6 text-center text-sm text-gray-500">
+      <div class="mt-6 text-center text-xs" :class="themeClasses.textMuted">
         <p>完成后，系统将基于您的信息生成个性化的投资组合建议</p>
       </div>
     </div>
@@ -513,11 +517,44 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useTheme } from '@/composables/useTheme'
 import { useWorkflowProgress } from '../composables/useWorkflowProgress'
 import RiskAssessmentModal from '../components/RiskAssessmentModal.vue'
 
 const router = useRouter()
+const { isDark } = useTheme()
 const { updateProgress, userProgress } = useWorkflowProgress()
+
+// 主题样式类
+const themeClasses = computed(() => {
+  if (isDark.value) {
+    return {
+      pageBg: 'bg-[#050505]',
+      textPrimary: 'text-white',
+      textSecondary: 'text-gray-300',
+      textMuted: 'text-gray-500',
+      cardBg: 'bg-[#0a0a0a]',
+      cardBorder: 'border-[#222222]',
+      progressBg: 'bg-[#1a1a1a]',
+      progressBorder: 'border-cyan-500/30',
+      checkBgInactive: 'bg-gray-700',
+      btnSecondary: 'bg-transparent border border-gray-600 text-gray-300 hover:border-gray-500 hover:text-white'
+    }
+  } else {
+    return {
+      pageBg: 'bg-slate-50',
+      textPrimary: 'text-slate-800',
+      textSecondary: 'text-slate-600',
+      textMuted: 'text-slate-400',
+      cardBg: 'bg-white',
+      cardBorder: 'border-slate-200',
+      progressBg: 'bg-slate-200',
+      progressBorder: 'border-cyan-500/30',
+      checkBgInactive: 'bg-slate-300',
+      btnSecondary: 'bg-transparent border border-slate-300 text-slate-600 hover:border-slate-400 hover:text-slate-800'
+    }
+  }
+})
 
 // Modal state
 const showRiskModal = ref(false)

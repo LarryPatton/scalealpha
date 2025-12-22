@@ -812,12 +812,12 @@
                 <col style="width: 75px;" />  <!-- Horizon -->
                 <col style="width: 90px;" />  <!-- Created -->
                 <col style="width: 80px;" />  <!-- Strategy Update -->
-                <col v-if="isExecutionPlanExpanded" style="width: 85px;" />  <!-- Plan Status -->
+                <col style="width: 85px;" />  <!-- Plan Status - 始终显示 -->
                 <col v-if="isExecutionPlanExpanded" style="width: 60px;" />  <!-- Plan Count -->
                 <col v-if="isExecutionPlanExpanded" style="width: 60px;" />  <!-- Unread -->
                 <col v-if="isExecutionPlanExpanded" style="width: 100px;" /> <!-- Generating -->
                 <col v-if="isExecutionPlanExpanded" style="width: 85px;" />  <!-- Plan Update -->
-                <col style="width: 90px;" />  <!-- Actions -->
+                <col style="width: 90px;" />  <!-- Actions - 独立列 -->
               </colgroup>
               <thead class="sticky top-0 z-20">
                 <!-- 分组表头行 -->
@@ -848,12 +848,16 @@
                     </div>
                   </th>
                   <!-- 计划分组 -->
-                  <th :colspan="isExecutionPlanExpanded ? 6 : 1" @click="toggleExecutionPlanExpand" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer select-none transition-all hover:brightness-110" :style="{ color: tokens.colors.accent.warning, borderBottomColor: tokens.colors.border.strong, background: `linear-gradient(to right, ${tokens.colors.accent.warning}26, ${tokens.colors.accent.warning}1A), ${tokens.colors.background.surface}` }">
+                  <th :colspan="isExecutionPlanExpanded ? 5 : 1" @click="toggleExecutionPlanExpand" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b border-r text-center cursor-pointer select-none transition-all hover:brightness-110" :style="{ color: tokens.colors.accent.warning, borderBottomColor: tokens.colors.border.strong, borderRightColor: tokens.colors.border.strong, background: `linear-gradient(to right, ${tokens.colors.accent.warning}26, ${tokens.colors.accent.warning}1A), ${tokens.colors.background.surface}` }">
                     <div class="flex items-center justify-center gap-2">
                       <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                       {{ $t('opportunity.strategyTable.executionPlan') }}
                       <svg class="w-3 h-3 transition-transform duration-200" :class="isExecutionPlanExpanded ? 'rotate-0' : '-rotate-90'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </div>
+                  </th>
+                  <!-- 操作列（独立） -->
+                  <th rowspan="2" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center align-middle" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                    {{ $t('opportunity.strategyTable.actions') }}
                   </th>
                 </tr>
                 <!-- 子表头行 -->
@@ -898,8 +902,8 @@
                   <th class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b border-r text-center" :style="{ color: tokens.colors.text.muted, borderBottomColor: tokens.colors.border.default, borderRightColor: tokens.colors.border.strong, backgroundColor: tokens.colors.background.surface }">
                     {{ $t('opportunity.strategyTable.update') }}
                   </th>
-                  <!-- 计划子列 -->
-                  <th v-if="isExecutionPlanExpanded" @click="handleSort('hasExecutionPlan')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <!-- 计划子列 - 状态列始终显示 -->
+                  <th @click="handleSort('hasExecutionPlan')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
                       {{ $t('opportunity.strategyTable.status') }}
                       <span v-if="strategySortField === 'hasExecutionPlan'" :style="{ color: tokens.colors.semantic.warning }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
@@ -923,14 +927,11 @@
                       <span v-if="strategySortField === 'planGeneratingCount'" :style="{ color: tokens.colors.semantic.warning }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
                   </th>
-                  <th v-if="isExecutionPlanExpanded" @click="handleSort('planNeedsUpdate')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                  <th v-if="isExecutionPlanExpanded" @click="handleSort('planNeedsUpdate')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b border-r text-center cursor-pointer hover:text-white transition-colors select-none" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, borderRightColor: tokens.colors.border.strong, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-1">
                       {{ $t('opportunity.strategyTable.update') }}
                       <span v-if="strategySortField === 'planNeedsUpdate'" :style="{ color: tokens.colors.semantic.warning }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
                     </div>
-                  </th>
-                  <th class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b text-center" :style="{ color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
-                    {{ $t('opportunity.strategyTable.actions') }}
                   </th>
                 </tr>
               </thead>
@@ -1127,11 +1128,11 @@
                       </span>
                     </template>
                   </td>
-                  <!-- Plan Status -->
-                  <td v-if="isExecutionPlanExpanded" class="px-3 py-3 whitespace-nowrap text-center">
+                  <!-- Plan Status - 始终显示 -->
+                  <td class="px-3 py-3 whitespace-nowrap text-center" :class="{ 'border-r': !isExecutionPlanExpanded }" :style="!isExecutionPlanExpanded ? { borderRightColor: tokens.colors.border.strong } : {}">
                     <span 
                       v-if="strategy.hasStrategy === false && strategy.hasExecutionPlan"
-                      class="px-2 py-0.5 rounded text-[10px] font-bold border"
+                      class="px-2 py-0.5 rounded-sm text-[10px] font-bold border"
                       :style="{ color: tokens.colors.accent.secondary, borderColor: tokens.colors.accent.secondary + '4D', backgroundColor: tokens.colors.accent.secondary + '1A' }"
                       title="Only Plan - No Strategy Report"
                     >
@@ -1139,7 +1140,7 @@
                     </span>
                     <span 
                       v-else-if="strategy.hasExecutionPlan"
-                      class="px-2 py-0.5 rounded text-[10px] font-bold border"
+                      class="px-2 py-0.5 rounded-sm text-[10px] font-bold border"
                       :style="{ color: tokens.colors.semantic.success, borderColor: tokens.colors.semantic.success + '4D', backgroundColor: tokens.colors.semantic.success + '1A' }"
                       title="Has Execution Plan"
                     >
@@ -1183,11 +1184,11 @@
                     <span v-else class="text-xs text-gray-500 tracking-wider">— — —</span>
                   </td>
                   <!-- Plan Update -->
-                  <td v-if="isExecutionPlanExpanded" class="px-3 py-3 whitespace-nowrap text-center">
+                  <td v-if="isExecutionPlanExpanded" class="px-3 py-3 whitespace-nowrap text-center border-r" :style="{ borderRightColor: tokens.colors.border.strong }">
                     <button 
                       v-if="strategy.planNeedsUpdate"
                       @click.stop
-                      class="flex items-center gap-1.5 px-2 py-1 border rounded text-[10px] font-bold uppercase tracking-wider transition-colors mx-auto"
+                      class="flex items-center gap-1.5 px-2 py-1 border rounded-sm text-[10px] font-bold uppercase tracking-wider transition-colors mx-auto"
                       :style="{ backgroundColor: tokens.colors.semantic.warning + '33', borderColor: tokens.colors.semantic.warning + '66', color: tokens.colors.semantic.warning }"
                       title="Plan needs update"
                     >
@@ -1196,14 +1197,14 @@
                     </button>
                     <span v-else class="text-xs text-gray-500 tracking-wider">— — —</span>
                   </td>
-                  <!-- Actions -->
-                  <td class="px-3 py-3 whitespace-nowrap text-center">
+                  <!-- Actions - 独立列 -->
+                  <td class="px-3 py-3 whitespace-nowrap text-center" :class="{ 'border-l': !isExecutionPlanExpanded }" :style="!isExecutionPlanExpanded ? { borderLeftColor: tokens.colors.border.strong } : {}">
                     <div class="flex items-center justify-center gap-1">
                       <!-- Generate Plan -->
                       <button 
                         v-if="strategy.grade !== 'N/A'"
                         @click.stop="generatePlanForStrategy(strategy)"
-                        class="p-1.5 border rounded transition-colors"
+                        class="p-1.5 border rounded-sm transition-colors hover:brightness-110"
                         :style="{ backgroundColor: tokens.colors.semantic.success + '33', borderColor: tokens.colors.semantic.success + '66', color: tokens.colors.semantic.success }"
                         :title="$t('opportunity.strategyTable.generatePlan')"
                       >
@@ -1213,7 +1214,7 @@
                       <button 
                         v-if="strategy.hasExecutionPlan"
                         @click.stop="toggleStrategyExpand(strategy.id)"
-                        class="p-1.5 border rounded transition-colors"
+                        class="p-1.5 border rounded-sm transition-colors hover:brightness-110"
                         :style="isStrategyExpanded(strategy.id) 
                           ? { backgroundColor: tokens.colors.accent.primary, borderColor: tokens.colors.accent.primary, color: tokens.colors.background.base }
                           : { backgroundColor: tokens.colors.accent.primary + '33', borderColor: tokens.colors.accent.primary + '66', color: tokens.colors.accent.primary }"
@@ -1224,8 +1225,8 @@
                       </button>
                       <!-- Delete -->
                       <button 
-                        @click.stop="deleteStrategy(strategy)"
-                        class="p-1.5 border rounded transition-colors"
+                        @click.stop="showDeleteConfirm(strategy)"
+                        class="p-1.5 border rounded-sm transition-colors hover:brightness-110"
                         :style="{ backgroundColor: tokens.colors.semantic.error + '33', borderColor: tokens.colors.semantic.error + '66', color: tokens.colors.semantic.error }"
                         :title="$t('opportunity.strategyTable.delete')"
                       >
@@ -1236,9 +1237,9 @@
                 </tr>
                 <!-- 展开的执行计划子表格 -->
                 <tr v-if="isStrategyExpanded(strategy.id) && strategy.hasExecutionPlan" class="bg-opacity-50">
-                  <td :colspan="isExecutionPlanExpanded ? 15 : 10" class="p-0">
+                  <td :colspan="isExecutionPlanExpanded ? 15 : 11" class="p-0">
                     <div 
-                      class="mx-4 my-3 border rounded-lg overflow-hidden"
+                      class="mx-4 my-3 border rounded-sm overflow-hidden"
                       :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.accent.primary + '4D' }"
                     >
                       <!-- 子表格头部 -->
@@ -1265,10 +1266,12 @@
                         <thead>
                           <tr :style="{ backgroundColor: tokens.colors.background.surface }">
                             <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider" :style="{ color: tokens.colors.text.muted }">计划名称</th>
-                            <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-center" :style="{ color: tokens.colors.text.muted }">状态</th>
+                            <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-center" :style="{ color: tokens.colors.text.muted }">操作建议</th>
+                            <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-center" :style="{ color: tokens.colors.text.muted }">置信度</th>
                             <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-center" :style="{ color: tokens.colors.text.muted }">入场价</th>
                             <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-center" :style="{ color: tokens.colors.text.muted }">目标价</th>
                             <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-center" :style="{ color: tokens.colors.text.muted }">止损价</th>
+                            <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-center" :style="{ color: tokens.colors.text.muted }">持仓</th>
                             <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-center" :style="{ color: tokens.colors.text.muted }">创建时间</th>
                             <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-center" :style="{ color: tokens.colors.text.muted }">操作</th>
                           </tr>
@@ -1280,56 +1283,84 @@
                             class="border-t transition-colors hover:bg-white/5"
                             :style="{ borderColor: tokens.colors.border.subtle }"
                           >
+                            <!-- 计划名称 - 双击可编辑 -->
                             <td class="px-4 py-2.5">
                               <div class="flex items-center gap-2">
-                                <span v-if="plan.isUnread" class="w-1.5 h-1.5 rounded-full animate-pulse" :style="{ backgroundColor: tokens.colors.accent.primary }"></span>
-                                <span class="text-sm font-medium" :style="{ color: tokens.colors.text.primary }">{{ plan.name }}</span>
+                                <input 
+                                  v-if="plan.isEditing"
+                                  v-model="plan.name"
+                                  @blur="plan.isEditing = false"
+                                  @keyup.enter="plan.isEditing = false"
+                                  class="text-sm font-medium bg-transparent border-b outline-none w-full max-w-[120px]"
+                                  :style="{ color: tokens.colors.text.primary, borderColor: tokens.colors.accent.primary }"
+                                />
+                                <span 
+                                  v-else
+                                  @dblclick="plan.isEditing = true"
+                                  class="text-sm font-medium cursor-pointer hover:opacity-80"
+                                  :style="{ color: tokens.colors.text.primary }"
+                                  title="双击编辑"
+                                >{{ plan.name }}</span>
+                                <svg class="w-3 h-3 opacity-30 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                </svg>
                               </div>
                             </td>
+                            <!-- 操作建议 -->
                             <td class="px-4 py-2.5 text-center">
                               <span 
-                                class="px-2 py-0.5 rounded text-[10px] font-bold border"
-                                :style="plan.status === 'executing' 
-                                  ? { color: tokens.colors.semantic.success, borderColor: tokens.colors.semantic.success + '4D', backgroundColor: tokens.colors.semantic.success + '1A' }
-                                  : plan.status === 'pending'
-                                  ? { color: tokens.colors.semantic.warning, borderColor: tokens.colors.semantic.warning + '4D', backgroundColor: tokens.colors.semantic.warning + '1A' }
-                                  : plan.status === 'completed'
-                                  ? { color: tokens.colors.accent.primary, borderColor: tokens.colors.accent.primary + '4D', backgroundColor: tokens.colors.accent.primary + '1A' }
-                                  : { color: tokens.colors.text.muted, borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }"
-                              >
-                                {{ plan.statusLabel }}
-                              </span>
+                                class="px-2 py-0.5 rounded-sm text-[10px] font-bold"
+                                :style="{ 
+                                  backgroundColor: plan.recommendation === 'BUY' ? tokens.colors.semantic.success + '1A' : plan.recommendation === 'SELL' ? tokens.colors.semantic.error + '1A' : tokens.colors.accent.primary + '1A',
+                                  color: plan.recommendation === 'BUY' ? tokens.colors.semantic.success : plan.recommendation === 'SELL' ? tokens.colors.semantic.error : tokens.colors.accent.primary
+                                }"
+                              >{{ plan.recommendation }}</span>
                             </td>
+                            <!-- 置信度 -->
                             <td class="px-4 py-2.5 text-center">
-                              <span class="text-sm font-mono" :style="{ color: tokens.colors.text.secondary }">${{ plan.entryPrice }}</span>
+                              <span 
+                                class="px-2 py-0.5 rounded-sm text-[10px] font-medium border"
+                                :style="{ 
+                                  borderColor: plan.confidence_level === 'High' ? tokens.colors.semantic.success + '4D' : plan.confidence_level === 'Medium' ? tokens.colors.semantic.warning + '4D' : tokens.colors.border.strong,
+                                  color: plan.confidence_level === 'High' ? tokens.colors.semantic.success : plan.confidence_level === 'Medium' ? tokens.colors.semantic.warning : tokens.colors.text.muted
+                                }"
+                              >{{ plan.confidence_level }}</span>
                             </td>
+                            <!-- 入场价 -->
                             <td class="px-4 py-2.5 text-center">
-                              <span class="text-sm font-mono" :style="{ color: tokens.colors.semantic.success }">${{ plan.targetPrice }}</span>
+                              <span class="text-sm font-mono" :style="{ color: tokens.colors.text.secondary }">${{ plan.entry_price.toFixed(2) }}</span>
                             </td>
+                            <!-- 目标价 -->
                             <td class="px-4 py-2.5 text-center">
-                              <span class="text-sm font-mono" :style="{ color: tokens.colors.semantic.error }">${{ plan.stopLoss }}</span>
+                              <span class="text-sm font-mono" :style="{ color: tokens.colors.semantic.success }">${{ plan.target_price.toFixed(2) }}</span>
                             </td>
+                            <!-- 止损价 -->
+                            <td class="px-4 py-2.5 text-center">
+                              <span class="text-sm font-mono" :style="{ color: tokens.colors.semantic.error }">${{ plan.stop_loss_price.toFixed(2) }}</span>
+                            </td>
+                            <!-- 持仓 -->
+                            <td class="px-4 py-2.5 text-center">
+                              <span 
+                                class="text-xs px-1.5 py-0.5 rounded-sm"
+                                :style="{ backgroundColor: tokens.colors.border.default, color: tokens.colors.text.muted }"
+                              >{{ plan.position_pct ? plan.position_pct + '%' : '--' }}</span>
+                            </td>
+                            <!-- 创建时间 -->
                             <td class="px-4 py-2.5 text-center">
                               <span class="text-xs" :style="{ color: tokens.colors.text.muted }">{{ plan.createdAt }}</span>
                             </td>
+                            <!-- 操作 -->
                             <td class="px-4 py-2.5 text-center">
                               <div class="flex items-center justify-center gap-1">
                                 <button 
-                                  class="p-1 border rounded transition-colors hover:bg-white/10"
+                                  class="p-1 border rounded-sm transition-colors hover:bg-white/10"
                                   :style="{ borderColor: tokens.colors.border.default, color: tokens.colors.text.muted }"
                                   title="查看详情"
                                 >
                                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                 </button>
                                 <button 
-                                  class="p-1 border rounded transition-colors hover:bg-white/10"
-                                  :style="{ borderColor: tokens.colors.border.default, color: tokens.colors.text.muted }"
-                                  title="编辑"
-                                >
-                                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                </button>
-                                <button 
-                                  class="p-1 border rounded transition-colors hover:bg-white/10"
+                                  class="p-1 border rounded-sm transition-colors hover:bg-white/10"
                                   :style="{ borderColor: tokens.colors.semantic.error + '4D', color: tokens.colors.semantic.error }"
                                   title="删除"
                                 >
@@ -1354,6 +1385,92 @@
             </div>
           </div>
         </div>
+        </div>
+      </div>
+
+      <!-- Delete Confirmation Modal -->
+      <div v-if="showDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-300" @click.self="closeDeleteModal">
+        <div class="border w-[480px] max-w-[95vw] overflow-hidden flex flex-col rounded-sm transform transition-all duration-200 scale-100" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+          
+          <!-- Modal Header -->
+          <div class="px-6 py-4 border-b flex justify-between items-center" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.semantic.error + '1A' }">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center" :style="{ backgroundColor: tokens.colors.semantic.error + '33' }">
+                <svg class="w-5 h-5" :style="{ color: tokens.colors.semantic.error }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-base font-bold" :style="{ color: tokens.colors.text.primary }">确认删除</h3>
+                <p class="text-xs" :style="{ color: tokens.colors.text.muted }">此操作不可撤销</p>
+              </div>
+            </div>
+            <button @click="closeDeleteModal" class="p-2 rounded-sm transition-colors hover:bg-white/10" :style="{ color: tokens.colors.text.muted }">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+          </div>
+          
+          <!-- Modal Content -->
+          <div class="px-6 py-5">
+            <div class="p-4 rounded-sm border" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.default }">
+              <div class="flex items-center gap-4">
+                <!-- 股票代码 -->
+                <div class="text-center">
+                  <div class="text-lg font-bold font-mono" :style="{ color: tokens.colors.text.primary }">{{ deleteTarget?.symbol }}</div>
+                  <div class="text-xs" :style="{ color: tokens.colors.text.muted }">{{ deleteTarget?.stockName }}</div>
+                </div>
+                <div class="flex-1 h-px" :style="{ backgroundColor: tokens.colors.border.default }"></div>
+                <!-- 策略信息 -->
+                <div class="text-right">
+                  <div class="flex items-center justify-end gap-2 mb-1">
+                    <span 
+                      class="px-2 py-0.5 rounded-sm text-[10px] font-bold"
+                      :style="{ 
+                        backgroundColor: deleteTarget?.direction === 'long' ? tokens.colors.semantic.success + '1A' : tokens.colors.semantic.error + '1A',
+                        color: deleteTarget?.direction === 'long' ? tokens.colors.semantic.success : tokens.colors.semantic.error 
+                      }"
+                    >{{ deleteTarget?.direction === 'long' ? '做多' : '做空' }}</span>
+                    <span 
+                      class="px-2 py-0.5 rounded-sm text-[10px] font-bold border"
+                      :style="{ color: tokens.colors.text.secondary, borderColor: tokens.colors.border.default }"
+                    >{{ deleteTarget?.grade }}</span>
+                  </div>
+                  <div class="text-xs" :style="{ color: tokens.colors.text.muted }">
+                    {{ deleteTarget?.hasExecutionPlan ? `包含 ${deleteTarget?.planCount || 0} 个执行计划` : '无执行计划' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mt-4 p-3 rounded-sm border" :style="{ backgroundColor: tokens.colors.semantic.warning + '0D', borderColor: tokens.colors.semantic.warning + '33' }">
+              <div class="flex items-start gap-2">
+                <svg class="w-4 h-4 mt-0.5 shrink-0" :style="{ color: tokens.colors.semantic.warning }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div class="text-xs" :style="{ color: tokens.colors.semantic.warning }">
+                  删除后将移除该策略及其所有关联的执行计划，数据无法恢复。
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Modal Footer -->
+          <div class="px-6 py-4 border-t flex justify-end gap-3" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.elevated }">
+            <button 
+              @click="closeDeleteModal"
+              class="px-4 py-2 text-sm font-medium rounded-sm border transition-colors hover:bg-white/5"
+              :style="{ borderColor: tokens.colors.border.default, color: tokens.colors.text.secondary }"
+            >
+              取消
+            </button>
+            <button 
+              @click="confirmDelete"
+              class="px-4 py-2 text-sm font-bold rounded-sm transition-colors hover:brightness-110"
+              :style="{ backgroundColor: tokens.colors.semantic.error, color: '#ffffff' }"
+            >
+              确认删除
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1714,44 +1831,18 @@
 
       <!-- Strategy Detail Modal (Apple-inspired Minimalist Design) -->
       <div v-if="showStrategyModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-300" @click.self="closeStrategyModal">
-        <div class="rounded-2xl border w-[95vw] h-[85vh] overflow-hidden shadow-2xl flex flex-col transform transition-all duration-300 scale-100 animate-modal-in" :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }">
+        <div class="rounded-sm border w-[95vw] h-[85vh] overflow-hidden shadow-2xl flex flex-col transform transition-all duration-300 scale-100 animate-modal-in relative" :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }">
           
-          <!-- Modal Header (Sticky) -->
-          <div class="px-8 py-5 border-b flex justify-between items-center backdrop-blur-xl z-10 shrink-0" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.overlay + 'F2' }">
-            <div class="flex items-center gap-3">
-              <!-- Grade Badge -->
-              <div class="px-2.5 py-1 rounded text-xs font-semibold tracking-wide"
-                :style="selectedStrategy.grade === 'A' || selectedStrategy.grade === 'A+' 
-                  ? { backgroundColor: tokens.colors.semantic.success + '1A', color: tokens.colors.semantic.success }
-                  : selectedStrategy.grade === 'B'
-                  ? { backgroundColor: tokens.colors.accent.primary + '1A', color: tokens.colors.accent.primary }
-                  : { backgroundColor: tokens.colors.semantic.warning + '1A', color: tokens.colors.semantic.warning }">
-                GRADE {{ selectedStrategy.grade }}
-              </div>
-              <!-- Direction Badge -->
-              <div class="flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-semibold"
-                :style="selectedStrategy.direction === 'LONG' 
-                  ? { backgroundColor: tokens.colors.semantic.success + '1A', color: tokens.colors.semantic.success }
-                  : selectedStrategy.direction === 'SHORT'
-                  ? { backgroundColor: tokens.colors.semantic.error + '1A', color: tokens.colors.semantic.error }
-                  : { backgroundColor: tokens.colors.text.muted + '1A', color: tokens.colors.text.tertiary }">
-                <span v-if="selectedStrategy.direction === 'LONG'">↑</span>
-                <span v-if="selectedStrategy.direction === 'SHORT'">↓</span>
-                {{ selectedStrategy.direction }}
-              </div>
-              <div class="h-4 w-px mx-1" :style="{ backgroundColor: tokens.colors.border.strong }"></div>
-              <span class="text-xs" :style="{ color: tokens.colors.text.muted }">{{ selectedStrategy.timeAgo }}</span>
-            </div>
-            <!-- Close Button -->
-            <button 
-              @click="closeStrategyModal" 
-              class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/5 transition-all duration-200"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" :style="{ color: tokens.colors.text.muted }">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </button>
-          </div>
+          <!-- Close Button (Absolute Positioned) -->
+          <button 
+            @click="closeStrategyModal" 
+            class="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-sm hover:bg-white/10 transition-all duration-200"
+            :style="{ backgroundColor: tokens.colors.background.elevated }"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" :style="{ color: tokens.colors.text.muted }">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
 
           <!-- Modal Body (Split Layout) -->
           <div class="flex flex-1 overflow-hidden">
@@ -1762,9 +1853,9 @@
             <!-- Chat Sidebar (Left, 320px) -->
             <div class="w-[320px] flex flex-col border-r shrink-0 hidden lg:flex" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.elevated }">
               <!-- Chat Header -->
-              <div class="px-4 py-3 border-b flex justify-between items-center" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.overlay }">
-                 <h3 class="text-sm font-medium flex items-center gap-2" :style="{ color: tokens.colors.text.secondary }">
-                   <i class="fas fa-robot" :style="{ color: tokens.colors.semantic.success }"></i> {{ $t('opportunity.chat.aiAssistant') }}
+              <div class="px-6 py-4 border-b flex justify-between items-center" :style="{ borderColor: tokens.colors.border.strong, backgroundColor: tokens.colors.background.elevated }">
+                 <h3 class="text-base font-bold flex items-center gap-2" :style="{ color: tokens.colors.text.primary }">
+                   {{ $t('opportunity.chat.aiAssistant') }}
                  </h3>
               </div>
 
@@ -1863,18 +1954,31 @@
               <!-- New Top Bar -->
               <div class="px-6 py-4 border-b flex justify-between items-center shrink-0" :style="{ borderColor: tokens.colors.border.strong, backgroundColor: tokens.colors.background.elevated }">
                 <!-- Left: Title & Meta -->
-                <div class="flex items-center gap-4 overflow-hidden">
-                  <h2 class="text-lg font-bold truncate max-w-[300px]" :title="selectedStrategy.title" :style="{ color: tokens.colors.text.primary }">{{ selectedStrategy.title }}</h2>
+                <div class="flex items-center gap-3 overflow-hidden">
+                  <h2 class="text-base font-bold truncate max-w-[280px]" :title="selectedStrategy.title" :style="{ color: tokens.colors.text.primary }">{{ selectedStrategy.title }}</h2>
                   <div class="flex items-center gap-2 shrink-0">
-                    <span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wide border" 
+                    <!-- Direction Badge -->
+                    <span class="px-2 py-0.5 rounded-sm text-[10px] font-bold tracking-wide border flex items-center gap-1"
+                      :style="selectedStrategy.direction === 'LONG' 
+                        ? { backgroundColor: tokens.colors.semantic.success + '1A', color: tokens.colors.semantic.success, borderColor: tokens.colors.semantic.success + '4D' }
+                        : selectedStrategy.direction === 'SHORT'
+                        ? { backgroundColor: tokens.colors.semantic.error + '1A', color: tokens.colors.semantic.error, borderColor: tokens.colors.semantic.error + '4D' }
+                        : { backgroundColor: tokens.colors.border.strong, color: tokens.colors.text.tertiary, borderColor: tokens.colors.border.strong }">
+                      <span v-if="selectedStrategy.direction === 'LONG'">↑</span>
+                      <span v-if="selectedStrategy.direction === 'SHORT'">↓</span>
+                      {{ selectedStrategy.direction }}
+                    </span>
+                    <!-- Grade Badge -->
+                    <span class="px-2 py-0.5 rounded-sm text-[10px] font-bold tracking-wide border" 
                       :style="{
-                        backgroundColor: (selectedStrategy.grade === 'A' || selectedStrategy.grade === 'A+') ? tokens.colors.semantic.success + '33' : selectedStrategy.grade === 'B' ? tokens.colors.accent.primary + '33' : tokens.colors.semantic.warning + '33',
+                        backgroundColor: (selectedStrategy.grade === 'A' || selectedStrategy.grade === 'A+') ? tokens.colors.semantic.success + '1A' : selectedStrategy.grade === 'B' ? tokens.colors.accent.primary + '1A' : tokens.colors.semantic.warning + '1A',
                         color: (selectedStrategy.grade === 'A' || selectedStrategy.grade === 'A+') ? tokens.colors.semantic.success : selectedStrategy.grade === 'B' ? tokens.colors.accent.primary : tokens.colors.semantic.warning,
                         borderColor: (selectedStrategy.grade === 'A' || selectedStrategy.grade === 'A+') ? tokens.colors.semantic.success + '4D' : selectedStrategy.grade === 'B' ? tokens.colors.accent.primary + '4D' : tokens.colors.semantic.warning + '4D'
                       }">
                       GRADE {{ selectedStrategy.grade }}
                     </span>
-                    <span class="px-2 py-0.5 rounded text-[10px] font-bold border" :style="{ backgroundColor: tokens.colors.border.strong, color: tokens.colors.text.secondary, borderColor: tokens.colors.border.strong }">
+                    <!-- Term Badge -->
+                    <span class="px-2 py-0.5 rounded-sm text-[10px] font-bold border" :style="{ backgroundColor: tokens.colors.border.strong, color: tokens.colors.text.secondary, borderColor: tokens.colors.border.strong }">
                       {{ selectedStrategy.term }}
                     </span>
                     <span class="text-xs" :style="{ color: tokens.colors.text.muted }">{{ selectedStrategy.time }}</span>
@@ -1882,10 +1986,11 @@
                 </div>
                 
                 <!-- Right: Actions -->
-                <div class="flex items-center gap-3 shrink-0">
+                <div class="flex items-center gap-2 shrink-0">
+                  <!-- View Actions -->
                   <button 
                     @click="copyShareLink"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold transition-all border"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-bold transition-all border"
                     :style="isCopied ? { backgroundColor: tokens.colors.semantic.success + '33', color: tokens.colors.semantic.success, borderColor: tokens.colors.semantic.success + '4D' } : { backgroundColor: tokens.colors.border.strong, color: tokens.colors.text.secondary, borderColor: tokens.colors.border.strong }"
                     :title="isCopied ? $t('opportunity.actions.copied') : $t('opportunity.actions.copyLink')"
                   >
@@ -1893,9 +1998,14 @@
                     <svg v-else class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                     {{ isCopied ? $t('opportunity.actions.copied') : $t('opportunity.actions.share') }}
                   </button>
+                  
+                  <!-- Divider -->
+                  <div class="h-5 w-px mx-1" :style="{ backgroundColor: tokens.colors.border.strong }"></div>
+                  
+                  <!-- Interaction Actions -->
                   <button 
                     @click="toggleStrategyWatchlist"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold transition-all border"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-bold transition-all border"
                     :style="isStrategyWatchlisted ? { backgroundColor: tokens.colors.accent.secondary, color: tokens.colors.text.primary, borderColor: tokens.colors.accent.primary } : { backgroundColor: tokens.colors.border.strong, color: tokens.colors.text.secondary, borderColor: tokens.colors.border.strong }"
                   >
                     <svg v-if="!isStrategyWatchlisted" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
@@ -1904,15 +2014,20 @@
                   </button>
                   <button 
                     @click="goToStockDetail(selectedStrategy.symbol || 'MSFT')"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-white text-xs font-bold transition-all border"
-                    :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-bold transition-all border"
+                    :style="{ backgroundColor: tokens.colors.accent.primary, borderColor: tokens.colors.accent.primary, color: '#000' }"
                   >
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                     {{ selectedStrategy.symbol || 'MSFT' }} {{ $t('opportunity.actions.details') }}
                   </button>
+                  
+                  <!-- Divider -->
+                  <div class="h-5 w-px mx-1" :style="{ backgroundColor: tokens.colors.border.strong }"></div>
+                  
+                  <!-- Save Actions -->
                   <button 
                     @click="toggleStrategyReport"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold transition-all border"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-bold transition-all border"
                     :style="isStrategyReportSaved ? { backgroundColor: tokens.colors.semantic.success + '33', color: tokens.colors.semantic.success, borderColor: tokens.colors.semantic.success + '4D' } : { backgroundColor: tokens.colors.border.strong, color: tokens.colors.text.secondary, borderColor: tokens.colors.border.strong }"
                   >
                     <svg v-if="!isStrategyReportSaved" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
@@ -1942,14 +2057,17 @@
                 <div class="flex gap-4 mt-12 pt-8 border-t" :style="{ borderColor: tokens.colors.border.strong }">
                   <button 
                     @click="generatePlanForStrategy(selectedStrategy)"
-                    class="flex-1 text-white py-3 rounded font-medium transition-colors flex items-center justify-center gap-2"
-                    :style="{ backgroundColor: tokens.colors.accent.secondary }"
+                    class="flex-1 py-4 rounded-sm font-bold text-base transition-all flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+                    :style="{ 
+                      backgroundColor: tokens.colors.accent.primary, 
+                      color: '#000',
+                      boxShadow: `0 4px 20px ${tokens.colors.accent.primary}4D`
+                    }"
                   >
-                    <i class="fas fa-magic"></i>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
                     {{ $t('opportunity.actions.generatePlan') }}
-                  </button>
-                  <button class="px-4 py-3 text-white rounded transition-colors" :style="{ backgroundColor: tokens.colors.border.strong }">
-                    <i class="fas fa-share-alt"></i>
                   </button>
                 </div>
               </div>
@@ -1957,112 +2075,137 @@
           </div>
 
             <!-- Right: Related Plans (Fixed Width) -->
-            <div class="w-[350px] border-l overflow-y-auto px-6 py-6 custom-scrollbar shrink-0 hidden xl:block" :style="{ borderColor: tokens.colors.border.strong, backgroundColor: tokens.colors.background.base }">
+            <div class="w-[350px] border-l overflow-y-auto custom-scrollbar shrink-0 hidden xl:block" :style="{ borderColor: tokens.colors.border.strong, backgroundColor: tokens.colors.background.base }">
               
               <!-- Plans Header -->
-              <div class="mb-5">
-                <div class="flex items-center gap-2 mb-2">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" :style="{ color: tokens.colors.text.muted }">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-                  </svg>
-                  <h3 class="text-sm font-semibold" :style="{ color: tokens.colors.text.primary }">{{ $t('opportunity.relatedPlans.title') }}</h3>
+              <div class="px-6 py-4 border-b flex items-center justify-between" :style="{ borderColor: tokens.colors.border.strong, backgroundColor: tokens.colors.background.elevated }">
+                <div class="flex items-center gap-2">
+                  <h3 class="text-base font-bold" :style="{ color: tokens.colors.text.primary }">{{ $t('opportunity.relatedPlans.title') }}</h3>
                   <span class="text-xs" :style="{ color: tokens.colors.text.muted }">({{ relatedPlans.length }})</span>
                 </div>
-                <p class="text-xs" :style="{ color: tokens.colors.text.muted }">{{ $t('opportunity.relatedPlans.count', { count: relatedPlans.length }) }}</p>
               </div>
-
-              <!-- Plans List -->
-              <div v-if="relatedPlans.length > 0" class="space-y-3">
-                <div 
-                  v-for="plan in relatedPlans" 
-                  :key="plan.id"
-                  class="border transition-all duration-200 group"
-                  :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: plan.isExpanded ? tokens.colors.accent.primary + '4D' : tokens.colors.border.strong }"
-                >
-                  <!-- Plan Header (Collapsible) -->
-                  <button 
-                    @click="togglePlanExpand(plan)"
-                    class="w-full px-4 py-3 flex items-center justify-between text-left transition-colors"
+              
+              <!-- Plans Content -->
+              <div class="p-4" v-if="relatedPlans.length > 0">
+                <p class="text-xs mb-4" :style="{ color: tokens.colors.text.muted }">{{ $t('opportunity.relatedPlans.count', { count: relatedPlans.length }) }}</p>
+                
+                <!-- Plan Cards -->
+                <div class="space-y-3">
+                  <div 
+                    v-for="plan in relatedPlans" 
+                    :key="plan.id"
+                    class="rounded-sm border transition-all duration-200"
+                    :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }"
                   >
-                    <div class="flex-1 min-w-0">
-                      <div class="flex items-center gap-2 mb-1">
-                        <svg 
-                          class="w-3.5 h-3.5 text-gray-500 transition-transform duration-200 group-hover:text-blue-400" 
-                          :class="{ 'rotate-90': plan.isExpanded }"
-                          fill="none" 
-                          stroke="currentColor" 
-                          viewBox="0 0 24 24"
+                    <!-- Plan Header -->
+                    <div class="px-4 py-3 border-b" :style="{ borderColor: tokens.colors.border.default }">
+                      <div class="flex items-center justify-between mb-2">
+                        <!-- Editable Title -->
+                        <div class="flex items-center gap-2 flex-1 min-w-0">
+                          <input 
+                            v-if="plan.isEditing"
+                            v-model="plan.title"
+                            @blur="plan.isEditing = false"
+                            @keyup.enter="plan.isEditing = false"
+                            class="text-sm font-medium bg-transparent border-b outline-none w-full"
+                            :style="{ color: tokens.colors.text.primary, borderColor: tokens.colors.accent.primary }"
+                          />
+                          <h4 
+                            v-else
+                            @dblclick="plan.isEditing = true"
+                            class="text-sm font-medium truncate cursor-pointer hover:opacity-80"
+                            :style="{ color: tokens.colors.text.primary }"
+                            :title="'双击编辑名称'"
+                          >{{ plan.title }}</h4>
+                          <svg class="w-3 h-3 opacity-40 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                          </svg>
+                        </div>
+                        <!-- Delete Button -->
+                        <button 
+                          @click="deletePlan(plan.id)"
+                          class="p-1 rounded-sm opacity-40 hover:opacity-100 transition-opacity"
+                          :style="{ color: tokens.colors.semantic.error }"
                         >
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                        <h4 class="text-sm font-medium truncate transition-colors" :style="{ color: tokens.colors.text.primary }">{{ plan.title }}</h4>
-                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-medium flex-shrink-0" :style="{ backgroundColor: tokens.colors.accent.primary + '1A', borderColor: tokens.colors.accent.primary + '33', color: tokens.colors.accent.primary }">
-                          <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                           </svg>
-                          {{ $t('opportunity.relatedPlans.official') }}
-                        </span>
+                        </button>
                       </div>
-                      <div class="flex items-center gap-3 text-xs ml-5" :style="{ color: tokens.colors.text.muted }">
-                        <span class="flex items-center gap-1">
-                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                          </svg>
-                          ${{ (plan.capital / 1000).toFixed(0) }}K
-                        </span>
-                        <span class="flex items-center gap-1">
-                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                          </svg>
-                          {{ plan.createdAt }}
-                        </span>
+                      
+                      <!-- Action & Confidence Row -->
+                      <div class="flex items-center gap-2 flex-wrap">
+                        <span 
+                          class="px-2 py-0.5 rounded-sm text-[10px] font-bold"
+                          :style="{ 
+                            backgroundColor: plan.recommendation === 'BUY' ? tokens.colors.semantic.success + '1A' : plan.recommendation === 'SELL' ? tokens.colors.semantic.error + '1A' : tokens.colors.accent.primary + '1A',
+                            color: plan.recommendation === 'BUY' ? tokens.colors.semantic.success : plan.recommendation === 'SELL' ? tokens.colors.semantic.error : tokens.colors.accent.primary
+                          }"
+                        >{{ plan.recommendation }}</span>
+                        <span 
+                          class="px-2 py-0.5 rounded-sm text-[10px] font-medium border"
+                          :style="{ 
+                            borderColor: plan.confidence_level === 'High' ? tokens.colors.semantic.success + '4D' : plan.confidence_level === 'Medium' ? tokens.colors.semantic.warning + '4D' : tokens.colors.border.strong,
+                            color: plan.confidence_level === 'High' ? tokens.colors.semantic.success : plan.confidence_level === 'Medium' ? tokens.colors.semantic.warning : tokens.colors.text.muted
+                          }"
+                        >{{ plan.confidence_level }}</span>
+                        <span 
+                          class="px-2 py-0.5 rounded-sm text-[10px] font-medium"
+                          :style="{ backgroundColor: tokens.colors.border.default, color: tokens.colors.text.muted }"
+                        >{{ plan.position_pct ? plan.position_pct + '% 持仓' : '无持仓' }}</span>
                       </div>
                     </div>
                     
-                    <!-- Expand Icon -->
-                    <div class="ml-2 text-gray-600">
-                      <!-- <i class="fas fa-chevron-down transition-transform duration-300" :class="{ 'rotate-180': plan.isExpanded }"></i> -->
-                    </div>
-                  </button>
-
-                  <!-- Plan Details (Expanded) -->
-                  <div 
-                    v-if="plan.isExpanded" 
-                    class="px-4 pb-4 pt-0 border-t mt-2 animate-fade-in"
-                    :style="{ borderColor: tokens.colors.border.strong }"
-                  >
-                    <div class="grid grid-cols-2 gap-2 mt-3 mb-3">
-                      <div class="p-2 rounded border" :style="{ backgroundColor: tokens.colors.border.default, borderColor: tokens.colors.border.strong }">
-                        <div class="text-[10px] uppercase" :style="{ color: tokens.colors.text.muted }">Entry</div>
-                        <div class="text-sm font-mono" :style="{ color: tokens.colors.text.primary }">${{ plan.entry }}</div>
-                      </div>
-                      <div class="p-2 rounded border" :style="{ backgroundColor: tokens.colors.border.default, borderColor: tokens.colors.border.strong }">
-                        <div class="text-[10px] uppercase" :style="{ color: tokens.colors.text.muted }">Target</div>
-                        <div class="text-sm font-mono" :style="{ color: tokens.colors.semantic.success }">${{ plan.target }}</div>
+                    <!-- Price Grid -->
+                    <div class="px-4 py-3">
+                      <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="p-2 rounded-sm" :style="{ backgroundColor: tokens.colors.background.base }">
+                          <div class="text-[10px] mb-1" :style="{ color: tokens.colors.text.muted }">入场价</div>
+                          <div class="text-sm font-mono font-medium" :style="{ color: tokens.colors.text.primary }">${{ plan.entry_price.toFixed(2) }}</div>
+                        </div>
+                        <div class="p-2 rounded-sm" :style="{ backgroundColor: tokens.colors.background.base }">
+                          <div class="text-[10px] mb-1" :style="{ color: tokens.colors.text.muted }">目标价</div>
+                          <div class="text-sm font-mono font-medium" :style="{ color: tokens.colors.semantic.success }">${{ plan.target_price.toFixed(2) }}</div>
+                        </div>
+                        <div class="p-2 rounded-sm" :style="{ backgroundColor: tokens.colors.background.base }">
+                          <div class="text-[10px] mb-1" :style="{ color: tokens.colors.text.muted }">止损价</div>
+                          <div class="text-sm font-mono font-medium" :style="{ color: tokens.colors.semantic.error }">${{ plan.stop_loss_price.toFixed(2) }}</div>
+                        </div>
                       </div>
                     </div>
-                    <button class="w-full py-2 border rounded text-xs font-bold transition-colors" :style="{ backgroundColor: tokens.colors.accent.primary + '33', color: tokens.colors.accent.primary, borderColor: tokens.colors.accent.primary + '4D' }">
-                      {{ $t('opportunity.relatedPlans.viewDetails') }}
-                    </button>
+                    
+                    <!-- Footer -->
+                    <div class="px-4 py-2 border-t flex items-center justify-between" :style="{ borderColor: tokens.colors.border.default }">
+                      <span class="text-xs" :style="{ color: tokens.colors.text.muted }">
+                        <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        {{ plan.createdAt }}
+                      </span>
+                      <button 
+                        class="text-xs font-medium"
+                        :style="{ color: tokens.colors.accent.primary }"
+                      >{{ $t('opportunity.relatedPlans.viewDetails') }}</button>
+                    </div>
                   </div>
                 </div>
               </div>
-              
+
               <!-- Empty State -->
-              <div v-else class="flex flex-col items-center justify-center py-12" :style="{ color: tokens.colors.text.muted }">
-                <div class="w-12 h-12 rounded-full flex items-center justify-center mb-3 border" :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }">
-                  <svg class="w-6 h-6 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                  </svg>
-                </div>
-                <p class="text-xs">{{ $t('opportunity.relatedPlans.empty') }}</p>
-                <button 
-                  @click="generatePlanForStrategy(selectedStrategy)"
-                  class="mt-3 text-xs font-medium"
-                  :style="{ color: tokens.colors.accent.primary }"
-                >
-                  {{ $t('opportunity.relatedPlans.generateNow') }}
-                </button>
+              <div v-else class="p-6 flex flex-col items-center justify-center py-12" :style="{ color: tokens.colors.text.muted }">
+                  <div class="w-12 h-12 rounded-full flex items-center justify-center mb-3 border" :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }">
+                    <svg class="w-6 h-6 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                  </div>
+                  <p class="text-xs">{{ $t('opportunity.relatedPlans.empty') }}</p>
+                  <button 
+                    @click="generatePlanForStrategy(selectedStrategy)"
+                    class="mt-3 text-xs font-medium"
+                    :style="{ color: tokens.colors.accent.primary }"
+                  >
+                    {{ $t('opportunity.relatedPlans.generateNow') }}
+                  </button>
               </div>
 
             </div>
@@ -2914,31 +3057,35 @@ const openStrategyModal = (opp) => {
     `
   }
   
-  // Mock related plans
+  // Mock related plans - 基于计划.txt真实数据结构
   relatedPlans.value = [
     {
       id: 1,
-      title: `${opp.symbol || 'MOCK'} Aggressive Growth`,
-      capital: 50000,
-      createdAt: '2023-10-25',
-      targetReturn: '+15%',
-      riskLevel: 'high',
-      isExpanded: false,
-      positions: [
-        { type: 'Buy Call', symbol: opp.symbol || 'MOCK', strike: 'ATM', expiry: '1 Month' }
-      ]
+      title: `激进增长计划`,
+      isEditing: false,
+      recommendation: 'WAIT_BUY',
+      confidence_level: 'High',
+      entry_price: 298.50,
+      target_price: 317.50,
+      stop_loss_price: 294.30,
+      position_pct: 15,  // 有持仓 15%
+      instruction: '等待回调至$298.50支撑区。当前超买且动能背离，耐心等待CPI数据后的更优入场点。',
+      createdAt: '2025-12-17',
+      isExpanded: false
     },
     {
       id: 2,
-      title: `${opp.symbol || 'MOCK'} Conservative Income`,
-      capital: 100000,
-      createdAt: '2023-10-26',
-      targetReturn: '+5%',
-      riskLevel: 'low',
-      isExpanded: false,
-      positions: [
-        { type: 'Sell Put', symbol: opp.symbol || 'MOCK', strike: 'OTM', expiry: '1 Month' }
-      ]
+      title: `保守收益计划`,
+      isEditing: false,
+      recommendation: 'WAIT_BUY',
+      confidence_level: 'High',
+      entry_price: 298.50,
+      target_price: 325.00,
+      stop_loss_price: 294.30,
+      position_pct: null,  // 无持仓
+      instruction: '在关键技术支撑位和机构Gamma墙附近部署限价买单。',
+      createdAt: '2025-12-18',
+      isExpanded: false
     }
   ]
   
@@ -2975,6 +3122,10 @@ const useQuickPrompt = (prompt) => {
 
 const togglePlanExpand = (plan) => {
   plan.isExpanded = !plan.isExpanded
+}
+
+const deletePlan = (planId) => {
+  relatedPlans.value = relatedPlans.value.filter(p => p.id !== planId)
 }
 
 // --- Generate Plan Modal Logic ---
@@ -3068,6 +3219,50 @@ const generatePlanForStrategy = (strategy) => {
 const closeGeneratePlanModal = () => {
   showGeneratePlanModal.value = false
   generatePlanTarget.value = null
+}
+
+// --- Delete Confirmation Modal Logic ---
+const showDeleteModal = ref(false)
+const deleteTarget = ref(null)
+
+const showDeleteConfirm = (strategy) => {
+  deleteTarget.value = strategy
+  showDeleteModal.value = true
+}
+
+const closeDeleteModal = () => {
+  showDeleteModal.value = false
+  deleteTarget.value = null
+}
+
+const confirmDelete = () => {
+  if (!deleteTarget.value) return
+  
+  // 从列表中移除策略
+  const strategyId = deleteTarget.value.id
+  const symbol = deleteTarget.value.symbol
+  
+  // 查找并移除策略（假设 displayedStrategies 来自 filteredStrategies）
+  // 这里需要根据实际数据结构调整
+  addToast(`策略 ${symbol} 已删除`, 'success')
+  
+  // 清除选中状态
+  if (selectedStrategyId.value === strategyId) {
+    selectedStrategyId.value = null
+  }
+  
+  // 清除展开状态
+  if (expandedStrategyIds.value.has(strategyId)) {
+    expandedStrategyIds.value.delete(strategyId)
+    expandedStrategyIds.value = new Set(expandedStrategyIds.value)
+  }
+  
+  // 清除计划缓存
+  if (strategyPlansCache.value.has(strategyId)) {
+    strategyPlansCache.value.delete(strategyId)
+  }
+  
+  closeDeleteModal()
 }
 
 const confirmGeneratePlan = () => {
@@ -3864,36 +4059,51 @@ const isStrategyExpanded = (strategyId) => {
   return expandedStrategyIds.value.has(strategyId)
 }
 
-// 获取策略的执行计划列表（模拟数据）
+// 执行计划缓存（防止每次渲染重新生成随机数据导致闪烁）
+const strategyPlansCache = ref(new Map())
+
+// 获取策略的执行计划列表（基于计划.txt真实数据结构）
 const getStrategyPlans = (strategy) => {
   if (!strategy.hasExecutionPlan || strategy.planCount === 0) return []
   
-  // 模拟生成执行计划数据
+  // 检查缓存中是否已有数据
+  if (strategyPlansCache.value.has(strategy.id)) {
+    return strategyPlansCache.value.get(strategy.id)
+  }
+  
+  // 生成执行计划数据（匹配真实数据结构）
   const plans = []
   const planCount = strategy.planCount || 0
-  const statuses = ['executing', 'pending', 'draft', 'completed']
-  const statusLabels = {
-    executing: '执行中',
-    pending: '待执行',
-    draft: '草稿',
-    completed: '已完成'
+  const planNames = ['建仓计划', '加仓计划', '止盈计划', '观望计划']
+  const recommendations = ['WAIT_BUY', 'BUY', 'SELL', 'WAIT_BUY']
+  const confidences = ['High', 'High', 'Medium', 'Low']
+  
+  // 使用固定种子生成伪随机数，确保同一策略始终生成相同数据
+  const seed = strategy.id.split('').reduce((a, c) => a + c.charCodeAt(0), 0)
+  const seededRandom = (offset = 0) => {
+    const x = Math.sin(seed + offset) * 10000
+    return x - Math.floor(x)
   }
   
   for (let i = 1; i <= planCount; i++) {
-    const status = statuses[Math.floor(Math.random() * statuses.length)]
-    const basePrice = 150 + Math.random() * 50
+    const idx = (i - 1) % 4
+    const basePrice = 150 + seededRandom(i) * 50
     plans.push({
       id: `${strategy.id}-plan-${i}`,
-      name: i === 1 ? '建仓计划' : i === 2 ? '加仓计划' : i === 3 ? '止盈计划' : `计划 #${i}`,
-      status: status,
-      statusLabel: statusLabels[status],
-      entryPrice: basePrice.toFixed(2),
-      targetPrice: (basePrice * (1 + 0.05 + Math.random() * 0.1)).toFixed(2),
-      stopLoss: (basePrice * (1 - 0.03 - Math.random() * 0.05)).toFixed(2),
-      createdAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }),
-      isUnread: Math.random() > 0.7
+      name: planNames[idx],
+      isEditing: false,
+      recommendation: recommendations[idx],
+      confidence_level: confidences[idx],
+      entry_price: parseFloat(basePrice.toFixed(2)),
+      target_price: parseFloat((basePrice * (1 + 0.05 + seededRandom(i + 100) * 0.1)).toFixed(2)),
+      stop_loss_price: parseFloat((basePrice * (1 - 0.03 - seededRandom(i + 200) * 0.05)).toFixed(2)),
+      position_pct: seededRandom(i + 300) > 0.5 ? Math.floor(seededRandom(i + 400) * 20 + 5) : null,
+      createdAt: new Date(Date.now() - seededRandom(i + 500) * 7 * 24 * 60 * 60 * 1000).toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
     })
   }
+  
+  // 存入缓存
+  strategyPlansCache.value.set(strategy.id, plans)
   return plans
 }
 

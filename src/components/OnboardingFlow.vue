@@ -3,7 +3,8 @@
     <Transition name="onboarding-fade">
       <div 
         v-if="isOpen" 
-        class="fixed inset-0 z-[100] bg-[#1a1a1a] flex items-center justify-center overflow-hidden"
+        class="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden"
+        :class="themeClasses.pageBg"
       >
         <!-- Content Container -->
         <Transition :name="transitionName" mode="out-in">
@@ -15,31 +16,34 @@
                 v-for="dot in 5" 
                 :key="dot"
                 :class="[
-                  'w-2 h-2 rounded-full transition-all duration-300',
-                  currentStep === dot ? 'bg-white w-8' : 'bg-gray-600'
+                  'h-1.5 transition-all duration-300',
+                  currentStep === dot 
+                    ? 'bg-cyan-500 w-8 rounded-sm' 
+                    : themeClasses.dotInactive + ' w-1.5 rounded-sm'
                 ]"
               />
             </div>
 
             <!-- Welcome Screen (Step 0) -->
             <div v-if="currentStep === 0" class="text-center max-w-2xl">
-              <h1 class="text-5xl font-semibold text-white mb-4 tracking-tight">
+              <h1 class="text-3xl font-bold mb-4 tracking-tight" :class="themeClasses.textPrimary">
                 欢迎来到 ScaleAlpha.ai
               </h1>
-              <p class="text-xl text-gray-400 mb-12">
+              <p class="text-base mb-12" :class="themeClasses.textMuted">
                 让我们帮您做好偏好设定。
               </p>
               
               <button 
                 @click="nextStep"
-                class="px-12 py-4 bg-white text-black text-lg font-medium rounded-full hover:scale-105 transition-transform duration-200"
+                class="px-10 py-3 bg-cyan-500 text-black text-sm font-bold rounded-sm hover:bg-cyan-400 transition-colors duration-200"
               >
                 开始
               </button>
               
               <button 
                 @click="skipOnboarding"
-                class="block mx-auto mt-8 text-gray-500 hover:text-gray-300 text-sm transition-colors"
+                class="block mx-auto mt-6 text-xs transition-colors"
+                :class="themeClasses.textMuted + ' hover:' + themeClasses.textSecondary"
               >
                 稍后跳过
               </button>
@@ -47,27 +51,27 @@
 
             <!-- Question 1: Investor Profile -->
             <div v-else-if="currentStep === 1" class="w-full max-w-3xl">
-              <h2 class="text-4xl font-semibold text-white text-center mb-12">
+              <h2 class="text-xl font-bold text-center mb-10" :class="themeClasses.textPrimary">
                 您的主要"投资者画像"是哪一类？
               </h2>
               
-              <div class="space-y-4">
+              <div class="space-y-3">
                 <button
                   v-for="option in questions[0].options"
                   :key="option.value"
                   @click="selectAnswer(0, option.value)"
                   :class="[
-                    'w-full p-6 rounded-2xl border-2 text-left transition-all duration-200 group',
+                    'w-full p-5 border text-left transition-all duration-200 group',
                     answers[0] === option.value
-                      ? 'border-blue-500 bg-blue-500/10'
-                      : 'border-gray-700 bg-[#2a2a2a] hover:border-gray-500 hover:scale-[1.02]'
+                      ? 'border-cyan-500 ' + themeClasses.cardSelectedBg
+                      : themeClasses.cardBorder + ' ' + themeClasses.cardBg + ' hover:border-cyan-500/50'
                   ]"
                 >
                   <div class="flex items-start gap-4">
-                    <div class="text-2xl flex-shrink-0 mt-1">{{ option.icon }}</div>
+                    <div class="text-xl flex-shrink-0 mt-0.5">{{ option.icon }}</div>
                     <div class="flex-1">
-                      <div class="text-lg font-semibold text-white mb-2">{{ option.label }}</div>
-                      <div class="text-sm text-gray-400 leading-relaxed">{{ option.desc }}</div>
+                      <div class="text-sm font-bold mb-1" :class="themeClasses.textPrimary">{{ option.label }}</div>
+                      <div class="text-xs leading-relaxed" :class="themeClasses.textMuted">{{ option.desc }}</div>
                     </div>
                   </div>
                 </button>
@@ -76,7 +80,7 @@
 
             <!-- Question 2: Investment Experience -->
             <div v-else-if="currentStep === 2" class="w-full max-w-2xl">
-              <h2 class="text-4xl font-semibold text-white text-center mb-12">
+              <h2 class="text-xl font-bold text-center mb-10" :class="themeClasses.textPrimary">
                 您的投资经验如何？
               </h2>
               
@@ -86,20 +90,20 @@
                   :key="option.value"
                   @click="selectAnswer(1, option.value)"
                   :class="[
-                    'w-full py-5 px-6 rounded-xl border-2 text-center transition-all duration-200',
+                    'w-full py-4 px-5 border text-center transition-all duration-200',
                     answers[1] === option.value
-                      ? 'border-blue-500 bg-blue-500/10 text-white'
-                      : 'border-gray-700 bg-[#2a2a2a] text-gray-300 hover:border-gray-500 hover:scale-[1.02]'
+                      ? 'border-cyan-500 ' + themeClasses.cardSelectedBg + ' ' + themeClasses.textPrimary
+                      : themeClasses.cardBorder + ' ' + themeClasses.cardBg + ' ' + themeClasses.textSecondary + ' hover:border-cyan-500/50'
                   ]"
                 >
-                  <div class="text-lg font-medium">{{ option.label }}</div>
+                  <div class="text-sm font-medium">{{ option.label }}</div>
                 </button>
               </div>
             </div>
 
             <!-- Question 3: Volatility Tolerance -->
             <div v-else-if="currentStep === 3" class="w-full max-w-2xl">
-              <h2 class="text-4xl font-semibold text-white text-center mb-12">
+              <h2 class="text-xl font-bold text-center mb-10" :class="themeClasses.textPrimary">
                 您能承受多大的短期波动？
               </h2>
               
@@ -109,20 +113,20 @@
                   :key="option.value"
                   @click="selectAnswer(2, option.value)"
                   :class="[
-                    'w-full py-5 px-6 rounded-xl border-2 text-center transition-all duration-200',
+                    'w-full py-4 px-5 border text-center transition-all duration-200',
                     answers[2] === option.value
-                      ? 'border-blue-500 bg-blue-500/10 text-white'
-                      : 'border-gray-700 bg-[#2a2a2a] text-gray-300 hover:border-gray-500 hover:scale-[1.02]'
+                      ? 'border-cyan-500 ' + themeClasses.cardSelectedBg + ' ' + themeClasses.textPrimary
+                      : themeClasses.cardBorder + ' ' + themeClasses.cardBg + ' ' + themeClasses.textSecondary + ' hover:border-cyan-500/50'
                   ]"
                 >
-                  <div class="text-lg font-medium">{{ option.label }}</div>
+                  <div class="text-sm font-medium">{{ option.label }}</div>
                 </button>
               </div>
             </div>
 
             <!-- Question 4: Loss Reaction -->
             <div v-else-if="currentStep === 4" class="w-full max-w-2xl">
-              <h2 class="text-4xl font-semibold text-white text-center mb-12">
+              <h2 class="text-xl font-bold text-center mb-10" :class="themeClasses.textPrimary">
                 如果投资组合出现10%的账面亏损，您会？
               </h2>
               
@@ -132,20 +136,20 @@
                   :key="option.value"
                   @click="selectAnswer(3, option.value)"
                   :class="[
-                    'w-full py-5 px-6 rounded-xl border-2 text-center transition-all duration-200',
+                    'w-full py-4 px-5 border text-center transition-all duration-200',
                     answers[3] === option.value
-                      ? 'border-blue-500 bg-blue-500/10 text-white'
-                      : 'border-gray-700 bg-[#2a2a2a] text-gray-300 hover:border-gray-500 hover:scale-[1.02]'
+                      ? 'border-cyan-500 ' + themeClasses.cardSelectedBg + ' ' + themeClasses.textPrimary
+                      : themeClasses.cardBorder + ' ' + themeClasses.cardBg + ' ' + themeClasses.textSecondary + ' hover:border-cyan-500/50'
                   ]"
                 >
-                  <div class="text-lg font-medium">{{ option.label }}</div>
+                  <div class="text-sm font-medium">{{ option.label }}</div>
                 </button>
               </div>
             </div>
 
             <!-- Question 5: Investment Goal -->
             <div v-else-if="currentStep === 5" class="w-full max-w-2xl">
-              <h2 class="text-4xl font-semibold text-white text-center mb-12">
+              <h2 class="text-xl font-bold text-center mb-10" :class="themeClasses.textPrimary">
                 您的主要投资目标是？
               </h2>
               
@@ -155,40 +159,40 @@
                   :key="option.value"
                   @click="selectAnswer(4, option.value)"
                   :class="[
-                    'w-full py-5 px-6 rounded-xl border-2 text-center transition-all duration-200',
+                    'w-full py-4 px-5 border text-center transition-all duration-200',
                     answers[4] === option.value
-                      ? 'border-blue-500 bg-blue-500/10 text-white'
-                      : 'border-gray-700 bg-[#2a2a2a] text-gray-300 hover:border-gray-500 hover:scale-[1.02]'
+                      ? 'border-cyan-500 ' + themeClasses.cardSelectedBg + ' ' + themeClasses.textPrimary
+                      : themeClasses.cardBorder + ' ' + themeClasses.cardBg + ' ' + themeClasses.textSecondary + ' hover:border-cyan-500/50'
                   ]"
                 >
-                  <div class="text-lg font-medium">{{ option.label }}</div>
+                  <div class="text-sm font-medium">{{ option.label }}</div>
                 </button>
               </div>
             </div>
 
             <!-- Completion Screen (Step 6) -->
             <div v-else-if="currentStep === 6" class="text-center max-w-2xl">
-              <div class="w-24 h-24 mx-auto mb-8 rounded-full bg-green-500/20 flex items-center justify-center">
-                <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-16 h-16 mx-auto mb-6 rounded-sm bg-emerald-500/20 flex items-center justify-center">
+                <svg class="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                 </svg>
               </div>
               
-              <h1 class="text-5xl font-semibold text-white mb-6">
+              <h1 class="text-2xl font-bold mb-4" :class="themeClasses.textPrimary">
                 设置完成！
               </h1>
               
-              <div class="text-2xl text-blue-400 font-semibold mb-4">
+              <div class="text-lg text-cyan-500 font-bold mb-3">
                 您的风险偏好：{{ riskLevelText }}
               </div>
               
-              <p class="text-lg text-gray-400 mb-12">
+              <p class="text-sm mb-10" :class="themeClasses.textMuted">
                 我们将为您推荐适合您风格的投资策略。
               </p>
               
               <button 
                 @click="completeOnboarding"
-                class="px-12 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-lg font-medium rounded-full hover:scale-105 transition-transform duration-200"
+                class="px-10 py-3 bg-cyan-500 text-black text-sm font-bold rounded-sm hover:bg-cyan-400 transition-colors duration-200"
               >
                 开始体验
               </button>
@@ -198,9 +202,10 @@
             <button
               v-if="currentStep >= 2 && currentStep <= 5"
               @click="prevStep"
-              class="absolute bottom-12 left-12 text-gray-500 hover:text-gray-300 transition-colors flex items-center gap-2"
+              class="absolute bottom-12 left-12 transition-colors flex items-center gap-2 text-sm"
+              :class="themeClasses.textMuted + ' hover:text-cyan-500'"
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
               </svg>
               上一步
@@ -214,6 +219,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useTheme } from '@/composables/useTheme'
 
 const props = defineProps({
   isOpen: {
@@ -223,6 +229,35 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close', 'complete'])
+
+const { isDark } = useTheme()
+
+// 主题样式类
+const themeClasses = computed(() => {
+  if (isDark.value) {
+    return {
+      pageBg: 'bg-[#050505]',
+      textPrimary: 'text-white',
+      textSecondary: 'text-gray-300',
+      textMuted: 'text-gray-500',
+      cardBg: 'bg-[#0a0a0a]',
+      cardBorder: 'border-[#222222]',
+      cardSelectedBg: 'bg-cyan-500/10',
+      dotInactive: 'bg-gray-700'
+    }
+  } else {
+    return {
+      pageBg: 'bg-slate-50',
+      textPrimary: 'text-slate-800',
+      textSecondary: 'text-slate-600',
+      textMuted: 'text-slate-400',
+      cardBg: 'bg-white',
+      cardBorder: 'border-slate-200',
+      cardSelectedBg: 'bg-cyan-500/10',
+      dotInactive: 'bg-slate-300'
+    }
+  }
+})
 
 const currentStep = ref(0) // 0 = Welcome, 1-5 = Questions, 6 = Completion
 const answers = ref([null, null, null, null, null])

@@ -1,30 +1,15 @@
 <template>
-  <div class="theme-bg-base min-h-screen pt-24 pb-20 px-4 sm:px-6 lg:px-8">
+  <div 
+    class="min-h-screen pt-24 pb-20 px-4 sm:px-6 lg:px-8"
+    :class="themeClasses.pageBg"
+  >
     <div class="max-w-7xl mx-auto">
 
-      <!-- Top Search Bar -->
-      <div class="flex flex-col items-center justify-center mb-4 animate-fade-in-down">
-        <div class="relative group w-full max-w-md">
-          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <svg class="h-4 w-4 theme-text-muted group-focus-within:theme-accent-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <input 
-            v-model="searchSymbol"
-            @keyup.enter="handleSearch"
-            type="text" 
-            placeholder="Search to jump to another stock (e.g. NVDA)..." 
-            class="theme-input w-full backdrop-blur text-sm pl-10 pr-4 py-2.5 rounded-full focus:ring-1 focus:ring-[var(--color-accent-primary)] transition-all theme-shadow-medium"
-          />
-          <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-            <span class="text-[10px] theme-text-disabled border theme-border-strong rounded px-1.5 py-0.5 theme-bg-elevated">Enter</span>
-          </div>
-        </div>
-      </div>
-
       <!-- Stock Basic Info Card -->
-      <div class="theme-card p-6 mb-8 relative">
+      <div 
+        class="p-6 mb-8 relative border rounded-sm"
+        :class="[themeClasses.cardBg, themeClasses.cardBorder]"
+      >
         <div class="flex items-start justify-between">
           <!-- Left Section: Company Info & Price -->
           <div class="flex-1">
@@ -141,32 +126,32 @@
       </div>
 
       <!-- Tabs -->
-      <div class="grid grid-cols-4 border-b theme-border-strong mb-8">
+      <div class="grid grid-cols-4 border-b mb-8" :class="themeClasses.borderDefault">
         <button 
           @click="activeTab = 'price'"
-          class="theme-tab px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap text-center"
-          :class="activeTab === 'price' ? 'active' : ''"
+          class="px-6 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap text-center"
+          :class="activeTab === 'price' ? themeClasses.tabActive : themeClasses.tabInactive"
         >
           价格走势 (Price Trend)
         </button>
         <button 
           @click="activeTab = 'themes'"
-          class="theme-tab px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap text-center"
-          :class="activeTab === 'themes' ? 'active' : ''"
+          class="px-6 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap text-center"
+          :class="activeTab === 'themes' ? themeClasses.tabActive : themeClasses.tabInactive"
         >
           相关主题 (Related Themes)
         </button>
         <button 
           @click="activeTab = 'attribution'"
-          class="theme-tab px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap text-center"
-          :class="activeTab === 'attribution' ? 'active' : ''"
+          class="px-6 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap text-center"
+          :class="activeTab === 'attribution' ? themeClasses.tabActive : themeClasses.tabInactive"
         >
           事件分析 (Event Analysis)
         </button>
         <button 
           @click="activeTab = 'strategies'"
-          class="theme-tab px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap text-center"
-          :class="activeTab === 'strategies' ? 'active' : ''"
+          class="px-6 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap text-center"
+          :class="activeTab === 'strategies' ? themeClasses.tabActive : themeClasses.tabInactive"
         >
           个股相关策略 (Strategies)
         </button>
@@ -179,12 +164,15 @@
           <!-- Sort by Change -->
           <button 
             @click="handleSort('change')"
-            class="flex items-center gap-2 px-3 py-1.5 bg-[#1a1a1a] border rounded-lg text-xs font-bold transition-all"
-            :class="sortField === 'change' ? 'border-blue-500 text-white' : 'border-[#333] text-gray-400 hover:text-white hover:border-gray-500'"
+            class="flex items-center gap-2 px-3 py-1.5 border rounded-sm text-xs font-bold transition-all"
+            :class="[
+              themeClasses.cardBg,
+              sortField === 'change' ? 'border-cyan-500 ' + themeClasses.textPrimary : themeClasses.filterInactive
+            ]"
           >
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
             <span>Change</span>
-            <span v-if="sortField === 'change'" class="text-blue-400 ml-1">
+            <span v-if="sortField === 'change'" class="text-cyan-400 ml-1">
               {{ sortDirection === 'desc' ? '↓' : '↑' }}
             </span>
           </button>
@@ -192,12 +180,15 @@
           <!-- Sort by Time -->
           <button 
             @click="handleSort('time')"
-            class="flex items-center gap-2 px-3 py-1.5 bg-[#1a1a1a] border rounded-lg text-xs font-bold transition-all"
-            :class="sortField === 'time' ? 'border-blue-500 text-white' : 'border-[#333] text-gray-400 hover:text-white hover:border-gray-500'"
+            class="flex items-center gap-2 px-3 py-1.5 border rounded-sm text-xs font-bold transition-all"
+            :class="[
+              themeClasses.cardBg,
+              sortField === 'time' ? 'border-cyan-500 ' + themeClasses.textPrimary : themeClasses.filterInactive
+            ]"
           >
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <span>Time</span>
-            <span v-if="sortField === 'time'" class="text-blue-400 ml-1">
+            <span v-if="sortField === 'time'" class="text-cyan-400 ml-1">
               {{ sortDirection === 'desc' ? '↓' : '↑' }}
             </span>
           </button>
@@ -210,40 +201,47 @@
             :key="theme.id" 
             :id="`theme-${theme.id}`"
             @click="toggleThemeExpand(theme)"
-            class="bg-[#1a1a1a] rounded-xl border p-5 transition-all group relative cursor-pointer"
+            class="rounded-sm border p-5 transition-all group relative cursor-pointer"
             :class="[
-              theme.id === highlightedThemeId ? 'border-blue-500 glow-info-md' : 'border-[#333] hover:border-gray-500'
+              themeClasses.cardBg,
+              theme.id === highlightedThemeId ? 'border-cyan-500' : themeClasses.cardBorder,
+              themeClasses.cardHover
             ]"
           >
             <div class="flex flex-col md:flex-row gap-6">
                   <!-- Left: Theme Change -->
-                  <div class="md:w-32 flex-shrink-0 flex items-center justify-center border-r border-[#333] mr-6 pr-6">
+                  <div class="md:w-32 flex-shrink-0 flex items-center justify-center border-r mr-6 pr-6" :class="themeClasses.borderDefault">
                     <div class="text-center">
-                      <div class="text-2xl font-bold font-mono" :class="getThemeChange(theme) >= 0 ? 'text-green-400' : 'text-red-400'">
+                      <div class="text-2xl font-bold font-mono" :class="getThemeChange(theme) >= 0 ? 'text-emerald-400' : 'text-rose-400'">
                         {{ getThemeChange(theme) >= 0 ? '+' : '' }}{{ getThemeChange(theme) }}%
                       </div>
-                      <div class="text-[10px] text-gray-500 uppercase tracking-wider mt-1">Today</div>
+                      <div class="text-[10px] uppercase tracking-wider mt-1" :class="themeClasses.textMuted">Today</div>
                     </div>
                   </div>
 
               <!-- Middle: Content -->
               <div class="flex-1 min-w-0">
-                <h3 class="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors pr-20">{{ theme.title }}</h3>
-                <p class="text-sm text-gray-400 mb-3">{{ theme.desc }}</p>
+                <h3 class="text-lg font-bold mb-2 group-hover:text-cyan-500 transition-colors pr-20" :class="themeClasses.textPrimary">{{ theme.title }}</h3>
+                <p class="text-sm mb-3" :class="themeClasses.textMuted">{{ theme.desc }}</p>
                 <div class="flex items-center gap-2">
-                  <span class="text-xs text-gray-500">Related:</span>
+                  <span class="text-xs" :class="themeClasses.textMuted">Related:</span>
                   <div class="flex flex-wrap gap-2">
-                    <span v-for="stock in theme.stocks" :key="stock" class="text-xs bg-[#2a2a2a] text-gray-300 px-2 py-0.5 rounded border border-[#333]">{{ stock }}</span>
+                    <span 
+                      v-for="stock in theme.stocks" 
+                      :key="stock" 
+                      class="text-xs px-2 py-0.5 rounded-sm border"
+                      :class="[themeClasses.cardBg, themeClasses.cardBorder, themeClasses.textSecondary]"
+                    >{{ stock }}</span>
                   </div>
                 </div>
               </div>
 
               <!-- Right: Meta & Expand -->
               <div class="flex flex-row md:flex-col justify-between items-end md:w-auto flex-shrink-0 text-right">
-                <div class="text-xs text-gray-500 mb-2">{{ theme.timeAgo }}</div>
+                <div class="text-xs mb-2" :class="themeClasses.textMuted">{{ theme.timeAgo }}</div>
                 
                 <!-- Expand Indicator -->
-                <div class="text-gray-500 group-hover:text-white transition-colors mt-auto flex items-center gap-1">
+                <div class="mt-auto flex items-center gap-1 transition-colors" :class="[themeClasses.textMuted, 'group-hover:text-cyan-500']">
                   <span class="text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">View Details</span>
                   <svg 
                     class="w-5 h-5 transition-transform duration-300" 
@@ -257,23 +255,29 @@
             </div>
 
             <!-- Expanded Content -->
-            <div v-if="theme.isExpanded" class="mt-6 pt-6 border-t border-[#333] animate-fade-in cursor-default" @click.stop>
+            <div 
+              v-if="theme.isExpanded" 
+              class="mt-6 pt-6 border-t animate-fade-in cursor-default" 
+              :class="themeClasses.borderDefault"
+              @click.stop
+            >
               <div class="mb-6">
-                <h4 class="text-sm font-bold text-gray-300 mb-2">📖 主题详情 (Theme Content)</h4>
-                <p class="text-sm text-gray-400 leading-relaxed">{{ theme.content }}</p>
+                <h4 class="text-sm font-bold mb-2" :class="themeClasses.textSecondary">📖 主题详情 (Theme Content)</h4>
+                <p class="text-sm leading-relaxed" :class="themeClasses.textMuted">{{ theme.content }}</p>
               </div>
               <div>
-                <h4 class="text-sm font-bold text-gray-300 mb-3">🔗 相关个股 (Related Stocks)</h4>
+                <h4 class="text-sm font-bold mb-3" :class="themeClasses.textSecondary">🔗 相关个股 (Related Stocks)</h4>
                 <div class="space-y-3">
                   <div 
                     v-for="stock in theme.stockDetails" 
                     :key="stock.symbol" 
                     @click="goToStockDetail(stock.symbol)"
-                    class="bg-[#222] rounded p-3 flex flex-col sm:flex-row sm:items-center gap-3 border border-[#333] hover:bg-[#2a2a2a] hover:border-gray-500 cursor-pointer transition-colors"
+                    class="rounded-sm p-3 flex flex-col sm:flex-row sm:items-center gap-3 border cursor-pointer transition-colors"
+                    :class="[themeClasses.cardBg, themeClasses.cardBorder, themeClasses.cardHover]"
                   >
                     <div class="flex items-center gap-4 min-w-[120px]">
-                      <span class="font-bold text-white">{{ stock.symbol }}</span>
-                      <span class="text-xs font-mono" :class="stock.change >= 0 ? 'text-green-400' : 'text-red-400'">
+                      <span class="font-bold" :class="themeClasses.textPrimary">{{ stock.symbol }}</span>
+                      <span class="text-xs font-mono" :class="stock.change >= 0 ? 'text-emerald-400' : 'text-rose-400'">
                         {{ stock.change >= 0 ? '+' : '' }}{{ stock.change }}% {{ stock.change >= 0 ? '↑' : '↓' }}
                       </span>
                     </div>
@@ -284,7 +288,11 @@
                 </div>
               </div>
               <div class="mt-4 flex justify-center">
-                <button @click.stop="toggleThemeExpand(theme)" class="text-xs text-gray-500 hover:text-white flex items-center gap-1">
+                <button 
+                  @click.stop="toggleThemeExpand(theme)" 
+                  class="text-xs flex items-center gap-1 hover:text-cyan-500 transition-colors"
+                  :class="themeClasses.textMuted"
+                >
                   收起 (Collapse) 🔼
                 </button>
               </div>
@@ -293,29 +301,36 @@
         </div>
 
         <!-- Empty State -->
-        <div v-else class="bg-[#1a1a1a] rounded-xl border border-[#333] p-12 text-center">
+        <div 
+          v-else 
+          class="rounded-sm border p-12 text-center"
+          :class="[themeClasses.cardBg, themeClasses.cardBorder]"
+        >
           <div class="text-4xl mb-4">🔍</div>
-          <h3 class="text-xl font-bold text-white mb-2">暂无相关主题</h3>
-          <p class="text-gray-500">该股票当前不在任何市场主题中</p>
+          <h3 class="text-xl font-bold mb-2" :class="themeClasses.textPrimary">暂无相关主题</h3>
+          <p :class="themeClasses.textMuted">该股票当前不在任何市场主题中</p>
         </div>
       </div>
 
       <!-- Price Tab -->
       <div v-if="activeTab === 'price'" class="animate-fade-in">
-        <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-6 h-96 flex items-center justify-center relative overflow-hidden">
+        <div 
+          class="rounded-sm border p-6 h-96 flex items-center justify-center relative overflow-hidden"
+          :class="[themeClasses.cardBg, themeClasses.cardBorder]"
+        >
            <!-- Mock Chart -->
            <div class="absolute inset-0 flex items-end px-4 pb-4 opacity-50">
               <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                 <path d="M0,80 Q10,70 20,75 T40,60 T60,40 T80,30 T100,10" fill="none" stroke="#3b82f6" stroke-width="2" />
-                 <path d="M0,80 L100,80" stroke="#333" stroke-width="0.5" stroke-dasharray="2 2" />
-                 <path d="M0,50 L100,50" stroke="#333" stroke-width="0.5" stroke-dasharray="2 2" />
-                 <path d="M0,20 L100,20" stroke="#333" stroke-width="0.5" stroke-dasharray="2 2" />
+                 <path d="M0,80 Q10,70 20,75 T40,60 T60,40 T80,30 T100,10" fill="none" stroke="#06b6d4" stroke-width="2" />
+                 <path d="M0,80 L100,80" :stroke="isDark ? '#333' : '#cbd5e1'" stroke-width="0.5" stroke-dasharray="2 2" />
+                 <path d="M0,50 L100,50" :stroke="isDark ? '#333' : '#cbd5e1'" stroke-width="0.5" stroke-dasharray="2 2" />
+                 <path d="M0,20 L100,20" :stroke="isDark ? '#333' : '#cbd5e1'" stroke-width="0.5" stroke-dasharray="2 2" />
               </svg>
            </div>
            <div class="text-center z-10">
-             <h3 class="text-xl font-bold text-white mb-2">{{ symbol }} Price Trend</h3>
-             <p class="text-gray-500">Real-time data visualization</p>
-             <div class="mt-4 text-3xl font-mono text-green-400">$142.58 <span class="text-sm text-green-600">+2.4%</span></div>
+             <h3 class="text-xl font-bold mb-2" :class="themeClasses.textPrimary">{{ symbol }} Price Trend</h3>
+             <p :class="themeClasses.textMuted">Real-time data visualization</p>
+             <div class="mt-4 text-3xl font-mono text-emerald-400">$142.58 <span class="text-sm text-emerald-600">+2.4%</span></div>
            </div>
         </div>
       </div>
@@ -324,8 +339,8 @@
       <div v-if="activeTab === 'strategies'" class="animate-fade-in">
         <div class="mb-6 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <h3 class="text-lg font-bold text-white">个股相关策略</h3>
-            <span class="text-sm text-gray-500">({{ filteredStrategies.length }})</span>
+            <h3 class="text-lg font-bold" :class="themeClasses.textPrimary">个股相关策略</h3>
+            <span class="text-sm" :class="themeClasses.textMuted">({{ filteredStrategies.length }})</span>
           </div>
           <div class="flex items-center gap-4">
             <div class="text-xs text-gray-500">
@@ -344,10 +359,13 @@
         <!-- Strategy Filters -->
         <div class="mb-4 space-y-3">
           <!-- 策略生成来源筛选器 -->
-          <div class="bg-[#1a1a1a] rounded-lg border border-[#333] p-3">
+          <div 
+            class="rounded-sm border p-3"
+            :class="[themeClasses.cardBg, themeClasses.cardBorder]"
+          >
             <div class="flex items-center gap-2 mb-2">
-              <span class="text-xs font-semibold text-gray-300">策略生成来源</span>
-              <span class="text-[10px] text-gray-500">(多选)</span>
+              <span class="text-xs font-bold" :class="themeClasses.textSecondary">策略生成来源</span>
+              <span class="text-[10px]" :class="themeClasses.textMuted">(多选)</span>
             </div>
             <div class="flex flex-wrap gap-1.5">
               <button
@@ -368,8 +386,11 @@
           <!-- 其他筛选器 (方向、持续时间、评级) -->
           <div class="grid grid-cols-3 gap-3">
             <!-- 策略方向 -->
-            <div class="bg-[#1a1a1a] rounded-lg border border-[#333] p-3">
-              <div class="text-xs font-semibold text-gray-300 mb-2">策略方向</div>
+            <div 
+              class="rounded-sm border p-3"
+              :class="[themeClasses.cardBg, themeClasses.cardBorder]"
+            >
+              <div class="text-xs font-bold mb-2" :class="themeClasses.textSecondary">策略方向</div>
               <div class="flex gap-1.5">
                 <button
                   v-for="direction in ['LONG', 'SHORT', 'WAIT']"
@@ -388,8 +409,11 @@
             </div>
 
             <!-- 持续时间 -->
-            <div class="bg-[#1a1a1a] rounded-lg border border-[#333] p-3">
-              <div class="text-xs font-semibold text-gray-300 mb-2">持续时间</div>
+            <div 
+              class="rounded-sm border p-3"
+              :class="[themeClasses.cardBg, themeClasses.cardBorder]"
+            >
+              <div class="text-xs font-bold mb-2" :class="themeClasses.textSecondary">持续时间</div>
               <div class="flex gap-1.5">
                 <button
                   v-for="duration in ['Short-term', 'Medium-term', 'Long-term']"
@@ -406,8 +430,11 @@
             </div>
 
             <!-- 策略评级 -->
-            <div class="bg-[#1a1a1a] rounded-lg border border-[#333] p-3">
-              <div class="text-xs font-semibold text-gray-300 mb-2">策略评级</div>
+            <div 
+              class="rounded-sm border p-3"
+              :class="[themeClasses.cardBg, themeClasses.cardBorder]"
+            >
+              <div class="text-xs font-bold mb-2" :class="themeClasses.textSecondary">策略评级</div>
               <div class="flex flex-wrap gap-1.5">
                 <button
                   v-for="grade in ['A+', 'A', 'A-', 'B+', 'B', 'C']"
@@ -445,15 +472,19 @@
             :key="strategy.id"
             :ref="el => { if (strategy.id === highlightedStrategyId) highlightedStrategyRef = el }"
             @click="openStrategyDetail(strategy)"
-            class="bg-[#1a1a1a] rounded-xl border p-5 hover:border-blue-500 transition-all group cursor-pointer"
-            :class="strategy.id === highlightedStrategyId 
-              ? 'border-blue-500 glow-info-lg bg-[#1a2740]' 
-              : 'border-[#333]'"
+            class="rounded-sm border p-5 transition-all group cursor-pointer"
+            :class="[
+              themeClasses.cardBg,
+              strategy.id === highlightedStrategyId 
+                ? themeClasses.strategyHighlight
+                : themeClasses.cardBorder,
+              themeClasses.strategyCardHover
+            ]"
           >
             <div class="flex items-start gap-4">
               <!-- Left: Symbol & Grade -->
               <div class="flex flex-col items-center gap-2 min-w-[80px]">
-                <div class="text-lg font-bold text-white">{{ strategy.symbol }}</div>
+                <div class="text-lg font-bold" :class="themeClasses.textPrimary">{{ strategy.symbol }}</div>
                 <div class="px-2 py-0.5 rounded text-xs font-bold" 
                   :class="{
                     'bg-green-900/30 text-green-400 border border-green-900/50': strategy.grade === 'A' || strategy.grade === 'A+',
@@ -477,12 +508,12 @@
                     <span class="text-xs">{{ getModelConfig(strategy.model)?.icon }}</span>
                     <span>{{ getModelConfig(strategy.model)?.name }}</span>
                   </span>
-                  <h3 class="text-base font-bold text-white truncate group-hover:text-blue-400 transition-colors">{{ strategy.title }}</h3>
+                  <h3 class="text-base font-bold truncate group-hover:text-cyan-500 transition-colors" :class="themeClasses.textPrimary">{{ strategy.title }}</h3>
                 </div>
-                <div class="text-sm text-gray-400 space-y-1 mb-2">
+                <div class="text-sm space-y-1 mb-2" :class="themeClasses.textMuted">
                   <p class="line-clamp-2">{{ strategy.description }}</p>
                 </div>
-                <div class="flex items-center gap-3 text-xs text-gray-500">
+                <div class="flex items-center gap-3 text-xs" :class="themeClasses.textMuted">
                   <span>{{ strategy.timeAgo }}</span>
                   <span>•</span>
                   <span class="flex items-center gap-1">
@@ -513,17 +544,20 @@
         </div>
 
         <!-- Empty State -->
-        <div v-else class="bg-[#1a1a1a] rounded-xl border border-[#333] p-12 text-center">
+        <div 
+          class="rounded-sm border p-12 text-center"
+          :class="[themeClasses.cardBg, themeClasses.cardBorder]"
+        >
           <div class="text-6xl mb-6">🎯</div>
-          <h3 class="text-2xl font-bold text-white mb-3">暂无 {{ symbol }} 相关策略</h3>
-          <p class="text-gray-400 mb-8 max-w-md mx-auto">
+          <h3 class="text-2xl font-bold mb-3" :class="themeClasses.textPrimary">暂无 {{ symbol }} 相关策略</h3>
+          <p class="mb-8 max-w-md mx-auto" :class="themeClasses.textMuted">
             还没有针对此股票的投资策略？基于AI量化分析，为 {{ symbol }} 生成专属策略
           </p>
           
           <!-- Primary CTA -->
           <button 
             @click="navigateToGenerateStrategy(symbol)"
-            class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-lg rounded-xl transition-all transform hover:scale-105 shadow-xl hover:shadow-blue-500/50 mb-4"
+            class="inline-flex items-center gap-3 px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-lg rounded-sm transition-all transform hover:scale-105 mb-4"
           >
             <span class="text-2xl">✨</span>
             <span>生成 {{ symbol }} 专属策略</span>
@@ -556,7 +590,10 @@
       <!-- Attribution Tab -->
       <div v-if="activeTab === 'attribution'" class="animate-fade-in">
         <!-- Stats Bar -->
-        <div class="bg-[#1a1a1a] rounded-xl border border-[#333] p-4 mb-8 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div 
+          class="rounded-sm border p-4 mb-8 flex flex-col md:flex-row items-center justify-between gap-6"
+          :class="[themeClasses.cardBg, themeClasses.cardBorder]"
+        >
         <div class="flex items-center gap-6">
           <div class="flex items-center gap-2 text-gray-400">
             <span class="text-white font-bold">59</span> events
@@ -612,7 +649,10 @@
         </div>
 
         <!-- Filters -->
-        <div class="flex bg-[#0f0f0f] rounded-lg p-1 border border-[#333]">
+        <div 
+          class="flex rounded-sm p-1 border"
+          :class="[themeClasses.cardBg, themeClasses.cardBorder]"
+        >
           <button 
             v-for="filter in filters" 
             :key="filter"
@@ -633,9 +673,9 @@
           :id="`event-group-${bar.id}`"
           v-show="bar.total > 0"
         >
-          <div class="flex items-center gap-4 mb-4 border-b border-[#333] pb-2">
-            <h2 class="text-lg font-bold text-white">{{ bar.label || `${24 - bar.id}h ago` }}</h2>
-            <span class="text-sm text-gray-500">{{ bar.total }} events</span>
+          <div class="flex items-center gap-4 mb-4 border-b pb-2" :class="themeClasses.borderDefault">
+            <h2 class="text-lg font-bold" :class="themeClasses.textPrimary">{{ bar.label || `${24 - bar.id}h ago` }}</h2>
+            <span class="text-sm" :class="themeClasses.textMuted">{{ bar.total }} events</span>
           </div>
           
           <div class="space-y-2">
@@ -643,14 +683,15 @@
               v-for="event in chartLinkedEvents[bar.id]" 
               :key="event.id" 
               @click="openDetail(event)"
-              class="bg-[#1a1a1a] hover:bg-[#222] border border-[#333] rounded-lg p-4 flex items-center justify-between cursor-pointer transition-colors group"
+              class="rounded-sm border p-4 flex items-center justify-between cursor-pointer transition-colors group"
+              :class="[themeClasses.cardBg, themeClasses.cardBorder, themeClasses.cardHover]"
             >
               <div class="flex items-center gap-4 overflow-hidden">
-                <span class="text-xs text-gray-500 font-mono flex-shrink-0">{{ event.time }}</span>
+                <span class="text-xs font-mono flex-shrink-0" :class="themeClasses.textMuted">{{ event.time }}</span>
                 <div class="flex items-center gap-3 min-w-0">
                   <span class="w-2 h-2 rounded-full flex-shrink-0" :class="getSentimentColor(event.sentiment)"></span>
-                  <h3 class="text-sm text-gray-300 truncate group-hover:text-white transition-colors">
-                    <span class="font-bold text-white mr-1">{{ symbol }}:</span> {{ event.title }}
+                  <h3 class="text-sm truncate transition-colors" :class="[themeClasses.textSecondary, 'group-hover:' + themeClasses.textPrimary]">
+                    <span class="font-bold mr-1" :class="themeClasses.textPrimary">{{ symbol }}:</span> {{ event.title }}
                   </h3>
                 </div>
               </div>
@@ -668,11 +709,22 @@
     </div>
 
     <!-- Strategy Detail Modal (Apple-inspired Minimalist Design) -->
-    <div v-if="showStrategyModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-300" @click.self="closeStrategyModal">
-      <div class="bg-[#1a1a1a] rounded-2xl border border-[#333] w-[95vw] h-[85vh] overflow-hidden shadow-2xl flex flex-col transform transition-all duration-300 scale-100 animate-modal-in">
+    <div 
+      v-if="showStrategyModal" 
+      class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm p-4 transition-opacity duration-300" 
+      :class="themeClasses.modalOverlay"
+      @click.self="closeStrategyModal"
+    >
+      <div 
+        class="rounded-sm border w-[95vw] h-[85vh] overflow-hidden shadow-2xl flex flex-col transform transition-all duration-300 scale-100 animate-modal-in"
+        :class="[themeClasses.modalBg, themeClasses.modalBorder]"
+      >
         
         <!-- Modal Header (Sticky) -->
-        <div class="px-8 py-5 border-b border-[#2a2a2a] flex justify-between items-center bg-[#1a1a1a]/95 backdrop-blur-xl z-10 shrink-0">
+        <div 
+          class="px-8 py-5 border-b flex justify-between items-center backdrop-blur-xl z-10 shrink-0"
+          :class="[themeClasses.modalBg, themeClasses.borderDefault]"
+        >
           <div class="flex items-center gap-3">
             <!-- Grade Badge -->
             <div class="px-2.5 py-1 rounded-md text-xs font-semibold tracking-wide" 
@@ -1183,6 +1235,121 @@ const accentColors = computed(() => ({
 
 // 阴影系统 computed
 const themeShadows = computed(() => theme.value.shadows)
+
+// ============================================
+// 统一主题样式类 (Unified Theme Classes)
+// ============================================
+const themeClasses = computed(() => {
+  if (isDark.value) {
+    return {
+      // 页面背景
+      pageBg: 'bg-[#050505]',
+      // 卡片/面板
+      cardBg: 'bg-[#0a0a0a]',
+      cardBorder: 'border-[#1a1a1a]',
+      cardHover: 'hover:border-cyan-500/50',
+      // 输入框
+      inputBg: 'bg-[#0a0a0a]',
+      inputBorder: 'border-[#222222]',
+      inputFocus: 'focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500',
+      // 文字
+      textPrimary: 'text-white',
+      textSecondary: 'text-gray-300',
+      textMuted: 'text-gray-500',
+      textDisabled: 'text-gray-600',
+      // 边框
+      borderDefault: 'border-[#1a1a1a]',
+      borderStrong: 'border-[#222222]',
+      borderHover: 'border-[#333333]',
+      // Tab
+      tabBg: 'bg-[#0a0a0a]',
+      tabActive: 'bg-cyan-500/10 border-cyan-500 text-cyan-400',
+      tabInactive: 'border-transparent text-gray-500 hover:text-gray-300',
+      // 按钮
+      btnPrimary: 'bg-cyan-500 hover:bg-cyan-400 text-black font-bold',
+      btnSecondary: 'bg-[#1a1a1a] border border-[#333] hover:border-gray-500 text-gray-300',
+      btnGhost: 'text-gray-500 hover:text-cyan-400',
+      // 筛选器
+      filterBg: 'bg-[#0a0a0a]',
+      filterBorder: 'border-[#222222]',
+      filterActive: 'border-cyan-500 bg-cyan-500/10 text-cyan-400',
+      filterInactive: 'border-[#333] text-gray-500 hover:border-gray-500',
+      // 策略卡片
+      strategyCardBg: 'bg-[#0a0a0a]',
+      strategyCardBorder: 'border-[#1a1a1a]',
+      strategyCardHover: 'hover:border-cyan-500',
+      strategyHighlight: 'border-cyan-500 bg-cyan-500/5',
+      // 模态框
+      modalBg: 'bg-[#0a0a0a]',
+      modalBorder: 'border-[#1a1a1a]',
+      modalOverlay: 'bg-black/80',
+      // 进度条/滑块
+      progressBg: 'bg-[#1a1a1a]',
+      progressFill: 'bg-cyan-500',
+      // 徽章
+      badgeSuccess: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+      badgeDanger: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
+      badgeWarning: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
+      badgeInfo: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
+      // 图标背景
+      iconBg: 'bg-[#1a1a1a]',
+    }
+  } else {
+    return {
+      // 页面背景
+      pageBg: 'bg-slate-50',
+      // 卡片/面板
+      cardBg: 'bg-white',
+      cardBorder: 'border-slate-200',
+      cardHover: 'hover:border-cyan-500/50',
+      // 输入框
+      inputBg: 'bg-white',
+      inputBorder: 'border-slate-200',
+      inputFocus: 'focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500',
+      // 文字
+      textPrimary: 'text-slate-800',
+      textSecondary: 'text-slate-600',
+      textMuted: 'text-slate-400',
+      textDisabled: 'text-slate-300',
+      // 边框
+      borderDefault: 'border-slate-200',
+      borderStrong: 'border-slate-300',
+      borderHover: 'border-slate-400',
+      // Tab
+      tabBg: 'bg-white',
+      tabActive: 'bg-cyan-500/10 border-cyan-500 text-cyan-600',
+      tabInactive: 'border-transparent text-slate-500 hover:text-slate-700',
+      // 按钮
+      btnPrimary: 'bg-cyan-500 hover:bg-cyan-400 text-white font-bold',
+      btnSecondary: 'bg-slate-100 border border-slate-200 hover:border-slate-300 text-slate-700',
+      btnGhost: 'text-slate-500 hover:text-cyan-500',
+      // 筛选器
+      filterBg: 'bg-slate-100',
+      filterBorder: 'border-slate-200',
+      filterActive: 'border-cyan-500 bg-cyan-500/10 text-cyan-600',
+      filterInactive: 'border-slate-300 text-slate-500 hover:border-slate-400',
+      // 策略卡片
+      strategyCardBg: 'bg-white',
+      strategyCardBorder: 'border-slate-200',
+      strategyCardHover: 'hover:border-cyan-500',
+      strategyHighlight: 'border-cyan-500 bg-cyan-500/5',
+      // 模态框
+      modalBg: 'bg-white',
+      modalBorder: 'border-slate-200',
+      modalOverlay: 'bg-black/50',
+      // 进度条/滑块
+      progressBg: 'bg-slate-200',
+      progressFill: 'bg-cyan-500',
+      // 徽章
+      badgeSuccess: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30',
+      badgeDanger: 'bg-rose-500/10 text-rose-600 border-rose-500/30',
+      badgeWarning: 'bg-amber-500/10 text-amber-600 border-amber-500/30',
+      badgeInfo: 'bg-cyan-500/10 text-cyan-600 border-cyan-500/30',
+      // 图标背景
+      iconBg: 'bg-slate-100',
+    }
+  }
+})
 
 // 配置 marked 选项
 marked.setOptions({

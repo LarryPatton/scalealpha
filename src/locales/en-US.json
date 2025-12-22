@@ -130,7 +130,8 @@
       "question1": "What are the main risks of this strategy?",
       "question2": "What plans are generated based on this strategy?",
       "question3": "How to hedge the downside risk of this strategy?",
-      "aiResponse": "Based on the strategy analysis of {symbol}, this is a great question. Generally speaking, considering the current market environment and the fundamentals of {symbol}, we need to pay attention to..."
+      "aiResponse": "Based on the strategy analysis of {symbol}, this is a great question. Generally speaking, considering the current market environment and the fundamentals of {symbol}, we need to pay attention to...",
+      "inputPlaceholder": "Type your question..."
     },
     "actions": {
       "copied": "Copied",

@@ -114,17 +114,8 @@ const handleLogin = () => {
   localStorage.setItem('isLoggedIn', 'true')
   localStorage.setItem('userEmail', email.value)
 
-  // 检查是否首次登录
-  const onboardingCompleted = localStorage.getItem('scaleAlpha_onboarding_completed')
-  const onboardingSkipped = localStorage.getItem('scaleAlpha_onboarding_skipped')
-  
-  if (!onboardingCompleted && !onboardingSkipped) {
-    // 首次登录，显示引导流程
-    showOnboarding.value = true
-  } else {
-    // 非首次登录，直接跳转
-    router.push('/infoB')
-  }
+  // Demo模式：每次登录都显示引导流程
+  showOnboarding.value = true
 }
 
 const handleOnboardingClose = () => {

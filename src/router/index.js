@@ -48,10 +48,15 @@ import OpportunityCardDesignPage from '../pages/OpportunityCardDesignPage.vue';
 import FlowDesignPage from '../pages/FlowDesignPage.vue';
 import ThemesLifecyclePage from '../pages/ThemesLifecyclePage.vue';
 import DesignSystemPage from '../pages/DesignSystemPage.vue';
+import LoadingPage from '../pages/LoadingPage.vue';
 import UIComponentsPage from '../pages/UIComponentsPage.vue';
 import DevToolsPage from '../pages/DevToolsPage.vue';
 import ColorSchemesPage from '../pages/ColorSchemesPage.vue';
 import ButtonSchemesPage from '../pages/ButtonSchemesPage.vue';
+import PricingPage from '../pages/PricingPage.vue';
+import StrategyEmptyStatePage from '../pages/StrategyEmptyStatePage.vue';
+import AttributionEmptyStatePage from '../pages/AttributionEmptyStatePage.vue';
+import PortfolioInputPage2 from '../pages/PortfolioInputPage2.vue';
 
 const routes = [
   // Root redirect - automatically redirect to Home page
@@ -209,6 +214,12 @@ const routes = [
     component: LoginPage,
     meta: { layout: AuthLayout }
   },
+  {
+    path: '/loading',
+    name: 'Loading',
+    component: LoadingPage,
+    meta: { layout: BlankLayout }
+  },
 
   // App Routes (Info Hub)
   {
@@ -274,6 +285,12 @@ const routes = [
     meta: { layout: AppLayout }
   },
   {
+    path: '/portfolio-input2',
+    name: 'PortfolioInput2',
+    component: PortfolioInputPage2,
+    meta: { layout: AppLayout }
+  },
+  {
     path: '/portfolio',
     name: 'Portfolio',
     component: PortfolioPage,
@@ -326,6 +343,28 @@ const routes = [
     name: 'Alerts',
     component: PingPingPage,
     meta: { layout: AppLayout }
+  },
+
+  // Pricing Page
+  {
+    path: '/pricing',
+    name: 'Pricing',
+    component: PricingPage,
+    meta: { layout: AppLayout }
+  },
+
+  // Design Showcase Pages
+  {
+    path: '/dev/strategy-empty-state',
+    name: 'StrategyEmptyState',
+    component: StrategyEmptyStatePage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/dev/attribution-empty-state',
+    name: 'AttributionEmptyState',
+    component: AttributionEmptyStatePage,
+    meta: { layout: BlankLayout }
   },
 
   // 404
