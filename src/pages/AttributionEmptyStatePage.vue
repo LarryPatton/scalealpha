@@ -14,13 +14,17 @@
             <p class="text-xs" :style="{ color: tokens.colors.text.muted }">Stock Attribution Page - Empty States Design</p>
           </div>
         </div>
-        <router-link 
-          to="/stock-attribution/GOOGL"
-          class="px-4 py-2 text-sm rounded-sm border transition-colors hover:bg-white/5"
-          :style="{ borderColor: tokens.colors.border.default, color: tokens.colors.text.secondary }"
-        >
-          返回归因页面
-        </router-link>
+        <div class="flex items-center gap-3">
+          <ThemeToggle />
+          <router-link 
+            to="/stock-attribution/GOOGL"
+            class="px-4 py-2 text-sm rounded-sm border transition-colors"
+            :style="{ borderColor: tokens.colors.border.default, color: tokens.colors.text.secondary }"
+            :class="isDark ? 'hover:bg-white/5' : 'hover:bg-black/5'"
+          >
+            返回归因页面
+          </router-link>
+        </div>
       </div>
     </header>
 
@@ -54,8 +58,9 @@
                 该股票暂无历史价格数据，可能是新上市股票或数据源暂时不可用
               </p>
               <button 
-                class="px-4 py-2 text-sm font-medium rounded-sm border transition-colors hover:bg-white/5"
+                class="px-4 py-2 text-sm font-medium rounded-sm border transition-colors"
                 :style="{ borderColor: tokens.colors.border.default, color: tokens.colors.text.secondary }"
+                :class="isDark ? 'hover:bg-white/5' : 'hover:bg-black/5'"
               >
                 刷新数据
               </button>
@@ -89,8 +94,9 @@
                   浏览热门主题
                 </button>
                 <button 
-                  class="px-4 py-2 text-sm font-medium rounded-sm border transition-colors hover:bg-white/5"
+                  class="px-4 py-2 text-sm font-medium rounded-sm border transition-colors"
                   :style="{ borderColor: tokens.colors.border.default, color: tokens.colors.text.secondary }"
+                  :class="isDark ? 'hover:bg-white/5' : 'hover:bg-black/5'"
                 >
                   请求分析
                 </button>
@@ -167,8 +173,9 @@
                   生成策略
                 </button>
                 <button 
-                  class="px-5 py-2.5 text-sm font-medium rounded-sm border transition-colors hover:bg-white/5"
+                  class="px-5 py-2.5 text-sm font-medium rounded-sm border transition-colors"
                   :style="{ borderColor: tokens.colors.border.default, color: tokens.colors.text.secondary }"
+                  :class="isDark ? 'hover:bg-white/5' : 'hover:bg-black/5'"
                 >
                   浏览机会
                 </button>
@@ -328,8 +335,9 @@
 <script setup>
 import { ref } from 'vue'
 import { useTheme } from '../composables/useTheme'
+import ThemeToggle from '../components/ThemeToggle.vue'
 
-const { tokens } = useTheme()
+const { tokens, isDark } = useTheme()
 
 const mockActiveTab = ref('strategies')
 const mockTabs = [
