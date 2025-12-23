@@ -14,13 +14,17 @@
             <p class="text-xs" :style="{ color: tokens.colors.text.muted }">Strategy Empty State Design Showcase</p>
           </div>
         </div>
-        <router-link 
-          to="/opportunityB?tab=mystrategy"
-          class="px-4 py-2 text-sm rounded-sm border transition-colors hover:bg-white/5"
-          :style="{ borderColor: tokens.colors.border.default, color: tokens.colors.text.secondary }"
-        >
-          返回策略列表
-        </router-link>
+        <div class="flex items-center gap-3">
+          <ThemeToggle />
+          <router-link 
+            to="/opportunityB?tab=mystrategy"
+            class="px-4 py-2 text-sm rounded-sm border transition-colors"
+            :style="{ borderColor: tokens.colors.border.default, color: tokens.colors.text.secondary }"
+            :class="isDark ? 'hover:bg-white/5' : 'hover:bg-black/5'"
+          >
+            返回策略列表
+          </router-link>
+        </div>
       </div>
     </header>
 
@@ -199,8 +203,9 @@
                   探索投资机会
                 </button>
                 <button 
-                  class="px-6 py-2.5 text-sm font-medium rounded-sm border transition-colors hover:bg-white/5"
+                  class="px-6 py-2.5 text-sm font-medium rounded-sm border transition-colors"
                   :style="{ borderColor: tokens.colors.border.default, color: tokens.colors.text.secondary }"
+                  :class="isDark ? 'hover:bg-white/5' : 'hover:bg-black/5'"
                 >
                   了解更多
                 </button>
@@ -309,10 +314,10 @@
               <!-- Quick actions -->
               <div class="flex items-center gap-2 text-xs" :style="{ color: tokens.colors.text.muted }">
                 <span>热门：</span>
-                <button class="px-2 py-1 rounded-sm transition-colors hover:bg-white/5" :style="{ color: tokens.colors.accent.primary }">NVDA</button>
-                <button class="px-2 py-1 rounded-sm transition-colors hover:bg-white/5" :style="{ color: tokens.colors.accent.primary }">AAPL</button>
-                <button class="px-2 py-1 rounded-sm transition-colors hover:bg-white/5" :style="{ color: tokens.colors.accent.primary }">TSLA</button>
-                <button class="px-2 py-1 rounded-sm transition-colors hover:bg-white/5" :style="{ color: tokens.colors.accent.primary }">MSFT</button>
+                <button class="px-2 py-1 rounded-sm transition-colors" :class="isDark ? 'hover:bg-white/5' : 'hover:bg-black/5'" :style="{ color: tokens.colors.accent.primary }">NVDA</button>
+                <button class="px-2 py-1 rounded-sm transition-colors" :class="isDark ? 'hover:bg-white/5' : 'hover:bg-black/5'" :style="{ color: tokens.colors.accent.primary }">AAPL</button>
+                <button class="px-2 py-1 rounded-sm transition-colors" :class="isDark ? 'hover:bg-white/5' : 'hover:bg-black/5'" :style="{ color: tokens.colors.accent.primary }">TSLA</button>
+                <button class="px-2 py-1 rounded-sm transition-colors" :class="isDark ? 'hover:bg-white/5' : 'hover:bg-black/5'" :style="{ color: tokens.colors.accent.primary }">MSFT</button>
               </div>
             </div>
           </div>
@@ -325,8 +330,9 @@
 
 <script setup>
 import { useTheme } from '../composables/useTheme'
+import ThemeToggle from '../components/ThemeToggle.vue'
 
-const { tokens } = useTheme()
+const { tokens, isDark } = useTheme()
 </script>
 
 <style scoped>
