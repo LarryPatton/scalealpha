@@ -166,8 +166,8 @@
               
               <!-- 1. Analysis Framework - flex-[2] 因为有2行卡片 -->
               <div id="analysis-frameworks" class="flex-[2] flex flex-col min-h-0">
-                <h3 class="text-xs font-bold text-gray-400 mb-1.5 flex items-center gap-2 uppercase tracking-wider shrink-0">
-                  <span class="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span> {{ $t('opportunity.config.frameworkTitle') }}
+                <h3 class="text-sm font-bold mb-2 pl-2.5 border-l-2 border-cyan-500 uppercase tracking-wider shrink-0" :style="{ color: isDark ? '#d1d5db' : '#374151' }">
+                  {{ $t('opportunity.config.frameworkTitle') }}
                 </h3>
                 <div class="flex gap-3 flex-1 min-h-0">
                   <!-- 左侧：卡片网格 -->
@@ -221,8 +221,8 @@
 
               <!-- 2. Investment Period - flex-1 均分空间 -->
               <div id="investment-period" class="flex-1 flex flex-col min-h-0">
-                <h3 class="text-xs font-bold text-gray-400 mb-1.5 flex items-center gap-2 uppercase tracking-wider shrink-0">
-                  <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span> {{ $t('opportunity.config.periodTitle') }}
+                <h3 class="text-sm font-bold mb-2 pl-2.5 border-l-2 border-blue-500 uppercase tracking-wider shrink-0" :style="{ color: isDark ? '#d1d5db' : '#374151' }">
+                  {{ $t('opportunity.config.periodTitle') }}
                 </h3>
                 <div class="flex gap-3 flex-1 min-h-0">
                   <!-- 左侧：卡片网格 -->
@@ -272,8 +272,8 @@
 
               <!-- 3. Risk Appetite - flex-1 均分空间 -->
               <div id="risk-appetite" class="flex-1 flex flex-col min-h-0">
-                <h3 class="text-xs font-bold text-gray-400 mb-1.5 flex items-center gap-2 uppercase tracking-wider shrink-0">
-                  <span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span> {{ $t('opportunity.config.riskTitle') }}
+                <h3 class="text-sm font-bold mb-2 pl-2.5 border-l-2 border-orange-500 uppercase tracking-wider shrink-0" :style="{ color: isDark ? '#d1d5db' : '#374151' }">
+                  {{ $t('opportunity.config.riskTitle') }}
                 </h3>
                 <div class="flex gap-3 flex-1 min-h-0">
                   <!-- 左侧：卡片网格 -->
@@ -323,9 +323,9 @@
 
               <!-- 4. Personal Insights - 个人洞察输入区 -->
               <div class="flex-1 flex flex-col min-h-0">
-                <h3 class="text-xs font-bold text-gray-400 mb-1.5 flex items-center gap-2 uppercase tracking-wider shrink-0">
-                  <span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span> {{ $t('opportunity.config.insightsTitle') }}
-                  <span class="text-[9px] font-normal text-gray-600">{{ $t('opportunity.config.optional') }}</span>
+                <h3 class="text-sm font-bold mb-2 pl-2.5 border-l-2 border-purple-500 uppercase tracking-wider shrink-0 flex items-center gap-2" :style="{ color: isDark ? '#d1d5db' : '#374151' }">
+                  {{ $t('opportunity.config.insightsTitle') }}
+                  <span class="text-[10px] font-normal" :style="{ color: isDark ? '#6b7280' : '#9ca3af' }">{{ $t('opportunity.config.optional') }}</span>
                 </h3>
                 <div class="grid grid-cols-2 gap-2 flex-1 min-h-0">
                   <!-- 宏观市场观点 -->

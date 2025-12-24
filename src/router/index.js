@@ -58,6 +58,7 @@ import StrategyEmptyStatePage from '../pages/StrategyEmptyStatePage.vue';
 import AttributionEmptyStatePage from '../pages/AttributionEmptyStatePage.vue';
 import InfoEmptyStatePage from '../pages/InfoEmptyStatePage.vue';
 import ThemeColorsReferencePage from '../pages/ThemeColorsReferencePage.vue';
+import SectionTitlePreviewPage from '../pages/SectionTitlePreviewPage.vue';
 import PortfolioInputPage2 from '../pages/PortfolioInputPage2.vue';
 import PlanDetailDemoPage from '../pages/PlanDetailDemoPage.vue';
 
@@ -379,6 +380,12 @@ const routes = [
     path: '/dev/theme-colors',
     name: 'ThemeColorsReference',
     component: ThemeColorsReferencePage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/dev/section-title-preview',
+    name: 'SectionTitlePreview',
+    component: SectionTitlePreviewPage,
     meta: { layout: BlankLayout }
   },
   {
