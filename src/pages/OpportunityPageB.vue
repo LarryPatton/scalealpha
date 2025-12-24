@@ -1400,7 +1400,8 @@
                             <td class="px-4 py-2.5 text-center">
                               <div class="flex items-center justify-center gap-1">
                                 <button 
-                                  class="p-1 border rounded-sm transition-colors hover:bg-white/10"
+                                  @click.stop="openPlanDetail(plan, strategy)"
+                                  class="p-1 border rounded-sm transition-colors hover:bg-white/10 hover:border-cyan-500/50"
                                   :style="{ borderColor: tokens.colors.border.default, color: tokens.colors.text.muted }"
                                   title="查看详情"
                                 >
@@ -1434,6 +1435,13 @@
         </div>
         </div>
       </div>
+
+      <!-- Execution Plan Detail Modal -->
+      <ExecutionPlanDetailModal 
+        :visible="showPlanDetailModal"
+        :plan-data="selectedPlanForDetail"
+        @close="closePlanDetailModal"
+      />
 
       <!-- Delete Confirmation Modal -->
       <div v-if="showDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-300" @click.self="closeDeleteModal">
@@ -2497,6 +2505,7 @@ import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import Navbar from '../components/Navbar.vue'
 import ThemeToggle from '../components/ThemeToggle.vue'
+import ExecutionPlanDetailModal from '../components/opportunity/ExecutionPlanDetailModal.vue'
 import { useTheme } from '../composables/useTheme'
 
 // 使用主题系统
@@ -3266,6 +3275,71 @@ const generatePlanForStrategy = (strategy) => {
 const closeGeneratePlanModal = () => {
   showGeneratePlanModal.value = false
   generatePlanTarget.value = null
+}
+
+// --- Execution Plan Detail Modal Logic ---
+const showPlanDetailModal = ref(false)
+const selectedPlanForDetail = ref(null)
+
+const openPlanDetail = (plan, strategy) => {
+  // 构造完整的计划数据，模拟计划.txt中的数据结构
+  selectedPlanForDetail.value = {
+    id: plan.id,
+    name: plan.name,
+    symbol: strategy?.symbol || 'N/A',
+    stockName: strategy?.stockName || '',
+    memorandum: {
+      Trading_Plan: {
+        current_action: {
+          recommendation: plan.recommendation,
+          confidence_level: plan.confidence_level,
+          instruction: `当前建议${plan.recommendation === 'WAIT_BUY' ? '等待回调买入' : plan.recommendation === 'BUY' ? '立即买入' : plan.recommendation === 'SELL' ? '卖出' : '持有观望'}，置信度${plan.confidence_level}。`
+        },
+        action_plan: {
+          instruction: `计划在$${plan.entry_price}附近建仓，目标价$${plan.target_price}，止损价$${plan.stop_loss_price}。`,
+          triggers: [{
+            trigger_price: plan.entry_price,
+            position_size_pct: plan.position_pct || 15,
+            rationale: '基于技术分析和AI模型共识确定的入场价位'
+          }]
+        },
+        profit_taking_plan: {
+          instruction: '分批止盈，锁定利润',
+          triggers: [
+            { trigger_price: plan.target_price, position_to_sell_pct: 50, rationale: '第一目标位' },
+            { trigger_price: plan.target_price * 1.05, position_to_sell_pct: 100, rationale: '最终目标位' }
+          ]
+        },
+        stop_loss_plan: {
+          instruction: '严格执行止损策略，控制风险',
+          trigger: { trigger_price: plan.stop_loss_price, rationale: '跌破关键支撑位' }
+        },
+        llm_consensus: {
+          openai: { recommendation: plan.recommendation, instruction: '基于技术和基本面分析' },
+          claude: { recommendation: plan.recommendation, instruction: '综合多维度分析' },
+          grok: { recommendation: plan.recommendation, instruction: '实时市场数据分析' },
+          deepseek: { recommendation: plan.recommendation, instruction: '深度推理分析' },
+          qwen: { recommendation: plan.recommendation, instruction: '量化模型分析' },
+          kimi: { recommendation: plan.recommendation, instruction: '情绪面分析' }
+        }
+      },
+      Plan_Analysis: {
+        Analytical_Approach: '多维共识分析。技术面：动量指标+均线支撑。基本面：估值合理。事件驱动：近期催化剂。',
+        Primary_Thesis_Vs_Counter_Thesis: `牛市论点：技术支撑强劲，基本面稳健，近期有正面催化剂。熊市论点：宏观不确定性，可能的回调风险。综合判断：盈亏比${((plan.target_price - plan.entry_price) / (plan.entry_price - plan.stop_loss_price)).toFixed(1)}:1有利。`,
+        Key_Scenarios_And_Likelihoods: '基准情景(65%): 回调至支撑位后企稳反弹。牛市情景(20%): 直接突破阻力位。熊市情景(15%): 跌破支撑位。',
+        Primary_Risks_To_Monitor: '宏观经济数据、行业监管政策、公司财报风险、市场情绪变化。',
+        Manager_s_Note_On_Strategy_And_Discipline: '严格执行交易纪律，不追高，耐心等待最佳入场时机。风险管理优先，保护本金。',
+        Options_Cross_Market_Analysis: '期权市场隐含波动率处于正常水平，无明显异常信号。',
+        Broad_Market_Analysis: '大盘整体趋势向好，市场情绪稳定。'
+      }
+    }
+  }
+  showPlanDetailModal.value = true
+}
+
+const closePlanDetailModal = () => {
+  showPlanDetailModal.value = false
+  selectedPlanForDetail.value = null
 }
 
 // --- Delete Confirmation Modal Logic ---

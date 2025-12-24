@@ -59,6 +59,7 @@ import AttributionEmptyStatePage from '../pages/AttributionEmptyStatePage.vue';
 import InfoEmptyStatePage from '../pages/InfoEmptyStatePage.vue';
 import ThemeColorsReferencePage from '../pages/ThemeColorsReferencePage.vue';
 import PortfolioInputPage2 from '../pages/PortfolioInputPage2.vue';
+import PlanDetailDemoPage from '../pages/PlanDetailDemoPage.vue';
 
 const routes = [
   // Root redirect - automatically redirect to Home page
@@ -378,6 +379,12 @@ const routes = [
     path: '/dev/theme-colors',
     name: 'ThemeColorsReference',
     component: ThemeColorsReferencePage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/dev/plan-detail',
+    name: 'PlanDetailDemo',
+    component: PlanDetailDemoPage,
     meta: { layout: BlankLayout }
   },
 

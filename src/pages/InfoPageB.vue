@@ -186,28 +186,27 @@
               <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/0 to-transparent group-hover:via-cyan-500/50 transition-all duration-300"></div>
 
               <div class="relative z-10">
-                <div class="flex justify-center mb-3">
-                  <span class="text-[9px] font-bold text-cyan-500 border border-cyan-500/30 px-1.5 py-0.5 rounded-sm uppercase tracking-wider">{{ opp.strategy }}</span>
-                </div>
-                
                 <h3 class="text-2xl font-bold mb-1 group-hover:text-cyan-50 transition-colors" :style="{ color: tokens.colors.text.primary }">{{ opp.symbol }}</h3>
-                <p class="text-[10px] mb-5 font-mono line-clamp-1" :style="{ color: tokens.colors.text.muted }">{{ opp.title }}</p>
+                <p class="text-[10px] mb-4 font-mono line-clamp-1" :style="{ color: tokens.colors.text.muted }">{{ opp.title }}</p>
                 
-                <div class="grid grid-cols-2 gap-3 mb-5 border-y py-3" :style="{ borderColor: tokens.colors.border.subtle }">
+                <div class="grid grid-cols-2 gap-3 mb-4 border-y py-3" :style="{ borderColor: tokens.colors.border.subtle }">
                   <div class="text-center border-r" :style="{ borderColor: tokens.colors.border.subtle }">
                     <div class="text-xl font-bold" :style="{ color: tokens.colors.text.primary }">A+</div>
-                    <div class="text-[9px] uppercase tracking-wider" :style="{ color: tokens.colors.text.disabled }">评级</div>
                   </div>
                   <div class="text-center">
                     <div class="text-xl font-bold" :style="{ color: opp.type === 'Long' ? tokens.colors.accent.success : tokens.colors.accent.danger }">{{ opp.type === 'Long' ? '做多' : '做空' }}</div>
-                    <div class="text-[9px] uppercase tracking-wider" :style="{ color: tokens.colors.text.disabled }">方向</div>
                   </div>
                 </div>
 
-                <div class="flex justify-between text-[9px] font-mono uppercase" :style="{ color: tokens.colors.text.disabled }">
+                <div class="flex justify-between items-center text-[9px] font-mono uppercase" :style="{ color: tokens.colors.text.disabled }">
                   <span>1-10 天</span>
-                  <span>GEMINI</span>
-                  <span :style="{ color: opp.risk === 'High' ? tokens.colors.accent.danger : (opp.risk === 'Med' ? tokens.colors.accent.warning : tokens.colors.accent.success) }">{{ opp.risk === 'High' ? '高' : (opp.risk === 'Med' ? '中' : '低') }}风险</span>
+                  <span 
+                    class="px-2 py-0.5 rounded-sm font-bold"
+                    :style="{ 
+                      backgroundColor: opp.risk === 'High' ? tokens.colors.accent.danger + '1A' : (opp.risk === 'Med' ? tokens.colors.accent.warning + '1A' : tokens.colors.accent.success + '1A'),
+                      color: opp.risk === 'High' ? tokens.colors.accent.danger : (opp.risk === 'Med' ? tokens.colors.accent.warning : tokens.colors.accent.success) 
+                    }"
+                  >{{ opp.risk === 'High' ? '高风险' : (opp.risk === 'Med' ? '风险适中' : '低风险') }}</span>
                 </div>
               </div>
             </div>
