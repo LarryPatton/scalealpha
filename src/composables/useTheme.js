@@ -44,9 +44,15 @@ const tokens = computed(() => {
       '2xl': '32px',
     },
     borderRadius: {
-      sharp: '2px',
+      sm: '4px',       // 小按钮、标签 (rounded-sm)
+      DEFAULT: '6px',  // 输入框、普通按钮 (rounded)
+      md: '8px',       // 小卡片 (rounded-md)
+      lg: '12px',      // 卡片、模态框 (rounded-lg)
+      xl: '16px',      // 大卡片 (rounded-xl)
+      full: '9999px',  // 头像、圆点 (rounded-full)
+      // 兼容旧命名
+      sharp: '4px',
       rounded: '8px',
-      full: '9999px',
     },
   }
 })

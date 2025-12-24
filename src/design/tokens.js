@@ -227,10 +227,17 @@ export const spacing = {
 // ============================================
 
 export const borderRadius = {
-  none: '0px',     // 卡片、面板 - 极简风格
-  sharp: '2px',    // 按钮、输入框 - 硬朗专业感 (对应 Tailwind rounded-sm)
-  soft: '4px',     // 标签、徽章、小组件 (对应 Tailwind rounded)
-  full: '9999px',  // 浮动导航、头像、圆点 (对应 Tailwind rounded-full)
+  none: '0px',     // 完全直角
+  sm: '4px',       // 小按钮、标签、Badge (对应 Tailwind rounded-sm)
+  DEFAULT: '6px',  // 输入框、普通按钮 (对应 Tailwind rounded)
+  md: '8px',       // 小卡片、面板 (对应 Tailwind rounded-md)
+  lg: '12px',      // 卡片、模态框 (对应 Tailwind rounded-lg)
+  xl: '16px',      // 大卡片 (对应 Tailwind rounded-xl)
+  full: '9999px',  // 头像、圆点 (对应 Tailwind rounded-full)
+  // 兼容旧命名
+  sharp: '4px',    // 已废弃，使用 sm
+  soft: '6px',     // 已废弃，使用 DEFAULT
+  rounded: '8px',  // 已废弃，使用 md
 }
 
 // ============================================

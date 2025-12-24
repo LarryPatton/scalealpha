@@ -41,6 +41,19 @@ export default {
         'screen-4xl': '2560px',
         'screen-5xl': '3840px',
       },
+      /* ============================================
+       * 圆角优化 - 从工业硬朗风格改为现代柔和风格
+       * 原始值: sm=2px, DEFAULT=4px, md=6px, lg=8px
+       * 新值:   sm=4px, DEFAULT=6px, md=8px, lg=12px
+       * ============================================ */
+      borderRadius: {
+        'sm': '4px',      // 原 2px → 4px (小按钮、标签、Badge)
+        DEFAULT: '6px',   // 原 4px → 6px (输入框、普通按钮)
+        'md': '8px',      // 原 6px → 8px (小卡片、面板)
+        'lg': '12px',     // 原 8px → 12px (卡片、模态框)
+        'xl': '16px',     // 原 12px → 16px (大卡片)
+        '2xl': '20px',    // 原 16px → 20px (超大卡片)
+      },
     },
   },
   plugins: [],

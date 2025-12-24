@@ -56,6 +56,8 @@ import ButtonSchemesPage from '../pages/ButtonSchemesPage.vue';
 import PricingPage from '../pages/PricingPage.vue';
 import StrategyEmptyStatePage from '../pages/StrategyEmptyStatePage.vue';
 import AttributionEmptyStatePage from '../pages/AttributionEmptyStatePage.vue';
+import InfoEmptyStatePage from '../pages/InfoEmptyStatePage.vue';
+import ThemeColorsReferencePage from '../pages/ThemeColorsReferencePage.vue';
 import PortfolioInputPage2 from '../pages/PortfolioInputPage2.vue';
 
 const routes = [
@@ -364,6 +366,18 @@ const routes = [
     path: '/dev/attribution-empty-state',
     name: 'AttributionEmptyState',
     component: AttributionEmptyStatePage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/dev/info-empty-state',
+    name: 'InfoEmptyState',
+    component: InfoEmptyStatePage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/dev/theme-colors',
+    name: 'ThemeColorsReference',
+    component: ThemeColorsReferencePage,
     meta: { layout: BlankLayout }
   },
 

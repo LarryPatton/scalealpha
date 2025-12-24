@@ -943,6 +943,8 @@
                   :class="[
                     selectedStrategyId === strategy.id ? 'border-l-2' : '',
                     strategy.grade === 'N/A' ? 'opacity-50 grayscale' : '',
+                    strategy.hasError || strategy.grade === 'ERROR' ? 'opacity-70' : '',
+                    strategy.isExpired ? 'opacity-60' : '',
                     regeneratingStrategies[strategy.id] ? 'pointer-events-none' : '',
                     isStrategyExpanded(strategy.id) ? 'border-b-0' : ''
                   ]"
@@ -953,7 +955,7 @@
                   }"
                   @mouseenter="$event.currentTarget.style.backgroundColor = selectedStrategyId === strategy.id ? tokens.colors.accent.primary + '33' : tokens.colors.background.elevated"
                   @mouseleave="$event.currentTarget.style.backgroundColor = selectedStrategyId === strategy.id ? tokens.colors.accent.primary + '33' : 'transparent'"
-                  @click="strategy.grade !== 'N/A' && !regeneratingStrategies[strategy.id] ? toggleStrategySelection(strategy.id) : null"
+                  @click="(strategy.grade !== 'N/A' || strategy.hasError || strategy.isExpired) && !regeneratingStrategies[strategy.id] ? toggleStrategySelection(strategy.id) : null"
                 >
                   <!-- Regenerating Overlay -->
                   <td v-if="regeneratingStrategies[strategy.id]" colspan="15" class="absolute inset-0 z-20">
@@ -1039,8 +1041,33 @@
                   </td>
                   <!-- Grade -->
                   <td class="px-3 py-3 whitespace-nowrap text-center">
+                    <!-- ERROR 状态：生成失败 -->
                     <div 
-                      v-if="strategy.grade && strategy.grade !== 'N/A'"
+                      v-if="strategy.hasError || strategy.grade === 'ERROR'"
+                      class="flex items-center justify-center gap-1.5 px-2 py-0.5 rounded border mx-auto"
+                      :style="{ borderColor: tokens.colors.semantic.error + '4D', backgroundColor: tokens.colors.semantic.error + '1A' }"
+                      :title="strategy.errorMessage || '生成失败'"
+                    >
+                      <svg class="w-3 h-3" :style="{ color: tokens.colors.semantic.error }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                      </svg>
+                      <span class="text-[10px] font-bold uppercase tracking-wider" :style="{ color: tokens.colors.semantic.error }">失败</span>
+                    </div>
+                    <!-- 已失效状态 -->
+                    <div 
+                      v-else-if="strategy.isExpired"
+                      class="flex items-center justify-center gap-1.5 px-2 py-0.5 rounded border mx-auto"
+                      :style="{ borderColor: tokens.colors.text.muted + '4D', backgroundColor: tokens.colors.text.muted + '1A' }"
+                      :title="strategy.expiredReason || '策略已失效'"
+                    >
+                      <svg class="w-3 h-3" :style="{ color: tokens.colors.text.muted }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                      <span class="text-[10px] font-bold uppercase tracking-wider" :style="{ color: tokens.colors.text.muted }">已失效</span>
+                    </div>
+                    <!-- 正常 Grade -->
+                    <div 
+                      v-else-if="strategy.grade && strategy.grade !== 'N/A'"
                       class="w-6 h-6 flex items-center justify-center rounded font-bold text-xs border mx-auto"
                       :style="strategy.grade === 'A' 
                         ? { borderColor: tokens.colors.semantic.success + '4D', backgroundColor: tokens.colors.semantic.success + '1A', color: tokens.colors.semantic.success }
@@ -1200,9 +1227,29 @@
                   <!-- Actions - 独立列 -->
                   <td class="px-3 py-3 whitespace-nowrap text-center" :class="{ 'border-l': !isExecutionPlanExpanded }" :style="!isExecutionPlanExpanded ? { borderLeftColor: tokens.colors.border.strong } : {}">
                     <div class="flex items-center justify-center gap-1">
-                      <!-- Generate Plan -->
+                      <!-- 重试按钮 (hasError 状态) - 圆环样式，黄色主题 -->
                       <button 
-                        v-if="strategy.grade !== 'N/A'"
+                        v-if="strategy.hasError || strategy.grade === 'ERROR'"
+                        @click.stop="handleRegenerateSingle(strategy)"
+                        class="p-1.5 border rounded-full transition-colors hover:brightness-110"
+                        :style="{ backgroundColor: tokens.colors.semantic.warning + '33', borderColor: tokens.colors.semantic.warning + '66', color: tokens.colors.semantic.warning }"
+                        :title="'重试生成: ' + (strategy.errorMessage || '点击重新生成策略')"
+                      >
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                      </button>
+                      <!-- 已失效状态 - 禁用的生成计划按钮 -->
+                      <button 
+                        v-else-if="strategy.isExpired"
+                        disabled
+                        class="p-1.5 border rounded-sm cursor-not-allowed opacity-50"
+                        :style="{ backgroundColor: tokens.colors.text.muted + '1A', borderColor: tokens.colors.text.muted + '33', color: tokens.colors.text.muted }"
+                        :title="strategy.expiredReason || '策略已失效，无法生成计划'"
+                      >
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                      </button>
+                      <!-- Generate Plan (正常状态) -->
+                      <button 
+                        v-else-if="strategy.grade !== 'N/A'"
                         @click.stop="generatePlanForStrategy(strategy)"
                         class="p-1.5 border rounded-sm transition-colors hover:brightness-110"
                         :style="{ backgroundColor: tokens.colors.semantic.success + '33', borderColor: tokens.colors.semantic.success + '66', color: tokens.colors.semantic.success }"
@@ -1925,14 +1972,14 @@
                  </div>
               </div>
 
-              <!-- Input Area -->
-              <div class="p-3 border-t" :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }">
+              <!-- Input Area - 与中栏底部按钮区域高度对齐 -->
+              <div class="px-4 py-4 border-t" :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }">
                 <div class="relative">
                   <input 
                     v-model="chatInput"
                     type="text" 
                     :placeholder="$t('opportunity.chat.inputPlaceholder')"
-                    class="w-full rounded pl-3 pr-10 py-2.5 text-sm focus:outline-none focus:ring-1 border"
+                    class="w-full rounded pl-3 pr-10 py-3.5 text-sm focus:outline-none focus:ring-1 border"
                     :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.strong, color: tokens.colors.text.primary }"
                     @keyup.enter="sendChatMessage"
                   >
@@ -2052,24 +2099,24 @@
 
                 <!-- Main Content -->
                 <div class="markdown-content space-y-6" :style="{ color: tokens.colors.text.secondary }" v-html="renderedStrategyContent"></div>
+              </div>
 
-                <!-- Action Buttons -->
-                <div class="flex gap-4 mt-12 pt-8 border-t" :style="{ borderColor: tokens.colors.border.strong }">
-                  <button 
-                    @click="generatePlanForStrategy(selectedStrategy)"
-                    class="flex-1 py-4 rounded-sm font-bold text-base transition-all flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] shadow-lg"
-                    :style="{ 
-                      backgroundColor: tokens.colors.accent.primary, 
-                      color: '#000',
-                      boxShadow: `0 4px 20px ${tokens.colors.accent.primary}4D`
-                    }"
-                  >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                    </svg>
-                    {{ $t('opportunity.actions.generatePlan') }}
-                  </button>
-                </div>
+              <!-- Fixed Bottom Action Button -->
+              <div class="shrink-0 px-6 py-4 border-t" :style="{ borderColor: tokens.colors.border.strong, backgroundColor: tokens.colors.background.surface }">
+                <button 
+                  @click="generatePlanForStrategy(selectedStrategy)"
+                  class="w-full py-4 rounded-sm font-bold text-base transition-all flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-[0.99] shadow-lg"
+                  :style="{ 
+                    backgroundColor: tokens.colors.accent.primary, 
+                    color: '#000',
+                    boxShadow: `0 4px 20px ${tokens.colors.accent.primary}4D`
+                  }"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  </svg>
+                  {{ $t('opportunity.actions.generatePlan') }}
+                </button>
               </div>
             </div>
           </div>
@@ -5250,6 +5297,131 @@ const generateDemoStrategies = () => {
       planNeedsUpdate: true,
       strategyNeedsUpdate: false,
       strategyUnread: false
+    },
+    // ========== 新增状态类型示例 ==========
+    // 1. 官方策略已失效 - 可查看但无法生成计划
+    {
+      id: 'demo-expired-1',
+      symbol: 'META',
+      stockName: 'Meta Platforms, Inc.',
+      direction: 'LONG',
+      grade: 'B',
+      horizon: 'Medium-term (3-6 months)',
+      source: 'Official',
+      model: 'Claude 3.5 Sonnet',
+      hasExecutionPlan: false,
+      hasStrategy: true,
+      isWatchlist: false,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Tech Stocks',
+      categoryId: 'tech',
+      planCount: 0,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: false,
+      strategyUnread: false,
+      officialUpdating: false,
+      officialUpdated: false,
+      // 新增字段：已失效状态
+      isExpired: true,
+      expiredReason: '该策略已于 2025-01-15 失效，市场条件已发生重大变化'
+    },
+    {
+      id: 'demo-expired-2',
+      symbol: 'NFLX',
+      stockName: 'Netflix, Inc.',
+      direction: 'SHORT',
+      grade: 'C',
+      horizon: 'Short-term (1-3 months)',
+      source: 'Official',
+      model: 'GPT-4o',
+      hasExecutionPlan: true,
+      hasStrategy: true,
+      isWatchlist: true,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 120 * 24 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 120 * 24 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Tech Stocks',
+      categoryId: 'tech',
+      planCount: 2,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: false,
+      strategyUnread: false,
+      officialUpdating: false,
+      officialUpdated: false,
+      // 新增字段：已失效状态
+      isExpired: true,
+      expiredReason: '策略已过期，原分析基于过时的财报数据'
+    },
+    // 2. 我的策略生成错误 - 显示错误状态，可重试
+    {
+      id: 'demo-error-1',
+      symbol: 'AMZN',
+      stockName: 'Amazon.com, Inc.',
+      direction: null,
+      grade: 'ERROR',
+      horizon: null,
+      source: 'My Strategy',
+      model: 'Gemini 1.5 Pro',
+      hasExecutionPlan: false,
+      hasStrategy: false,
+      isWatchlist: false,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 1 * 60 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 1 * 60 * 60 * 1000).toISOString(),
+      categoryName: 'Tech Stocks',
+      categoryId: 'tech',
+      planCount: 0,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: false,
+      strategyUnread: false,
+      // 新增字段：生成错误状态
+      hasError: true,
+      errorMessage: 'API 调用超时，请重试',
+      errorCode: 'TIMEOUT'
+    },
+    {
+      id: 'demo-error-2',
+      symbol: 'UBER',
+      stockName: 'Uber Technologies',
+      direction: null,
+      grade: 'ERROR',
+      horizon: null,
+      source: 'My Strategy',
+      model: 'Claude 3.5 Sonnet',
+      hasExecutionPlan: false,
+      hasStrategy: false,
+      isWatchlist: false,
+      isArchived: false,
+      generatedAt: new Date(now.getTime() - 30 * 60 * 1000).toISOString(),
+      savedAt: new Date(now.getTime() - 30 * 60 * 1000).toISOString(),
+      categoryName: null,
+      categoryId: null,
+      planCount: 0,
+      planUnreadCount: 0,
+      planGeneratingCount: 0,
+      generatingCurrent: 0,
+      generatingProgress: 0,
+      planNeedsUpdate: false,
+      strategyNeedsUpdate: false,
+      strategyUnread: false,
+      // 新增字段：生成错误状态
+      hasError: true,
+      errorMessage: '数据源异常，无法获取市场数据',
+      errorCode: 'DATA_SOURCE_ERROR'
     }
   ]
 }
