@@ -144,6 +144,21 @@
             <span>进度</span>
           </button>
 
+          <!-- Help Button -->
+          <button 
+            @click="openHelpModal"
+            class="px-2.5 py-1.5 border rounded-sm flex items-center gap-1.5 transition-all hover:scale-105"
+            :style="{ 
+              backgroundColor: '#2c2416',
+              borderColor: '#fbbf24',
+              color: '#fbbf24'
+            }"
+            title="查看字段说明"
+          >
+            <span class="text-xs font-bold">中</span>
+            <span class="text-[10px]">说明</span>
+          </button>
+
           <!-- View Switcher (Opportunities and Themes) -->
           <div v-if="['opportunities', 'themes'].includes(activeTab)" class="border rounded-sm p-0.5 flex items-center" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle }">
             <button 
@@ -186,27 +201,34 @@
               <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/0 to-transparent group-hover:via-cyan-500/50 transition-all duration-300"></div>
 
               <div class="relative z-10">
+                <!-- Header: Symbol + Title -->
                 <h3 class="text-2xl font-bold mb-1 group-hover:text-cyan-50 transition-colors" :style="{ color: tokens.colors.text.primary }">{{ opp.symbol }}</h3>
-                <p class="text-[10px] mb-4 font-mono line-clamp-1" :style="{ color: tokens.colors.text.muted }">{{ opp.title }}</p>
+                <p class="text-[10px] mb-1 line-clamp-1" :style="{ color: tokens.colors.text.muted }">{{ opp.title }}</p>
+                <p v-if="opp.titleEn" class="text-[9px] mb-4 line-clamp-1 font-mono" :style="{ color: tokens.colors.text.disabled }">{{ opp.titleEn }}</p>
+                <div v-else class="mb-3"></div>
                 
+                <!-- Middle: Rating + Action -->
                 <div class="grid grid-cols-2 gap-3 mb-4 border-y py-3" :style="{ borderColor: tokens.colors.border.subtle }">
                   <div class="text-center border-r" :style="{ borderColor: tokens.colors.border.subtle }">
-                    <div class="text-xl font-bold" :style="{ color: tokens.colors.text.primary }">A+</div>
+                    <div class="text-xl font-bold" :style="{ color: getRatingColor(opp.rating) }">{{ opp.rating || 'A' }}</div>
                   </div>
                   <div class="text-center">
-                    <div class="text-xl font-bold" :style="{ color: opp.type === 'Long' ? tokens.colors.accent.success : tokens.colors.accent.danger }">{{ opp.type === 'Long' ? '做多' : '做空' }}</div>
+                    <div class="text-xl font-bold" :style="{ color: getDirectionColor(opp.direction) }">{{ opp.action || '观望买入' }}</div>
                   </div>
                 </div>
 
-                <div class="flex justify-between items-center text-[9px] font-mono uppercase" :style="{ color: tokens.colors.text.disabled }">
-                  <span>1-10 天</span>
+                <!-- Bottom: Timeframe + Ratio + Risk Tag (Single Line with Dots) -->
+                <div class="flex items-center justify-center gap-2 text-[9px] font-mono uppercase" :style="{ color: tokens.colors.text.disabled }">
+                  <span>{{ opp.timeframe || '1-10 天' }}</span>
+                  <span>•</span>
+                  <span class="font-bold" :style="{ color: tokens.colors.text.secondary }">{{ opp.ratio || '2.5:1' }}</span>
+                  <span>•</span>
                   <span 
-                    class="px-2 py-0.5 rounded-sm font-bold"
+                    class="font-bold"
                     :style="{ 
-                      backgroundColor: opp.risk === 'High' ? tokens.colors.accent.danger + '1A' : (opp.risk === 'Med' ? tokens.colors.accent.warning + '1A' : tokens.colors.accent.success + '1A'),
-                      color: opp.risk === 'High' ? tokens.colors.accent.danger : (opp.risk === 'Med' ? tokens.colors.accent.warning : tokens.colors.accent.success) 
+                      color: getRiskTagColor(opp.riskTag)
                     }"
-                  >{{ opp.risk === 'High' ? '高风险' : (opp.risk === 'Med' ? '风险适中' : '低风险') }}</span>
+                  >{{ opp.riskTag || '中' }}</span>
                 </div>
               </div>
             </div>
@@ -232,7 +254,7 @@
 
               <!-- Main Info -->
               <div class="flex-1 min-w-0 grid grid-cols-12 gap-4 items-center">
-                <div class="col-span-5">
+                <div class="col-span-4">
                   <div class="font-medium truncate text-sm group-hover:text-cyan-400 transition-colors" :style="{ color: tokens.colors.text.secondary }">{{ opp.title }}</div>
                   <div class="flex items-center gap-2 mt-0.5">
                     <span class="text-[10px] px-1.5 rounded-sm" :style="{ backgroundColor: tokens.colors.border.strong, color: tokens.colors.text.tertiary }">{{ opp.strategy }}</span>
@@ -242,21 +264,30 @@
                 
                 <div class="col-span-2 text-center">
                   <div class="text-[10px] uppercase" :style="{ color: tokens.colors.text.muted }">Rating</div>
-                  <div class="font-bold" :style="{ color: tokens.colors.text.secondary }">A+</div>
+                  <div class="font-bold" :style="{ color: getRatingColor(opp.rating) }">{{ opp.rating || 'A' }}</div>
                 </div>
                 
-                <!-- Duration (Replaces Return) -->
                 <div class="col-span-2 text-center">
-                  <div class="text-[10px] uppercase" :style="{ color: tokens.colors.text.muted }">Duration</div>
-                  <div class="font-bold" :style="{ color: tokens.colors.text.secondary }">1-10 DAYS</div>
+                  <div class="text-[10px] uppercase" :style="{ color: tokens.colors.text.muted }">Action</div>
+                  <div class="font-bold text-sm" :style="{ color: getDirectionColor(opp.direction) }">{{ opp.action || '观望买入' }}</div>
+                </div>
+
+                <div class="col-span-1 text-center">
+                  <div class="text-[10px] uppercase" :style="{ color: tokens.colors.text.muted }">Ratio</div>
+                  <div class="font-bold text-xs" :style="{ color: tokens.colors.text.secondary }">{{ opp.ratio || '2.5:1' }}</div>
                 </div>
 
                 <div class="col-span-3 flex justify-end items-center gap-3">
-                   <!-- Model (Replaces Score) -->
                    <div class="text-right">
-                      <div class="text-[10px] uppercase tracking-wide" :style="{ color: tokens.colors.text.disabled }">Model</div>
-                      <div class="font-bold text-cyan-400 text-sm">GEMINI</div>
+                      <div class="text-[10px] uppercase tracking-wide" :style="{ color: tokens.colors.text.disabled }">Duration</div>
+                      <div class="font-bold text-sm" :style="{ color: tokens.colors.text.secondary }">{{ opp.timeframe || '1-10 DAYS' }}</div>
                    </div>
+                   <span 
+                    class="font-bold text-[10px]"
+                    :style="{ 
+                      color: getRiskTagColor(opp.riskTag)
+                    }"
+                  >{{ opp.riskTag || '中' }}</span>
                    <div class="w-7 h-7 rounded-full flex items-center justify-center group-hover:bg-cyan-500/10 group-hover:text-cyan-400 transition-colors" :style="{ backgroundColor: tokens.colors.background.elevated, color: tokens.colors.text.disabled }">
                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                    </div>
@@ -1146,21 +1177,26 @@
             <!-- New Top Bar -->
             <div class="px-6 py-4 border-b flex justify-between items-center shrink-0" :style="{ borderColor: tokens.colors.border.subtle, backgroundColor: tokens.colors.background.surface }">
               <!-- Left: Title & Meta -->
-              <div class="flex items-center gap-4 overflow-hidden">
-                <h2 class="text-lg font-bold truncate max-w-[300px]" :title="selectedStrategy.title" :style="{ color: tokens.colors.text.primary }">{{ selectedStrategy.title }}</h2>
-                <div class="flex items-center gap-2 shrink-0">
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wide border" 
-                    :style="{
-                      backgroundColor: (selectedStrategy.grade === 'A' || selectedStrategy.grade === 'A+') ? tokens.colors.accent.successBg : (selectedStrategy.grade === 'B' ? tokens.colors.accent.primaryBg : 'rgba(234, 179, 8, 0.2)'),
-                      color: (selectedStrategy.grade === 'A' || selectedStrategy.grade === 'A+') ? tokens.colors.accent.success : (selectedStrategy.grade === 'B' ? tokens.colors.accent.primary : '#facc15'),
-                      borderColor: (selectedStrategy.grade === 'A' || selectedStrategy.grade === 'A+') ? 'rgba(34, 197, 94, 0.3)' : (selectedStrategy.grade === 'B' ? 'rgba(6, 182, 212, 0.3)' : 'rgba(234, 179, 8, 0.3)')
-                    }">
-                    GRADE {{ selectedStrategy.grade }}
-                  </span>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold border" :style="{ backgroundColor: tokens.colors.background.elevated, color: tokens.colors.text.secondary, borderColor: tokens.colors.border.strong }">
-                    {{ selectedStrategy.term }}
-                  </span>
-                  <span class="text-xs" :style="{ color: tokens.colors.text.muted }">{{ selectedStrategy.time }}</span>
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-4 overflow-hidden">
+                  <h2 class="text-lg font-bold truncate max-w-[300px]" :title="selectedStrategy.title" :style="{ color: tokens.colors.text.primary }">{{ selectedStrategy.title }}</h2>
+                  <div class="flex items-center gap-2 shrink-0">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wide border" 
+                      :style="{
+                        backgroundColor: (selectedStrategy.grade === 'A' || selectedStrategy.grade === 'A+') ? tokens.colors.accent.successBg : (selectedStrategy.grade === 'B' ? tokens.colors.accent.primaryBg : 'rgba(234, 179, 8, 0.2)'),
+                        color: (selectedStrategy.grade === 'A' || selectedStrategy.grade === 'A+') ? tokens.colors.accent.success : (selectedStrategy.grade === 'B' ? tokens.colors.accent.primary : '#facc15'),
+                        borderColor: (selectedStrategy.grade === 'A' || selectedStrategy.grade === 'A+') ? 'rgba(34, 197, 94, 0.3)' : (selectedStrategy.grade === 'B' ? 'rgba(6, 182, 212, 0.3)' : 'rgba(234, 179, 8, 0.3)')
+                      }">
+                      GRADE {{ selectedStrategy.grade }}
+                    </span>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold border" :style="{ backgroundColor: tokens.colors.background.elevated, color: tokens.colors.text.secondary, borderColor: tokens.colors.border.strong }">
+                      {{ selectedStrategy.term }}
+                    </span>
+                  </div>
+                </div>
+                <!-- Generated Time (Dual Timezone) -->
+                <div class="text-xs" :style="{ color: tokens.colors.text.disabled }">
+                  生成时间: {{ selectedStrategy.generatedTime || '2025-12-25 02:46:19' }}（美东时间: {{ selectedStrategy.generatedTimeET || '2025-12-24 13:46:19' }}）
                 </div>
               </div>
               
@@ -1213,19 +1249,150 @@
 
             <!-- Scrollable Content Area -->
             <div class="flex-1 overflow-y-auto p-6 scrollbar-thin">
-              <!-- Strategy Summary Box -->
-              <div class="border p-5 mb-8" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle }">
-                <h3 class="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2" :style="{ color: tokens.colors.text.muted }">
-                  <i class="fas fa-file-alt"></i>
-                  Strategy Summary
+              <!-- Market Expectation Gap Summary -->
+              <div class="mb-8">
+                <h3 class="text-base font-bold mb-4 flex items-center gap-2" :style="{ color: tokens.colors.text.primary }">
+                  <span class="w-1 h-5 bg-cyan-500 rounded"></span>
+                  市场预期差距
                 </h3>
-                <p class="leading-relaxed text-sm" :style="{ color: tokens.colors.text.secondary }">
-                  {{ selectedStrategy.summary }}
-                </p>
+                <div class="space-y-4">
+                  <!-- Market Consensus -->
+                  <div>
+                    <h4 class="text-sm font-bold mb-2" :style="{ color: tokens.colors.text.primary }">市场共识：定价完美的高位盘整</h4>
+                    <div class="text-sm leading-relaxed" :style="{ color: tokens.colors.text.secondary }" v-html="selectedStrategy.marketConsensus || '暂无数据'"></div>
+                  </div>
+                  <!-- Our Edge -->
+                  <div>
+                    <h4 class="text-sm font-bold mb-2" :style="{ color: tokens.colors.text.primary }">我们的优势：结构性支付红利被低估</h4>
+                    <div class="text-sm leading-relaxed" :style="{ color: tokens.colors.text.secondary }" v-html="selectedStrategy.ourEdge || '暂无数据'"></div>
+                  </div>
+                  <!-- Conclusion -->
+                  <div>
+                    <h4 class="text-sm font-bold mb-2" :style="{ color: tokens.colors.text.primary }">结论</h4>
+                    <div class="text-sm leading-relaxed" :style="{ color: tokens.colors.text.secondary }" v-html="selectedStrategy.conclusion || '暂无数据'"></div>
+                  </div>
+                </div>
               </div>
 
-              <!-- Main Content -->
-              <div class="markdown-content space-y-6" :style="{ color: tokens.colors.text.secondary }" v-html="renderedStrategyContent"></div>
+              <!-- Key Metrics Grid -->
+              <div class="grid grid-cols-4 gap-4 mb-8">
+                <div class="border rounded p-4" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle }">
+                  <div class="text-lg font-bold mb-1" :style="{ color: tokens.colors.text.primary }">主要分析框架</div>
+                  <div class="text-sm" :style="{ color: tokens.colors.text.secondary }">{{ selectedStrategy.analysisFramework || 'Fundamental' }}</div>
+                </div>
+                <div class="border rounded p-4" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle }">
+                  <div class="text-lg font-bold mb-1" :style="{ color: tokens.colors.text.primary }">时间区间</div>
+                  <div class="text-sm" :style="{ color: tokens.colors.text.secondary }">{{ selectedStrategy.timeframe || 'Medium-term (1-4 weeks)' }}</div>
+                </div>
+                <div class="border rounded p-4" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle }">
+                  <div class="text-lg font-bold mb-1" :style="{ color: tokens.colors.text.primary }">风险等级</div>
+                  <div class="text-sm font-bold" :style="{ color: selectedStrategy.riskLevelColor || '#1890ff' }">{{ selectedStrategy.riskLevel || '中' }}</div>
+                </div>
+                <div class="border rounded p-4" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle }">
+                  <div class="text-lg font-bold mb-1" :style="{ color: tokens.colors.text.primary }">收益风险比</div>
+                  <div class="text-sm" :style="{ color: tokens.colors.text.secondary }">{{ selectedStrategy.riskRewardRatio || '2.8:1' }}</div>
+                </div>
+              </div>
+
+              <!-- 7-Dimension Analysis Cards -->
+              <div class="mb-8">
+                <h3 class="text-base font-bold mb-4 flex items-center gap-2" :style="{ color: tokens.colors.text.primary }">
+                  <span class="w-1 h-5 bg-cyan-500 rounded"></span>
+                  分析细节
+                </h3>
+                <div class="grid grid-cols-2 gap-4">
+                  <!-- 基本面分析 -->
+                  <div class="border rounded-sm p-4" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+                    <div class="flex items-center gap-2 mb-3">
+                      <span class="text-xl">📊</span>
+                      <span class="font-bold text-sm" :style="{ color: tokens.colors.text.primary }">基本面分析</span>
+                    </div>
+                    <div class="text-sm leading-relaxed" :style="{ color: tokens.colors.text.secondary }" v-html="selectedStrategy.fundamentalAnalysis || '暂无数据'"></div>
+                  </div>
+
+                  <!-- 技术分析 -->
+                  <div class="border rounded-sm p-4" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+                    <div class="flex items-center gap-2 mb-3">
+                      <span class="text-xl">📈</span>
+                      <span class="font-bold text-sm" :style="{ color: tokens.colors.text.primary }">技术分析</span>
+                    </div>
+                    <div class="text-sm leading-relaxed" :style="{ color: tokens.colors.text.secondary }" v-html="selectedStrategy.technicalAnalysis || '暂无数据'"></div>
+                  </div>
+
+                  <!-- 量化分析 -->
+                  <div class="border rounded-sm p-4" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+                    <div class="flex items-center gap-2 mb-3">
+                      <span class="text-xl">🔢</span>
+                      <span class="font-bold text-sm" :style="{ color: tokens.colors.text.primary }">量化分析</span>
+                    </div>
+                    <div class="text-sm leading-relaxed" :style="{ color: tokens.colors.text.secondary }" v-html="selectedStrategy.quantitativeAnalysis || '暂无数据'"></div>
+                  </div>
+
+                  <!-- 事件驱动分析 -->
+                  <div class="border rounded-sm p-4" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+                    <div class="flex items-center gap-2 mb-3">
+                      <span class="text-xl">📰</span>
+                      <span class="font-bold text-sm" :style="{ color: tokens.colors.text.primary }">事件驱动分析</span>
+                    </div>
+                    <div class="text-sm leading-relaxed" :style="{ color: tokens.colors.text.secondary }" v-html="selectedStrategy.eventDrivenAnalysis || '暂无数据'"></div>
+                  </div>
+
+                  <!-- 宏观经济分析 -->
+                  <div class="border rounded-sm p-4" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+                    <div class="flex items-center gap-2 mb-3">
+                      <span class="text-xl">🌍</span>
+                      <span class="font-bold text-sm" :style="{ color: tokens.colors.text.primary }">宏观经济分析</span>
+                    </div>
+                    <div class="text-sm leading-relaxed" :style="{ color: tokens.colors.text.secondary }" v-html="selectedStrategy.macroAnalysis || '暂无数据'"></div>
+                  </div>
+
+                  <!-- 资金流分析 -->
+                  <div class="border rounded-sm p-4" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+                    <div class="flex items-center gap-2 mb-3">
+                      <span class="text-xl">💹</span>
+                      <span class="font-bold text-sm" :style="{ color: tokens.colors.text.primary }">资金流分析</span>
+                    </div>
+                    <div class="text-sm leading-relaxed" :style="{ color: tokens.colors.text.secondary }" v-html="selectedStrategy.flowAnalysis || '暂无数据'"></div>
+                  </div>
+
+                  <!-- 用户评论分析 -->
+                  <div class="border rounded-sm p-4 col-span-2" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+                    <div class="flex items-center gap-2 mb-3">
+                      <span class="text-xl">💭</span>
+                      <span class="font-bold text-sm" :style="{ color: tokens.colors.text.primary }">用户评论分析</span>
+                    </div>
+                    <div class="text-sm leading-relaxed" :style="{ color: tokens.colors.text.secondary }" v-html="selectedStrategy.sentimentAnalysis || '暂无数据'"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Key Assumptions -->
+              <div class="mb-6">
+                <h4 class="text-sm font-bold mb-3" :style="{ color: tokens.colors.text.primary }">关键假设</h4>
+                <div class="space-y-2">
+                  <div v-for="(assumption, index) in (selectedStrategy.keyAssumptions || ['假日支出超预期将直接转化为Q4营收超预期', '电商和跨境旅游的高增长将扩大利润率', '消费者支出在财报前不会出现断崖式下跌'])" :key="index" class="flex items-start gap-2 text-sm" :style="{ color: tokens.colors.text.secondary }">
+                    <span class="mt-1">•</span>
+                    <div v-html="assumption"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Main Risks -->
+              <div class="mb-6">
+                <h4 class="text-sm font-bold mb-3" :style="{ color: tokens.colors.text.primary }">主要风险</h4>
+                <div class="space-y-2">
+                  <div v-for="(risk, index) in (selectedStrategy.mainRisks || ['监管和解方案可能导致估值倍数压缩', '财报指引若保守可能引发获利回吐', '宏观经济数据突然恶化影响消费'])" :key="index" class="flex items-start gap-2 text-sm" :style="{ color: tokens.colors.text.secondary }">
+                    <span class="mt-1">•</span>
+                    <div v-html="risk"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Risk Management Warning Box -->
+              <div class="mb-8 border rounded-sm p-4" :style="{ backgroundColor: 'rgba(255, 77, 79, 0.05)', borderColor: '#ff4d4f' }">
+                <h4 class="text-sm font-bold mb-2" style="color: #ff4d4f;">投资失效条件</h4>
+                <div class="text-sm" :style="{ color: tokens.colors.text.secondary }" v-html="selectedStrategy.invalidCondition || '如果股价跌破关键支撑位，或财报指引明确表示消费支出大幅放缓，则论点失效。'"></div>
+              </div>
 
               <!-- Action Buttons -->
               <div class="flex gap-4 mt-12 pt-8 border-t" :style="{ borderColor: tokens.colors.border.subtle }">
@@ -1468,6 +1635,185 @@
       </div>
     </div>
   </div>
+
+  <!-- Help Modal -->
+  <div v-if="showHelpModal" class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm p-4" :style="{ backgroundColor: isDark ? 'rgba(0,0,0,0.8)' : 'rgba(0,0,0,0.5)' }" @click.self="closeHelpModal">
+    <div class="border w-full max-w-3xl max-h-[85vh] overflow-hidden shadow-2xl flex flex-col" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+      
+      <!-- Header -->
+      <div class="px-6 py-4 border-b flex justify-between items-center" :style="{ borderColor: tokens.colors.border.subtle, backgroundColor: tokens.colors.background.surface }">
+        <h2 class="text-xl font-bold" :style="{ color: tokens.colors.text.primary }">📖 字段说明</h2>
+        <button @click="closeHelpModal" class="w-8 h-8 flex items-center justify-center rounded-full transition-all hover:bg-opacity-20" :style="{ backgroundColor: tokens.colors.border.subtle }">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" :style="{ color: tokens.colors.text.muted }"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <!-- Content -->
+      <div class="flex-1 overflow-y-auto p-6 space-y-6" :style="{ backgroundColor: tokens.colors.background.base }">
+        
+        <!-- 策略评级 -->
+        <div class="pb-6 border-b" :style="{ borderColor: tokens.colors.border.subtle }">
+          <h3 class="text-lg font-bold mb-3 flex items-center gap-2" :style="{ color: tokens.colors.text.primary }">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
+            策略评级 (Rating)
+          </h3>
+          <p class="text-sm leading-relaxed mb-3" :style="{ color: tokens.colors.text.secondary }">
+            基于算法综合评估的策略质量等级，评估维度包括历史回测表现、风险收益比、市场环境适配度等。
+          </p>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="p-3 border rounded-sm" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+              <div class="text-2xl font-bold mb-1" style="color: #10b981;">A</div>
+              <div class="text-xs" :style="{ color: tokens.colors.text.muted }">优质策略，强推荐<br>胜率 >65%</div>
+            </div>
+            <div class="p-3 border rounded-sm" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+              <div class="text-2xl font-bold mb-1" style="color: #3b82f6;">B</div>
+              <div class="text-xs" :style="{ color: tokens.colors.text.muted }">中等质量，可考虑<br>胜率 50-65%</div>
+            </div>
+            <div class="p-3 border rounded-sm" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+              <div class="text-2xl font-bold mb-1" style="color: #9ca3af;">C</div>
+              <div class="text-xs" :style="{ color: tokens.colors.text.muted }">较低质量，谨慎<br>胜率 <50%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 操作建议 -->
+        <div class="pb-6 border-b" :style="{ borderColor: tokens.colors.border.subtle }">
+          <h3 class="text-lg font-bold mb-3 flex items-center gap-2" :style="{ color: tokens.colors.text.primary }">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
+            操作建议 (Action)
+          </h3>
+          <p class="text-sm leading-relaxed mb-3" :style="{ color: tokens.colors.text.secondary }">
+            根据技术分析、基本面分析和市场情绪综合判断的交易方向建议。
+          </p>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="flex items-center gap-2 p-2 border rounded-sm" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+              <span class="font-bold text-sm" style="color: #10b981;">做多</span>
+              <span class="text-xs" :style="{ color: tokens.colors.text.muted }">明确看涨，建议做多</span>
+            </div>
+            <div class="flex items-center gap-2 p-2 border rounded-sm" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+              <span class="font-bold text-sm" style="color: #10b981;">观望做多</span>
+              <span class="text-xs" :style="{ color: tokens.colors.text.muted }">等待最佳做多时机</span>
+            </div>
+            <div class="flex items-center gap-2 p-2 border rounded-sm" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+              <span class="font-bold text-sm" style="color: #ef4444;">做空</span>
+              <span class="text-xs" :style="{ color: tokens.colors.text.muted }">明确看跌，建议做空</span>
+            </div>
+            <div class="flex items-center gap-2 p-2 border rounded-sm" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+              <span class="font-bold text-sm" style="color: #fb923c;">观望做空</span>
+              <span class="text-xs" :style="{ color: tokens.colors.text.muted }">等待最佳做空时机</span>
+            </div>
+            <div class="flex items-center gap-2 p-2 border rounded-sm" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+              <span class="font-bold text-sm" style="color: #3b82f6;">震荡</span>
+              <span class="text-xs" :style="{ color: tokens.colors.text.muted }">横盘震荡，方向不明</span>
+            </div>
+            <div class="flex items-center gap-2 p-2 border rounded-sm" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+              <span class="font-bold text-sm" style="color: #a855f7;">震荡放量</span>
+              <span class="text-xs" :style="{ color: tokens.colors.text.muted }">震荡中成交量放大</span>
+            </div>
+            <div class="flex items-center gap-2 p-2 border rounded-sm" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+              <span class="font-bold text-sm" style="color: #64748b;">震荡缩量</span>
+              <span class="text-xs" :style="{ color: tokens.colors.text.muted }">震荡中成交量萎缩</span>
+            </div>
+            <div class="flex items-center gap-2 p-2 border rounded-sm" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+              <span class="font-bold text-sm" style="color: #9ca3af;">观望</span>
+              <span class="text-xs" :style="{ color: tokens.colors.text.muted }">暂时观望，等待信号</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 时间周期 -->
+        <div class="pb-6 border-b" :style="{ borderColor: tokens.colors.border.subtle }">
+          <h3 class="text-lg font-bold mb-3 flex items-center gap-2" :style="{ color: tokens.colors.text.primary }">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
+            时间周期 (Timeframe)
+          </h3>
+          <p class="text-sm leading-relaxed mb-3" :style="{ color: tokens.colors.text.secondary }">
+            策略预期持仓时长，根据技术形态和催化剂时间推算。
+          </p>
+          <div class="text-sm space-y-2" :style="{ color: tokens.colors.text.secondary }">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
+              <span><strong>1-7天</strong> - 超短线策略，适合日内或短线交易</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
+              <span><strong>1-4周</strong> - 中短线策略，适合波段交易</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
+              <span><strong>>4周</strong> - 中长线策略，适合趋势跟踪</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 风险回报比 -->
+        <div class="pb-6 border-b" :style="{ borderColor: tokens.colors.border.subtle }">
+          <h3 class="text-lg font-bold mb-3 flex items-center gap-2" :style="{ color: tokens.colors.text.primary }">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
+            风险回报比 (Risk/Reward Ratio)
+          </h3>
+          <p class="text-sm leading-relaxed mb-3" :style="{ color: tokens.colors.text.secondary }">
+            预期收益与潜在损失的比例。例如 3:1 表示每承担1单位风险，有望获得3单位收益。
+          </p>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="p-3 border rounded-sm text-center" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+              <div class="text-xl font-bold mb-1" style="color: #10b981;">≥3:1</div>
+              <div class="text-xs" :style="{ color: tokens.colors.text.muted }">优秀</div>
+            </div>
+            <div class="p-3 border rounded-sm text-center" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+              <div class="text-xl font-bold mb-1" style="color: #fbbf24;">2-3:1</div>
+              <div class="text-xs" :style="{ color: tokens.colors.text.muted }">良好</div>
+            </div>
+            <div class="p-3 border rounded-sm text-center" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+              <div class="text-xl font-bold mb-1" style="color: #ef4444;"><2:1</div>
+              <div class="text-xs" :style="{ color: tokens.colors.text.muted }">较低</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 风险标签 -->
+        <div>
+          <h3 class="text-lg font-bold mb-3 flex items-center gap-2" :style="{ color: tokens.colors.text.primary }">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
+            风险标签 (Risk Tag)
+          </h3>
+          <p class="text-sm leading-relaxed mb-3" :style="{ color: tokens.colors.text.secondary }">
+            综合市场波动率、流动性、历史表现等因素评估的风险等级。
+          </p>
+          <div class="grid grid-cols-4 gap-3">
+            <div class="p-3 border rounded-sm text-center" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+              <div class="text-xl font-bold mb-1" style="color: #10b981;">盈</div>
+              <div class="text-xs" :style="{ color: tokens.colors.text.muted }">预期盈利</div>
+            </div>
+            <div class="p-3 border rounded-sm text-center" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+              <div class="text-xl font-bold mb-1" style="color: #3b82f6;">低</div>
+              <div class="text-xs" :style="{ color: tokens.colors.text.muted }">低风险</div>
+            </div>
+            <div class="p-3 border rounded-sm text-center" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+              <div class="text-xl font-bold mb-1" style="color: #fbbf24;">中</div>
+              <div class="text-xs" :style="{ color: tokens.colors.text.muted }">中等风险</div>
+            </div>
+            <div class="p-3 border rounded-sm text-center" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+              <div class="text-xl font-bold mb-1" style="color: #ef4444;">高</div>
+              <div class="text-xs" :style="{ color: tokens.colors.text.muted }">高风险</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="px-6 py-4 border-t flex justify-between items-center" :style="{ borderColor: tokens.colors.border.subtle, backgroundColor: tokens.colors.background.surface }">
+        <div class="text-xs" :style="{ color: tokens.colors.text.disabled }">
+          💡 提示：所有评级和建议仅供参考，请结合自身风险承受能力谨慎决策
+        </div>
+        <button @click="closeHelpModal" class="px-4 py-2 rounded-sm font-bold transition-all" :style="{ backgroundColor: tokens.colors.accent.primaryDark, color: tokens.colors.text.primary }">
+          知道了
+        </button>
+      </div>
+
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -1482,6 +1828,42 @@ import { useTheme } from '../composables/useTheme'
 const route = useRoute()
 const router = useRouter()
 const { tokens, isDark } = useTheme()
+
+// Direction Color Mapping
+const getDirectionColor = (direction) => {
+  const colorMap = {
+    'LONG': '#10b981',              // 深绿 - 做多
+    'WAIT_LONG': '#10b981',         // 浅绿 - 观望做多
+    'SHORT': '#ef4444',             // 深红 - 做空
+    'WAIT_SHORT': '#fb923c',        // 橙色 - 观望做空
+    'SIDEWAYS': '#3b82f6',          // 蓝色 - 震荡
+    'SIDEWAYS_VOL_UP': '#a855f7',   // 紫色 - 震荡放量
+    'SIDEWAYS_VOL_DOWN': '#64748b', // 灰蓝 - 震荡缩量
+    'WAIT': '#9ca3af'               // 灰色 - 观望
+  }
+  return colorMap[direction] || '#06b6d4' // 默认青色
+}
+
+// Rating Color Mapping
+const getRatingColor = (rating) => {
+  const colorMap = {
+    'A': '#10b981',   // 绿色 - 优质策略
+    'B': '#3b82f6',   // 蓝色 - 中等策略
+    'C': '#9ca3af'    // 灰色 - 谨慎策略
+  }
+  return colorMap[rating] || '#06b6d4' // 默认青色
+}
+
+// Risk Tag Color Mapping
+const getRiskTagColor = (tag) => {
+  const colorMap = {
+    '盈': '#10b981',   // 绿色 - 盈利
+    '中': '#fbbf24',   // 黄色 - 中等风险
+    '低': '#3b82f6',   // 蓝色 - 低风险
+    '高': '#ef4444'    // 红色 - 高风险
+  }
+  return colorMap[tag] || '#9ca3af' // 默认灰色
+}
 
 // UI State
 const showBackToTop = ref(false)
@@ -2124,14 +2506,157 @@ initAttributionData()
 // Mock Data Generator
 const generateMockOpportunities = (count, startIndex) => {
   const templates = [
-    { symbol: 'MSFT', title: '微软云计算+AI双轮驱动', type: 'Long', strategy: '基本面分析', risk: 'Low', tags: ['Cloud', 'AI'] },
-    { symbol: 'TSLA', title: '特斯拉短期回调压力', type: 'Short', strategy: '技术分析', risk: 'High', tags: ['EV', 'Tech'] },
-    { symbol: 'NVDA', title: 'AI芯片需求持续爆发', type: 'Long', strategy: '趋势跟踪', risk: 'Med', tags: ['Semi', 'AI'] },
-    { symbol: 'AAPL', title: 'iPhone销量超预期', type: 'Long', strategy: '事件驱动', risk: 'Low', tags: ['Consumer', 'Tech'] },
-    { symbol: 'AMD', title: 'MI300发布会前瞻', type: 'Long', strategy: '事件驱动', risk: 'High', tags: ['Semi', 'Event'] },
-    { symbol: 'META', title: '广告业务复苏强劲', type: 'Long', strategy: '基本面分析', risk: 'Med', tags: ['Ads', 'Social'] },
-    { symbol: 'GOOGL', title: 'Gemini模型发布', type: 'Long', strategy: '产品发布', risk: 'Med', tags: ['AI', 'Search'] },
-    { symbol: 'AMZN', title: 'AWS利润率提升', type: 'Long', strategy: '财报分析', risk: 'Low', tags: ['Cloud', 'E-com'] }
+    { 
+      symbol: 'NVDA', 
+      title: 'NVIDIA AI芯片需求持续火爆，上升趋势明确', 
+      rating: 'A',
+      action: '做多',
+      direction: 'LONG',
+      timeframe: '2-4 weeks',
+      ratio: '5.2:1',
+      riskTag: '盈',
+      type: 'Long', 
+      strategy: '趋势跟踪', 
+      tags: ['AI', '半导体'] 
+    },
+    { 
+      symbol: 'TSLA', 
+      title: '特斯拉交付量突破预期，等待最佳做多时机', 
+      rating: 'A',
+      action: '观望做多',
+      direction: 'WAIT_LONG',
+      timeframe: '1-2 weeks',
+      ratio: '3.8:1',
+      riskTag: '中',
+      type: 'Long', 
+      strategy: '事件驱动', 
+      tags: ['电动车', '科技'] 
+    },
+    { 
+      symbol: 'BABA', 
+      title: '阿里巴巴监管风险加剧，空头机会显现', 
+      rating: 'B',
+      action: '做空',
+      direction: 'SHORT',
+      timeframe: '1-3 weeks',
+      ratio: '4.1:1',
+      riskTag: '中',
+      type: 'Short', 
+      strategy: '事件驱动', 
+      tags: ['中概股', '监管'] 
+    },
+    { 
+      symbol: 'MA', 
+      title: '万事达卡假日消费结构性超预期策略',
+      rating: 'A',
+      action: '观望做多',
+      direction: 'WAIT_LONG',
+      timeframe: '1-4 weeks',
+      ratio: '2.8:1',
+      riskTag: '中',
+      type: 'Long', 
+      strategy: '基本面分析', 
+      tags: ['金融科技', '支付'],
+      
+      // 新增：时间戳字段
+      generatedTime: '2025-12-25 02:46:19',
+      generatedTimeET: '2025-12-24 13:46:19',
+      
+      // 新增：关键指标
+      analysisFramework: 'Fundamental',
+      riskLevel: '中',
+      riskLevelColor: '#1890ff',
+      riskRewardRatio: '2.8:1',
+      
+      // 新增：市场预期差距
+      marketConsensus: '<p>市场目前将万事达卡（MA）视为在历史高位附近的"完美定价"资产，普遍担忧通胀压力和关税不确定性将抑制第四季度消费支出。投资者对即将到来的1月27日财报持谨慎态度，认为目前的股价（约$579）已充分反映了温和增长的预期，且面临监管和解的潜在阻力。</p>',
+      
+      ourEdge: '<p>然而，我们发现了显著的预期差。12月24日发布的SpendingPulse数据显示，美国假日零售额同比增长<strong>3.9%</strong>，超过了市场预期的3.6%。更关键的是<strong>结构性转变</strong>：电商销售激增<strong>7.4%</strong>，且"体验式"消费（餐饮+5.2%）强劲。这种向"无卡支付（CNP）"和跨境服务的高利润率领域的转移，将直接提振万事达卡的收益率，而不仅仅是交易量。此外，机构期权流向显示"聪明钱"正在布局，近期有18笔看涨大单，且隐含波动率（IV 16.7%）低于实现波动率（RV 20%），表明期权定价偏低。</p>',
+      
+      conclusion: '<p>这种基本面超预期与市场谨慎情绪的错配，创造了在财报前回调买入的绝佳机会。我们预计股价将向<strong>$610-620</strong>区间漂移。</p>',
+      
+      // 新增：7维度分析
+      fundamentalAnalysis: '<p>SpendingPulse数据显示假日零售额同比增长3.9%，优于预期的3.6%。关键驱动力是电商销售激增7.4%，这对万事达卡的高利润率数字支付业务是直接利好。Q3净营收已增长17%至86亿美元，EPS $4.38超预期，显示出强劲的运营杠杆。Tigress Financial已将目标价上调至$685。</p>',
+      
+      technicalAnalysis: '<p>股价目前在$579.61的历史高位附近盘整，日线图显示强劲的上升趋势但短期超买。RSI处于高位，暗示短期回调风险。关键支撑位在$565-570区间（20日均线附近）。成交量配合健康，未见明显出货迹象。等待回调确认支撑是最佳策略。</p>',
+      
+      quantitativeAnalysis: '<p>动量因子得分极高，ROE达到惊人的197%，显示卓越的质量因子。期权市场显示RV（20%）高于IV（16.7%），表明期权相对便宜，适合做多波动率或直接持股。短期获胜概率p(win)约为70%，但需更好的入场价格以优化凯利公式配置。</p>',
+      
+      eventDrivenAnalysis: '<p>主要催化剂是12月24日发布的假日销售数据，确认了消费韧性。下一个关键节点是2026年1月27日的Q4财报。历史数据显示，万事达卡在强劲假日季后的财报往往能超预期。监管和解（刷卡费）仍是长期背景噪音，但短期内不太可能爆发。</p>',
+      
+      macroAnalysis: '<p>尽管面临关税和通胀担忧，美国消费者表现出"精明"的韧性，转向体验和在线消费。宏观环境对支付网络有利：油价下跌释放了可支配收入，且美元走强虽然是逆风，但跨境旅游（亚太区+28-40%）的复苏提供了对冲。</p>',
+      
+      flowAnalysis: '<p>机构资金流向积极，Benzinga报告显示近期有18笔"聪明钱"看涨期权交易。虽然没有大规模的Jan 2026 LEAPs异常，但短期看涨情绪明显。缺乏大规模机构抛售表明持仓者惜售。</p>',
+      
+      sentimentAnalysis: '<p>黑色星期五在线销售额激增10.4%，远超线下。社交媒体情绪偏向正面，主要集中在旅游复苏和数字支付便利性上。分析师评级稳步上调，市场情绪从担忧衰退转向期待"软着陆"。</p>',
+      
+      // 新增：风险管理
+      keyAssumptions: [
+        '假日支出超预期（+3.9%）将直接转化为Q4营收超预期',
+        '电商（+7.4%）和跨境旅游的高增长将扩大利润率',
+        '消费者支出在1月27日财报前不会出现断崖式下跌'
+      ],
+      
+      mainRisks: [
+        '监管和解方案（刷卡费）可能导致估值倍数压缩',
+        '1月27日财报指引若保守可能引发获利回吐',
+        '宏观经济数据突然恶化影响非必需消费品支出'
+      ],
+      
+      invalidCondition: '如果股价跌破$553关键支撑位，或1月27日财报指引明确表示消费支出大幅放缓，则论点失效。'
+    },
+    { 
+      symbol: 'JPM', 
+      title: '摩根大通横盘震荡，等待方向明朗', 
+      rating: 'C',
+      action: '震荡',
+      direction: 'SIDEWAYS',
+      timeframe: '1-2 weeks',
+      ratio: '2.2:1',
+      riskTag: '低',
+      type: 'Long', 
+      strategy: '区间交易', 
+      tags: ['金融', '银行'] 
+    },
+    { 
+      symbol: 'AAPL', 
+      title: '苹果震荡整理，成交量显著放大', 
+      rating: 'B',
+      action: '震荡放量',
+      direction: 'SIDEWAYS_VOL_UP',
+      timeframe: '1-3 weeks',
+      ratio: '2.8:1',
+      riskTag: '中',
+      type: 'Long', 
+      strategy: '量价分析', 
+      tags: ['消费电子', '科技'] 
+    },
+    { 
+      symbol: 'AMZN', 
+      title: '亚马逊震荡缩量，市场观望情绪浓厚', 
+      rating: 'C',
+      action: '震荡缩量',
+      direction: 'SIDEWAYS_VOL_DOWN',
+      timeframe: '2-3 weeks',
+      ratio: '2.0:1',
+      riskTag: '低',
+      type: 'Long', 
+      strategy: '量价分析', 
+      tags: ['电商', '云计算'] 
+    },
+    { 
+      symbol: 'MSFT', 
+      title: '微软财报前保持观望，等待催化剂', 
+      rating: 'B',
+      action: '观望',
+      direction: 'WAIT',
+      timeframe: '1-2 weeks',
+      ratio: '2.5:1',
+      riskTag: '低',
+      type: 'Long', 
+      strategy: '事件驱动', 
+      tags: ['软件', 'AI'] 
+    }
   ]
 
   return Array.from({ length: count }).map((_, i) => {
@@ -2462,6 +2987,17 @@ const chatInput = ref('')
 const chatHistory = ref([])
 const isChatLoading = ref(false)
 const relatedPlans = ref([])
+
+// --- Help Modal Logic ---
+const showHelpModal = ref(false)
+
+const openHelpModal = () => {
+  showHelpModal.value = true
+}
+
+const closeHelpModal = () => {
+  showHelpModal.value = false
+}
 
 const toggleStrategyWatchlist = () => {
   isStrategyWatchlisted.value = !isStrategyWatchlisted.value

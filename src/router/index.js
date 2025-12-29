@@ -61,6 +61,9 @@ import ThemeColorsReferencePage from '../pages/ThemeColorsReferencePage.vue';
 import SectionTitlePreviewPage from '../pages/SectionTitlePreviewPage.vue';
 import PortfolioInputPage2 from '../pages/PortfolioInputPage2.vue';
 import PlanDetailDemoPage from '../pages/PlanDetailDemoPage.vue';
+import OpportunityDesignVariantsPage from '../pages/OpportunityDesignVariantsPage.vue';
+import OpportunityDataVizPage from '../pages/OpportunityDataVizPage.vue';
+import OpportunityMicroTweaksPage from '../pages/OpportunityMicroTweaksPage.vue';
 
 const routes = [
   // Root redirect - automatically redirect to Home page
@@ -165,6 +168,24 @@ const routes = [
     path: '/dev/button-schemes',
     name: 'DevButtonSchemes',
     component: ButtonSchemesPage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/dev/opportunity-variants',
+    name: 'DevOpportunityVariants',
+    component: OpportunityDesignVariantsPage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/dev/opportunity-data-viz',
+    name: 'DevOpportunityDataViz',
+    component: OpportunityDataVizPage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/dev/opportunity-micro-tweaks',
+    name: 'DevOpportunityMicroTweaks',
+    component: OpportunityMicroTweaksPage,
     meta: { layout: BlankLayout }
   },
   

@@ -502,18 +502,18 @@
                 </div>
            </div>
 
-           <!-- Expanded View (网格布局) -->
-           <div v-else class="grid grid-cols-4 gap-3 min-h-[70px]">
+           <!-- Expanded View (flex wrap 布局，保持卡片大小一致) -->
+           <div v-else class="flex flex-wrap gap-3 min-h-[70px]">
               <!-- Empty State -->
-              <div v-if="pendingTasks.length === 0 && processingTasks.length === 0" class="col-span-4 flex items-center justify-center text-gray-600 text-xs font-mono border border-dashed rounded-sm py-6" :style="{ borderColor: tokens.colors.border.strong }">
+              <div v-if="pendingTasks.length === 0 && processingTasks.length === 0" class="w-full flex items-center justify-center text-gray-600 text-xs font-mono border border-dashed rounded-sm py-6" :style="{ borderColor: tokens.colors.border.strong }">
                 {{ $t('opportunity.activeGeneration.noActiveTasks') }}
               </div>
 
-              <!-- Processing Tasks -->
+              <!-- Processing Tasks (保持与折叠视图相同的固定宽度) -->
               <div 
                 v-for="task in processingTasks" 
                 :key="task.id" 
-                class="border rounded-sm p-3 relative overflow-hidden group cursor-pointer transition-all"
+                class="w-[280px] border rounded-sm p-3 relative overflow-hidden group cursor-pointer transition-all"
                 :class="[
                   selectedStrategyId === `temp-${task.id}` 
                     ? 'border-cyan-500 glow-primary-md ring-2 ring-cyan-500/30 selected-task-glow' 
@@ -537,11 +537,11 @@
                  <div class="text-[10px] font-mono" :style="{ color: tokens.colors.text.muted }">{{ task.statusText }}</div>
               </div>
 
-              <!-- Pending Tasks -->
+              <!-- Pending Tasks (保持与折叠视图相同的固定宽度) -->
               <div 
                 v-for="task in pendingTasks" 
                 :key="task.id" 
-                class="border rounded-sm p-3 flex flex-col justify-center cursor-pointer transition-all relative overflow-hidden"
+                class="w-[200px] border rounded-sm p-3 flex flex-col justify-center cursor-pointer transition-all relative overflow-hidden"
                 :style="selectedStrategyId === `temp-${task.id}` 
                     ? { backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.accent.primary, boxShadow: `0 0 15px ${tokens.colors.accent.primary}4D`, opacity: 1 }
                     : { backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default, opacity: 0.7 }"
@@ -1530,7 +1530,7 @@
       </div>
 
       <!-- Generate Plan Modal (方案B: 单页折叠式) -->
-      <div v-if="showGeneratePlanModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-300" @click.self="closeGeneratePlanModal">
+      <div v-if="showGeneratePlanModal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-300" @click.self="closeGeneratePlanModal">
         <div class="border w-[820px] max-w-[95vw] overflow-hidden flex flex-col transform transition-all duration-200 scale-100 animate-modal-in" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
           
           <!-- Modal Header -->
@@ -2114,16 +2114,30 @@
                 <button 
                   @click="generatePlanForStrategy(selectedStrategy)"
                   class="w-full py-4 rounded-sm font-bold text-base transition-all flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-[0.99] shadow-lg"
-                  :style="{ 
+                  :style="generatePlanSuccess ? { 
+                    backgroundColor: tokens.colors.semantic.success, 
+                    color: '#fff',
+                    boxShadow: `0 4px 20px ${tokens.colors.semantic.success}4D`
+                  } : { 
                     backgroundColor: tokens.colors.accent.primary, 
                     color: '#000',
                     boxShadow: `0 4px 20px ${tokens.colors.accent.primary}4D`
                   }"
                 >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                  </svg>
-                  {{ $t('opportunity.actions.generatePlan') }}
+                  <!-- 成功状态：绿色对勾 + 已生成 -->
+                  <template v-if="generatePlanSuccess">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    {{ $t('opportunity.hints.planGenerated') }}
+                  </template>
+                  <!-- 默认状态：闪电图标 + 生成交易计划 -->
+                  <template v-else>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    {{ $t('opportunity.actions.generatePlan') }}
+                  </template>
                 </button>
               </div>
             </div>
@@ -2144,106 +2158,169 @@
               <div class="p-4" v-if="relatedPlans.length > 0">
                 <p class="text-xs mb-4" :style="{ color: tokens.colors.text.muted }">{{ $t('opportunity.relatedPlans.count', { count: relatedPlans.length }) }}</p>
                 
-                <!-- Plan Cards -->
-                <div class="space-y-3">
+                <!-- Plan Cards with slide-in animation -->
+                <transition-group name="plan-slide" tag="div" class="space-y-3">
                   <div 
-                    v-for="plan in relatedPlans" 
+                    v-for="(plan, index) in relatedPlans" 
                     :key="plan.id"
                     class="rounded-sm border transition-all duration-200"
-                    :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }"
+                    :class="{ 'animate-slide-in-right': plan.isNew, 'border-cyan-500/30': plan.isGenerating }"
+                    :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: plan.isGenerating ? tokens.colors.accent.primary + '4D' : tokens.colors.border.strong, '--delay': index * 100 + 'ms' }"
                   >
-                    <!-- Plan Header -->
-                    <div class="px-4 py-3 border-b" :style="{ borderColor: tokens.colors.border.default }">
-                      <div class="flex items-center justify-between mb-2">
-                        <!-- Editable Title -->
-                        <div class="flex items-center gap-2 flex-1 min-w-0">
-                          <input 
-                            v-if="plan.isEditing"
-                            v-model="plan.title"
-                            @blur="plan.isEditing = false"
-                            @keyup.enter="plan.isEditing = false"
-                            class="text-sm font-medium bg-transparent border-b outline-none w-full"
-                            :style="{ color: tokens.colors.text.primary, borderColor: tokens.colors.accent.primary }"
-                          />
-                          <h4 
-                            v-else
-                            @dblclick="plan.isEditing = true"
-                            class="text-sm font-medium truncate cursor-pointer hover:opacity-80"
-                            :style="{ color: tokens.colors.text.primary }"
-                            :title="'双击编辑名称'"
-                          >{{ plan.title }}</h4>
-                          <svg class="w-3 h-3 opacity-40 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
-                          </svg>
+                    <!-- ========== 正在生成状态 ========== -->
+                    <template v-if="plan.isGenerating">
+                      <div class="p-4">
+                        <!-- Header: 标题 + 状态标签 -->
+                        <div class="flex items-center justify-between mb-4">
+                          <div class="flex items-center gap-2">
+                            <h4 class="text-sm font-medium" :style="{ color: tokens.colors.text.primary }">{{ plan.title }}</h4>
+                            <span class="px-2 py-0.5 rounded-sm text-[10px] font-bold animate-pulse" :style="{ backgroundColor: tokens.colors.accent.primary + '33', color: tokens.colors.accent.primary }">
+                              生成中
+                            </span>
+                          </div>
+                          <!-- 取消按钮 -->
+                          <button 
+                            @click="deletePlan(plan.id)"
+                            class="text-[10px] px-2 py-1 rounded-sm transition-colors"
+                            :style="{ color: tokens.colors.text.muted }"
+                          >
+                            取消
+                          </button>
                         </div>
-                        <!-- Delete Button -->
-                        <button 
-                          @click="deletePlan(plan.id)"
-                          class="p-1 rounded-sm opacity-40 hover:opacity-100 transition-opacity"
-                          :style="{ color: tokens.colors.semantic.error }"
-                        >
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                          </svg>
-                        </button>
+                        
+                        <!-- 进度条 -->
+                        <div class="mb-3">
+                          <div class="h-1.5 rounded-full overflow-hidden" :style="{ backgroundColor: tokens.colors.border.default }">
+                            <div 
+                              class="h-full rounded-full transition-all duration-500"
+                              :style="{ 
+                                width: Math.min(plan.generatingProgress || 0, 100) + '%',
+                                background: `linear-gradient(90deg, ${tokens.colors.accent.primary}, ${tokens.colors.accent.secondary})`
+                              }"
+                            ></div>
+                          </div>
+                          <div class="flex justify-between mt-1.5">
+                            <span class="text-[10px]" :style="{ color: tokens.colors.text.muted }">AI 正在分析策略...</span>
+                            <span class="text-[10px] font-mono" :style="{ color: tokens.colors.accent.primary }">{{ Math.round(plan.generatingProgress || 0) }}%</span>
+                          </div>
+                        </div>
+                        
+                        <!-- 骨架屏占位 -->
+                        <div class="space-y-2">
+                          <div class="grid grid-cols-3 gap-2">
+                            <div class="h-12 rounded-sm animate-pulse" :style="{ backgroundColor: tokens.colors.border.default }"></div>
+                            <div class="h-12 rounded-sm animate-pulse" :style="{ backgroundColor: tokens.colors.border.default }"></div>
+                            <div class="h-12 rounded-sm animate-pulse" :style="{ backgroundColor: tokens.colors.border.default }"></div>
+                          </div>
+                        </div>
+                        
+                        <!-- 预计时间提示 -->
+                        <div class="mt-3 text-center">
+                          <span class="text-[10px]" :style="{ color: tokens.colors.text.muted }">
+                            <svg class="w-3 h-3 inline mr-1 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            预计还需 {{ Math.ceil((100 - (plan.generatingProgress || 0)) / 10) }} 分钟
+                          </span>
+                        </div>
+                      </div>
+                    </template>
+                    
+                    <!-- ========== 已完成状态（原有内容） ========== -->
+                    <template v-else>
+                      <!-- Plan Header -->
+                      <div class="px-4 py-3 border-b" :style="{ borderColor: tokens.colors.border.default }">
+                        <div class="flex items-center justify-between mb-2">
+                          <!-- Editable Title -->
+                          <div class="flex items-center gap-2 flex-1 min-w-0">
+                            <input 
+                              v-if="plan.isEditing"
+                              v-model="plan.title"
+                              @blur="plan.isEditing = false"
+                              @keyup.enter="plan.isEditing = false"
+                              class="text-sm font-medium bg-transparent border-b outline-none w-full"
+                              :style="{ color: tokens.colors.text.primary, borderColor: tokens.colors.accent.primary }"
+                            />
+                            <h4 
+                              v-else
+                              @dblclick="plan.isEditing = true"
+                              class="text-sm font-medium truncate cursor-pointer hover:opacity-80"
+                              :style="{ color: tokens.colors.text.primary }"
+                              :title="'双击编辑名称'"
+                            >{{ plan.title }}</h4>
+                            <svg class="w-3 h-3 opacity-40 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                            </svg>
+                          </div>
+                          <!-- Delete Button -->
+                          <button 
+                            @click="deletePlan(plan.id)"
+                            class="p-1 rounded-sm opacity-40 hover:opacity-100 transition-opacity"
+                            :style="{ color: tokens.colors.semantic.error }"
+                          >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                          </button>
+                        </div>
+                        
+                        <!-- Action & Confidence Row -->
+                        <div class="flex items-center gap-2 flex-wrap">
+                          <span 
+                            class="px-2 py-0.5 rounded-sm text-[10px] font-bold"
+                            :style="{ 
+                              backgroundColor: plan.recommendation === 'BUY' ? tokens.colors.semantic.success + '1A' : plan.recommendation === 'SELL' ? tokens.colors.semantic.error + '1A' : tokens.colors.accent.primary + '1A',
+                              color: plan.recommendation === 'BUY' ? tokens.colors.semantic.success : plan.recommendation === 'SELL' ? tokens.colors.semantic.error : tokens.colors.accent.primary
+                            }"
+                          >{{ plan.recommendation }}</span>
+                          <span 
+                            class="px-2 py-0.5 rounded-sm text-[10px] font-medium border"
+                            :style="{ 
+                              borderColor: plan.confidence_level === 'High' ? tokens.colors.semantic.success + '4D' : plan.confidence_level === 'Medium' ? tokens.colors.semantic.warning + '4D' : tokens.colors.border.strong,
+                              color: plan.confidence_level === 'High' ? tokens.colors.semantic.success : plan.confidence_level === 'Medium' ? tokens.colors.semantic.warning : tokens.colors.text.muted
+                            }"
+                          >{{ plan.confidence_level }}</span>
+                          <span 
+                            class="px-2 py-0.5 rounded-sm text-[10px] font-medium"
+                            :style="{ backgroundColor: tokens.colors.border.default, color: tokens.colors.text.muted }"
+                          >{{ plan.position_pct ? plan.position_pct + '% 持仓' : '无持仓' }}</span>
+                        </div>
                       </div>
                       
-                      <!-- Action & Confidence Row -->
-                      <div class="flex items-center gap-2 flex-wrap">
-                        <span 
-                          class="px-2 py-0.5 rounded-sm text-[10px] font-bold"
-                          :style="{ 
-                            backgroundColor: plan.recommendation === 'BUY' ? tokens.colors.semantic.success + '1A' : plan.recommendation === 'SELL' ? tokens.colors.semantic.error + '1A' : tokens.colors.accent.primary + '1A',
-                            color: plan.recommendation === 'BUY' ? tokens.colors.semantic.success : plan.recommendation === 'SELL' ? tokens.colors.semantic.error : tokens.colors.accent.primary
-                          }"
-                        >{{ plan.recommendation }}</span>
-                        <span 
-                          class="px-2 py-0.5 rounded-sm text-[10px] font-medium border"
-                          :style="{ 
-                            borderColor: plan.confidence_level === 'High' ? tokens.colors.semantic.success + '4D' : plan.confidence_level === 'Medium' ? tokens.colors.semantic.warning + '4D' : tokens.colors.border.strong,
-                            color: plan.confidence_level === 'High' ? tokens.colors.semantic.success : plan.confidence_level === 'Medium' ? tokens.colors.semantic.warning : tokens.colors.text.muted
-                          }"
-                        >{{ plan.confidence_level }}</span>
-                        <span 
-                          class="px-2 py-0.5 rounded-sm text-[10px] font-medium"
-                          :style="{ backgroundColor: tokens.colors.border.default, color: tokens.colors.text.muted }"
-                        >{{ plan.position_pct ? plan.position_pct + '% 持仓' : '无持仓' }}</span>
-                      </div>
-                    </div>
-                    
-                    <!-- Price Grid -->
-                    <div class="px-4 py-3">
-                      <div class="grid grid-cols-3 gap-2 text-center">
-                        <div class="p-2 rounded-sm" :style="{ backgroundColor: tokens.colors.background.base }">
-                          <div class="text-[10px] mb-1" :style="{ color: tokens.colors.text.muted }">入场价</div>
-                          <div class="text-sm font-mono font-medium" :style="{ color: tokens.colors.text.primary }">${{ plan.entry_price.toFixed(2) }}</div>
-                        </div>
-                        <div class="p-2 rounded-sm" :style="{ backgroundColor: tokens.colors.background.base }">
-                          <div class="text-[10px] mb-1" :style="{ color: tokens.colors.text.muted }">目标价</div>
-                          <div class="text-sm font-mono font-medium" :style="{ color: tokens.colors.semantic.success }">${{ plan.target_price.toFixed(2) }}</div>
-                        </div>
-                        <div class="p-2 rounded-sm" :style="{ backgroundColor: tokens.colors.background.base }">
-                          <div class="text-[10px] mb-1" :style="{ color: tokens.colors.text.muted }">止损价</div>
-                          <div class="text-sm font-mono font-medium" :style="{ color: tokens.colors.semantic.error }">${{ plan.stop_loss_price.toFixed(2) }}</div>
+                      <!-- Price Grid -->
+                      <div class="px-4 py-3">
+                        <div class="grid grid-cols-3 gap-2 text-center">
+                          <div class="p-2 rounded-sm" :style="{ backgroundColor: tokens.colors.background.base }">
+                            <div class="text-[10px] mb-1" :style="{ color: tokens.colors.text.muted }">入场价</div>
+                            <div class="text-sm font-mono font-medium" :style="{ color: tokens.colors.text.primary }">${{ plan.entry_price.toFixed(2) }}</div>
+                          </div>
+                          <div class="p-2 rounded-sm" :style="{ backgroundColor: tokens.colors.background.base }">
+                            <div class="text-[10px] mb-1" :style="{ color: tokens.colors.text.muted }">目标价</div>
+                            <div class="text-sm font-mono font-medium" :style="{ color: tokens.colors.semantic.success }">${{ plan.target_price.toFixed(2) }}</div>
+                          </div>
+                          <div class="p-2 rounded-sm" :style="{ backgroundColor: tokens.colors.background.base }">
+                            <div class="text-[10px] mb-1" :style="{ color: tokens.colors.text.muted }">止损价</div>
+                            <div class="text-sm font-mono font-medium" :style="{ color: tokens.colors.semantic.error }">${{ plan.stop_loss_price.toFixed(2) }}</div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    
-                    <!-- Footer -->
-                    <div class="px-4 py-2 border-t flex items-center justify-between" :style="{ borderColor: tokens.colors.border.default }">
-                      <span class="text-xs" :style="{ color: tokens.colors.text.muted }">
-                        <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                        {{ plan.createdAt }}
-                      </span>
-                      <button 
-                        class="text-xs font-medium"
-                        :style="{ color: tokens.colors.accent.primary }"
-                      >{{ $t('opportunity.relatedPlans.viewDetails') }}</button>
-                    </div>
+                      
+                      <!-- Footer -->
+                      <div class="px-4 py-2 border-t flex items-center justify-between" :style="{ borderColor: tokens.colors.border.default }">
+                        <span class="text-xs" :style="{ color: tokens.colors.text.muted }">
+                          <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                          </svg>
+                          {{ plan.createdAt }}
+                        </span>
+                        <button 
+                          class="text-xs font-medium"
+                          :style="{ color: tokens.colors.accent.primary }"
+                        >{{ $t('opportunity.relatedPlans.viewDetails') }}</button>
+                      </div>
+                    </template>
                   </div>
-                </div>
+                </transition-group>
               </div>
 
               <!-- Empty State -->
@@ -3187,6 +3264,7 @@ const deletePlan = (planId) => {
 // --- Generate Plan Modal Logic ---
 const showGeneratePlanModal = ref(false)
 const generatePlanTarget = ref(null)
+const generatePlanSuccess = ref(false) // 按钮成功状态（绿色对勾）
 const generatePlanSettings = ref({
   // 持仓状态
   hasPosition: false,
@@ -3389,7 +3467,8 @@ const confirmDelete = () => {
 const confirmGeneratePlan = () => {
   if (!generatePlanTarget.value) return
   
-  const settings = generatePlanSettings.value
+  // 保存当前设置的快照（避免闭包问题）
+  const settings = { ...generatePlanSettings.value }
   
   // 保存为默认设置
   if (settings.saveAsDefault) {
@@ -3411,23 +3490,59 @@ const confirmGeneratePlan = () => {
   const strategy = allSavedStrategies.value.find(s => s.id === generatePlanTarget.value.id)
   if (strategy) {
     strategy.hasExecutionPlan = true
-    strategy.planCount = 1
-    strategy.planGeneratingCount = 1
-    strategy.generatingCurrent = 1
-    strategy.generatingProgress = 0
-    
-    // 模拟进度
-    const interval = setInterval(() => {
-      if (strategy.generatingProgress < 100) {
-        strategy.generatingProgress += 10
-      } else {
-        clearInterval(interval)
-        strategy.planGeneratingCount = 0
-        strategy.planUnreadCount = 1
-        addToast(`Execution plan for ${strategy.symbol} generated!`, 'success')
-      }
-    }, 500)
+    strategy.planCount = (strategy.planCount || 0) + 1
   }
+  
+  // 立即添加新计划到右侧列表（显示"正在生成"状态）
+  const horizonLabels = { short: '短期激进', medium: '中期均衡', long: '长期稳健' }
+  const newPlanId = Date.now()
+  const newPlan = {
+    id: newPlanId,
+    title: `${horizonLabels[settings.investmentHorizon]}计划`,
+    isEditing: false,
+    isNew: true,
+    isGenerating: true, // 正在生成状态
+    generatingProgress: 0, // 生成进度
+    recommendation: settings.hasPosition ? 'HOLD' : 'BUY',
+    confidence_level: settings.riskPreference > 66 ? 'High' : settings.riskPreference > 33 ? 'Medium' : 'Low',
+    entry_price: 298.50,
+    target_price: 317.50,
+    stop_loss_price: 294.30,
+    position_pct: settings.hasPosition ? settings.positionSize : null,
+    instruction: settings.hasPosition 
+      ? `基于现有持仓的${horizonLabels[settings.investmentHorizon]}调仓建议。` 
+      : `建议在当前价位附近建立${horizonLabels[settings.investmentHorizon]}仓位。`,
+    createdAt: new Date().toISOString().split('T')[0],
+    isExpanded: false
+  }
+  relatedPlans.value.unshift(newPlan)
+  
+  // 显示提示
+  addToast(`正在生成${horizonLabels[settings.investmentHorizon]}计划，预计需要10-15分钟...`, 'info')
+  
+  // Demo: 模拟生成进度（实际应用中应由后端推送进度）
+  const progressInterval = setInterval(() => {
+    const plan = relatedPlans.value.find(p => p.id === newPlanId)
+    if (plan && plan.isGenerating) {
+      plan.generatingProgress += Math.random() * 15 + 5
+      if (plan.generatingProgress >= 100) {
+        plan.generatingProgress = 100
+        plan.isGenerating = false
+        clearInterval(progressInterval)
+        addToast(`${plan.title}生成完成！`, 'success')
+      }
+    } else {
+      clearInterval(progressInterval)
+    }
+  }, 2000) // Demo: 每2秒更新进度
+  
+  // 设置按钮成功状态
+  generatePlanSuccess.value = true
+  
+  // 2秒后重置成功状态（因为可以生成多个计划）
+  setTimeout(() => {
+    generatePlanSuccess.value = false
+  }, 2000)
   
   closeGeneratePlanModal()
 }
@@ -5649,6 +5764,46 @@ const loadSavedStrategies = () => {
 }
 .animate-fade-in {
   animation: fade-in 0.3s ease-out forwards;
+}
+
+/* Plan Card Slide-in Animation (从右滑入) */
+@keyframes slide-in-right {
+  from { 
+    opacity: 0; 
+    transform: translateX(100px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0);
+  }
+}
+.animate-slide-in-right {
+  animation: slide-in-right 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: var(--delay, 0ms);
+}
+
+/* Plan Slide Transition Group - 使用 :deep() 确保在 scoped 中生效 */
+:deep(.plan-slide-enter-active),
+.plan-slide-enter-active {
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+:deep(.plan-slide-leave-active),
+.plan-slide-leave-active {
+  transition: all 0.3s ease-in !important;
+}
+:deep(.plan-slide-enter-from),
+.plan-slide-enter-from {
+  opacity: 0 !important;
+  transform: translateX(120px) !important;
+}
+:deep(.plan-slide-leave-to),
+.plan-slide-leave-to {
+  opacity: 0 !important;
+  transform: translateX(-30px) scale(0.95) !important;
+}
+:deep(.plan-slide-move),
+.plan-slide-move {
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 /* List Transitions */
