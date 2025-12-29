@@ -36,18 +36,18 @@
         <!-- Left: Filter & Switcher -->
         <div class="flex items-center gap-3">
           <!-- Content Switcher -->
-          <div id="content-switcher" class="border p-1 flex items-center" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+          <div id="content-switcher" class="border p-1 flex items-center" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: isDark ? tokens.colors.border.default : tokens.colors.border.strong }">
             <button 
               @click="contentFilter = 'recommended'"
               class="px-3 py-1.5 rounded-sm text-xs font-bold transition-all"
-              :style="contentFilter === 'recommended' ? { backgroundColor: tokens.colors.border.strong, color: tokens.colors.text.primary } : { color: tokens.colors.text.muted }"
+              :style="contentFilter === 'recommended' ? { backgroundColor: isDark ? tokens.colors.border.strong : tokens.colors.text.primary, color: isDark ? tokens.colors.text.primary : '#ffffff' } : { color: isDark ? tokens.colors.text.muted : tokens.colors.text.tertiary }"
             >
               Recommended
             </button>
             <button 
               @click="contentFilter = 'following'"
               class="px-3 py-1.5 rounded-sm text-xs font-bold transition-all"
-              :style="contentFilter === 'following' ? { backgroundColor: isDark ? '#ffffff' : tokens.colors.background.elevated, color: isDark ? '#000000' : tokens.colors.text.primary } : { color: tokens.colors.text.muted }"
+              :style="contentFilter === 'following' ? { backgroundColor: isDark ? '#ffffff' : tokens.colors.text.primary, color: isDark ? '#000000' : '#ffffff' } : { color: isDark ? tokens.colors.text.muted : tokens.colors.text.tertiary }"
             >
               Following
             </button>
@@ -480,13 +480,13 @@
           <div v-for="event in allAttributionEvents" :key="event.id" class="flex gap-5 items-stretch group">
             <!-- Time Column -->
             <div class="w-20 text-right pt-5 shrink-0">
-              <div class="text-lg font-bold font-mono tracking-tight" :style="{ color: tokens.colors.text.primary }">{{ event.time.split(' ')[0] }}</div>
-              <div class="text-xs font-mono uppercase" :style="{ color: tokens.colors.text.disabled }">{{ event.time.split(' ')[1] || 'AM' }}</div>
+              <div class="text-lg font-bold font-mono tracking-tight" :style="{ color: isDark ? tokens.colors.text.primary : tokens.colors.text.secondary }">{{ event.time.split(' ')[0] }}</div>
+              <div class="text-xs font-mono uppercase" :style="{ color: isDark ? tokens.colors.text.disabled : tokens.colors.text.muted }">{{ event.time.split(' ')[1] || 'AM' }}</div>
             </div>
             
             <!-- Decoration Line -->
-            <div class="w-px relative group-hover:bg-cyan-500/50 transition-colors duration-300" :style="{ backgroundColor: tokens.colors.border.subtle }">
-              <div class="absolute top-6 -left-1 w-2 h-2 rounded-full group-hover:border-cyan-500 group-hover:glow-primary-sm transition-all" :style="{ backgroundColor: tokens.colors.background.base, borderWidth: '1px', borderStyle: 'solid', borderColor: tokens.colors.border.strong }"></div>
+            <div class="w-px relative group-hover:bg-cyan-500/50 transition-colors duration-300" :style="{ backgroundColor: isDark ? tokens.colors.border.subtle : tokens.colors.border.strong }">
+              <div class="absolute top-6 -left-1 w-2 h-2 rounded-full group-hover:border-cyan-500 group-hover:glow-primary-sm transition-all" :style="{ backgroundColor: tokens.colors.background.base, borderWidth: '2px', borderStyle: 'solid', borderColor: isDark ? tokens.colors.border.strong : tokens.colors.border.hover }"></div>
             </div>
             
             <!-- Card -->
