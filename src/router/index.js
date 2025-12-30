@@ -64,6 +64,7 @@ import PlanDetailDemoPage from '../pages/PlanDetailDemoPage.vue';
 import OpportunityDesignVariantsPage from '../pages/OpportunityDesignVariantsPage.vue';
 import OpportunityDataVizPage from '../pages/OpportunityDataVizPage.vue';
 import OpportunityMicroTweaksPage from '../pages/OpportunityMicroTweaksPage.vue';
+import HoverEffectsDemoPage from '../pages/HoverEffectsDemoPage.vue';
 
 const routes = [
   // Root redirect - automatically redirect to Home page
@@ -186,6 +187,12 @@ const routes = [
     path: '/dev/opportunity-micro-tweaks',
     name: 'DevOpportunityMicroTweaks',
     component: OpportunityMicroTweaksPage,
+    meta: { layout: BlankLayout }
+  },
+  {
+    path: '/hover-demo',
+    name: 'HoverEffectsDemo',
+    component: HoverEffectsDemoPage,
     meta: { layout: BlankLayout }
   },
   

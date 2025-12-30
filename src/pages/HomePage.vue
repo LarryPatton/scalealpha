@@ -15,7 +15,7 @@
         </span>
         <div 
           class="w-3 h-3 rounded-full border-2 transition-all duration-300"
-          :class="activeSection === section.id ? 'bg-cyan-500 border-cyan-500 scale-125' : 'bg-transparent border-gray-600 hover:border-gray-400'"
+          :class="activeSection === section.id ? 'bg-sky-600 border-sky-600 scale-125' : 'bg-transparent border-gray-600 hover:border-gray-400'"
         ></div>
       </button>
     </div>
@@ -65,10 +65,10 @@
           <div class="flex gap-4">
             <router-link 
               to="/revenueB" 
-              class="inline-block px-8 py-4 font-bold text-lg rounded-sm transition-all shadow-lg transform hover:-translate-y-1 hover:scale-[1.02] hover:shadow-cyan-500/25"
+              class="inline-block px-8 py-4 font-bold text-lg rounded-sm transition-all shadow-lg transform hover:-translate-y-1 hover:scale-[1.02] hover:shadow-sky-500/25"
               :style="{ 
                 backgroundColor: tokens.colors.accent.primary, 
-                color: '#000',
+                color: '#ffffff',
                 boxShadow: `0 10px 40px ${tokens.colors.accent.primary}4D`
               }"
             >

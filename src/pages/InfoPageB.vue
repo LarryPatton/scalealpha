@@ -36,18 +36,18 @@
         <!-- Left: Filter & Switcher -->
         <div class="flex items-center gap-3">
           <!-- Content Switcher -->
-          <div id="content-switcher" class="border p-1 flex items-center" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: isDark ? tokens.colors.border.default : tokens.colors.border.strong }">
+          <div id="content-switcher" class="border p-1 flex items-center" :style="{ backgroundColor: isDark ? tokens.colors.background.surface : tokens.colors.background.elevated, borderColor: isDark ? tokens.colors.border.default : tokens.colors.border.subtle }">
             <button 
               @click="contentFilter = 'recommended'"
               class="px-3 py-1.5 rounded-sm text-xs font-bold transition-all"
-              :style="contentFilter === 'recommended' ? { backgroundColor: isDark ? tokens.colors.border.strong : tokens.colors.text.primary, color: isDark ? tokens.colors.text.primary : '#ffffff' } : { color: isDark ? tokens.colors.text.muted : tokens.colors.text.tertiary }"
+              :style="contentFilter === 'recommended' ? { backgroundColor: isDark ? tokens.colors.border.strong : '#ffffff', color: isDark ? tokens.colors.text.primary : tokens.colors.text.primary, boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.05)' } : { color: tokens.colors.text.muted }"
             >
               Recommended
             </button>
             <button 
               @click="contentFilter = 'following'"
               class="px-3 py-1.5 rounded-sm text-xs font-bold transition-all"
-              :style="contentFilter === 'following' ? { backgroundColor: isDark ? '#ffffff' : tokens.colors.text.primary, color: isDark ? '#000000' : '#ffffff' } : { color: isDark ? tokens.colors.text.muted : tokens.colors.text.tertiary }"
+              :style="contentFilter === 'following' ? { backgroundColor: isDark ? '#ffffff' : '#ffffff', color: isDark ? '#000000' : tokens.colors.text.primary, boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.05)' } : { color: tokens.colors.text.muted }"
             >
               Following
             </button>
@@ -149,7 +149,7 @@
             @click="openHelpModal"
             class="px-2.5 py-1.5 border rounded-sm flex items-center gap-1.5 transition-all hover:scale-105"
             :style="{ 
-              backgroundColor: '#2c2416',
+              backgroundColor: isDark ? '#2c2416' : tokens.colors.background.surface,
               borderColor: '#fbbf24',
               color: '#fbbf24'
             }"
@@ -160,11 +160,11 @@
           </button>
 
           <!-- View Switcher (Opportunities and Themes) -->
-          <div v-if="['opportunities', 'themes'].includes(activeTab)" class="border rounded-sm p-0.5 flex items-center" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle }">
+          <div v-if="['opportunities', 'themes'].includes(activeTab)" class="border rounded-sm p-0.5 flex items-center" :style="{ backgroundColor: isDark ? tokens.colors.background.base : tokens.colors.background.elevated, borderColor: tokens.colors.border.subtle }">
             <button 
               @click="activeTab === 'themes' ? themesViewMode = 'card' : viewMode = 'card'"
               class="p-1.5 rounded-sm transition-all"
-              :style="(activeTab === 'themes' ? themesViewMode : viewMode) === 'card' ? { backgroundColor: tokens.colors.border.default, color: tokens.colors.text.primary } : { color: tokens.colors.text.disabled }"
+              :style="(activeTab === 'themes' ? themesViewMode : viewMode) === 'card' ? { backgroundColor: isDark ? tokens.colors.border.default : '#ffffff', color: tokens.colors.text.primary, boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.05)' } : { color: tokens.colors.text.disabled }"
               title="Card View"
             >
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
@@ -172,7 +172,7 @@
             <button 
               @click="activeTab === 'themes' ? themesViewMode = 'list' : viewMode = 'list'"
               class="p-1.5 rounded-sm transition-all"
-              :style="(activeTab === 'themes' ? themesViewMode : viewMode) === 'list' ? { backgroundColor: tokens.colors.border.default, color: tokens.colors.text.primary } : { color: tokens.colors.text.disabled }"
+              :style="(activeTab === 'themes' ? themesViewMode : viewMode) === 'list' ? { backgroundColor: isDark ? tokens.colors.border.default : '#ffffff', color: tokens.colors.text.primary, boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.05)' } : { color: tokens.colors.text.disabled }"
               title="List View"
             >
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -249,17 +249,12 @@
               <!-- Symbol -->
               <div class="w-16 flex-shrink-0">
                 <div class="font-bold text-sm" :style="{ color: tokens.colors.text.primary }">{{ opp.symbol }}</div>
-                <div class="text-[10px]" :style="{ color: tokens.colors.text.muted }">US Stock</div>
               </div>
 
               <!-- Main Info -->
               <div class="flex-1 min-w-0 grid grid-cols-12 gap-4 items-center">
                 <div class="col-span-4">
                   <div class="font-medium truncate text-sm group-hover:text-cyan-400 transition-colors" :style="{ color: tokens.colors.text.secondary }">{{ opp.title }}</div>
-                  <div class="flex items-center gap-2 mt-0.5">
-                    <span class="text-[10px] px-1.5 rounded-sm" :style="{ backgroundColor: tokens.colors.border.strong, color: tokens.colors.text.tertiary }">{{ opp.strategy }}</span>
-                    <span class="text-[10px] truncate" :style="{ color: tokens.colors.text.muted }">{{ opp.tags.join(', ') }}</span>
-                  </div>
                 </div>
                 
                 <div class="col-span-2 text-center">
@@ -277,17 +272,15 @@
                   <div class="font-bold text-xs" :style="{ color: tokens.colors.text.secondary }">{{ opp.ratio || '2.5:1' }}</div>
                 </div>
 
-                <div class="col-span-3 flex justify-end items-center gap-3">
-                   <div class="text-right">
+                <div class="col-span-3 flex justify-end items-center gap-4">
+                   <div class="text-center">
                       <div class="text-[10px] uppercase tracking-wide" :style="{ color: tokens.colors.text.disabled }">Duration</div>
                       <div class="font-bold text-sm" :style="{ color: tokens.colors.text.secondary }">{{ opp.timeframe || '1-10 DAYS' }}</div>
                    </div>
-                   <span 
-                    class="font-bold text-[10px]"
-                    :style="{ 
-                      color: getRiskTagColor(opp.riskTag)
-                    }"
-                  >{{ opp.riskTag || '中' }}</span>
+                   <div class="text-center">
+                      <div class="text-[10px] uppercase tracking-wide" :style="{ color: tokens.colors.text.disabled }">Risk</div>
+                      <div class="font-bold text-sm" :style="{ color: getRiskTagColor(opp.riskTag) }">{{ opp.riskTag || '中' }}</div>
+                   </div>
                    <div class="w-7 h-7 rounded-full flex items-center justify-center group-hover:bg-cyan-500/10 group-hover:text-cyan-400 transition-colors" :style="{ backgroundColor: tokens.colors.background.elevated, color: tokens.colors.text.disabled }">
                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                    </div>
@@ -380,7 +373,7 @@
             <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/0 to-transparent group-hover:via-cyan-500/50 transition-all duration-500"></div>
 
             <!-- Left: Lifecycle Progress -->
-            <div class="w-20 shrink-0 border-r p-3 flex flex-col items-center justify-center" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle }">
+            <div class="w-20 shrink-0 border-r p-3 flex flex-col items-center justify-center" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle }">
               <div class="flex items-center gap-0.5 mb-1.5 w-full">
                 <template v-for="(stage, index) in lifecycleStages.slice(0, 4)" :key="stage.key">
                   <div class="h-1 flex-1 rounded-full" :class="getSegmentClass(event.state, index)"></div>
@@ -404,14 +397,9 @@
             </div>
 
             <!-- Right: Affected Stocks -->
-            <div class="flex items-center gap-2 shrink-0 p-5">
-              <div v-for="stock in event.stocks.slice(0, 3)" :key="stock.symbol" class="flex items-center gap-2 px-2.5 py-1.5 rounded-md border" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle }">
-                <div class="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold border" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default, color: tokens.colors.text.muted }">
-                  {{ stock.symbol.slice(0, 2) }}
-                </div>
-                <div class="font-bold text-[11px]" :style="{ color: tokens.colors.text.secondary }">{{ stock.symbol }}</div>
-              </div>
-              <span v-if="event.stocks.length > 3" class="text-[10px] px-2 py-1 rounded-md border" :style="{ color: tokens.colors.text.disabled, backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle }">+{{ event.stocks.length - 3 }}</span>
+            <div class="flex items-center gap-1.5 shrink-0 p-5">
+              <span v-for="stock in event.stocks.slice(0, 4)" :key="stock.symbol" class="px-1.5 py-0.5 text-[10px] font-mono font-bold border transition-colors" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle, color: tokens.colors.text.secondary }">{{ stock.symbol }}</span>
+              <span v-if="event.stocks.length > 4" class="px-1.5 py-0.5 text-[10px] font-mono border" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle, color: tokens.colors.text.disabled }">+{{ event.stocks.length - 4 }}</span>
             </div>
 
             <!-- Far Right: Theme Change (30D & 1Y side by side) -->
@@ -485,15 +473,12 @@
             </div>
             
             <!-- Decoration Line -->
-            <div class="w-px relative group-hover:bg-cyan-500/50 transition-colors duration-300" :style="{ backgroundColor: isDark ? tokens.colors.border.subtle : tokens.colors.border.strong }">
-              <div class="absolute top-6 -left-1 w-2 h-2 rounded-full group-hover:border-cyan-500 group-hover:glow-primary-sm transition-all" :style="{ backgroundColor: tokens.colors.background.base, borderWidth: '2px', borderStyle: 'solid', borderColor: isDark ? tokens.colors.border.strong : tokens.colors.border.hover }"></div>
+            <div class="w-0.5 relative group-hover:bg-cyan-500 transition-colors duration-300" :style="{ backgroundColor: isDark ? tokens.colors.border.default : '#cbd5e1' }">
+              <div class="absolute top-6 -left-[5px] w-3 h-3 rounded-full group-hover:border-cyan-500 group-hover:bg-cyan-500 group-hover:shadow-[0_0_10px_rgba(6,182,212,0.5)] transition-all duration-300" :style="{ backgroundColor: tokens.colors.background.base, borderWidth: '2px', borderStyle: 'solid', borderColor: isDark ? tokens.colors.border.strong : '#94a3b8' }"></div>
             </div>
             
             <!-- Card -->
-            <div class="flex-1 border transition-all relative overflow-hidden" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle }">
-              <!-- Subtle top accent line on hover -->
-              <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/0 to-transparent group-hover:via-cyan-500/50 transition-all duration-500"></div>
-
+            <div class="flex-1 border transition-all duration-200 relative overflow-hidden group-hover:border-cyan-500 group-hover:bg-slate-50 dark:group-hover:bg-white/5" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle }">
               <div class="flex h-full">
                 <!-- Image (Left) -->
                 <div class="w-56 relative overflow-hidden border-r shrink-0" :style="{ borderColor: tokens.colors.border.subtle }">
@@ -511,8 +496,8 @@
                 </div>
 
                 <!-- Stocks List (Right) -->
-                <div class="w-72 border-l flex flex-col shrink-0 relative" :style="{ backgroundColor: tokens.colors.background.base, borderColor: tokens.colors.border.subtle }">
-                  <div class="px-3 py-2 border-b flex items-center justify-between" :style="{ borderColor: tokens.colors.border.subtle }">
+                <div class="w-72 border-l flex flex-col shrink-0 relative" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: isDark ? tokens.colors.border.subtle : '#e2e8f0' }">
+                  <div class="px-3 py-2 border-b flex items-center justify-between" :style="{ borderColor: isDark ? tokens.colors.border.subtle : '#f1f5f9' }">
                     <span class="text-[10px] font-bold uppercase tracking-wider" :style="{ color: tokens.colors.text.disabled }">相关标的</span>
                     <span class="text-[10px]" :style="{ color: tokens.colors.text.disabled }">{{ event.stocks.length }} 只</span>
                   </div>
@@ -521,11 +506,11 @@
                       v-for="stock in event.stocks" 
                       :key="stock.symbol" 
                       @click.stop="openEventModal(event)"
-                      class="border rounded-sm px-2.5 py-2 flex items-center gap-2.5 transition-all cursor-pointer group/stock"
-                      :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle }"
+                      class="border rounded-sm px-2.5 py-2 flex items-center gap-2.5 transition-all cursor-pointer group/stock hover:bg-slate-50 dark:hover:bg-white/5"
+                      :style="{ backgroundColor: 'transparent', borderColor: isDark ? tokens.colors.border.subtle : '#f1f5f9' }"
                     >
                       <!-- Icon -->
-                      <div class="w-7 h-7 rounded-sm flex items-center justify-center text-[10px] font-bold border group-hover/stock:text-cyan-400 group-hover/stock:border-cyan-500/50 transition-colors shrink-0" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default, color: tokens.colors.text.muted }">
+                      <div class="w-7 h-7 rounded-sm flex items-center justify-center text-[10px] font-bold border group-hover/stock:text-cyan-400 group-hover/stock:border-cyan-500/50 transition-colors shrink-0" :style="{ backgroundColor: isDark ? tokens.colors.background.elevated : '#f8fafc', borderColor: isDark ? tokens.colors.border.default : '#e2e8f0', color: tokens.colors.text.muted }">
                         {{ stock.symbol.slice(0, 2) }}
                       </div>
                       
@@ -547,7 +532,7 @@
                     </div>
                   </div>
                   <!-- Scroll Hint Gradient -->
-                  <div class="absolute bottom-0 left-0 right-0 h-4 pointer-events-none" :style="{ background: `linear-gradient(to top, ${tokens.colors.background.base}, transparent)` }"></div>
+                  <div class="absolute bottom-0 left-0 right-0 h-4 pointer-events-none" :style="{ background: `linear-gradient(to top, ${tokens.colors.background.surface}, transparent)` }"></div>
                 </div>
               </div>
             </div>
@@ -568,15 +553,15 @@
 
     <!-- 3. Floating Tabs (Bottom Center) -->
     <div id="floating-tabs" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-40">
-      <div class="backdrop-blur-xl border rounded-full p-1.5 shadow-2xl flex items-center gap-1" :style="{ backgroundColor: tokens.colors.background.elevated + 'E6', borderColor: tokens.colors.border.strong }">
+      <div class="backdrop-blur-xl border rounded-full p-1.5 shadow-2xl flex items-center gap-1" :style="{ backgroundColor: isDark ? tokens.colors.background.elevated + 'E6' : 'rgba(255,255,255,0.8)', borderColor: tokens.colors.border.strong }">
         <button 
           v-for="tab in tabs.filter(t => t.id !== 'themesB')" 
           :key="tab.id"
           @click="switchTab(tab.id)"
           class="px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2"
           :class="activeTab === tab.id ? 'shadow-lg scale-105' : ''"
-          :style="activeTab === tab.id ? { backgroundColor: isDark ? '#ffffff' : tokens.colors.text.primary, color: isDark ? '#000000' : '#ffffff' } : { color: tokens.colors.text.muted }"
-          @mouseenter="activeTab !== tab.id && ($event.target.style.backgroundColor = tokens.colors.border.strong)"
+          :style="activeTab === tab.id ? { backgroundColor: isDark ? '#ffffff' : '#ffffff', color: isDark ? '#000000' : tokens.colors.accent.primary, boxShadow: isDark ? 'none' : '0 4px 12px rgba(0,0,0,0.1)' } : { color: tokens.colors.text.muted }"
+          @mouseenter="activeTab !== tab.id && ($event.target.style.backgroundColor = isDark ? tokens.colors.border.strong : 'rgba(0,0,0,0.05)')"
           @mouseleave="activeTab !== tab.id && ($event.target.style.backgroundColor = 'transparent')"
         >
           <span class="text-sm">{{ tab.icon }}</span>
@@ -1938,14 +1923,14 @@ const lifecycleStages = [
 ]
 
 const stageConfigs = {
-  watch: { label: 'Watch', bgClass: 'bg-slate-500', textClass: 'text-slate-400', badgeClass: 'bg-slate-900/50 text-slate-400 border border-slate-700' },
-  emerging: { label: 'Emerging', bgClass: 'bg-emerald-500', textClass: 'text-emerald-400', badgeClass: 'bg-emerald-900/50 text-emerald-400 border border-emerald-700' },
-  growing: { label: 'Growing', bgClass: 'bg-green-500', textClass: 'text-green-400', badgeClass: 'bg-green-900/50 text-green-400 border border-green-700' },
-  mature: { label: 'Mature', bgClass: 'bg-blue-500', textClass: 'text-blue-400', badgeClass: 'bg-blue-900/50 text-blue-400 border border-blue-700' },
-  fading: { label: 'Fading', bgClass: 'bg-yellow-500', textClass: 'text-yellow-400', badgeClass: 'bg-yellow-900/50 text-yellow-400 border border-yellow-700' },
-  declining: { label: 'Declining', bgClass: 'bg-orange-500', textClass: 'text-orange-400', badgeClass: 'bg-orange-900/50 text-orange-400 border border-orange-700' },
-  defunct: { label: 'Defunct', bgClass: 'bg-red-500', textClass: 'text-red-400', badgeClass: 'bg-red-900/50 text-red-400 border border-red-700' },
-  dormant: { label: 'Dormant', bgClass: 'bg-gray-500', textClass: 'text-gray-400', badgeClass: 'bg-gray-800/50 text-gray-400 border border-gray-600' }
+  watch: { label: 'Watch', bgClass: 'bg-slate-500', textClass: 'text-slate-400', badgeClass: '!bg-transparent dark:bg-slate-900/30 text-slate-600 dark:text-slate-400 border border-slate-400 dark:border-slate-700 font-bold' },
+  emerging: { label: 'Emerging', bgClass: 'bg-emerald-500', textClass: 'text-emerald-400', badgeClass: '!bg-transparent dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-400 dark:border-emerald-700 font-bold' },
+  growing: { label: 'Growing', bgClass: 'bg-green-500', textClass: 'text-green-400', badgeClass: '!bg-transparent dark:bg-green-900/30 text-green-600 dark:text-green-400 border border-green-400 dark:border-green-700 font-bold' },
+  mature: { label: 'Mature', bgClass: 'bg-blue-500', textClass: 'text-blue-400', badgeClass: '!bg-transparent dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-400 dark:border-blue-700 font-bold' },
+  fading: { label: 'Fading', bgClass: 'bg-yellow-500', textClass: 'text-yellow-400', badgeClass: '!bg-transparent dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 border border-yellow-400 dark:border-yellow-700 font-bold' },
+  declining: { label: 'Declining', bgClass: 'bg-orange-500', textClass: 'text-orange-400', badgeClass: '!bg-transparent dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 border border-orange-400 dark:border-orange-700 font-bold' },
+  defunct: { label: 'Defunct', bgClass: 'bg-red-500', textClass: 'text-red-400', badgeClass: '!bg-transparent dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-400 dark:border-red-700 font-bold' },
+  dormant: { label: 'Dormant', bgClass: 'bg-gray-500', textClass: 'text-gray-400', badgeClass: '!bg-transparent dark:bg-gray-800/30 text-gray-600 dark:text-gray-400 border border-gray-400 dark:border-gray-600 font-bold' }
 }
 
 const getStageConfig = (state) => stageConfigs[state] || stageConfigs.watch
