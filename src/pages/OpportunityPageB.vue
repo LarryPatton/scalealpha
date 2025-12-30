@@ -1,5 +1,12 @@
 <template>
-  <div class="h-screen font-sans selection:bg-cyan-500/30 overflow-hidden flex flex-col" :style="{ backgroundColor: tokens.colors.background.base, color: tokens.colors.text.secondary }">
+  <div 
+    class="h-screen font-sans selection:bg-cyan-500/30 overflow-hidden flex flex-col transition-colors duration-300" 
+    :style="{ 
+      backgroundColor: tokens.colors.background.base, 
+      backgroundImage: !isDark ? 'radial-gradient(circle at 50% 0%, #ffffff 0%, #f1f5f9 100%)' : 'none',
+      color: tokens.colors.text.secondary 
+    }"
+  >
     <Navbar />
     
     <main class="flex-1 pt-5 px-4 lg:px-8 max-w-[2200px] mx-auto w-full flex flex-col overflow-hidden relative">
@@ -56,9 +63,17 @@
         </button>
         
         <!-- Left Column: Asset Selection -->
-        <div id="asset-selection-panel" class="w-[240px] flex flex-col border overflow-hidden shrink-0" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+        <div 
+          id="asset-selection-panel" 
+          class="w-[240px] flex flex-col border overflow-hidden shrink-0 transition-all duration-300" 
+          :class="!isDark ? 'shadow-[0_4px_20px_rgba(0,0,0,0.05)] rounded-lg border-transparent' : 'rounded-sm'"
+          :style="{ 
+            backgroundColor: tokens.colors.background.surface, 
+            borderColor: !isDark ? 'rgba(0,0,0,0.03)' : tokens.colors.border.default 
+          }"
+        >
           <!-- Search & Filter Header -->
-          <div class="p-4 border-b" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+          <div class="p-4 border-b" :style="{ borderColor: !isDark ? 'rgba(0,0,0,0.03)' : tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
             <div class="flex gap-1 p-1 rounded-sm border" :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.default }">
               <button 
                 v-for="tab in assetTabs" 
@@ -138,7 +153,14 @@
         </div>
 
         <!-- Right Column: Strategy Configuration -->
-        <div class="flex-1 flex flex-col border overflow-hidden relative" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }">
+        <div 
+          class="flex-1 flex flex-col border overflow-hidden relative transition-all duration-300" 
+          :class="!isDark ? 'shadow-[0_4px_20px_rgba(0,0,0,0.05)] rounded-lg border-transparent' : 'rounded-sm'"
+          :style="{ 
+            backgroundColor: tokens.colors.background.surface, 
+            borderColor: !isDark ? 'rgba(0,0,0,0.03)' : tokens.colors.border.default 
+          }"
+        >
           
           <!-- Scrollable Content - 使用 flex 布局充分利用纵向空间 -->
           <div class="flex-1 flex flex-col overflow-y-auto custom-scrollbar p-4">
@@ -390,7 +412,15 @@
         <div v-else-if="activeTab === 'mystrategy'" class="flex-1 flex flex-col min-h-0 mt-0 pb-24 animate-fade-in relative">
           
           <!-- Active Tasks Section (Zone A) -->
-          <div id="active-generation-panel" class="w-full mb-3 border p-4 shrink-0" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+          <div 
+            id="active-generation-panel" 
+            class="w-full mb-3 border p-4 shrink-0 transition-all duration-300" 
+            :class="!isDark ? 'shadow-[0_4px_20px_rgba(0,0,0,0.05)] rounded-lg border-transparent' : 'rounded-sm'"
+            :style="{ 
+              borderColor: !isDark ? 'rgba(0,0,0,0.03)' : tokens.colors.border.default, 
+              backgroundColor: tokens.colors.background.surface 
+            }"
+          >
              <div class="flex justify-between items-center mb-3">
               <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
                  <span class="w-2 h-2 rounded-full" :class="(pendingTasks.length + processingTasks.length) > 0 ? 'bg-cyan-500 animate-pulse' : 'bg-gray-600'"></span>
@@ -821,20 +851,20 @@
               </colgroup>
               <thead class="sticky top-0 z-20">
                 <!-- 分组表头行 -->
-                <tr class="border-b" :style="{ borderColor: tokens.colors.border.strong, backgroundColor: tokens.colors.background.surface }">
-                  <th rowspan="2" class="px-2 py-2 border-b align-middle" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
+                <tr class="border-b-2" :style="{ borderColor: !isDark ? 'rgba(0,0,0,0.05)' : tokens.colors.border.strong, backgroundColor: tokens.colors.background.surface }">
+                  <th rowspan="2" class="px-2 py-2 border-b-2 align-middle" :style="{ borderColor: !isDark ? 'rgba(0,0,0,0.05)' : tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div 
                       @click="toggleSelectAllStrategies" 
                       class="w-5 h-5 border rounded-[2px] flex items-center justify-center cursor-pointer transition-colors mx-auto" 
                       :style="isAllStrategiesSelected 
                         ? { backgroundColor: tokens.colors.accent.primary, borderColor: tokens.colors.accent.primary }
-                        : { borderColor: tokens.colors.border.strong }"
+                        : { borderColor: !isDark ? 'rgba(0,0,0,0.1)' : tokens.colors.border.strong }"
                     >
                       <svg v-if="isAllStrategiesSelected" class="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                     </div>
                   </th>
                   <!-- Ticker 独立列 -->
-                  <th rowspan="2" @click="handleSort('symbol')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b border-r cursor-pointer hover:text-white transition-colors select-none align-middle" :style="{ color: tokens.colors.text.tertiary, borderBottomColor: tokens.colors.border.default, borderRightColor: tokens.colors.border.strong, backgroundColor: tokens.colors.background.surface }">
+                  <th rowspan="2" @click="handleSort('symbol')" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b-2 border-r cursor-pointer hover:text-cyan-500 transition-colors select-none align-middle" :style="{ color: !isDark ? '#94a3b8' : tokens.colors.text.tertiary, borderBottomColor: !isDark ? 'rgba(0,0,0,0.05)' : tokens.colors.border.default, borderRightColor: !isDark ? 'rgba(0,0,0,0.05)' : tokens.colors.border.strong, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center gap-1">
                       {{ $t('opportunity.strategyTable.ticker') }}
                       <span v-if="strategySortField === 'symbol'" :style="{ color: tokens.colors.accent.primary }">{{ strategySortDirection === 'asc' ? '▲' : '▼' }}</span>
@@ -939,22 +969,23 @@
                 <template v-for="(strategy, index) in displayedStrategies" :key="strategy.id">
                 <tr 
                   :id="index === 0 ? 'first-strategy-row' : undefined"
-                  class="border-b transition-colors group cursor-pointer relative"
+                  class="border-b transition-all duration-200 group cursor-pointer relative"
                   :class="[
                     selectedStrategyId === strategy.id ? 'border-l-2' : '',
                     strategy.grade === 'N/A' ? 'opacity-50 grayscale' : '',
                     strategy.hasError || strategy.grade === 'ERROR' ? 'opacity-70' : '',
                     strategy.isExpired ? 'opacity-60' : '',
                     regeneratingStrategies[strategy.id] ? 'pointer-events-none' : '',
-                    isStrategyExpanded(strategy.id) ? 'border-b-0' : ''
+                    isStrategyExpanded(strategy.id) ? 'border-b-0' : '',
+                    !isDark ? 'hover:-translate-y-px hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:z-10' : ''
                   ]"
                   :style="{ 
-                    borderBottomColor: tokens.colors.border.subtle,
-                    backgroundColor: selectedStrategyId === strategy.id ? (isDark ? tokens.colors.accent.primary + '33' : '#f0f9ff') : 'transparent',
+                    borderBottomColor: !isDark ? 'rgba(0,0,0,0.03)' : tokens.colors.border.subtle,
+                    backgroundColor: selectedStrategyId === strategy.id ? (isDark ? tokens.colors.accent.primary + '33' : '#f0f9ff') : tokens.colors.background.surface,
                     borderLeftColor: selectedStrategyId === strategy.id ? tokens.colors.accent.primary : 'transparent'
                   }"
-                  @mouseenter="$event.currentTarget.style.backgroundColor = selectedStrategyId === strategy.id ? (isDark ? tokens.colors.accent.primary + '33' : '#f0f9ff') : (isDark ? tokens.colors.background.elevated : '#f8fafc')"
-                  @mouseleave="$event.currentTarget.style.backgroundColor = selectedStrategyId === strategy.id ? (isDark ? tokens.colors.accent.primary + '33' : '#f0f9ff') : 'transparent'"
+                  @mouseenter="$event.currentTarget.style.backgroundColor = selectedStrategyId === strategy.id ? (isDark ? tokens.colors.accent.primary + '33' : '#f0f9ff') : (isDark ? tokens.colors.background.elevated : '#ffffff')"
+                  @mouseleave="$event.currentTarget.style.backgroundColor = selectedStrategyId === strategy.id ? (isDark ? tokens.colors.accent.primary + '33' : '#f0f9ff') : tokens.colors.background.surface"
                   @click="(strategy.grade !== 'N/A' || strategy.hasError || strategy.isExpired) && !regeneratingStrategies[strategy.id] ? toggleStrategySelection(strategy.id) : null"
                 >
                   <!-- Regenerating Overlay -->
