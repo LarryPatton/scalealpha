@@ -95,9 +95,9 @@ export const colors = {
 export const colorsLight = {
   // 背景色 - 4层系统 (科技风改造)
   background: {
-    base: '#f0f4f8',      // Level 0: 极淡的冷蓝灰色，营造科技氛围 (Cool Gray)
+    base: '#f8fafc',      // Level 0: 改back to more light Slate-50, enhanced by CSS gradients
     surface: '#ffffff',   // Level 1: 纯白面板，高对比度
-    elevated: '#f8fafc',  // Level 2: 悬浮元素 (Slate-50)
+    elevated: '#ffffff',  // Level 2: 悬浮元素也用纯白，靠阴影区分
     overlay: '#ffffff',   // Level 3: 模态框
   },
   

@@ -54,32 +54,37 @@ html {
    ============================================ */
 
 /* 浅色模式下的文字颜色覆盖 - 更深更易读 */
+[data-theme="light"] body {
+  background-color: #f0f4f8 !important; /* Cool Gray Base */
+  color: #0f172a !important; /* Slate-900 */
+}
+
 [data-theme="light"] .text-white {
-  color: #0f172a !important; /* slate-900 */
+  color: #0f172a !important; /* Slate-900 */
 }
 
 [data-theme="light"] .text-gray-100 {
-  color: #1e293b !important; /* slate-800 */
+  color: #1e293b !important; /* Slate-800 */
 }
 
 [data-theme="light"] .text-gray-200 {
-  color: #334155 !important; /* slate-700 */
+  color: #334155 !important; /* Slate-700 */
 }
 
 [data-theme="light"] .text-gray-300 {
-  color: #334155 !important; /* slate-700 - Darker for better readability */
+  color: #334155 !important; /* Slate-700 - Darker for better readability */
 }
 
 [data-theme="light"] .text-gray-400 {
-  color: #475569 !important; /* slate-600 - Darker for better readability */
+  color: #475569 !important; /* Slate-600 - Darker for better readability */
 }
 
 [data-theme="light"] .text-gray-500 {
-  color: #475569 !important; /* slate-600 - Darker for better readability */
+  color: #475569 !important; /* Slate-600 - Darker for better readability */
 }
 
 [data-theme="light"] .text-gray-600 {
-  color: #475569 !important; /* slate-600 - Darker for better readability */
+  color: #475569 !important; /* Slate-600 - Darker for better readability */
 }
 
 /* 浅色模式下的背景色反转 */
@@ -90,41 +95,41 @@ html {
 [data-theme="light"] .bg-\[\#0f0f0f\],
 [data-theme="light"] .bg-\[\#0a0a0a\],
 [data-theme="light"] .bg-\[\#050505\] {
-  background-color: #f8fafc !important; /* slate-50 */
+  background-color: #f0f4f8 !important; /* Cool Gray Base */
 }
 
 [data-theme="light"] .bg-\[\#1a1a1a\],
 [data-theme="light"] .bg-\[\#1f1f1f\] {
-  background-color: #f1f5f9 !important; /* slate-100 */
+  background-color: #ffffff !important; /* Surface White */
 }
 
 [data-theme="light"] .bg-\[\#2a2a2a\],
 [data-theme="light"] .bg-\[\#222222\] {
-  background-color: #e2e8f0 !important; /* slate-200 */
+  background-color: #f8fafc !important; /* Elevated Slate-50 */
 }
 
 [data-theme="light"] .bg-\[\#333333\],
 [data-theme="light"] .bg-\[\#333\] {
-  background-color: #cbd5e1 !important; /* slate-300 */
+  background-color: #e2e8f0 !important; /* Border/Divider Slate-200 */
 }
 
 [data-theme="light"] .bg-\[\#3a3a3a\],
 [data-theme="light"] .bg-\[\#404040\] {
-  background-color: #94a3b8 !important; /* slate-400 */
+  background-color: #94a3b8 !important; /* Slate-400 */
 }
 
 /* 浅色模式下的边框色 */
 [data-theme="light"] .border-\[\#333\],
 [data-theme="light"] .border-\[\#333333\] {
-  border-color: #cbd5e1 !important; /* slate-300 */
+  border-color: #cbd5e1 !important; /* Slate-300 */
 }
 
 [data-theme="light"] .border-\[\#404040\] {
-  border-color: #94a3b8 !important; /* slate-400 */
+  border-color: #94a3b8 !important; /* Slate-400 */
 }
 
 [data-theme="light"] .border-\[\#2a2a2a\] {
-  border-color: #e2e8f0 !important; /* slate-200 */
+  border-color: #e2e8f0 !important; /* Slate-200 */
 }
 
 /* 浅色模式下的 hover 状态 */
@@ -176,7 +181,7 @@ html {
 /* 浅色模式下的 cyan 强调色保持 */
 [data-theme="light"] .text-cyan-400,
 [data-theme="light"] .text-cyan-500 {
-  color: #0284c7 !important; /* sky-600 更鲜艳 */
+  color: #0284c7 !important; /* Sky-600 更鲜艳 */
 }
 
 [data-theme="light"] .border-cyan-500\/30,
@@ -186,16 +191,16 @@ html {
 
 /* 浅色模式下的成功/错误/警告色调整 */
 [data-theme="light"] .text-emerald-400 {
-  color: #059669 !important; /* emerald-600 */
+  color: #059669 !important; /* Emerald-600 */
 }
 
 [data-theme="light"] .text-rose-400,
 [data-theme="light"] .text-red-400 {
-  color: #e11d48 !important; /* rose-600 */
+  color: #e11d48 !important; /* Rose-600 */
 }
 
 [data-theme="light"] .text-amber-400 {
-  color: #d97706 !important; /* amber-600 */
+  color: #d97706 !important; /* Amber-600 */
 }
 
 /* ============================================
@@ -204,7 +209,7 @@ html {
 [data-theme="light"] .hover\:bg-\[\#3a3a3a\]:hover,
 [data-theme="light"] .hover\:bg-\[\#333333\]:hover,
 [data-theme="light"] .hover\:bg-\[\#2a2a2a\]:hover {
-  background-color: #e2e8f0 !important; /* slate-200 */
+  background-color: #e2e8f0 !important; /* Slate-200 */
 }
 
 [data-theme="light"] .hover\:bg-white\/10:hover {
@@ -233,30 +238,30 @@ html {
 [data-theme="light"] select,
 [data-theme="light"] textarea {
   background-color: #ffffff !important;
-  border-color: #cbd5e1 !important; /* slate-300 */
-  color: #0f172a !important; /* slate-900 */
+  border-color: #cbd5e1 !important; /* Slate-300 */
+  color: #0f172a !important; /* Slate-900 */
 }
 
 [data-theme="light"] input:focus,
 [data-theme="light"] select:focus,
 [data-theme="light"] textarea:focus {
-  border-color: #0284c7 !important; /* sky-600 */
+  border-color: #0284c7 !important; /* Sky-600 */
   box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2) !important;
 }
 
 [data-theme="light"] input::placeholder {
-  color: #94a3b8 !important; /* slate-400 */
+  color: #94a3b8 !important; /* Slate-400 */
 }
 
 [data-theme="light"] .placeholder-gray-500::placeholder {
-  color: #94a3b8 !important; /* slate-400 */
+  color: #94a3b8 !important; /* Slate-400 */
 }
 
 /* ============================================
    浅色模式下的卡片选中状态
    ============================================ */
 [data-theme="light"] .border-cyan-500 {
-  border-color: #0284c7 !important; /* sky-600 */
+  border-color: #0284c7 !important; /* Sky-600 */
 }
 
 [data-theme="light"] .border-blue-500 {
@@ -268,7 +273,7 @@ html {
 }
 
 [data-theme="light"] .border-orange-500 {
-  border-color: #ea580c !important; /* orange-600 */
+  border-color: #ea580c !important; /* Orange-600 */
 }
 
 /* 浅色模式下选中卡片的背景色 - 增加光感和渐变 */
@@ -433,8 +438,9 @@ html {
    浅色模式下的表格
    ============================================ */
 [data-theme="light"] table th {
-  background-color: #f1f5f9 !important; /* slate-100 */
+  background-color: #ffffff !important; /* Surface White */
   color: #475569 !important; /* slate-600 */
+  border-bottom-color: #e2e8f0 !important;
 }
 
 [data-theme="light"] table td {
@@ -442,7 +448,13 @@ html {
 }
 
 [data-theme="light"] table tr:hover td {
-  background-color: #f8fafc !important; /* slate-50 */
+  background-color: #f0f9ff !important; /* Very light blue hover */
+}
+
+/* 强制浅色模式下表格内的状态标签背景透明 */
+[data-theme="light"] table td span.rounded.border {
+  background-color: transparent !important;
+  background-image: none !important;
 }
 
 /* ============================================

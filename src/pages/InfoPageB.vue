@@ -1,5 +1,11 @@
 <template>
-  <div class="min-h-screen flex flex-col pb-24" :style="{ backgroundColor: tokens.colors.background.base }">
+  <div 
+    class="min-h-screen flex flex-col pb-24 transition-colors duration-300" 
+    :style="{ 
+      backgroundColor: tokens.colors.background.base,
+      backgroundImage: !isDark ? 'radial-gradient(circle at 50% 0%, #ffffff 0%, #f1f5f9 100%)' : 'none'
+    }"
+  >
     <!-- 1. Global Navbar -->
     <Navbar />
 
@@ -32,7 +38,14 @@
       </div>
 
       <!-- Universal Filter Bar -->
-      <div id="info-filter-bar" class="sticky top-16 z-40 backdrop-blur border-b px-4 lg:px-8 py-3 mb-6 flex flex-wrap items-center justify-between gap-4 transition-all duration-300" :style="{ backgroundColor: tokens.colors.background.base + 'f2', borderColor: tokens.colors.border.default }">
+      <div 
+        id="info-filter-bar" 
+        class="sticky top-16 z-40 backdrop-blur-md border-b px-4 lg:px-8 py-3 mb-6 flex flex-wrap items-center justify-between gap-4 transition-all duration-300" 
+        :style="{ 
+          backgroundColor: isDark ? tokens.colors.background.base + 'f2' : 'rgba(255, 255, 255, 0.7)', 
+          borderColor: isDark ? tokens.colors.border.default : 'rgba(0,0,0,0.03)' 
+        }"
+      >
         <!-- Left: Filter & Switcher -->
         <div class="flex items-center gap-3">
           <!-- Content Switcher -->
@@ -194,8 +207,13 @@
               :key="opp.id + '-' + index" 
               :id="index === 0 ? 'first-opportunity-card' : undefined"
               @click="openStrategyModal(opp)"
-              class="p-5 text-center border transition-all duration-200 cursor-pointer group relative overflow-hidden"
-              :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle, color: tokens.colors.text.primary }"
+              class="p-5 text-center border transition-all duration-300 cursor-pointer group relative overflow-hidden hover:-translate-y-1"
+              :class="!isDark ? 'shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_24px_rgba(0,0,0,0.08)]' : ''"
+              :style="{ 
+                backgroundColor: tokens.colors.background.surface, 
+                borderColor: !isDark ? 'rgba(0,0,0,0.03)' : tokens.colors.border.subtle, 
+                color: tokens.colors.text.primary 
+              }"
             >
               <!-- Subtle top accent on hover -->
               <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/0 to-transparent group-hover:via-cyan-500/50 transition-all duration-300"></div>
@@ -236,11 +254,27 @@
 
           <!-- List View (Minimalist) -->
           <template v-else>
+            <!-- Header Row -->
+            <div class="flex items-center gap-4 px-4 py-2 mb-2 text-[10px] font-bold uppercase tracking-wider" :style="{ color: tokens.colors.text.muted }">
+              <div class="w-0.5"></div> <!-- Spacer for status bar -->
+              <div class="w-16 flex-shrink-0">Symbol</div>
+              <div class="flex-1 min-w-0">Strategy</div>
+              
+              <!-- Right Side Headers -->
+              <div class="flex items-center gap-8 pr-12">
+                <div class="w-24 text-center">Rating / Action</div>
+                <div class="w-16 text-right">Ratio</div>
+                <div class="w-20 text-right">Duration</div>
+                <div class="w-10 text-center">Risk</div>
+              </div>
+            </div>
+
             <div 
               v-for="(opp, index) in filteredOpportunities" 
               :key="opp.id + '-' + index" 
               @click="openStrategyModal(opp)"
-              class="border p-4 flex items-center gap-4 transition-colors cursor-pointer group"
+              class="border p-4 flex items-center gap-4 transition-colors cursor-pointer group hover:-translate-y-0.5"
+              :class="!isDark ? 'shadow-sm hover:shadow-md' : ''"
               :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle }"
             >
               <!-- Status Bar -->
@@ -251,39 +285,39 @@
                 <div class="font-bold text-sm" :style="{ color: tokens.colors.text.primary }">{{ opp.symbol }}</div>
               </div>
 
-              <!-- Main Info -->
-              <div class="flex-1 min-w-0 grid grid-cols-12 gap-4 items-center">
-                <div class="col-span-4">
-                  <div class="font-medium truncate text-sm group-hover:text-cyan-400 transition-colors" :style="{ color: tokens.colors.text.secondary }">{{ opp.title }}</div>
-                </div>
-                
-                <div class="col-span-2 text-center">
-                  <div class="text-[10px] uppercase" :style="{ color: tokens.colors.text.muted }">Rating</div>
-                  <div class="font-bold" :style="{ color: getRatingColor(opp.rating) }">{{ opp.rating || 'A' }}</div>
-                </div>
-                
-                <div class="col-span-2 text-center">
-                  <div class="text-[10px] uppercase" :style="{ color: tokens.colors.text.muted }">Action</div>
-                  <div class="font-bold text-sm" :style="{ color: getDirectionColor(opp.direction) }">{{ opp.action || '观望买入' }}</div>
+              <!-- Strategy Title -->
+              <div class="flex-1 min-w-0">
+                <div class="font-medium truncate text-sm group-hover:text-cyan-400 transition-colors" :style="{ color: tokens.colors.text.secondary }">{{ opp.title }}</div>
+              </div>
+
+              <!-- Right Side Info Group -->
+              <div class="flex items-center gap-8">
+                <!-- Signal Group (Rating + Action) -->
+                <div class="w-24 flex flex-col items-center justify-center leading-tight">
+                  <div class="font-bold text-lg" :style="{ color: getRatingColor(opp.rating) }">{{ opp.rating || 'A' }}</div>
+                  <div class="text-[10px] font-bold" :style="{ color: getDirectionColor(opp.direction) }">{{ opp.action || '观望买入' }}</div>
                 </div>
 
-                <div class="col-span-1 text-center">
-                  <div class="text-[10px] uppercase" :style="{ color: tokens.colors.text.muted }">Ratio</div>
-                  <div class="font-bold text-xs" :style="{ color: tokens.colors.text.secondary }">{{ opp.ratio || '2.5:1' }}</div>
+                <!-- Ratio -->
+                <div class="w-16 text-right">
+                  <div class="font-bold text-sm font-mono" :style="{ color: tokens.colors.text.secondary }">{{ opp.ratio || '2.5:1' }}</div>
                 </div>
 
-                <div class="col-span-3 flex justify-end items-center gap-4">
-                   <div class="text-center">
-                      <div class="text-[10px] uppercase tracking-wide" :style="{ color: tokens.colors.text.disabled }">Duration</div>
-                      <div class="font-bold text-sm" :style="{ color: tokens.colors.text.secondary }">{{ opp.timeframe || '1-10 DAYS' }}</div>
-                   </div>
-                   <div class="text-center">
-                      <div class="text-[10px] uppercase tracking-wide" :style="{ color: tokens.colors.text.disabled }">Risk</div>
-                      <div class="font-bold text-sm" :style="{ color: getRiskTagColor(opp.riskTag) }">{{ opp.riskTag || '中' }}</div>
-                   </div>
-                   <div class="w-7 h-7 rounded-full flex items-center justify-center group-hover:bg-cyan-500/10 group-hover:text-cyan-400 transition-colors" :style="{ backgroundColor: tokens.colors.background.elevated, color: tokens.colors.text.disabled }">
-                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                   </div>
+                <!-- Duration (Simplified) -->
+                <div class="w-20 text-right">
+                  <div class="font-bold text-sm font-mono" :style="{ color: tokens.colors.text.secondary }">
+                    {{ (opp.timeframe || '1-10 D').replace('weeks', 'W').replace('days', 'D').replace('week', 'W').replace('day', 'D') }}
+                  </div>
+                </div>
+
+                <!-- Risk -->
+                <div class="w-10 flex justify-center">
+                  <div class="font-bold text-sm" :style="{ color: getRiskTagColor(opp.riskTag) }">{{ opp.riskTag || '中' }}</div>
+                </div>
+
+                <!-- Arrow -->
+                <div class="w-7 h-7 rounded-full flex items-center justify-center group-hover:bg-cyan-500/10 group-hover:text-cyan-400 transition-colors" :style="{ backgroundColor: tokens.colors.background.elevated, color: tokens.colors.text.disabled }">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </div>
               </div>
             </div>
@@ -478,8 +512,11 @@
             </div>
             
             <!-- Card -->
-            <div class="flex-1 border transition-all duration-200 relative overflow-hidden group-hover:border-cyan-500 group-hover:bg-slate-50 dark:group-hover:bg-white/5" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle }">
-              <div class="flex h-full">
+            <div class="flex-1 border transition-all duration-300 relative overflow-hidden group-hover:border-cyan-500 group-hover:shadow-[0_0_15px_rgba(6,182,212,0.3)]" :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.subtle }">
+              <!-- Holographic Scan Line -->
+              <div class="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/10 to-transparent -translate-y-full group-hover:translate-y-full transition-none group-hover:transition-transform group-hover:duration-1000 group-hover:ease-in-out pointer-events-none z-20"></div>
+              
+              <div class="flex h-full relative z-10">
                 <!-- Image (Left) -->
                 <div class="w-56 relative overflow-hidden border-r shrink-0" :style="{ borderColor: tokens.colors.border.subtle }">
                   <img :src="event.image" class="w-full h-full object-cover opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
@@ -553,15 +590,30 @@
 
     <!-- 3. Floating Tabs (Bottom Center) -->
     <div id="floating-tabs" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-40">
-      <div class="backdrop-blur-xl border rounded-full p-1.5 shadow-2xl flex items-center gap-1" :style="{ backgroundColor: isDark ? tokens.colors.background.elevated + 'E6' : 'rgba(255,255,255,0.8)', borderColor: tokens.colors.border.strong }">
+      <div 
+        class="backdrop-blur-xl border rounded-full p-1.5 flex items-center gap-1 transition-all duration-300" 
+        :class="isDark ? 'shadow-2xl' : 'shadow-[0_8px_30px_rgba(0,0,0,0.12)]'"
+        :style="{ 
+          backgroundColor: isDark ? tokens.colors.background.elevated + 'E6' : 'rgba(255,255,255,0.85)', 
+          borderColor: isDark ? tokens.colors.border.strong : 'rgba(0,0,0,0.08)' 
+        }"
+      >
         <button 
           v-for="tab in tabs.filter(t => t.id !== 'themesB')" 
           :key="tab.id"
           @click="switchTab(tab.id)"
-          class="px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2"
-          :class="activeTab === tab.id ? 'shadow-lg scale-105' : ''"
-          :style="activeTab === tab.id ? { backgroundColor: isDark ? '#ffffff' : '#ffffff', color: isDark ? '#000000' : tokens.colors.accent.primary, boxShadow: isDark ? 'none' : '0 4px 12px rgba(0,0,0,0.1)' } : { color: tokens.colors.text.muted }"
-          @mouseenter="activeTab !== tab.id && ($event.target.style.backgroundColor = isDark ? tokens.colors.border.strong : 'rgba(0,0,0,0.05)')"
+          class="px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2 relative overflow-hidden"
+          :class="activeTab === tab.id ? 'scale-105' : 'hover:scale-105'"
+          :style="activeTab === tab.id 
+            ? { 
+                backgroundColor: isDark ? '#ffffff' : tokens.colors.text.primary, 
+                color: isDark ? '#000000' : '#ffffff', 
+                boxShadow: isDark ? '0 0 20px rgba(255,255,255,0.2)' : '0 4px 15px rgba(15, 23, 42, 0.3)' 
+              } 
+            : { 
+                color: isDark ? tokens.colors.text.muted : tokens.colors.text.secondary 
+              }"
+          @mouseenter="activeTab !== tab.id && ($event.target.style.backgroundColor = isDark ? tokens.colors.border.strong : 'rgba(0,0,0,0.04)')"
           @mouseleave="activeTab !== tab.id && ($event.target.style.backgroundColor = 'transparent')"
         >
           <span class="text-sm">{{ tab.icon }}</span>

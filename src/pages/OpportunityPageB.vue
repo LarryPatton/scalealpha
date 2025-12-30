@@ -841,14 +841,14 @@
                     </div>
                   </th>
                   <!-- 策略分组 -->
-                  <th colspan="7" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b border-r text-center" :style="{ color: tokens.colors.accent.primary, borderBottomColor: tokens.colors.border.strong, borderRightColor: tokens.colors.border.strong, background: `linear-gradient(to right, ${tokens.colors.accent.primary}26, ${tokens.colors.accent.primary}1A), ${tokens.colors.background.surface}` }">
+                  <th colspan="7" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b border-r text-center" :style="{ color: tokens.colors.text.secondary, borderBottomColor: tokens.colors.border.default, borderRightColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-2">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                       {{ $t('opportunity.strategyTable.strategy') }}
                     </div>
                   </th>
                   <!-- 计划分组 -->
-                  <th :colspan="isExecutionPlanExpanded ? 5 : 1" @click="toggleExecutionPlanExpand" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b border-r text-center cursor-pointer select-none transition-all hover:brightness-110" :style="{ color: tokens.colors.accent.warning, borderBottomColor: tokens.colors.border.strong, borderRightColor: tokens.colors.border.strong, background: `linear-gradient(to right, ${tokens.colors.accent.warning}26, ${tokens.colors.accent.warning}1A), ${tokens.colors.background.surface}` }">
+                  <th :colspan="isExecutionPlanExpanded ? 5 : 1" @click="toggleExecutionPlanExpand" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider border-b border-r text-center cursor-pointer select-none transition-all hover:bg-gray-50" :style="{ color: tokens.colors.text.secondary, borderBottomColor: tokens.colors.border.default, borderRightColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
                     <div class="flex items-center justify-center gap-2">
                       <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                       {{ $t('opportunity.strategyTable.executionPlan') }}
@@ -950,11 +950,11 @@
                   ]"
                   :style="{ 
                     borderBottomColor: tokens.colors.border.subtle,
-                    backgroundColor: selectedStrategyId === strategy.id ? tokens.colors.accent.primary + '33' : 'transparent',
+                    backgroundColor: selectedStrategyId === strategy.id ? (isDark ? tokens.colors.accent.primary + '33' : '#f0f9ff') : 'transparent',
                     borderLeftColor: selectedStrategyId === strategy.id ? tokens.colors.accent.primary : 'transparent'
                   }"
-                  @mouseenter="$event.currentTarget.style.backgroundColor = selectedStrategyId === strategy.id ? tokens.colors.accent.primary + '33' : tokens.colors.background.elevated"
-                  @mouseleave="$event.currentTarget.style.backgroundColor = selectedStrategyId === strategy.id ? tokens.colors.accent.primary + '33' : 'transparent'"
+                  @mouseenter="$event.currentTarget.style.backgroundColor = selectedStrategyId === strategy.id ? (isDark ? tokens.colors.accent.primary + '33' : '#f0f9ff') : (isDark ? tokens.colors.background.elevated : '#f8fafc')"
+                  @mouseleave="$event.currentTarget.style.backgroundColor = selectedStrategyId === strategy.id ? (isDark ? tokens.colors.accent.primary + '33' : '#f0f9ff') : 'transparent'"
                   @click="(strategy.grade !== 'N/A' || strategy.hasError || strategy.isExpired) && !regeneratingStrategies[strategy.id] ? toggleStrategySelection(strategy.id) : null"
                 >
                   <!-- Regenerating Overlay -->
@@ -1017,9 +1017,9 @@
                       v-if="strategy.source"
                       class="px-2 py-0.5 rounded text-[10px] font-bold border"
                       :class="{
-                        'text-cyan-400 border-cyan-500/30 bg-cyan-900/10': strategy.source === 'AI',
-                        'text-orange-400 border-orange-500/30 bg-orange-900/10': strategy.source === 'Manual',
-                        'text-violet-400 border-violet-500/30 bg-violet-900/10': strategy.source === 'Import'
+                        'text-cyan-600 bg-transparent border-cyan-200 dark:text-cyan-400 dark:bg-cyan-900/20 dark:border-cyan-500/30': strategy.source === 'AI',
+                        'text-orange-600 bg-transparent border-orange-200 dark:text-orange-400 dark:bg-orange-900/20 dark:border-orange-500/30': strategy.source === 'Manual',
+                        'text-violet-600 bg-transparent border-violet-200 dark:text-violet-400 dark:bg-violet-900/20 dark:border-violet-500/30': strategy.source === 'Import'
                       }"
                     >
                       {{ strategy.source === 'Official' ? $t('opportunity.strategyTable.official') : strategy.source === 'My Strategy' ? $t('opportunity.strategyTable.myStrategy') : strategy.source }}
@@ -1031,9 +1031,9 @@
                     <span 
                       v-if="strategy.direction === 'LONG' || strategy.direction === 'SHORT'"
                       class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border"
-                      :style="strategy.direction === 'LONG' 
-                        ? { color: tokens.colors.semantic.success, borderColor: tokens.colors.semantic.success + '4D', backgroundColor: tokens.colors.semantic.success + '1A' }
-                        : { color: tokens.colors.semantic.error, borderColor: tokens.colors.semantic.error + '4D', backgroundColor: tokens.colors.semantic.error + '1A' }"
+                      :class="strategy.direction === 'LONG' 
+                        ? 'text-emerald-700 bg-transparent border-emerald-200 dark:text-emerald-400 dark:bg-emerald-900/20 dark:border-emerald-500/30'
+                        : 'text-rose-700 bg-transparent border-rose-200 dark:text-rose-400 dark:bg-rose-900/20 dark:border-rose-500/30'"
                     >
                       {{ strategy.direction === 'LONG' ? $t('opportunity.strategyTable.long') : $t('opportunity.strategyTable.short') }}
                     </span>
@@ -1069,11 +1069,11 @@
                     <div 
                       v-else-if="strategy.grade && strategy.grade !== 'N/A'"
                       class="w-6 h-6 flex items-center justify-center rounded font-bold text-xs border mx-auto"
-                      :style="strategy.grade === 'A' 
-                        ? { borderColor: tokens.colors.semantic.success + '4D', backgroundColor: tokens.colors.semantic.success + '1A', color: tokens.colors.semantic.success }
+                      :class="strategy.grade === 'A' 
+                        ? 'text-emerald-700 bg-transparent border-emerald-200 dark:text-emerald-400 dark:bg-emerald-900/20 dark:border-emerald-500/30'
                         : strategy.grade === 'B' 
-                        ? { borderColor: tokens.colors.accent.primary + '4D', backgroundColor: tokens.colors.accent.primary + '1A', color: tokens.colors.accent.primary }
-                        : { borderColor: tokens.colors.semantic.warning + '4D', backgroundColor: tokens.colors.semantic.warning + '1A', color: tokens.colors.semantic.warning }"
+                        ? 'text-blue-700 bg-transparent border-blue-200 dark:text-blue-400 dark:bg-blue-900/20 dark:border-blue-500/30'
+                        : 'text-amber-700 bg-transparent border-amber-200 dark:text-amber-400 dark:bg-amber-900/20 dark:border-amber-500/30'"
                     >
                       {{ strategy.grade }}
                     </div>
@@ -1084,11 +1084,11 @@
                     <span 
                       v-if="strategy.horizon && strategy.horizon !== 'N/A'"
                       class="px-2 py-0.5 rounded text-[10px] font-bold border"
-                      :style="strategy.horizon.includes('Long') 
-                        ? { color: tokens.colors.accent.secondary, borderColor: tokens.colors.accent.secondary + '4D', backgroundColor: tokens.colors.accent.secondary + '1A' }
+                      :class="strategy.horizon.includes('Long') 
+                        ? 'text-blue-700 bg-transparent border-blue-200 dark:text-blue-400 dark:bg-blue-900/20 dark:border-blue-500/30'
                         : strategy.horizon.includes('Medium') 
-                        ? { color: tokens.colors.accent.primary, borderColor: tokens.colors.accent.primary + '4D', backgroundColor: tokens.colors.accent.primary + '1A' }
-                        : { color: tokens.colors.semantic.warning, borderColor: tokens.colors.semantic.warning + '4D', backgroundColor: tokens.colors.semantic.warning + '1A' }"
+                        ? 'text-cyan-700 bg-transparent border-cyan-200 dark:text-cyan-400 dark:bg-cyan-900/20 dark:border-cyan-500/30'
+                        : 'text-amber-700 bg-transparent border-amber-200 dark:text-amber-400 dark:bg-amber-900/20 dark:border-amber-500/30'"
                       :title="strategy.horizon"
                     >
                       {{ strategy.horizon.includes('Long') ? $t('opportunity.strategyTable.horizonLong') : strategy.horizon.includes('Medium') ? $t('opportunity.strategyTable.horizonMedium') : $t('opportunity.strategyTable.horizonShort') }}
@@ -1105,15 +1105,14 @@
                     <template v-if="strategy.source === 'Official'">
                       <span 
                         v-if="strategy.officialUpdating"
-                        class="px-2.5 py-1 bg-cyan-500/30 border border-cyan-400/60 text-cyan-300 rounded text-[10px] font-bold uppercase tracking-wider mx-auto"
+                        class="px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider mx-auto border text-cyan-700 bg-transparent border-cyan-200 dark:text-cyan-300 dark:bg-cyan-500/30 dark:border-cyan-400/60"
                         title="Official is updating"
                       >
                         {{ $t('opportunity.strategyTable.updating') }}
                       </span>
                       <span 
                         v-else-if="strategy.officialUpdated"
-                        class="px-2.5 py-1 border rounded text-[10px] font-bold uppercase tracking-wider mx-auto"
-                        :style="{ backgroundColor: tokens.colors.semantic.success + '4D', borderColor: tokens.colors.semantic.success + '99', color: tokens.colors.semantic.success }"
+                        class="px-2.5 py-1 border rounded text-[10px] font-bold uppercase tracking-wider mx-auto text-emerald-700 bg-transparent border-emerald-200 dark:text-emerald-400 dark:bg-emerald-900/20 dark:border-emerald-500/30"
                         title="Official has updated"
                       >
                         {{ $t('opportunity.strategyTable.updated') }}
