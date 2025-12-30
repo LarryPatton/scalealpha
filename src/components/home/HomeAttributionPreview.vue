@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="px-4 py-3 border-b border-[#222] flex justify-between items-center bg-[#111]">
       <div class="flex items-center gap-2">
-        <div class="w-3 h-3 rounded-full bg-amber-500"></div>
+        <div class="w-3 h-3 rounded-full bg-amber-500 animate-pulse"></div>
         <span class="text-sm font-bold text-white">Event Impact Analysis</span>
       </div>
       <div class="flex gap-2">
@@ -34,18 +34,19 @@
         </defs>
         
         <!-- Line Path -->
-        <path d="M0 150 C 50 140, 80 160, 120 130 S 180 80, 220 90 S 280 110, 320 60 S 380 40, 400 20" 
+        <path class="chart-area" d="M0 150 C 50 140, 80 160, 120 130 S 180 80, 220 90 S 280 110, 320 60 S 380 40, 400 20 L 400 200 L 0 200 Z" 
               fill="url(#chartGrad)" stroke="none" />
-        <path d="M0 150 C 50 140, 80 160, 120 130 S 180 80, 220 90 S 280 110, 320 60 S 380 40, 400 20" 
+        <path class="chart-line" d="M0 150 C 50 140, 80 160, 120 130 S 180 80, 220 90 S 280 110, 320 60 S 380 40, 400 20" 
               fill="none" stroke="#f59e0b" stroke-width="2" />
               
         <!-- Event Markers -->
         <!-- Event 1: Earnings Beat -->
-        <g transform="translate(120, 130)">
-          <circle r="4" fill="#10b981" stroke="#000" stroke-width="2" />
-          <line x1="0" y1="0" x2="0" y2="-40" stroke="#333" stroke-dasharray="2" />
-          <foreignObject x="-60" y="-80" width="120" height="40">
-            <div xmlns="http://www.w3.org/1999/xhtml" class="bg-[#111] border border-emerald-500/50 rounded p-1 text-center shadow-lg transform hover:scale-110 transition-transform cursor-pointer">
+        <g transform="translate(120, 130)" class="group/marker cursor-pointer">
+          <circle r="4" fill="#10b981" stroke="#000" stroke-width="2" class="group-hover/marker:scale-150 transition-transform duration-300" />
+          <circle r="8" fill="#10b981" opacity="0.3" class="animate-ping" />
+          <line x1="0" y1="0" x2="0" y2="-40" stroke="#333" stroke-dasharray="2" class="opacity-0 group-hover/marker:opacity-100 transition-opacity duration-300" />
+          <foreignObject x="-60" y="-80" width="120" height="40" class="opacity-0 group-hover/marker:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover/marker:translate-y-0">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="bg-[#111] border border-emerald-500/50 rounded p-1 text-center shadow-lg">
               <div class="text-[8px] text-emerald-400 font-bold">Earnings Beat</div>
               <div class="text-[6px] text-gray-400">+12% Surprise</div>
             </div>
@@ -53,11 +54,12 @@
         </g>
         
         <!-- Event 2: Product Launch -->
-        <g transform="translate(220, 90)">
-          <circle r="4" fill="#3b82f6" stroke="#000" stroke-width="2" />
-          <line x1="0" y1="0" x2="0" y2="40" stroke="#333" stroke-dasharray="2" />
-          <foreignObject x="-60" y="45" width="120" height="40">
-            <div xmlns="http://www.w3.org/1999/xhtml" class="bg-[#111] border border-blue-500/50 rounded p-1 text-center shadow-lg transform hover:scale-110 transition-transform cursor-pointer">
+        <g transform="translate(220, 90)" class="group/marker cursor-pointer">
+          <circle r="4" fill="#3b82f6" stroke="#000" stroke-width="2" class="group-hover/marker:scale-150 transition-transform duration-300" />
+          <circle r="8" fill="#3b82f6" opacity="0.3" class="animate-ping delay-75" />
+          <line x1="0" y1="0" x2="0" y2="40" stroke="#333" stroke-dasharray="2" class="opacity-0 group-hover/marker:opacity-100 transition-opacity duration-300" />
+          <foreignObject x="-60" y="45" width="120" height="40" class="opacity-0 group-hover/marker:opacity-100 transition-opacity duration-300 transform -translate-y-2 group-hover/marker:translate-y-0">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="bg-[#111] border border-blue-500/50 rounded p-1 text-center shadow-lg">
               <div class="text-[8px] text-blue-400 font-bold">Product Launch</div>
               <div class="text-[6px] text-gray-400">New AI Chip</div>
             </div>
@@ -65,11 +67,12 @@
         </g>
         
         <!-- Event 3: Fed Rate Decision -->
-        <g transform="translate(320, 60)">
-          <circle r="4" fill="#ef4444" stroke="#000" stroke-width="2" />
-          <line x1="0" y1="0" x2="0" y2="-30" stroke="#333" stroke-dasharray="2" />
-          <foreignObject x="-60" y="-70" width="120" height="40">
-            <div xmlns="http://www.w3.org/1999/xhtml" class="bg-[#111] border border-red-500/50 rounded p-1 text-center shadow-lg transform hover:scale-110 transition-transform cursor-pointer">
+        <g transform="translate(320, 60)" class="group/marker cursor-pointer">
+          <circle r="4" fill="#ef4444" stroke="#000" stroke-width="2" class="group-hover/marker:scale-150 transition-transform duration-300" />
+          <circle r="8" fill="#ef4444" opacity="0.3" class="animate-ping delay-150" />
+          <line x1="0" y1="0" x2="0" y2="-30" stroke="#333" stroke-dasharray="2" class="opacity-0 group-hover/marker:opacity-100 transition-opacity duration-300" />
+          <foreignObject x="-60" y="-70" width="120" height="40" class="opacity-0 group-hover/marker:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover/marker:translate-y-0">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="bg-[#111] border border-red-500/50 rounded p-1 text-center shadow-lg">
               <div class="text-[8px] text-red-400 font-bold">Fed Rate Hike</div>
               <div class="text-[6px] text-gray-400">Market Volatility</div>
             </div>
@@ -89,6 +92,31 @@
     </div>
   </div>
 </template>
+
+<style scoped>
+.chart-line {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: drawLine 3s ease-out forwards;
+}
+
+.chart-area {
+  opacity: 0;
+  animation: fadeIn 1s ease-out 2s forwards;
+}
+
+@keyframes drawLine {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+</style>
 
 <script setup>
 // Static preview component

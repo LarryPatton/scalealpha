@@ -15,19 +15,19 @@
       <div class="mb-4">
         <div class="text-[10px] text-gray-500 uppercase mb-2">Analysis Frameworks</div>
         <div class="grid grid-cols-4 gap-2">
-          <div class="bg-cyan-900/20 border border-cyan-500/50 rounded p-2 flex flex-col items-center justify-center gap-1">
+          <div class="bg-cyan-900/20 border border-cyan-500/50 rounded p-2 flex flex-col items-center justify-center gap-1 cursor-pointer hover:bg-cyan-900/40 transition-colors">
             <span class="text-lg">📊</span>
             <span class="text-[10px] text-cyan-400 font-bold">Technical</span>
           </div>
-          <div class="bg-[#111] border border-[#333] rounded p-2 flex flex-col items-center justify-center gap-1 opacity-50">
+          <div class="bg-[#111] border border-[#333] rounded p-2 flex flex-col items-center justify-center gap-1 opacity-50 cursor-pointer hover:opacity-100 hover:border-gray-500 transition-all">
             <span class="text-lg">📈</span>
             <span class="text-[10px] text-gray-400">Fundamental</span>
           </div>
-          <div class="bg-cyan-900/20 border border-cyan-500/50 rounded p-2 flex flex-col items-center justify-center gap-1">
+          <div class="bg-cyan-900/20 border border-cyan-500/50 rounded p-2 flex flex-col items-center justify-center gap-1 cursor-pointer hover:bg-cyan-900/40 transition-colors">
             <span class="text-lg">🤖</span>
             <span class="text-[10px] text-cyan-400 font-bold">Quant</span>
           </div>
-          <div class="bg-[#111] border border-[#333] rounded p-2 flex flex-col items-center justify-center gap-1 opacity-50">
+          <div class="bg-[#111] border border-[#333] rounded p-2 flex flex-col items-center justify-center gap-1 opacity-50 cursor-pointer hover:opacity-100 hover:border-gray-500 transition-all">
             <span class="text-lg">📰</span>
             <span class="text-[10px] text-gray-400">Sentiment</span>
           </div>
@@ -39,23 +39,23 @@
         <div>
           <div class="text-[10px] text-gray-500 uppercase mb-2">Time Horizon</div>
           <div class="flex gap-1">
-            <div class="flex-1 bg-cyan-900/20 border border-cyan-500/50 rounded p-1.5 text-center text-[10px] text-cyan-400 font-bold">Short</div>
-            <div class="flex-1 bg-[#111] border border-[#333] rounded p-1.5 text-center text-[10px] text-gray-500">Med</div>
-            <div class="flex-1 bg-[#111] border border-[#333] rounded p-1.5 text-center text-[10px] text-gray-500">Long</div>
+            <div class="flex-1 bg-cyan-900/20 border border-cyan-500/50 rounded p-1.5 text-center text-[10px] text-cyan-400 font-bold cursor-pointer hover:bg-cyan-900/40 transition-colors">Short</div>
+            <div class="flex-1 bg-[#111] border border-[#333] rounded p-1.5 text-center text-[10px] text-gray-500 cursor-pointer hover:bg-[#222] transition-colors">Med</div>
+            <div class="flex-1 bg-[#111] border border-[#333] rounded p-1.5 text-center text-[10px] text-gray-500 cursor-pointer hover:bg-[#222] transition-colors">Long</div>
           </div>
         </div>
         <div>
           <div class="text-[10px] text-gray-500 uppercase mb-2">Risk Profile</div>
           <div class="flex gap-1">
-            <div class="flex-1 bg-[#111] border border-[#333] rounded p-1.5 text-center text-[10px] text-gray-500">Low</div>
-            <div class="flex-1 bg-amber-900/20 border border-amber-500/50 rounded p-1.5 text-center text-[10px] text-amber-400 font-bold">Med</div>
-            <div class="flex-1 bg-[#111] border border-[#333] rounded p-1.5 text-center text-[10px] text-gray-500">High</div>
+            <div class="flex-1 bg-[#111] border border-[#333] rounded p-1.5 text-center text-[10px] text-gray-500 cursor-pointer hover:bg-[#222] transition-colors">Low</div>
+            <div class="flex-1 bg-amber-900/20 border border-amber-500/50 rounded p-1.5 text-center text-[10px] text-amber-400 font-bold cursor-pointer hover:bg-amber-900/40 transition-colors">Med</div>
+            <div class="flex-1 bg-[#111] border border-[#333] rounded p-1.5 text-center text-[10px] text-gray-500 cursor-pointer hover:bg-[#222] transition-colors">High</div>
           </div>
         </div>
       </div>
       
       <!-- Generate Button -->
-      <div class="w-full py-3 bg-cyan-600 rounded text-center text-xs font-bold text-white uppercase tracking-widest shadow-[0_0_15px_rgba(8,145,178,0.5)] cursor-pointer hover:bg-cyan-500 transition-colors">
+      <div class="w-full py-3 bg-cyan-600 rounded text-center text-xs font-bold text-white uppercase tracking-widest shadow-[0_0_15px_rgba(8,145,178,0.5)] cursor-pointer hover:bg-cyan-500 hover:shadow-[0_0_25px_rgba(8,145,178,0.7)] hover:scale-[1.02] transition-all active:scale-95">
         Generate Strategy
       </div>
     </div>
