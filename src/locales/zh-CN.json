@@ -1,13 +1,18 @@
 {
   "nav": {
-    "info": "Info",
+    "info": "首页",
     "opportunity": "机会发现",
     "watchlist": "我的关注",
     "login": "登录 / 注册",
     "logout": "登出",
     "myInfo": "我的信息",
     "viewProgress": "查看进度",
-    "price": "Price"
+    "price": "价格",
+    "help": "帮助",
+    "account": "账户信息",
+    "guide": "页面引导",
+    "feedback": "反馈问题",
+    "contact": "联系我们"
   },
   "search": {
     "placeholder": "搜索股票 / 策略 / 主题..."
@@ -317,5 +322,27 @@
     "error": "错误",
     "warning": "警告",
     "info": "提示"
+  },
+  "contact": {
+    "title": "联系我们",
+    "emailTitle": "邮箱联系我们",
+    "wechatTitle": "扫描二维码添加微信",
+    "wechatHint": "使用微信扫描添加我们",
+    "copied": "已复制"
+  },
+  "feedback": {
+    "title": "问题反馈",
+    "problemTitle": "问题名称",
+    "titlePlaceholder": "请简要描述您遇到的问题",
+    "problemDesc": "问题描述",
+    "descPlaceholder": "请详细描述您遇到的问题，包括具体的操作步骤、预期结果和实际结果等",
+    "screenshot": "问题截图",
+    "upload": "上传图片",
+    "uploadHint": "支持上传图片，最多5张，每张不超过1MB",
+    "submit": "提交反馈",
+    "reset": "重 置",
+    "submitSuccess": "反馈提交成功，感谢您的反馈！",
+    "fileTooLarge": "文件大小不能超过1MB",
+    "maxImages": "最多只能上传5张图片"
   }
 }

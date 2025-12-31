@@ -7,7 +7,12 @@
     "logout": "Logout",
     "myInfo": "My Profile",
     "viewProgress": "View Progress",
-    "price": "Price"
+    "price": "Price",
+    "help": "Help",
+    "account": "Account",
+    "guide": "Page Guide",
+    "feedback": "Feedback",
+    "contact": "Contact Us"
   },
   "search": {
     "placeholder": "Search stocks / strategies / themes..."
@@ -317,5 +322,27 @@
     "error": "Error",
     "warning": "Warning",
     "info": "Info"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "emailTitle": "Email Us",
+    "wechatTitle": "Scan QR Code to Add WeChat",
+    "wechatHint": "Scan with WeChat to add us",
+    "copied": "Copied"
+  },
+  "feedback": {
+    "title": "Feedback",
+    "problemTitle": "Issue Title",
+    "titlePlaceholder": "Briefly describe the issue you encountered",
+    "problemDesc": "Issue Description",
+    "descPlaceholder": "Please describe the issue in detail, including steps to reproduce, expected result and actual result",
+    "screenshot": "Screenshots",
+    "upload": "Upload",
+    "uploadHint": "Upload up to 5 images, max 1MB each",
+    "submit": "Submit",
+    "reset": "Reset",
+    "submitSuccess": "Feedback submitted successfully, thank you!",
+    "fileTooLarge": "File size cannot exceed 1MB",
+    "maxImages": "Maximum 5 images allowed"
   }
 }
