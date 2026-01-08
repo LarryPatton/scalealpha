@@ -1429,6 +1429,7 @@
                             <!-- 操作 -->
                             <td class="px-4 py-2.5 text-center">
                               <div class="flex items-center justify-center gap-1">
+                                <!-- 查看详情按钮 -->
                                 <button 
                                   @click.stop="openPlanDetail(plan, strategy)"
                                   class="p-1 border rounded-sm transition-colors hover:bg-white/10 hover:border-cyan-500/50"
@@ -1437,6 +1438,60 @@
                                 >
                                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                 </button>
+                                
+                                <!-- 分隔线 -->
+                                <div class="w-px h-4 mx-0.5" :style="{ backgroundColor: tokens.colors.border.default }"></div>
+                                
+                                <!-- 券商快捷执行按钮 -->
+                                <template v-for="account in brokerAccounts.slice(0, 2)" :key="account.id">
+                                  <button 
+                                    @click.stop="openExecuteModal(plan, strategy, 'broker', account.id)"
+                                    class="px-1.5 py-0.5 border rounded-sm text-[10px] font-bold transition-all hover:scale-105"
+                                    :style="{ 
+                                      backgroundColor: account.broker?.color + '1A', 
+                                      borderColor: account.broker?.color + '4D', 
+                                      color: account.broker?.color 
+                                    }"
+                                    :title="`执行到 ${account.broker?.shortName}`"
+                                  >
+                                    {{ account.broker?.shortName?.slice(0, 2) || 'BR' }}
+                                  </button>
+                                </template>
+                                
+                                <!-- 模拟盘按钮 -->
+                                <button 
+                                  v-if="paperPortfolios.length > 0"
+                                  @click.stop="openExecuteModal(plan, strategy, 'paper', paperPortfolios[0]?.id)"
+                                  class="px-1.5 py-0.5 border rounded-sm text-[10px] font-bold transition-all hover:scale-105"
+                                  :style="{ 
+                                    backgroundColor: tokens.colors.accent.primary + '1A', 
+                                    borderColor: tokens.colors.accent.primary + '4D', 
+                                    color: tokens.colors.accent.primary 
+                                  }"
+                                  title="执行到模拟盘"
+                                >
+                                  📊
+                                </button>
+                                
+                                <!-- 通用执行按钮（无券商时显示） -->
+                                <button 
+                                  v-if="brokerAccounts.length === 0 && paperPortfolios.length === 0"
+                                  @click.stop="openExecuteModal(plan, strategy)"
+                                  class="px-1.5 py-0.5 border rounded-sm text-[10px] font-bold transition-all hover:scale-105"
+                                  :style="{ 
+                                    backgroundColor: tokens.colors.semantic.success + '1A', 
+                                    borderColor: tokens.colors.semantic.success + '4D', 
+                                    color: tokens.colors.semantic.success 
+                                  }"
+                                  title="执行交易"
+                                >
+                                  执行
+                                </button>
+                                
+                                <!-- 分隔线 -->
+                                <div class="w-px h-4 mx-0.5" :style="{ backgroundColor: tokens.colors.border.default }"></div>
+                                
+                                <!-- 删除按钮 -->
                                 <button 
                                   class="p-1 border rounded-sm transition-colors hover:bg-white/10"
                                   :style="{ borderColor: tokens.colors.semantic.error + '4D', color: tokens.colors.semantic.error }"
@@ -1471,6 +1526,19 @@
         :visible="showPlanDetailModal"
         :plan-data="selectedPlanForDetail"
         @close="closePlanDetailModal"
+      />
+
+      <!-- Execute Plan Modal -->
+      <ExecutePlanModal
+        :visible="showExecuteModal"
+        :plan-data="executePlanData"
+        :strategy-data="executeStrategyData"
+        :preselected-account-type="executePreselectedAccountType"
+        :preselected-account-id="executePreselectedAccountId"
+        @close="closeExecuteModal"
+        @confirm="handleExecuteConfirm"
+        @go-to-broker="goToPortfolio('broker')"
+        @go-to-paper="goToPortfolio('simulation')"
       />
 
       <!-- Delete Confirmation Modal -->
@@ -2613,10 +2681,17 @@ import "driver.js/dist/driver.css";
 import Navbar from '../components/Navbar.vue'
 import ThemeToggle from '../components/ThemeToggle.vue'
 import ExecutionPlanDetailModal from '../components/opportunity/ExecutionPlanDetailModal.vue'
+import ExecutePlanModal from '../components/opportunity/ExecutePlanModal.vue'
 import { useTheme } from '../composables/useTheme'
+import { useBrokerAccount } from '../composables/useBrokerAccount'
+import { usePaperPortfolios } from '../composables/usePaperPortfolios'
 
 // 使用主题系统
 const { tokens, isDark, toggleTheme } = useTheme()
+
+// 券商账户和模拟盘
+const { brokerAccounts, loadAccounts: loadBrokerAccounts } = useBrokerAccount()
+const { portfolios: paperPortfolios, loadPortfolios: loadPaperPortfolios, addOrderToPortfolio } = usePaperPortfolios()
 
 // 使用国际化
 const { t, locale } = useI18n()
@@ -3450,6 +3525,97 @@ const closePlanDetailModal = () => {
   selectedPlanForDetail.value = null
 }
 
+// --- Execute Plan Modal Logic ---
+const showExecuteModal = ref(false)
+const executePlanData = ref(null)
+const executeStrategyData = ref(null)
+const executePreselectedAccountType = ref(null)
+const executePreselectedAccountId = ref(null)
+
+// 打开执行弹窗（通用方法）
+const openExecuteModal = (plan, strategy, accountType = null, accountId = null) => {
+  executePlanData.value = {
+    ...plan,
+    symbol: strategy?.symbol || plan.symbol,
+    stockName: strategy?.stockName || plan.stockName
+  }
+  executeStrategyData.value = strategy
+  executePreselectedAccountType.value = accountType
+  executePreselectedAccountId.value = accountId
+  showExecuteModal.value = true
+}
+
+// 关闭执行弹窗
+const closeExecuteModal = () => {
+  showExecuteModal.value = false
+  executePlanData.value = null
+  executeStrategyData.value = null
+  executePreselectedAccountType.value = null
+  executePreselectedAccountId.value = null
+}
+
+// 确认执行订单
+const handleExecuteConfirm = (orderData) => {
+  console.log('Executing order:', orderData)
+  
+  if (orderData.accountType === 'paper') {
+    // 模拟盘订单
+    const result = addOrderToPortfolio(orderData.accountId, {
+      symbol: orderData.symbol,
+      stockName: orderData.stockName,
+      side: orderData.side,
+      quantity: orderData.quantity,
+      orderType: orderData.orderType,
+      price: orderData.price,
+      targetPrice: orderData.targetPrice,
+      stopLossPrice: orderData.stopLossPrice,
+      planId: orderData.planId,
+      strategyId: orderData.strategyId,
+      source: 'strategy_plan'
+    })
+    
+    if (result.success) {
+      addToast(`模拟盘订单已提交: ${orderData.side === 'buy' ? '买入' : '卖出'} ${orderData.symbol} ${orderData.quantity}股`, 'success')
+    } else {
+      addToast('订单提交失败: ' + (result.error || '未知错误'), 'error')
+    }
+  } else {
+    // 真实券商订单 - 暂时模拟，将订单添加到券商账户
+    const account = brokerAccounts.value.find(a => a.id === orderData.accountId)
+    if (account) {
+      if (!account.orders) account.orders = []
+      account.orders.push({
+        id: `broker_order_${Date.now()}`,
+        symbol: orderData.symbol,
+        stockName: orderData.stockName,
+        side: orderData.side,
+        quantity: orderData.quantity,
+        price: orderData.price,
+        orderType: orderData.orderType,
+        targetPrice: orderData.targetPrice,
+        stopLossPrice: orderData.stopLossPrice,
+        status: 'pending',
+        source: 'strategy_plan',
+        planId: orderData.planId,
+        strategyId: orderData.strategyId,
+        createdAt: new Date().toISOString()
+      })
+      // 保存到 localStorage
+      localStorage.setItem('broker_accounts', JSON.stringify(brokerAccounts.value))
+      addToast(`券商订单已提交: ${orderData.side === 'buy' ? '买入' : '卖出'} ${orderData.symbol} ${orderData.quantity}股`, 'success')
+    } else {
+      addToast('未找到选中的券商账户', 'error')
+    }
+  }
+  
+  closeExecuteModal()
+}
+
+// 跳转到投资组合页面
+const goToPortfolio = (tab = 'broker') => {
+  router.push({ path: '/portfolio', query: { tab } })
+}
+
 // --- Delete Confirmation Modal Logic ---
 const showDeleteModal = ref(false)
 const deleteTarget = ref(null)
@@ -3727,6 +3893,10 @@ let progressInterval
 
 onMounted(() => {
   loadSavedStrategies()
+  
+  // 加载券商账户和模拟盘数据
+  loadBrokerAccounts()
+  loadPaperPortfolios()
   
   // Setup Demo Data for Flow Visualization if on mystrategy tab
   if (activeTab.value === 'mystrategy') {

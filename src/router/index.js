@@ -65,6 +65,11 @@ import OpportunityDesignVariantsPage from '../pages/OpportunityDesignVariantsPag
 import OpportunityDataVizPage from '../pages/OpportunityDataVizPage.vue';
 import OpportunityMicroTweaksPage from '../pages/OpportunityMicroTweaksPage.vue';
 import HoverEffectsDemoPage from '../pages/HoverEffectsDemoPage.vue';
+import HomeDemo1Page from '../pages/HomeDemo1Page.vue';
+import HomeDemo2Page from '../pages/HomeDemo2Page.vue';
+import IconPickerPage from '../pages/IconPickerPage.vue';
+import PortfolioHubPage from '../pages/PortfolioHubPage.vue'
+import PaywallDemoPage from '../pages/PaywallDemoPage.vue'
 
 const routes = [
   // Root redirect - automatically redirect to Home page
@@ -324,9 +329,9 @@ const routes = [
   },
   {
     path: '/portfolio',
-    name: 'Portfolio',
-    component: PortfolioPage,
-    meta: { layout: AppLayout }
+    name: 'PortfolioHub',
+    component: PortfolioHubPage,
+    meta: { layout: BlankLayout }
   },
   {
     path: '/opportunityB',
@@ -420,6 +425,36 @@ const routes = [
     path: '/dev/plan-detail',
     name: 'PlanDetailDemo',
     component: PlanDetailDemoPage,
+    meta: { layout: BlankLayout }
+  },
+  
+  // Home Demo Routes (Animation Variants)
+  {
+    path: '/home-demo1',
+    name: 'HomeDemo1',
+    component: HomeDemo1Page,
+    meta: { layout: AppLayout }
+  },
+  {
+    path: '/home-demo2',
+    name: 'HomeDemo2',
+    component: HomeDemo2Page,
+    meta: { layout: AppLayout }
+  },
+  
+  // Icon Picker Page
+  {
+    path: '/icon-picker',
+    name: 'IconPicker',
+    component: IconPickerPage,
+    meta: { layout: BlankLayout }
+  },
+
+  // Paywall Design Demo
+  {
+    path: '/dev/paywall-demo',
+    name: 'PaywallDemo',
+    component: PaywallDemoPage,
     meta: { layout: BlankLayout }
   },
 
