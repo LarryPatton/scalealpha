@@ -47,6 +47,26 @@
       <!-- Main Split Layout: Generate Tab -->
       <div v-if="activeTab === 'generate'" class="flex-1 flex gap-6 min-h-0 mt-0 pb-24 animate-fade-in relative">
         
+        <!-- Demo: 积分不足状态切换按钮 -->
+        <button 
+          @click="isCreditsInsufficient = !isCreditsInsufficient"
+          class="absolute top-2 right-14 z-30 flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all"
+          :style="{ 
+            backgroundColor: isCreditsInsufficient ? 'rgba(239, 68, 68, 0.1)' : tokens.colors.background.elevated, 
+            borderColor: isCreditsInsufficient ? '#ef4444' : tokens.colors.border.strong, 
+            color: isCreditsInsufficient ? '#ef4444' : tokens.colors.text.muted 
+          }"
+          title="切换积分不足状态 (Demo)"
+        >
+          <svg v-if="isCreditsInsufficient" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          </svg>
+          <svg v-else class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+          </svg>
+          <span class="text-xs font-medium">{{ isCreditsInsufficient ? '积分不足' : '积分充足' }}</span>
+        </button>
+
         <!-- Help Button for Generate Tour -->
         <button 
           @click="startGenerateTour"
@@ -386,11 +406,60 @@
 
           <!-- Footer Action Bar -->
           <div class="p-6 border-t flex justify-between items-center" :style="{ borderColor: tokens.colors.border.default, backgroundColor: tokens.colors.background.surface }">
-            <div class="text-xs text-gray-500 font-mono">
-              <div>{{ $t('opportunity.footer.estTime') }}: <span class="text-white">~3 {{ $t('opportunity.footer.mins') }}</span></div>
-              <div>{{ $t('opportunity.footer.cost') }}: <span class="text-white">20 {{ $t('opportunity.footer.credits') }}</span></div>
+            <!-- 左侧：正常状态显示时间和费用，积分不足时显示警告 -->
+            <div class="text-xs font-mono">
+              <!-- 积分不足警告 -->
+              <template v-if="isCreditsInsufficient">
+                <div 
+                  class="flex items-center gap-3 px-4 py-2.5 rounded-md border"
+                  :style="{ 
+                    backgroundColor: isDark ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.05)',
+                    borderColor: isDark ? 'rgba(239, 68, 68, 0.3)' : 'rgba(239, 68, 68, 0.2)'
+                  }"
+                >
+                  <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    <span class="text-red-500 font-medium">积分不足</span>
+                  </div>
+                  <div class="h-4 w-px" :style="{ backgroundColor: 'rgba(239, 68, 68, 0.3)' }"></div>
+                  <div :style="{ color: tokens.colors.text.muted }">
+                    需要 <span class="text-red-400 font-bold">{{ requiredCredits }}</span> 积分，当前余额 <span class="text-red-400 font-bold">{{ userCredits }}</span> 积分
+                  </div>
+                </div>
+              </template>
+              <!-- 正常状态 -->
+              <template v-else>
+                <div :style="{ color: tokens.colors.text.muted }">{{ $t('opportunity.footer.estTime') }}: <span :style="{ color: tokens.colors.text.primary }">~3 {{ $t('opportunity.footer.mins') }}</span></div>
+                <div :style="{ color: tokens.colors.text.muted }">{{ $t('opportunity.footer.cost') }}: <span :style="{ color: tokens.colors.text.primary }">20 {{ $t('opportunity.footer.credits') }}</span></div>
+              </template>
             </div>
+
+            <!-- 右侧按钮组 -->
+            <div class="flex items-center gap-3">
+            <!-- 积分不足时：充值按钮 -->
+            <router-link 
+              v-if="isCreditsInsufficient"
+              to="/pricing"
+              id="generate-btn"
+              class="px-8 py-3 font-bold text-sm tracking-widest uppercase rounded-sm transition-all flex items-center gap-2 border"
+              :style="{ 
+                backgroundColor: isDark ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.1)',
+                borderColor: '#ef4444',
+                color: '#ef4444'
+              }"
+              @mouseenter="$event.target.style.backgroundColor = isDark ? 'rgba(239, 68, 68, 0.25)' : 'rgba(239, 68, 68, 0.15)'"
+              @mouseleave="$event.target.style.backgroundColor = isDark ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.1)'"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              充值获取积分
+            </router-link>
+            <!-- 正常状态：生成按钮 -->
             <button 
+              v-else
               id="generate-btn"
               @click="handleInitializeGeneration"
               :disabled="isGenerationDisabled"
@@ -403,6 +472,7 @@
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
               {{ $t('opportunity.footer.initGeneration') }}
             </button>
+            </div>
           </div>
 
         </div>
@@ -2726,6 +2796,12 @@ const router = useRouter()
 const route = useRoute()
 
 const activeTab = ref('generate')
+
+// Demo: 积分不足状态切换
+const isCreditsInsufficient = ref(false)
+const userCredits = ref(5) // 模拟用户当前积分
+const requiredCredits = 20 // 生成策略所需积分
+
 const tabs = computed(() => {
   // 依赖 locale 以确保语言切换时重新计算
   const _ = locale.value

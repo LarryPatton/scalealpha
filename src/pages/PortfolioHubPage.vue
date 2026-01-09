@@ -25,9 +25,17 @@
       <!-- Content Area -->
       <div class="w-full px-4 lg:px-8">
         
+        <!-- Tab Content: Summary -->
+        <div v-if="activeTab === 'summary'">
+          <PortfolioSummarySection 
+            @switch-tab="switchTab"
+            @select-account="handleSelectAccount"
+          />
+        </div>
+
         <!-- Tab Content: Real Broker -->
-        <div v-if="activeTab === 'broker'">
-          <RealBrokerSection />
+        <div v-else-if="activeTab === 'broker'">
+          <RealBrokerSection ref="brokerSectionRef" />
         </div>
 
         <!-- Tab Content: Simulation -->
@@ -79,6 +87,7 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useTheme } from '../composables/useTheme'
 import Navbar from '../components/Navbar.vue'
+import PortfolioSummarySection from '../components/portfolio/PortfolioSummarySection.vue'
 import RealBrokerSection from '../components/portfolio/RealBrokerSection.vue'
 import SimulationSection from '../components/portfolio/SimulationSection.vue'
 
@@ -86,18 +95,29 @@ const { t } = useI18n()
 const { tokens, isDark } = useTheme()
 
 // Active Tab
-const activeTab = ref('broker')
+const activeTab = ref('summary')
 
 // Tabs Configuration
 const tabs = computed(() => [
-  { id: 'broker', label: t('portfolio.tabs.broker') },
-  { id: 'simulation', label: t('portfolio.tabs.simulation') }
+  { id: 'summary', label: t('portfolio.tabs.summary'), icon: 'chart' },
+  { id: 'broker', label: t('portfolio.tabs.broker'), icon: 'bank' },
+  { id: 'simulation', label: t('portfolio.tabs.simulation'), icon: 'beaker' }
 ])
+
+// Broker Section Ref
+const brokerSectionRef = ref(null)
 
 // Switch Tab
 const switchTab = (tabId) => {
   activeTab.value = tabId
   window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+// Handle account selection from summary
+const handleSelectAccount = (accountId) => {
+  // This can be used to select specific account in broker section
+  // The broker section will handle the selection through its own state
+  console.log('Selected account:', accountId)
 }
 </script>
 

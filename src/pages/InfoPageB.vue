@@ -216,15 +216,14 @@
 
       <!-- Tab: Opportunities -->
       <div id="opportunities-content" v-if="activeTab === 'opportunities'" class="w-full px-4 lg:px-8 relative">
-        <!-- 积分不足毛玻璃遮罩层 (Fixed 全屏覆盖) -->
-        <Teleport to="body">
-          <Transition name="paywall-fade">
-            <div v-if="isCreditsInsufficient" class="fixed inset-0 z-[100] flex items-center justify-center">
-              <!-- 毛玻璃背景 -->
-              <div 
-                class="absolute inset-0 backdrop-blur-md"
-                :style="{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.7)' }"
-              ></div>
+        <!-- 积分不足毛玻璃遮罩层 (不覆盖导航栏) -->
+        <Transition name="paywall-fade">
+          <div v-if="isCreditsInsufficient" class="fixed left-0 right-0 bottom-0 z-[60] flex items-center justify-center" style="top: 64px;">
+            <!-- 毛玻璃背景 -->
+            <div 
+              class="absolute inset-0 backdrop-blur-md"
+              :style="{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.7)' }"
+            ></div>
               
               <!-- 居中引导卡片 -->
               <div 
@@ -311,10 +310,9 @@
               <p class="mt-5 text-[10px]" :style="{ color: tokens.colors.text.disabled }">
                 💡 首次充值享 <span class="text-amber-500 font-medium">8折优惠</span>
               </p>
-              </div>
             </div>
-          </Transition>
-        </Teleport>
+          </div>
+        </Transition>
 
         <div 
           :class="[
