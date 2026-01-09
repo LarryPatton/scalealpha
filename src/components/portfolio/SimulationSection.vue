@@ -61,130 +61,142 @@
 
     <!-- Has Portfolios - Main Interface -->
     <div v-else class="space-y-4">
-      <!-- Top Bar: Portfolio Switcher + Stats (Same as Real Broker) -->
+      <!-- 合并的模拟盘选择器 + 统计栏 -->
       <div 
-        class="border rounded-lg p-4"
+        class="border rounded-lg p-3"
         :style="{ 
           backgroundColor: tokens.colors.background.surface, 
           borderColor: tokens.colors.border.default 
         }"
       >
-        <div class="flex items-center justify-between flex-wrap gap-4">
-          <!-- Left: Portfolio Switcher -->
-          <div class="flex items-center gap-3">
-            <!-- Current Portfolio Card -->
-            <div 
-              v-if="currentPortfolio"
-              class="flex items-center gap-3 px-3 py-2 rounded-lg border"
+        <div class="flex items-center gap-3">
+          <!-- 左侧：模拟盘选择器 -->
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <!-- All Portfolios Option -->
+            <button 
+              @click="switchViewMode('all')"
+              class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border transition-all"
+              :class="isAllPortfoliosMode ? 'ring-2 ring-indigo-500' : (isDark ? 'hover:bg-white/5' : 'hover:bg-black/5')"
               :style="{ 
-                backgroundColor: isDark ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)',
-                borderColor: 'rgba(99, 102, 241, 0.3)'
+                backgroundColor: isAllPortfoliosMode ? (isDark ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.08)') : 'transparent',
+                borderColor: isAllPortfoliosMode ? 'rgba(99, 102, 241, 0.5)' : tokens.colors.border.default
               }"
             >
               <div 
-                class="w-8 h-8 rounded-md flex items-center justify-center text-white text-xs font-bold bg-indigo-500"
-              >
-                {{ currentPortfolio.name?.slice(0, 2) || 'SIM' }}
-              </div>
-              <div>
-                <p class="text-sm font-medium" :style="{ color: tokens.colors.text.primary }">
-                  {{ currentPortfolio.name }}
-                </p>
-                <p class="text-xs" :style="{ color: tokens.colors.text.muted }">
-                  {{ $t('portfolio.simulation.initialCapital') }}: {{ formatMoney(currentPortfolio.initialCapital) }}
-                </p>
-              </div>
-              <span class="ml-2 w-2 h-2 rounded-full bg-purple-500"></span>
-            </div>
-            
-            <!-- Other Portfolios Dropdown Trigger -->
-            <div v-if="portfolios.length > 1" class="relative">
-              <button 
-                @click="showPortfolioDropdown = !showPortfolioDropdown"
-                class="px-3 py-2 rounded-lg border text-sm transition-colors"
-                :class="isDark ? 'hover:bg-white/5' : 'hover:bg-black/5'"
-                :style="{ borderColor: tokens.colors.border.default, color: tokens.colors.text.secondary }"
-              >
-                +{{ portfolios.length - 1 }} 更多
-                <svg class="w-4 h-4 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              
-              <!-- Dropdown Menu -->
-              <div 
-                v-if="showPortfolioDropdown"
-                class="absolute top-full left-0 mt-1 w-56 rounded-lg border shadow-lg z-10"
+                class="w-7 h-7 rounded flex items-center justify-center text-xs font-bold"
                 :style="{ 
-                  backgroundColor: tokens.colors.background.overlay,
-                  borderColor: tokens.colors.border.default
+                  backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                  color: tokens.colors.text.primary 
                 }"
               >
-                <button 
-                  v-for="portfolio in portfolios.filter(p => p.id !== selectedPortfolioId)" 
-                  :key="portfolio.id"
-                  @click="selectPortfolioById(portfolio.id)"
-                  class="w-full flex items-center gap-2 px-3 py-2 text-left transition-colors"
-                  :class="isDark ? 'hover:bg-white/5' : 'hover:bg-black/5'"
-                >
-                  <div 
-                    class="w-6 h-6 rounded flex items-center justify-center text-white text-xs font-bold bg-indigo-500"
-                  >
-                    {{ portfolio.name?.slice(0, 2) || 'SIM' }}
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <span class="text-sm truncate block" :style="{ color: tokens.colors.text.primary }">
-                      {{ portfolio.name }}
-                    </span>
-                  </div>
-                </button>
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
               </div>
-            </div>
-            
+              <div class="text-left">
+                <p class="text-xs font-medium leading-tight" :style="{ color: tokens.colors.text.primary }">全部</p>
+                <p class="text-xs leading-tight" :style="{ color: tokens.colors.text.muted }">{{ formatCompactMoney(summaryCurrentValue) }}</p>
+              </div>
+              <span v-if="isAllPortfoliosMode" class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+            </button>
+
+            <!-- Individual Portfolio Options -->
+            <button 
+              v-for="portfolio in portfolios" 
+              :key="portfolio.id"
+              @click="switchViewMode(portfolio.id)"
+              class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border transition-all"
+              :class="viewMode === portfolio.id ? 'ring-2 ring-indigo-500' : (isDark ? 'hover:bg-white/5' : 'hover:bg-black/5')"
+              :style="{ 
+                backgroundColor: viewMode === portfolio.id ? (isDark ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.08)') : 'transparent',
+                borderColor: viewMode === portfolio.id ? 'rgba(99, 102, 241, 0.5)' : tokens.colors.border.default
+              }"
+            >
+              <div class="w-7 h-7 rounded flex items-center justify-center text-white text-xs font-bold bg-indigo-500">
+                {{ portfolio.name?.slice(0, 2) || 'SIM' }}
+              </div>
+              <div class="text-left">
+                <p class="text-xs font-medium leading-tight" :style="{ color: tokens.colors.text.primary }">
+                  {{ portfolio.name }}
+                </p>
+                <p class="text-xs leading-tight" :style="{ color: tokens.colors.text.muted }">{{ formatCompactMoney(portfolio.currentValue) }}</p>
+              </div>
+              <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+            </button>
+
             <!-- Add Portfolio Button -->
             <button 
               @click="showCreateModal = true"
-              class="px-3 py-2 rounded-lg border border-dashed text-sm transition-colors"
+              class="flex items-center justify-center w-8 h-8 rounded-lg border border-dashed transition-colors"
               :class="isDark ? 'hover:bg-white/5' : 'hover:bg-black/5'"
               :style="{ borderColor: tokens.colors.border.default, color: tokens.colors.text.muted }"
+              :title="$t('portfolio.simulation.createBtn')"
             >
-              <svg class="w-4 h-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
               </svg>
-              {{ $t('portfolio.simulation.createBtn') }}
             </button>
           </div>
-          
-          <!-- Right: Quick Stats -->
-          <div class="flex items-center gap-6">
+
+          <!-- 分隔线 -->
+          <div class="w-px h-10 flex-shrink-0" :style="{ backgroundColor: tokens.colors.border.default }"></div>
+
+          <!-- 中间：快速统计 -->
+          <div class="flex items-center gap-4 flex-shrink-0">
+            <div class="text-center">
+              <p class="text-xs" :style="{ color: tokens.colors.text.muted }">可用</p>
+              <p class="text-sm font-medium" :style="{ color: tokens.colors.text.primary }">{{ formatCompactMoney(displayAvailableCash) }}</p>
+            </div>
+            <div class="text-center">
+              <p class="text-xs" :style="{ color: tokens.colors.text.muted }">持仓</p>
+              <p class="text-sm font-medium" :style="{ color: tokens.colors.text.primary }">{{ formatCompactMoney(displayHoldingsValue) }}</p>
+            </div>
+            <div class="text-center">
+              <p class="text-xs" :style="{ color: tokens.colors.text.muted }">仓位</p>
+              <div class="flex items-center gap-1.5">
+                <div class="w-12 h-1.5 rounded-full overflow-hidden" :style="{ backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }">
+                  <div class="h-full rounded-full bg-indigo-500" :style="{ width: `${displayPositionRatio}%` }"></div>
+                </div>
+                <span class="text-xs font-medium" :style="{ color: tokens.colors.text.secondary }">{{ displayPositionRatio.toFixed(0) }}%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 分隔线 -->
+          <div class="w-px h-10 flex-shrink-0" :style="{ backgroundColor: tokens.colors.border.default }"></div>
+
+          <!-- 右侧：核心指标 + 操作 -->
+          <div class="flex items-center gap-4 ml-auto">
             <div class="text-right">
               <p class="text-xs" :style="{ color: tokens.colors.text.muted }">{{ $t('portfolio.simulation.currentValue') }}</p>
-              <p class="text-lg font-bold" :style="{ color: tokens.colors.text.primary }">
-                {{ formatMoney(currentPortfolio?.currentValue || 0) }}
-              </p>
+              <p class="text-base font-bold" :style="{ color: tokens.colors.text.primary }">{{ formatMoney(displayCurrentValue) }}</p>
             </div>
             <div class="text-right">
               <p class="text-xs" :style="{ color: tokens.colors.text.muted }">{{ $t('portfolio.simulation.totalReturn') }}</p>
               <p 
-                class="text-lg font-bold"
-                :class="(currentPortfolio?.totalReturn || 0) >= 0 ? 'text-green-500' : 'text-red-500'"
+                class="text-base font-bold"
+                :class="displayTotalReturn >= 0 ? 'text-green-500' : 'text-red-500'"
               >
-                {{ (currentPortfolio?.totalReturn || 0) >= 0 ? '+' : '' }}{{ (currentPortfolio?.totalReturn || 0).toFixed(2) }}%
+                {{ displayTotalReturn >= 0 ? '+' : '' }}{{ displayTotalReturn.toFixed(2) }}%
               </p>
             </div>
-            <div class="flex items-center gap-2">
+            
+            <!-- 操作按钮 -->
+            <div class="flex items-center gap-1.5 ml-2">
               <button 
+                v-if="!isAllPortfoliosMode"
                 @click="openTradeModal"
-                class="px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-colors"
+                class="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors"
               >
-                <svg class="w-4 h-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg class="w-3.5 h-3.5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
-                {{ $t('portfolio.simulation.detail.newTradeBtn') }}
+                交易
               </button>
               <button 
+                v-if="!isAllPortfoliosMode"
                 @click="handleDeletePortfolio"
-                class="p-2 rounded-lg border transition-colors text-red-500 hover:bg-red-500/10"
+                class="p-1.5 rounded-lg border transition-colors text-red-500 hover:bg-red-500/10"
                 :style="{ borderColor: tokens.colors.border.default }"
                 :title="$t('portfolio.simulation.deleteBtn')"
               >
@@ -193,33 +205,6 @@
                 </svg>
               </button>
             </div>
-          </div>
-        </div>
-        
-        <!-- Sub Stats Row -->
-        <div class="flex items-center gap-6 mt-3 pt-3 border-t" :style="{ borderColor: tokens.colors.border.subtle }">
-          <div class="flex items-center gap-2">
-            <span class="text-xs" :style="{ color: tokens.colors.text.muted }">{{ $t('portfolio.simulation.detail.availableCash') }}:</span>
-            <span class="text-sm font-medium" :style="{ color: tokens.colors.text.primary }">{{ formatMoney(currentPortfolio?.availableCash || 0) }}</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-xs" :style="{ color: tokens.colors.text.muted }">{{ $t('portfolio.simulation.detail.holdingsValue') }}:</span>
-            <span class="text-sm font-medium" :style="{ color: tokens.colors.text.primary }">{{ formatMoney(holdingsValue) }}</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-xs" :style="{ color: tokens.colors.text.muted }">仓位:</span>
-            <div class="flex items-center gap-2">
-              <div class="w-20 h-1.5 rounded-full overflow-hidden" :style="{ backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }">
-                <div 
-                  class="h-full rounded-full bg-indigo-500" 
-                  :style="{ width: `${positionRatio}%` }"
-                ></div>
-              </div>
-              <span class="text-xs font-medium" :style="{ color: tokens.colors.text.secondary }">{{ positionRatio.toFixed(0) }}%</span>
-            </div>
-          </div>
-          <div class="ml-auto text-xs" :style="{ color: tokens.colors.text.muted }">
-            {{ $t('portfolio.simulation.cardCreatedAt') }} {{ formatDate(currentPortfolio?.createdAt) }}
           </div>
         </div>
       </div>
@@ -236,11 +221,15 @@
         >
           <div class="px-4 py-3 border-b flex items-center justify-between" :style="{ borderColor: tokens.colors.border.default }">
             <h3 class="font-bold text-sm" :style="{ color: tokens.colors.text.primary }">
-              {{ $t('portfolio.simulation.detail.tabHoldings') }} ({{ currentPortfolio?.holdings?.length || 0 }})
+              {{ $t('portfolio.simulation.detail.tabHoldings') }} ({{ isAllPortfoliosMode ? groupedHoldings.length : (displayPortfolio?.holdings?.length || 0) }})
             </h3>
+            <span v-if="isAllPortfoliosMode" class="text-xs px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-500">
+              汇总视图
+            </span>
           </div>
           
-          <div v-if="currentPortfolio?.holdings?.length > 0" class="flex-1 overflow-auto">
+          <!-- 非汇总模式: 普通表格 -->
+          <div v-if="!isAllPortfoliosMode && displayPortfolio?.holdings?.length > 0" class="flex-1 overflow-auto">
             <table class="w-full">
               <thead class="sticky top-0" :style="{ backgroundColor: tokens.colors.background.surface }">
                 <tr :style="{ backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }">
@@ -252,7 +241,7 @@
               </thead>
               <tbody class="divide-y" :style="{ borderColor: tokens.colors.border.subtle }">
                 <tr 
-                  v-for="holding in currentPortfolio.holdings" 
+                  v-for="holding in displayPortfolio.holdings" 
                   :key="holding.symbol"
                   class="transition-colors"
                   :class="isDark ? 'hover:bg-white/5' : 'hover:bg-black/2'"
@@ -283,6 +272,119 @@
                     </p>
                   </td>
                 </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 汇总模式: 按股票分组的表格 -->
+          <div v-else-if="isAllPortfoliosMode && groupedHoldings.length > 0" class="flex-1 overflow-auto">
+            <table class="w-full">
+              <thead class="sticky top-0" :style="{ backgroundColor: tokens.colors.background.surface }">
+                <tr :style="{ backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }">
+                  <th class="px-4 py-2 text-left text-xs font-medium uppercase" :style="{ color: tokens.colors.text.muted }">股票</th>
+                  <th class="px-4 py-2 text-left text-xs font-medium uppercase" :style="{ color: tokens.colors.text.muted }">模拟盘</th>
+                  <th class="px-4 py-2 text-right text-xs font-medium uppercase" :style="{ color: tokens.colors.text.muted }">数量</th>
+                  <th class="px-4 py-2 text-right text-xs font-medium uppercase" :style="{ color: tokens.colors.text.muted }">市值</th>
+                  <th class="px-4 py-2 text-right text-xs font-medium uppercase" :style="{ color: tokens.colors.text.muted }">盈亏</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template v-for="(group, groupIndex) in groupedHoldings" :key="group.symbol">
+                  <!-- 股票汇总行 - 只在有多个模拟盘时显示 -->
+                  <tr 
+                    v-if="group.portfolios.length > 1"
+                    class="border-t-2"
+                    :style="{ 
+                      backgroundColor: isDark ? 'rgba(99, 102, 241, 0.08)' : 'rgba(99, 102, 241, 0.04)',
+                      borderColor: tokens.colors.border.default
+                    }"
+                  >
+                    <td class="px-4 py-3">
+                      <div class="flex items-center gap-2">
+                        <div 
+                          class="w-7 h-7 rounded flex items-center justify-center text-xs font-bold"
+                          :style="{ backgroundColor: 'rgba(99, 102, 241, 0.2)', color: '#6366f1' }"
+                        >{{ group.symbol.slice(0, 2) }}</div>
+                        <div>
+                          <p class="font-bold text-sm" :style="{ color: tokens.colors.text.primary }">{{ group.symbol }}</p>
+                          <p class="text-xs" :style="{ color: tokens.colors.text.muted }">{{ group.name }}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-4 py-3">
+                      <span class="text-xs font-medium px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-500">
+                        {{ group.portfolios.length }} 个模拟盘合计
+                      </span>
+                    </td>
+                    <td class="px-4 py-3 text-right text-sm font-bold" :style="{ color: tokens.colors.text.primary }">
+                      {{ group.totalQuantity }}
+                    </td>
+                    <td class="px-4 py-3 text-right">
+                      <p class="font-bold text-sm" :style="{ color: tokens.colors.text.primary }">{{ formatMoney(group.totalMarketValue) }}</p>
+                      <p class="text-xs" :style="{ color: tokens.colors.text.muted }">@{{ formatMoney(group.avgPrice) }}</p>
+                    </td>
+                    <td class="px-4 py-3 text-right">
+                      <p class="font-bold text-sm" :class="group.totalPnl >= 0 ? 'text-green-500' : 'text-red-500'">
+                        {{ group.totalPnl >= 0 ? '+' : '' }}{{ formatMoney(group.totalPnl) }}
+                      </p>
+                      <p class="text-xs" :class="group.totalPnlPercent >= 0 ? 'text-green-500' : 'text-red-500'">
+                        {{ group.totalPnlPercent >= 0 ? '+' : '' }}{{ group.totalPnlPercent?.toFixed(2) || '0.00' }}%
+                      </p>
+                    </td>
+                  </tr>
+                  <!-- 各模拟盘明细行 -->
+                  <tr 
+                    v-for="(holding, holdingIndex) in group.portfolios" 
+                    :key="`${group.symbol}-${holding.portfolioId}`"
+                    class="transition-colors border-b"
+                    :class="isDark ? 'hover:bg-white/5' : 'hover:bg-black/2'"
+                    :style="{ 
+                      borderColor: holdingIndex === group.portfolios.length - 1 ? tokens.colors.border.default : tokens.colors.border.subtle,
+                      backgroundColor: group.portfolios.length > 1 ? (isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)') : 'transparent'
+                    }"
+                  >
+                    <td class="px-4 py-2.5" :class="group.portfolios.length > 1 ? 'pl-8' : ''">
+                      <div class="flex items-center gap-2">
+                        <div 
+                          v-if="group.portfolios.length === 1"
+                          class="w-7 h-7 rounded flex items-center justify-center text-xs font-bold"
+                          :style="{ backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)', color: tokens.colors.text.primary }"
+                        >{{ holding.symbol.slice(0, 2) }}</div>
+                        <div>
+                          <p class="font-medium text-sm" :style="{ color: tokens.colors.text.primary }">
+                            {{ group.portfolios.length === 1 ? holding.symbol : '' }}
+                          </p>
+                          <p v-if="group.portfolios.length === 1" class="text-xs" :style="{ color: tokens.colors.text.muted }">{{ holding.name }}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-4 py-2.5">
+                      <div class="flex items-center gap-1.5">
+                        <div class="w-5 h-5 rounded flex items-center justify-center text-white text-xs font-bold bg-indigo-500">
+                          {{ holding.portfolioName?.slice(0, 1) }}
+                        </div>
+                        <span class="text-xs font-medium" :style="{ color: tokens.colors.text.secondary }">
+                          {{ holding.portfolioName }}
+                        </span>
+                      </div>
+                    </td>
+                    <td class="px-4 py-2.5 text-right text-sm" :style="{ color: tokens.colors.text.secondary }">
+                      {{ holding.quantity }}
+                    </td>
+                    <td class="px-4 py-2.5 text-right">
+                      <p class="font-medium text-sm" :style="{ color: tokens.colors.text.primary }">{{ formatMoney(holding.marketValue) }}</p>
+                      <p class="text-xs" :style="{ color: tokens.colors.text.muted }">@{{ formatMoney(holding.currentPrice) }}</p>
+                    </td>
+                    <td class="px-4 py-2.5 text-right">
+                      <p class="font-medium text-sm" :class="(holding.pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500'">
+                        {{ (holding.pnl || 0) >= 0 ? '+' : '' }}{{ formatMoney(holding.pnl || 0) }}
+                      </p>
+                      <p class="text-xs" :class="(holding.pnlPercent || 0) >= 0 ? 'text-green-500' : 'text-red-500'">
+                        {{ (holding.pnlPercent || 0) >= 0 ? '+' : '' }}{{ (holding.pnlPercent || 0).toFixed(2) }}%
+                      </p>
+                    </td>
+                  </tr>
+                </template>
               </tbody>
             </table>
           </div>
@@ -794,6 +896,216 @@ const tradeModalType = ref('buy')
 const preSelectedStock = ref(null)
 const activeTradeFilter = ref('all')
 
+// 视图模式 - 'all' 表示查看全部模拟盘汇总, 模拟盘ID 表示查看单个模拟盘
+const viewMode = ref('all')
+
+// 是否为汇总模式
+const isAllPortfoliosMode = computed(() => viewMode.value === 'all')
+
+// 当前显示的模拟盘（单模拟盘模式下）
+const displayPortfolio = computed(() => {
+  if (isAllPortfoliosMode.value) return null
+  return portfolios.value.find(p => p.id === viewMode.value) || portfolios.value[0]
+})
+
+// 切换视图模式
+const switchViewMode = (mode) => {
+  viewMode.value = mode
+  showPortfolioDropdown.value = false
+  if (mode !== 'all') {
+    selectedPortfolioId.value = mode
+  }
+}
+
+// ===== 汇总数据计算 =====
+
+// 汇总: 总现值
+const summaryCurrentValue = computed(() => {
+  return portfolios.value.reduce((sum, p) => sum + (p.currentValue || 0), 0)
+})
+
+// 汇总: 初始资金总额
+const summaryInitialCapital = computed(() => {
+  return portfolios.value.reduce((sum, p) => sum + (p.initialCapital || 0), 0)
+})
+
+// 汇总: 总收益率
+const summaryTotalReturn = computed(() => {
+  if (!summaryInitialCapital.value) return 0
+  return ((summaryCurrentValue.value - summaryInitialCapital.value) / summaryInitialCapital.value) * 100
+})
+
+// 汇总: 可用资金
+const summaryAvailableCash = computed(() => {
+  return portfolios.value.reduce((sum, p) => sum + (p.availableCash || 0), 0)
+})
+
+// 汇总: 持仓市值
+const summaryHoldingsValue = computed(() => {
+  return portfolios.value.reduce((sum, p) => {
+    const holdingsValue = p.holdings?.reduce((s, h) => s + (h.marketValue || 0), 0) || 0
+    return sum + holdingsValue
+  }, 0)
+})
+
+// 汇总: 所有持仓（不聚合，按股票代码分组显示）
+const summaryHoldings = computed(() => {
+  const holdings = []
+  portfolios.value.forEach(portfolio => {
+    if (portfolio.holdings) {
+      portfolio.holdings.forEach(holding => {
+        holdings.push({
+          ...holding,
+          portfolioId: portfolio.id,
+          portfolioName: portfolio.name || 'Unknown'
+        })
+      })
+    }
+  })
+  // 按股票代码排序，相同股票放在一起
+  return holdings.sort((a, b) => a.symbol.localeCompare(b.symbol))
+})
+
+// 汇总: 按股票分组的持仓（用于汇总视图）
+const groupedHoldings = computed(() => {
+  const groups = {}
+  
+  portfolios.value.forEach(portfolio => {
+    if (portfolio.holdings) {
+      portfolio.holdings.forEach(holding => {
+        const symbol = holding.symbol
+        if (!groups[symbol]) {
+          groups[symbol] = {
+            symbol: symbol,
+            name: holding.name,
+            totalQuantity: 0,
+            totalMarketValue: 0,
+            totalCostBasis: 0,
+            portfolios: []
+          }
+        }
+        
+        groups[symbol].totalQuantity += holding.quantity || 0
+        groups[symbol].totalMarketValue += holding.marketValue || 0
+        groups[symbol].totalCostBasis += (holding.avgCost || holding.costBasis / holding.quantity || 0) * holding.quantity
+        
+        groups[symbol].portfolios.push({
+          ...holding,
+          portfolioId: portfolio.id,
+          portfolioName: portfolio.name || 'Unknown'
+        })
+      })
+    }
+  })
+  
+  // 计算每组的汇总盈亏
+  Object.values(groups).forEach(group => {
+    group.totalPnl = group.totalMarketValue - group.totalCostBasis
+    group.totalPnlPercent = group.totalCostBasis > 0 
+      ? (group.totalPnl / group.totalCostBasis) * 100 
+      : 0
+    group.avgPrice = group.totalMarketValue / group.totalQuantity
+  })
+  
+  // 按股票代码排序后返回数组
+  return Object.values(groups).sort((a, b) => a.symbol.localeCompare(b.symbol))
+})
+
+// 汇总: 所有待执行订单
+const summaryPendingOrders = computed(() => {
+  const orders = []
+  portfolios.value.forEach(portfolio => {
+    if (portfolio.orders) {
+      portfolio.orders
+        .filter(o => ['pending', 'partial'].includes(o.status))
+        .forEach(order => {
+          orders.push({
+            ...order,
+            portfolioId: portfolio.id,
+            portfolioName: portfolio.name || 'Unknown'
+          })
+        })
+    }
+  })
+  return orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+})
+
+// 汇总: 所有交易记录
+const summaryTrades = computed(() => {
+  const trades = []
+  portfolios.value.forEach(portfolio => {
+    if (portfolio.trades) {
+      portfolio.trades.forEach(trade => {
+        trades.push({
+          ...trade,
+          portfolioId: portfolio.id,
+          portfolioName: portfolio.name || 'Unknown'
+        })
+      })
+    }
+  })
+  return trades.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+})
+
+// ===== 当前显示数据（根据模式切换）=====
+
+// 显示的总现值
+const displayCurrentValue = computed(() => {
+  return isAllPortfoliosMode.value ? summaryCurrentValue.value : (displayPortfolio.value?.currentValue || 0)
+})
+
+// 显示的总收益率
+const displayTotalReturn = computed(() => {
+  if (isAllPortfoliosMode.value) return summaryTotalReturn.value
+  return displayPortfolio.value?.totalReturn || 0
+})
+
+// 显示的可用资金
+const displayAvailableCash = computed(() => {
+  return isAllPortfoliosMode.value ? summaryAvailableCash.value : (displayPortfolio.value?.availableCash || 0)
+})
+
+// 显示的持仓市值
+const displayHoldingsValue = computed(() => {
+  if (isAllPortfoliosMode.value) return summaryHoldingsValue.value
+  if (!displayPortfolio.value?.holdings) return 0
+  return displayPortfolio.value.holdings.reduce((sum, h) => sum + (h.marketValue || 0), 0)
+})
+
+// 显示的仓位比例
+const displayPositionRatio = computed(() => {
+  if (isAllPortfoliosMode.value) {
+    if (!summaryCurrentValue.value) return 0
+    return (summaryHoldingsValue.value / summaryCurrentValue.value) * 100
+  }
+  if (!displayPortfolio.value?.currentValue) return 0
+  return (displayHoldingsValue.value / displayPortfolio.value.currentValue) * 100
+})
+
+// 显示的持仓
+const displayHoldings = computed(() => {
+  return isAllPortfoliosMode.value ? summaryHoldings.value : (displayPortfolio.value?.holdings || [])
+})
+
+// 显示的待执行订单
+const displayPendingOrders = computed(() => {
+  if (isAllPortfoliosMode.value) return summaryPendingOrders.value
+  if (!displayPortfolio.value?.orders) return []
+  return displayPortfolio.value.orders
+    .filter(o => ['pending', 'partial'].includes(o.status))
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+})
+
+// 显示的交易记录（根据筛选）
+const displayTrades = computed(() => {
+  const trades = isAllPortfoliosMode.value ? summaryTrades.value : (displayPortfolio.value?.trades || [])
+  if (activeTradeFilter.value === 'all') return trades
+  if (activeTradeFilter.value === 'buy') return trades.filter(t => t.type === 'buy')
+  if (activeTradeFilter.value === 'sell') return trades.filter(t => t.type === 'sell')
+  if (activeTradeFilter.value === 'strategy') return trades.filter(t => t.source === 'strategy')
+  return trades
+})
+
 const tradeFilters = [
   { id: 'all', label: '全部' },
   { id: 'buy', label: '买入' },
@@ -958,6 +1270,21 @@ const formatMoney = (amount) => {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   }).format(amount || 0)
+}
+
+// Format compact money (e.g., $1.13M, $550K)
+const formatCompactMoney = (amount) => {
+  if (!amount && amount !== 0) return '$0'
+  const absAmount = Math.abs(amount)
+  const sign = amount < 0 ? '-' : ''
+  
+  if (absAmount >= 1000000) {
+    return sign + '$' + (absAmount / 1000000).toFixed(2) + 'M'
+  } else if (absAmount >= 1000) {
+    return sign + '$' + (absAmount / 1000).toFixed(0) + 'K'
+  } else {
+    return sign + '$' + absAmount.toFixed(0)
+  }
 }
 
 // Format date

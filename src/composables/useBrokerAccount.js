@@ -77,14 +77,54 @@ const STOCKS = [
   { symbol: 'JPM', name: 'JPMorgan Chase', sector: 'Finance', price: 172.65 }
 ]
 
-// Fake 持仓数据
-const generateFakeHoldings = () => {
-  // 随机选择 4-6 只股票
-  const count = 4 + Math.floor(Math.random() * 3)
-  const shuffled = [...STOCKS].sort(() => 0.5 - Math.random())
-  const selected = shuffled.slice(0, count)
+// 生成期权代码 (OCC 格式)
+const generateOptionSymbol = (underlying, expirationDate, optionType, strikePrice) => {
+  const date = new Date(expirationDate)
+  const year = date.getFullYear().toString().slice(-2)
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const day = date.getDate().toString().padStart(2, '0')
+  const type = optionType === 'call' ? 'C' : 'P'
+  const strike = Math.round(strikePrice * 1000).toString().padStart(8, '0')
+  return `${underlying}${year}${month}${day}${type}${strike}`
+}
+
+// 生成期权到期日（未来1-3个月的周五）
+const generateExpirationDates = () => {
+  const dates = []
+  const now = new Date()
   
-  return selected.map(stock => {
+  // 生成未来3个月的到期日
+  for (let i = 1; i <= 3; i++) {
+    const futureDate = new Date(now)
+    futureDate.setMonth(futureDate.getMonth() + i)
+    
+    // 找到当月第三个周五 (标准月度期权到期日)
+    futureDate.setDate(1)
+    let fridayCount = 0
+    while (fridayCount < 3) {
+      if (futureDate.getDay() === 5) {
+        fridayCount++
+        if (fridayCount === 3) break
+      }
+      futureDate.setDate(futureDate.getDate() + 1)
+    }
+    dates.push(futureDate.toISOString().split('T')[0])
+  }
+  
+  return dates
+}
+
+// Fake 持仓数据（包含股票和期权）
+const generateFakeHoldings = (includeOptions = true) => {
+  const holdings = []
+  
+  // 随机选择 4-6 只股票
+  const stockCount = 4 + Math.floor(Math.random() * 3)
+  const shuffled = [...STOCKS].sort(() => 0.5 - Math.random())
+  const selectedStocks = shuffled.slice(0, stockCount)
+  
+  // 生成股票持仓
+  selectedStocks.forEach(stock => {
     const quantity = Math.floor(10 + Math.random() * 100) * 5
     const costPrice = stock.price * (0.85 + Math.random() * 0.3)
     const currentPrice = stock.price * (0.95 + Math.random() * 0.1)
@@ -93,19 +133,86 @@ const generateFakeHoldings = () => {
     const pnl = marketValue - costBasis
     const pnlPercent = (pnl / costBasis) * 100
     
-    return {
+    holdings.push({
       symbol: stock.symbol,
       name: stock.name,
       sector: stock.sector,
+      assetType: 'stock',
       quantity,
+      avgCost: parseFloat(costPrice.toFixed(2)),
       costPrice: parseFloat(costPrice.toFixed(2)),
       currentPrice: parseFloat(currentPrice.toFixed(2)),
       marketValue: parseFloat(marketValue.toFixed(2)),
       costBasis: parseFloat(costBasis.toFixed(2)),
       pnl: parseFloat(pnl.toFixed(2)),
       pnlPercent: parseFloat(pnlPercent.toFixed(2))
-    }
+    })
   })
+  
+  // 生成期权持仓（对部分股票添加期权）
+  if (includeOptions) {
+    const expirationDates = generateExpirationDates()
+    // 选择2-3只股票添加期权
+    const optionStocks = selectedStocks.slice(0, 2 + Math.floor(Math.random() * 2))
+    
+    optionStocks.forEach(stock => {
+      // 每只股票生成1-3个期权持仓
+      const optionCount = 1 + Math.floor(Math.random() * 3)
+      
+      for (let i = 0; i < optionCount; i++) {
+        const optionType = Math.random() > 0.5 ? 'call' : 'put'
+        const expirationDate = expirationDates[Math.floor(Math.random() * expirationDates.length)]
+        
+        // 行权价: Call期权略高于现价, Put期权略低于现价
+        let strikePrice
+        if (optionType === 'call') {
+          strikePrice = Math.round(stock.price * (1 + Math.random() * 0.15) / 5) * 5
+        } else {
+          strikePrice = Math.round(stock.price * (0.85 + Math.random() * 0.1) / 5) * 5
+        }
+        
+        const optionSymbol = generateOptionSymbol(stock.symbol, expirationDate, optionType, strikePrice)
+        
+        // 期权合约数量（每个合约代表100股）
+        const contracts = Math.floor(1 + Math.random() * 10)
+        
+        // 期权价格（简化计算，实际应使用Black-Scholes等模型）
+        const intrinsicValue = optionType === 'call' 
+          ? Math.max(0, stock.price - strikePrice)
+          : Math.max(0, strikePrice - stock.price)
+        const timeValue = stock.price * 0.02 * (1 + Math.random()) // 简化的时间价值
+        const optionPrice = intrinsicValue + timeValue
+        const optionCost = optionPrice * (0.7 + Math.random() * 0.5) // 成本价有波动
+        
+        const marketValue = contracts * 100 * optionPrice
+        const costBasis = contracts * 100 * optionCost
+        const pnl = marketValue - costBasis
+        const pnlPercent = costBasis > 0 ? (pnl / costBasis) * 100 : 0
+        
+        holdings.push({
+          symbol: optionSymbol,
+          name: `${stock.symbol} ${optionType === 'call' ? 'Call' : 'Put'} $${strikePrice}`,
+          assetType: 'option',
+          underlying: stock.symbol,
+          underlyingName: stock.name,
+          optionType: optionType,
+          expirationDate: expirationDate,
+          strikePrice: strikePrice,
+          quantity: contracts,
+          multiplier: 100, // 每个合约代表100股
+          avgCost: parseFloat(optionCost.toFixed(2)),
+          costPrice: parseFloat(optionCost.toFixed(2)),
+          currentPrice: parseFloat(optionPrice.toFixed(2)),
+          marketValue: parseFloat(marketValue.toFixed(2)),
+          costBasis: parseFloat(costBasis.toFixed(2)),
+          pnl: parseFloat(pnl.toFixed(2)),
+          pnlPercent: parseFloat(pnlPercent.toFixed(2))
+        })
+      }
+    })
+  }
+  
+  return holdings
 }
 
 // 生成模拟订单数据（来自策略计划）

@@ -481,6 +481,26 @@
         <!-- My Strategy Tab Content -->
         <div v-else-if="activeTab === 'mystrategy'" class="flex-1 flex flex-col min-h-0 mt-0 pb-24 animate-fade-in relative">
           
+          <!-- Demo: 积分不足状态切换按钮 (mystrategy tab) -->
+          <button 
+            @click="isCreditsInsufficient = !isCreditsInsufficient"
+            class="absolute top-2 right-2 z-30 flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all"
+            :style="{ 
+              backgroundColor: isCreditsInsufficient ? 'rgba(239, 68, 68, 0.1)' : tokens.colors.background.elevated, 
+              borderColor: isCreditsInsufficient ? '#ef4444' : tokens.colors.border.strong, 
+              color: isCreditsInsufficient ? '#ef4444' : tokens.colors.text.muted 
+            }"
+            title="切换积分不足状态 (Demo)"
+          >
+            <svg v-if="isCreditsInsufficient" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            <svg v-else class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+            </svg>
+            <span class="text-xs font-medium">{{ isCreditsInsufficient ? '积分不足' : '积分充足' }}</span>
+          </button>
+
           <!-- Active Tasks Section (Zone A) -->
           <div 
             id="active-generation-panel" 
@@ -1348,6 +1368,17 @@
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                       </button>
                       <!-- Generate Plan (正常状态) -->
+                      <!-- 积分不足时：禁用状态 -->
+                      <button 
+                        v-else-if="strategy.grade !== 'N/A' && isCreditsInsufficient"
+                        class="p-1.5 border rounded-sm cursor-not-allowed opacity-50"
+                        :style="{ backgroundColor: tokens.colors.text.muted + '1A', borderColor: tokens.colors.text.muted + '33', color: tokens.colors.text.muted }"
+                        :title="'积分不足，无法生成计划 (需要 ' + requiredCredits + ' 积分)'"
+                        disabled
+                      >
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                      </button>
+                      <!-- 积分充足时：正常状态 -->
                       <button 
                         v-else-if="strategy.grade !== 'N/A'"
                         @click.stop="generatePlanForStrategy(strategy)"
@@ -1512,27 +1543,28 @@
                                 <!-- 分隔线 -->
                                 <div class="w-px h-4 mx-0.5" :style="{ backgroundColor: tokens.colors.border.default }"></div>
                                 
-                                <!-- 券商快捷执行按钮 -->
-                                <template v-for="account in brokerAccounts.slice(0, 2)" :key="account.id">
-                                  <button 
-                                    @click.stop="openExecuteModal(plan, strategy, 'broker', account.id)"
-                                    class="px-1.5 py-0.5 border rounded-sm text-[10px] font-bold transition-all hover:scale-105"
-                                    :style="{ 
-                                      backgroundColor: account.broker?.color + '1A', 
-                                      borderColor: account.broker?.color + '4D', 
-                                      color: account.broker?.color 
-                                    }"
-                                    :title="`执行到 ${account.broker?.shortName}`"
-                                  >
-                                    {{ account.broker?.shortName?.slice(0, 2) || 'BR' }}
-                                  </button>
-                                </template>
+                                <!-- 券商执行按钮（合并为一个） -->
+                                <button 
+                                  v-if="brokerAccounts.length > 0"
+                                  @click.stop="openExecuteModal(plan, strategy, 'broker', brokerAccounts[0]?.id)"
+                                  class="p-1 border rounded-sm transition-all hover:scale-105"
+                                  :style="{ 
+                                    backgroundColor: tokens.colors.semantic.success + '1A', 
+                                    borderColor: tokens.colors.semantic.success + '4D', 
+                                    color: tokens.colors.semantic.success 
+                                  }"
+                                  title="执行到券商账户"
+                                >
+                                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/>
+                                  </svg>
+                                </button>
                                 
                                 <!-- 模拟盘按钮 -->
                                 <button 
                                   v-if="paperPortfolios.length > 0"
                                   @click.stop="openExecuteModal(plan, strategy, 'paper', paperPortfolios[0]?.id)"
-                                  class="px-1.5 py-0.5 border rounded-sm text-[10px] font-bold transition-all hover:scale-105"
+                                  class="p-1 border rounded-sm transition-all hover:scale-105"
                                   :style="{ 
                                     backgroundColor: tokens.colors.accent.primary + '1A', 
                                     borderColor: tokens.colors.accent.primary + '4D', 
@@ -1540,14 +1572,16 @@
                                   }"
                                   title="执行到模拟盘"
                                 >
-                                  📊
+                                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                  </svg>
                                 </button>
                                 
-                                <!-- 通用执行按钮（无券商时显示） -->
+                                <!-- 通用执行按钮（无券商和模拟盘时显示） -->
                                 <button 
                                   v-if="brokerAccounts.length === 0 && paperPortfolios.length === 0"
                                   @click.stop="openExecuteModal(plan, strategy)"
-                                  class="px-1.5 py-0.5 border rounded-sm text-[10px] font-bold transition-all hover:scale-105"
+                                  class="p-1 border rounded-sm transition-all hover:scale-105"
                                   :style="{ 
                                     backgroundColor: tokens.colors.semantic.success + '1A', 
                                     borderColor: tokens.colors.semantic.success + '4D', 
@@ -1555,7 +1589,10 @@
                                   }"
                                   title="执行交易"
                                 >
-                                  执行
+                                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                  </svg>
                                 </button>
                                 
                                 <!-- 分隔线 -->
@@ -2149,24 +2186,68 @@
               </div>
 
               <!-- Input Area - 与中栏底部按钮区域高度对齐 -->
-              <div class="px-4 py-4 border-t" :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }">
-                <div class="relative">
-                  <input 
-                    v-model="chatInput"
-                    type="text" 
-                    :placeholder="$t('opportunity.chat.inputPlaceholder')"
-                    class="w-full rounded pl-3 pr-10 py-3.5 text-sm focus:outline-none focus:ring-1 border"
-                    :style="{ backgroundColor: tokens.colors.background.elevated, borderColor: tokens.colors.border.strong, color: tokens.colors.text.primary }"
-                    @keyup.enter="sendChatMessage"
+              <div class="border-t" :style="{ backgroundColor: tokens.colors.background.overlay, borderColor: tokens.colors.border.strong }">
+                <!-- 积分不足警告条 -->
+                <Transition name="slide-down">
+                  <div 
+                    v-if="isCreditsInsufficient"
+                    class="px-4 py-3 border-b flex items-center justify-between gap-3"
+                    :style="{ 
+                      backgroundColor: isDark ? 'rgba(251, 191, 36, 0.08)' : 'rgba(251, 191, 36, 0.1)',
+                      borderColor: isDark ? 'rgba(251, 191, 36, 0.2)' : 'rgba(251, 191, 36, 0.3)'
+                    }"
                   >
-                  <button 
-                    @click="sendChatMessage"
-                    class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 transition-colors"
-                    :style="{ color: tokens.colors.accent.primary }"
-                    :disabled="!chatInput.trim() || isChatLoading"
-                  >
-                    <i class="fas fa-paper-plane"></i>
-                  </button>
+                    <div class="flex items-center gap-2 text-xs">
+                      <svg class="w-4 h-4 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                      </svg>
+                      <span :style="{ color: tokens.colors.text.secondary }">
+                        积分不足 · 余额 <span class="text-amber-500 font-bold">{{ userCredits }}</span> / 需 <span class="text-amber-500 font-bold">2</span>
+                      </span>
+                    </div>
+                    <router-link 
+                      to="/pricing"
+                      class="px-3 py-1 text-xs font-medium rounded border transition-all hover:-translate-y-0.5"
+                      :style="{ 
+                        backgroundColor: isDark ? 'rgba(251, 191, 36, 0.15)' : 'rgba(251, 191, 36, 0.2)',
+                        borderColor: 'rgba(251, 191, 36, 0.4)',
+                        color: '#f59e0b'
+                      }"
+                    >
+                      去充值
+                    </router-link>
+                  </div>
+                </Transition>
+
+                <!-- 输入框区域 -->
+                <div class="px-4 py-4">
+                  <div class="relative">
+                    <input 
+                      v-model="chatInput"
+                      type="text" 
+                      :placeholder="isCreditsInsufficient ? '积分不足，无法继续对话' : $t('opportunity.chat.inputPlaceholder')"
+                      :disabled="isCreditsInsufficient"
+                      class="w-full rounded pl-3 pr-10 py-3.5 text-sm focus:outline-none focus:ring-1 border transition-all"
+                      :class="isCreditsInsufficient ? 'cursor-not-allowed opacity-60' : ''"
+                      :style="{ 
+                        backgroundColor: tokens.colors.background.elevated, 
+                        borderColor: isCreditsInsufficient ? tokens.colors.border.subtle : tokens.colors.border.strong, 
+                        color: tokens.colors.text.primary 
+                      }"
+                      @keyup.enter="sendChatMessage"
+                    >
+                    <button 
+                      @click="sendChatMessage"
+                      class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 transition-colors"
+                      :style="{ color: isCreditsInsufficient ? tokens.colors.text.disabled : tokens.colors.accent.primary }"
+                      :disabled="!chatInput.trim() || isChatLoading || isCreditsInsufficient"
+                    >
+                      <svg v-if="isCreditsInsufficient" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                      </svg>
+                      <i v-else class="fas fa-paper-plane"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2279,7 +2360,55 @@
 
               <!-- Fixed Bottom Action Button -->
               <div class="shrink-0 px-6 py-4 border-t" :style="{ borderColor: tokens.colors.border.strong, backgroundColor: tokens.colors.background.surface }">
+                <!-- 积分不足警告条 -->
+                <div 
+                  v-if="isCreditsInsufficient"
+                  class="mb-3 px-4 py-2.5 rounded-sm border flex items-center justify-between gap-3"
+                  :style="{ 
+                    backgroundColor: isDark ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.05)',
+                    borderColor: isDark ? 'rgba(239, 68, 68, 0.3)' : 'rgba(239, 68, 68, 0.2)'
+                  }"
+                >
+                  <div class="flex items-center gap-2 text-xs">
+                    <svg class="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    <span :style="{ color: tokens.colors.text.secondary }">
+                      积分不足 · 余额 <span class="text-red-400 font-bold">{{ userCredits }}</span> / 需 <span class="text-red-400 font-bold">{{ requiredCredits }}</span>
+                    </span>
+                  </div>
+                  <router-link 
+                    to="/pricing"
+                    class="px-3 py-1 text-xs font-medium rounded border transition-all hover:-translate-y-0.5"
+                    :style="{ 
+                      backgroundColor: isDark ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.2)',
+                      borderColor: 'rgba(239, 68, 68, 0.4)',
+                      color: '#ef4444'
+                    }"
+                  >
+                    去充值
+                  </router-link>
+                </div>
+
+                <!-- 积分不足时：禁用按钮 -->
                 <button 
+                  v-if="isCreditsInsufficient"
+                  disabled
+                  class="w-full py-4 rounded-sm font-bold text-base flex items-center justify-center gap-3 cursor-not-allowed opacity-60"
+                  :style="{ 
+                    backgroundColor: tokens.colors.background.elevated, 
+                    color: tokens.colors.text.muted,
+                    border: `1px solid ${tokens.colors.border.default}`
+                  }"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                  </svg>
+                  积分不足，无法生成计划
+                </button>
+                <!-- 积分充足时：正常按钮 -->
+                <button 
+                  v-else
                   @click="generatePlanForStrategy(selectedStrategy)"
                   class="w-full py-4 rounded-sm font-bold text-base transition-all flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-[0.99] shadow-lg"
                   :style="generatePlanSuccess ? { 
@@ -2499,7 +2628,24 @@
                     </svg>
                   </div>
                   <p class="text-xs">{{ $t('opportunity.relatedPlans.empty') }}</p>
+                  <!-- 积分不足时：显示充值链接 -->
+                  <template v-if="isCreditsInsufficient">
+                    <p class="mt-2 text-xs text-red-400">积分不足，无法生成</p>
+                    <router-link 
+                      to="/pricing"
+                      class="mt-2 text-xs font-medium px-3 py-1 rounded border transition-all"
+                      :style="{ 
+                        backgroundColor: isDark ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.05)',
+                        borderColor: 'rgba(239, 68, 68, 0.3)',
+                        color: '#ef4444'
+                      }"
+                    >
+                      去充值
+                    </router-link>
+                  </template>
+                  <!-- 积分充足时：正常按钮 -->
                   <button 
+                    v-else
                     @click="generatePlanForStrategy(selectedStrategy)"
                     class="mt-3 text-xs font-medium"
                     :style="{ color: tokens.colors.accent.primary }"
@@ -6032,6 +6178,25 @@ const loadSavedStrategies = () => {
   opacity: 1;
   transform: translateY(0);
   max-height: 500px;
+}
+
+/* Slide Down Transition (for chat warning bar) */
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+.slide-down-enter-from,
+.slide-down-leave-to {
+  opacity: 0;
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.slide-down-enter-to,
+.slide-down-leave-from {
+  opacity: 1;
+  max-height: 60px;
 }
 
 @keyframes fade-in {

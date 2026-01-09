@@ -25,16 +25,8 @@
       <!-- Content Area -->
       <div class="w-full px-4 lg:px-8">
         
-        <!-- Tab Content: Summary -->
-        <div v-if="activeTab === 'summary'">
-          <PortfolioSummarySection 
-            @switch-tab="switchTab"
-            @select-account="handleSelectAccount"
-          />
-        </div>
-
         <!-- Tab Content: Real Broker -->
-        <div v-else-if="activeTab === 'broker'">
+        <div v-if="activeTab === 'broker'">
           <RealBrokerSection ref="brokerSectionRef" />
         </div>
 
@@ -87,19 +79,17 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useTheme } from '../composables/useTheme'
 import Navbar from '../components/Navbar.vue'
-import PortfolioSummarySection from '../components/portfolio/PortfolioSummarySection.vue'
 import RealBrokerSection from '../components/portfolio/RealBrokerSection.vue'
 import SimulationSection from '../components/portfolio/SimulationSection.vue'
 
 const { t } = useI18n()
 const { tokens, isDark } = useTheme()
 
-// Active Tab
-const activeTab = ref('summary')
+// Active Tab - 默认显示实盘账户
+const activeTab = ref('broker')
 
-// Tabs Configuration
+// Tabs Configuration - 只保留2个 tab
 const tabs = computed(() => [
-  { id: 'summary', label: t('portfolio.tabs.summary'), icon: 'chart' },
   { id: 'broker', label: t('portfolio.tabs.broker'), icon: 'bank' },
   { id: 'simulation', label: t('portfolio.tabs.simulation'), icon: 'beaker' }
 ])
@@ -111,13 +101,6 @@ const brokerSectionRef = ref(null)
 const switchTab = (tabId) => {
   activeTab.value = tabId
   window.scrollTo({ top: 0, behavior: 'smooth' })
-}
-
-// Handle account selection from summary
-const handleSelectAccount = (accountId) => {
-  // This can be used to select specific account in broker section
-  // The broker section will handle the selection through its own state
-  console.log('Selected account:', accountId)
 }
 </script>
 
