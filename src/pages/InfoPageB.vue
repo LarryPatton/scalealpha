@@ -26,6 +26,26 @@
           使用引导
         </span>
       </button>
+
+      <!-- Demo: 积分不足状态切换按钮 -->
+      <button 
+        @click="isCreditsInsufficient = !isCreditsInsufficient"
+        class="fixed top-32 right-6 z-50 flex items-center gap-2 px-3 py-2 rounded-lg border transition-all shadow-lg"
+        :style="{ 
+          backgroundColor: isCreditsInsufficient ? 'rgba(239, 68, 68, 0.1)' : tokens.colors.background.surface, 
+          borderColor: isCreditsInsufficient ? '#ef4444' : tokens.colors.border.default, 
+          color: isCreditsInsufficient ? '#ef4444' : tokens.colors.text.tertiary 
+        }"
+        title="切换积分不足状态 (Demo)"
+      >
+        <svg v-if="isCreditsInsufficient" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+        <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+        </svg>
+        <span class="text-xs font-medium">{{ isCreditsInsufficient ? '积分不足' : '积分充足' }}</span>
+      </button>
       
       <!-- Hero Section (Always visible for all tabs) -->
       <div class="mb-8 text-center py-10">
@@ -195,9 +215,112 @@
       </div>
 
       <!-- Tab: Opportunities -->
-      <div id="opportunities-content" v-if="activeTab === 'opportunities'" class="w-full px-4 lg:px-8">
+      <div id="opportunities-content" v-if="activeTab === 'opportunities'" class="w-full px-4 lg:px-8 relative">
+        <!-- 积分不足毛玻璃遮罩层 (Fixed 全屏覆盖) -->
+        <Teleport to="body">
+          <Transition name="paywall-fade">
+            <div v-if="isCreditsInsufficient" class="fixed inset-0 z-[100] flex items-center justify-center">
+              <!-- 毛玻璃背景 -->
+              <div 
+                class="absolute inset-0 backdrop-blur-md"
+                :style="{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.7)' }"
+              ></div>
+              
+              <!-- 居中引导卡片 -->
+              <div 
+                class="relative z-10 border rounded-lg p-8 max-w-md text-center mx-4 transition-colors"
+                :style="{ 
+                  backgroundColor: tokens.colors.background.surface,
+                  borderColor: tokens.colors.border.default,
+                  boxShadow: isDark ? '0 25px 50px -12px rgba(0, 0, 0, 0.5)' : '0 25px 50px -12px rgba(0, 0, 0, 0.15)'
+                }"
+              >
+              <!-- 锁定图标 -->
+              <div 
+                class="w-16 h-16 mx-auto mb-5 rounded-lg flex items-center justify-center border"
+                :style="{ 
+                  backgroundColor: isDark ? 'rgba(6, 182, 212, 0.1)' : 'rgba(6, 182, 212, 0.08)',
+                  borderColor: isDark ? 'rgba(6, 182, 212, 0.3)' : 'rgba(6, 182, 212, 0.2)'
+                }"
+              >
+                <svg class="w-8 h-8 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+              </div>
+              
+              <!-- 标题 -->
+              <h3 class="text-xl font-bold mb-2" :style="{ color: tokens.colors.text.primary }">积分不足</h3>
+              <p class="text-sm mb-6 leading-relaxed" :style="{ color: tokens.colors.text.muted }">
+                您的积分余额不足，无法查看完整交易机会<br>
+                升级会员，解锁全部 <span class="text-cyan-500 font-bold">50+</span> 专业交易洞察
+              </p>
+              
+              <!-- 价值提示 -->
+              <div 
+                class="flex items-center justify-center gap-4 mb-6 py-4 border-y text-xs"
+                :style="{ borderColor: tokens.colors.border.subtle }"
+              >
+                <div class="flex items-center gap-1.5" :style="{ color: tokens.colors.text.tertiary }">
+                  <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                  </svg>
+                  <span>AI 评级分析</span>
+                </div>
+                <div class="flex items-center gap-1.5" :style="{ color: tokens.colors.text.tertiary }">
+                  <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                  </svg>
+                  <span>盈亏比计算</span>
+                </div>
+                <div class="flex items-center gap-1.5" :style="{ color: tokens.colors.text.tertiary }">
+                  <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                  </svg>
+                  <span>实时更新</span>
+                </div>
+              </div>
+              
+              <!-- 操作按钮 -->
+              <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <router-link 
+                  to="/pricing"
+                  class="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-md bg-cyan-500 text-white font-bold text-sm hover:bg-cyan-400 transition-all hover:-translate-y-0.5"
+                  :style="{ boxShadow: '0 4px 14px rgba(6, 182, 212, 0.3)' }"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                  </svg>
+                  立即充值
+                </router-link>
+                <button 
+                  @click="isCreditsInsufficient = false"
+                  class="px-6 py-2.5 rounded-md border font-medium text-sm transition-all hover:bg-opacity-10"
+                  :style="{ 
+                    borderColor: tokens.colors.border.default, 
+                    color: tokens.colors.text.secondary,
+                    backgroundColor: 'transparent'
+                  }"
+                  @mouseenter="$event.target.style.backgroundColor = tokens.colors.background.elevated"
+                  @mouseleave="$event.target.style.backgroundColor = 'transparent'"
+                >
+                  稍后再说
+                </button>
+              </div>
+              
+              <!-- 底部提示 -->
+              <p class="mt-5 text-[10px]" :style="{ color: tokens.colors.text.disabled }">
+                💡 首次充值享 <span class="text-amber-500 font-medium">8折优惠</span>
+              </p>
+              </div>
+            </div>
+          </Transition>
+        </Teleport>
+
         <div 
-          :class="viewMode === 'card' ? 'grid gap-4' : 'flex flex-col space-y-3'"
+          :class="[
+            viewMode === 'card' ? 'grid gap-4' : 'flex flex-col space-y-3',
+            isCreditsInsufficient ? 'filter blur-sm pointer-events-none select-none' : ''
+          ]"
           :style="viewMode === 'card' ? { gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))` } : {}"
         >
           <!-- Cards (Minimalist Dark) -->
@@ -1910,6 +2033,20 @@ const viewMode = ref('card') // 'card' or 'list'
 const themesViewMode = ref('list') // 'card' or 'list' for themes tab
 const showProgressBar = ref(true) // Toggle for progress bar display in card view
 
+// Demo: 积分不足状态切换
+const isCreditsInsufficient = ref(false)
+
+// 监听积分不足状态，控制页面滚动
+watch(isCreditsInsufficient, (insufficient) => {
+  if (insufficient) {
+    // 禁止页面滚动
+    document.body.style.overflow = 'hidden'
+  } else {
+    // 恢复页面滚动
+    document.body.style.overflow = ''
+  }
+})
+
 // Filter State
 const filters = ref({
   sources: [],
@@ -2878,6 +3015,8 @@ const setupObserver = () => {
 }
 
 const loadMore = async () => {
+  // 积分不足时禁止加载更多
+  if (isCreditsInsufficient.value) return
   if (isLoading.value) return
   isLoading.value = true
   
@@ -2996,6 +3135,8 @@ onUnmounted(() => {
   if (observer) observer.disconnect()
   window.removeEventListener('scroll', handleWindowScroll)
   document.removeEventListener('click', handleClickOutside)
+  // 确保恢复页面滚动
+  document.body.style.overflow = ''
 })
 
 // Watch tab change to reset observer and update URL
@@ -3226,5 +3367,26 @@ const renderedStrategyContent = computed(() => selectedStrategy.value.content ||
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+/* Paywall Fade Transition */
+.paywall-fade-enter-active,
+.paywall-fade-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.paywall-fade-enter-from,
+.paywall-fade-leave-to {
+  opacity: 0;
+}
+
+.paywall-fade-enter-from .relative,
+.paywall-fade-leave-to .relative {
+  transform: scale(0.95) translateY(10px);
+}
+
+.paywall-fade-enter-active .relative,
+.paywall-fade-leave-active .relative {
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 </style>

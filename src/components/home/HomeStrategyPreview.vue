@@ -56,7 +56,8 @@
         <!-- Overlay for Disabled State -->
         <div 
           v-if="!selectedAsset" 
-          class="absolute inset-0 z-20 backdrop-blur-sm flex items-center justify-center bg-black/20"
+          class="absolute inset-0 z-20 backdrop-blur-sm flex items-center justify-center"
+          :style="{ backgroundColor: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)' }"
         >
           <div class="text-xs font-mono text-cyan-500 animate-pulse">WAITING FOR TARGET LOCK...</div>
         </div>
@@ -177,7 +178,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useTheme } from '../../composables/useTheme'
 
-const { tokens } = useTheme()
+const { tokens, isDark } = useTheme()
 
 // Data
 const assets = [

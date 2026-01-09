@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="w-full h-full border rounded-lg overflow-hidden flex flex-col shadow-2xl transition-colors duration-300"
+    class="w-full h-full border rounded-lg flex flex-col shadow-2xl transition-colors duration-300 overflow-visible"
     :style="{ backgroundColor: tokens.colors.background.surface, borderColor: tokens.colors.border.default }"
   >
     <!-- Metrics Row -->

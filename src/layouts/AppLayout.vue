@@ -1,5 +1,6 @@
 <template>
-  <div class="min-h-screen bg-[#1a1a1a] text-white flex flex-col">
+  <div class="min-h-screen text-white flex flex-col" :class="{ 'bg-[#1a1a1a]': route.name !== 'Home' }">
+    <TechBackground v-if="route.name === 'Home'" />
     <!-- Global Navbar -->
     <Navbar />
 
@@ -16,5 +17,9 @@
 </template>
 
 <script setup>
+import { useRoute } from 'vue-router'
 import Navbar from '../components/Navbar.vue'
+import TechBackground from '../components/TechBackground.vue'
+
+const route = useRoute()
 </script>
