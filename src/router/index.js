@@ -71,6 +71,7 @@ import HomeDemo2Page from '../pages/HomeDemo2Page.vue';
 import IconPickerPage from '../pages/IconPickerPage.vue';
 import PortfolioHubPage from '../pages/PortfolioHubPage.vue'
 import PaywallDemoPage from '../pages/PaywallDemoPage.vue'
+import DeepResearchPage from '../pages/DeepResearchPage.vue'
 
 const routes = [
   // Root redirect - automatically redirect to Home page
@@ -463,6 +464,14 @@ const routes = [
     name: 'PaywallDemo',
     component: PaywallDemoPage,
     meta: { layout: BlankLayout }
+  },
+
+  // Deep Research Page
+  {
+    path: '/deep-research',
+    name: 'DeepResearch',
+    component: DeepResearchPage,
+    meta: { layout: AppLayout }
   },
 
   // 404

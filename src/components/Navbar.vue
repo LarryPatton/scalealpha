@@ -39,6 +39,15 @@
               ]"
               :style="{ color: $route.path === '/portfolio' ? (isDark ? '#fff' : '#1e293b') : (isDark ? tokens.colors.text.tertiary : '#334155') }"
             >{{ $t('nav.portfolio') }}</router-link>
+            <router-link 
+              to="/deep-research" 
+              class="text-sm font-medium transition-colors hover-underline-effect nav-link"
+              :class="[
+                isDark ? 'hover:text-white' : 'hover:text-slate-900',
+                $route.path === '/deep-research' ? 'nav-link-active' : ''
+              ]"
+              :style="{ color: $route.path === '/deep-research' ? (isDark ? '#fff' : '#1e293b') : (isDark ? tokens.colors.text.tertiary : '#334155') }"
+            >{{ $t('nav.deepResearch') }}</router-link>
           </div>
         </div>
 

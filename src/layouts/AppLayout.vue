@@ -1,18 +1,13 @@
 <template>
-  <div class="min-h-screen text-white flex flex-col" :class="{ 'bg-[#1a1a1a]': route.name !== 'Home' }">
+  <div class="h-screen text-white flex flex-col overflow-hidden" :class="{ 'bg-[#1a1a1a]': route.name !== 'Home' }">
     <TechBackground v-if="route.name === 'Home'" />
     <!-- Global Navbar -->
     <Navbar />
 
     <!-- Main Content -->
-    <main class="flex-grow">
+    <main class="flex-1 overflow-hidden">
       <slot></slot>
     </main>
-
-    <!-- Footer -->
-    <footer class="border-t border-[#404040] py-8 text-center text-gray-500 text-sm mt-auto">
-      <p>&copy; 2025 ScaleAlpha.ai. All rights reserved.</p>
-    </footer>
   </div>
 </template>
 

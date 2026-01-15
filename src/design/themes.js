@@ -21,7 +21,7 @@ export const darkTheme = {
     // 边框色 - 4层系统
     border: {
       subtle: '#1a1a1a',    // 最浅边框
-      default: '#222222',   // 默认边框
+      default: '#555555',   // 默认边框（稍微更明显）
       strong: '#333333',    // 强调边框
       hover: '#444444',     // 悬停边框
     },
@@ -116,7 +116,7 @@ export const lightTheme = {
     // 边框色 - 4层系统 (浅色调)
     border: {
       subtle: '#e2e8f0',    // 最浅边框 (slate-200)
-      default: '#cbd5e1',   // 默认边框 (slate-300)
+      default: '#b2bdca',   // 默认边框 (slate-300)
       strong: '#94a3b8',    // 强调边框 (slate-400)
       hover: '#64748b',     // 悬停边框 (slate-500)
     },
