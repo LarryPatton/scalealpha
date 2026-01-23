@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Researcher Workspace | Quantum Finance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00f2ff",
+                        "accent": "#1152d4",
+                        "background-dark": "#06090f",
+                        "card-dark": "#0d121d",
+                        "investigation": "#1a1f2e"
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .glass-panel {
+            background: rgba(13, 18, 29, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 242, 255, 0.1);
+        }
+        .investigation-panel {
+            background: rgba(13, 18, 29, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .glow-pulse {
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
+        }
+        .material-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.2s ease;
+        }
+        .material-card:hover {
+            border-color: rgba(0, 242, 255, 0.3);
+            background: rgba(0, 242, 255, 0.02);
+        }
+        .chat-bubble-ai {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .chat-bubble-user {
+            background: rgba(17, 82, 212, 0.2);
+            border: 1px solid rgba(17, 82, 212, 0.4);
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display text-white selection:bg-primary/30 overflow-hidden">
+<div class="relative flex h-screen w-full flex-col">
+<header class="flex items-center justify-between px-8 py-4 z-30 border-b border-white/5 bg-background-dark/80 backdrop-blur-md">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="size-8 text-primary">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 4H42V17.3333V30.6667H24V44H6V30.6667V17.3333H24V4Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<div>
+<h1 class="text-sm font-bold tracking-[0.2em] uppercase text-white">Quantum</h1>
+<p class="text-[10px] text-primary/60 font-medium tracking-widest uppercase">Finance Hub</p>
+</div>
+</div>
+<nav class="flex gap-6">
+<a class="text-[10px] font-bold tracking-widest text-white/40 hover:text-white uppercase transition-colors" href="#">Pipeline</a>
+<a class="text-[10px] font-bold tracking-widest text-primary uppercase border-b border-primary pb-1" href="#">Workspace</a>
+<a class="text-[10px] font-bold tracking-widest text-white/40 hover:text-white uppercase transition-colors" href="#">Intelligence</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-primary glow-pulse"></span>
+<span class="text-[10px] font-mono text-primary/80 uppercase tracking-tighter">Researcher Active</span>
+</div>
+<div class="h-6 w-px bg-white/10"></div>
+<div class="bg-center bg-cover rounded-full size-8 border border-white/20" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA9eFJSBUSMXWhNKS1NOffVgsBBKcAYNsAqDyUwmiWSOnaaR-P4bHE9_HU2Z0svNoPfO7DZ2ZF_CoY4RHYMd179KSNxAzQ1QHbaVULWHYJcvlP5-rgcwwhmnlhlFZ6olsqpZD6xxof-YOPCfJGuoRTUfYe6kUpLglTQpVDzFLI6QYI2CkE_dEHs6UTHzyR5SY8iiK4pww0-6wv5YU8wfnWb5nLnmbVXwQtAS4Aj4nBBU3e3nsEE_Dbdr-pBM6CP5AYFoMLTYZhdvXmE");'></div>
+</div>
+</header>
+<main class="flex-1 flex overflow-hidden">
+<aside class="w-64 border-r border-white/5 flex flex-col p-6 investigation-panel">
+<div class="mb-8">
+<div class="flex items-center gap-3 mb-6">
+<img class="size-10 rounded-lg border border-primary/30 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4raWNT-zuo2ddRMhHM7gm5AgZw2hYSV5Ol5DIElddd0H_FDTgooGBpA5BdbCmrnVWxGgjIHadrwSEqJNwFlTKc5R7pK6_pD_IS8N-ZIKZV-2bb-QmDxujE0vfuVHco8vOzjd4ydW8LJWoBGKUOgrK1gIpOAb1XNtgWQIVkLSgqC2PCAFMO0rDdpoSTrGGOG_wLQzSzehSTDVMRHH0PWFq3KmPX8c1uGplDtTYxFL5OD7eRSRtlNl2aDGu0A3eNPZCFSDTE7F8Vds_"/>
+<div>
+<h2 class="text-sm font-bold">Researcher</h2>
+<p class="text-[10px] text-white/40 uppercase tracking-widest">Lead Investigator</p>
+</div>
+</div>
+<div class="space-y-1">
+<button class="w-full text-left px-3 py-2 rounded bg-primary/10 text-primary text-xs font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">dashboard</span> Workspace
+                        </button>
+<button class="w-full text-left px-3 py-2 rounded hover:bg-white/5 text-white/60 text-xs font-semibold flex items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-sm">database</span> Sources
+                        </button>
+<button class="w-full text-left px-3 py-2 rounded hover:bg-white/5 text-white/60 text-xs font-semibold flex items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-sm">history</span> History
+                        </button>
+<button class="w-full text-left px-3 py-2 rounded hover:bg-white/5 text-white/60 text-xs font-semibold flex items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-sm">settings</span> Parameters
+                        </button>
+</div>
+</div>
+<div class="mt-auto">
+<div class="p-3 rounded-lg border border-white/5 bg-white/5">
+<p class="text-[10px] text-white/40 font-bold uppercase mb-2">System Status</p>
+<div class="flex items-center justify-between text-[10px]">
+<span class="text-white/60">Node Latency</span>
+<span class="text-primary font-mono">12ms</span>
+</div>
+<div class="h-1 bg-white/10 rounded-full mt-2 overflow-hidden">
+<div class="h-full w-4/5 bg-primary"></div>
+</div>
+</div>
+</div>
+</aside>
+<section class="flex-1 flex flex-col overflow-y-auto p-8 relative">
+<div class="mb-10">
+<div class="flex items-center gap-2 text-[10px] text-white/40 font-bold uppercase tracking-widest mb-2">
+<span>Workspace</span>
+<span class="material-symbols-outlined text-[10px]">chevron_right</span>
+<span class="text-primary/80">Active Investigation</span>
+</div>
+<h1 class="text-3xl font-extrabold tracking-tight">Market Signal Discovery</h1>
+<p class="text-white/40 text-sm mt-2 max-w-xl">Exploring non-linear correlations between global shipping indices and mid-cap technology disclosures.</p>
+</div>
+<div class="mb-12">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-xs font-black uppercase tracking-[0.2em] text-white/60">Read-Only Materials</h3>
+<span class="text-[10px] text-white/30 uppercase font-mono">Source: Data Scientist</span>
+</div>
+<div class="grid grid-cols-3 gap-4">
+<div class="material-card p-4 rounded-xl">
+<div class="size-8 rounded bg-primary/10 flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-primary text-xl">dataset</span>
+</div>
+<p class="text-xs font-bold mb-1">Global_Shipping_v4.csv</p>
+<p class="text-[10px] text-white/40 uppercase">Cleaned Dataset</p>
+</div>
+<div class="material-card p-4 rounded-xl">
+<div class="size-8 rounded bg-orange-500/10 flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-orange-500 text-xl">description</span>
+</div>
+<p class="text-xs font-bold mb-1">SEC_Disclosures_JSON</p>
+<p class="text-[10px] text-white/40 uppercase">Raw Feed</p>
+</div>
+<div class="material-card p-4 rounded-xl">
+<div class="size-8 rounded bg-purple-500/10 flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-purple-500 text-xl">insights</span>
+</div>
+<p class="text-xs font-bold mb-1">Volatility_Index_Ref</p>
+<p class="text-[10px] text-white/40 uppercase">Calculated Field</p>
+</div>
+</div>
+</div>
+<div class="mb-8">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-xs font-black uppercase tracking-[0.2em] text-white/60">Active Tasks</h3>
+<button class="text-[10px] text-primary font-bold uppercase tracking-widest hover:underline">+ New Exploration</button>
+</div>
+<div class="space-y-3">
+<div class="glass-panel p-4 rounded-xl flex items-center justify-between border-l-2 border-l-primary">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">travel_explore</span>
+</div>
+<div>
+<h4 class="text-sm font-bold">Broad Scan</h4>
+<p class="text-[10px] text-white/40">Searching for anomalies in sector-wide sentiment</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-[10px] font-mono text-primary/60 px-2 py-1 bg-primary/5 rounded border border-primary/10 uppercase">Processing</span>
+<span class="material-symbols-outlined text-white/20 cursor-pointer hover:text-white transition-colors">chevron_right</span>
+</div>
+</div>
+<div class="glass-panel p-4 rounded-xl flex items-center justify-between opacity-60 hover:opacity-100 transition-opacity">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-full bg-white/5 flex items-center justify-center">
+<span class="material-symbols-outlined text-white/40">search_insights</span>
+</div>
+<div>
+<h4 class="text-sm font-bold">Deep Dive</h4>
+<p class="text-[10px] text-white/40">Isolating specific causal links in 10-K filings</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-[10px] font-mono text-white/40 px-2 py-1 bg-white/5 rounded border border-white/10 uppercase">Queued</span>
+<span class="material-symbols-outlined text-white/20 cursor-pointer hover:text-white transition-colors">chevron_right</span>
+</div>
+</div>
+<div class="glass-panel p-4 rounded-xl flex items-center justify-between opacity-60 hover:opacity-100 transition-opacity">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-full bg-white/5 flex items-center justify-center">
+<span class="material-symbols-outlined text-white/40">hub</span>
+</div>
+<div>
+<h4 class="text-sm font-bold">Cross-topic Exploration</h4>
+<p class="text-[10px] text-white/40">Linking macro events to micro performance</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-[10px] font-mono text-white/40 px-2 py-1 bg-white/5 rounded border border-white/10 uppercase">Queued</span>
+<span class="material-symbols-outlined text-white/20 cursor-pointer hover:text-white transition-colors">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-auto pt-8">
+<div class="glass-panel rounded-lg p-3 flex items-center justify-between border-l-2 border-l-primary/40 bg-black/20">
+<div class="flex items-center gap-4 text-[10px] font-mono tracking-tight overflow-hidden whitespace-nowrap">
+<span class="text-primary font-bold">[14:22:15] DISCOVERY_AGENT</span>
+<span class="text-white/40">|</span>
+<span class="text-white/80">Broad Scan found outlier in ‘Port Congestion’ sentiment index...</span>
+</div>
+</div>
+</div>
+</section>
+<aside class="w-96 border-l border-white/5 flex flex-col bg-card-dark/30">
+<div class="p-6 border-b border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="size-2 rounded-full bg-primary glow-pulse"></div>
+<h3 class="text-sm font-bold uppercase tracking-widest">AI Specialist</h3>
+</div>
+<span class="material-symbols-outlined text-white/20 text-xl cursor-pointer">more_horiz</span>
+</div>
+<div class="flex-1 overflow-y-auto p-6 space-y-6">
+<div class="flex flex-col gap-2 max-w-[85%]">
+<div class="chat-bubble-ai p-4 rounded-2xl rounded-tl-none">
+<p class="text-sm leading-relaxed text-white/80">I've noticed a strange correlation between the recent Baltic Dry Index spike and a series of logistics disclosures from the tech sector. It seems counter-intuitive.</p>
+</div>
+<span class="text-[9px] text-white/30 uppercase font-bold pl-1">Specialist • 10:42 AM</span>
+</div>
+<div class="flex flex-col gap-2 max-w-[85%] self-end">
+<div class="chat-bubble-user p-4 rounded-2xl rounded-tr-none">
+<p class="text-sm leading-relaxed text-white/90">That is interesting. Does the data scientist's dataset account for regional port strikes?</p>
+</div>
+<span class="text-[9px] text-white/30 uppercase font-bold pr-1 self-end">You • 10:44 AM</span>
+</div>
+<div class="flex flex-col gap-2 max-w-[85%]">
+<div class="chat-bubble-ai p-4 rounded-2xl rounded-tl-none">
+<p class="text-sm leading-relaxed text-white/80">Checking... The primary dataset from the Data Scientist includes global port telemetry but misses local union activity. <span class="text-primary font-semibold">Should we dig deeper here?</span> I can cross-reference some news feeds to see if strikes are the missing link.</p>
+</div>
+<div class="flex gap-2 mt-2">
+<button class="px-3 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-[10px] font-bold uppercase hover:bg-primary/20 transition-all">Yes, initiate deep dive</button>
+<button class="px-3 py-1.5 rounded-full border border-white/10 bg-white/5 text-white/60 text-[10px] font-bold uppercase hover:bg-white/10 transition-all">Not yet</button>
+</div>
+<span class="text-[9px] text-white/30 uppercase font-bold pl-1">Specialist • Just now</span>
+</div>
+</div>
+<div class="p-6 mt-auto border-t border-white/5">
+<div class="relative">
+<textarea class="w-full bg-white/5 border border-white/10 rounded-xl p-4 pr-12 text-sm focus:outline-none focus:border-primary/40 resize-none h-24 placeholder:text-white/20" placeholder="Ask the Researcher..."></textarea>
+<button class="absolute bottom-4 right-4 text-primary hover:text-white transition-colors">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+<div class="flex gap-4 mt-4 px-1">
+<button class="flex items-center gap-1.5 text-[9px] font-bold uppercase text-white/40 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-sm">attach_file</span> Attach Data
+                        </button>
+<button class="flex items-center gap-1.5 text-[9px] font-bold uppercase text-white/40 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-sm">summarize</span> Summarize Sources
+                        </button>
+</div>
+</div>
+</aside>
+</main>
+<div class="fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-50">
+<button class="size-10 flex items-center justify-center rounded-lg glass-panel border-white/10 text-white/40 hover:text-primary hover:border-primary/40 transition-all">
+<span class="material-symbols-outlined text-xl">layers</span>
+</button>
+<button class="size-10 flex items-center justify-center rounded-lg glass-panel border-white/10 text-white/40 hover:text-primary hover:border-primary/40 transition-all">
+<span class="material-symbols-outlined text-xl">psychology</span>
+</button>
+</div>
+<div class="absolute inset-0 z-[-1] pointer-events-none opacity-[0.03]" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+</div>
+
+</body></html>

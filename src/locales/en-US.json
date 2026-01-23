@@ -4,6 +4,7 @@
     "opportunity": "Opportunities",
     "portfolio": "Portfolio",
     "deepResearch": "Deep Research",
+    "advanced": "Advanced",
     "watchlist": "Watchlist",
     "login": "Login / Register",
     "logout": "Logout",
@@ -533,6 +534,59 @@
     "wechatTitle": "Scan QR Code to Add WeChat",
     "wechatHint": "Scan with WeChat to add us",
     "copied": "Copied"
+  },
+  "advanced": {
+    "title": "AI Workflow Orchestration",
+    "status": "Status",
+    "enter": "Enter",
+    "systemLog": {
+      "agent": "Researcher",
+      "message": "Scanning SEC filings for new disclosure trends...",
+      "latency": "Data latency",
+      "syncing": "Syncing"
+    },
+    "agents": {
+      "dataScientist": {
+        "name": "Data Scientist",
+        "desc": "Signal engineering & data extraction"
+      },
+      "researcher": {
+        "name": "Researcher",
+        "desc": "Sentiment analysis & macro trends"
+      },
+      "analyst": {
+        "name": "Analyst",
+        "desc": "Fundamental risk evaluation"
+      },
+      "strategist": {
+        "name": "Strategist",
+        "desc": "Model architecture & allocation"
+      },
+      "trader": {
+        "name": "Trader",
+        "desc": "Execution & order management"
+      },
+      "portfolioManager": {
+        "name": "Portfolio Mgr",
+        "desc": "Global oversight & risk monitoring"
+      }
+    },
+    "workspace": {
+      "back": "Back",
+      "currentWorkspace": "Current Workspace",
+      "workspace": "Workspace",
+      "exportPlans": "Export Plans",
+      "materials": "Materials & Plans",
+      "tasks": "Active Tasks",
+      "addTask": "Add Task",
+      "assetDistribution": "Asset Weight Distribution",
+      "riskExposure": "Systemic Risk Exposure",
+      "systemHealth": "System Health",
+      "aiAssistant": "AI Assistant",
+      "online": "Online",
+      "inputPlaceholder": "Enter your question or command..."
+    },
+    "hire": "HIRE AGENT"
   },
   "feedback": {
     "title": "Feedback",

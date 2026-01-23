@@ -72,6 +72,8 @@ import IconPickerPage from '../pages/IconPickerPage.vue';
 import PortfolioHubPage from '../pages/PortfolioHubPage.vue'
 import PaywallDemoPage from '../pages/PaywallDemoPage.vue'
 import DeepResearchPage from '../pages/DeepResearchPage.vue'
+import AdvancedModePage from '../pages/AdvancedModePage.vue'
+import AdvancedWorkspacePage from '../pages/AdvancedWorkspacePage.vue'
 
 const routes = [
   // Root redirect - automatically redirect to Home page
@@ -471,6 +473,20 @@ const routes = [
     path: '/deep-research',
     name: 'DeepResearch',
     component: DeepResearchPage,
+    meta: { layout: AppLayout }
+  },
+
+  // ========== Advanced Mode Routes ==========
+  {
+    path: '/advanced',
+    name: 'Advanced',
+    component: AdvancedModePage,
+    meta: { layout: AppLayout }
+  },
+  {
+    path: '/advanced/workspace/:id',
+    name: 'AdvancedWorkspace',
+    component: AdvancedWorkspacePage,
     meta: { layout: AppLayout }
   },
 

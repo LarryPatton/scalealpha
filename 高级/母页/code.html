@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Minimalist Team Pipeline Variant</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00f2ff",
+                        "accent": "#1152d4",
+                        "background-dark": "#06090f",
+                        "card-dark": "#0d121d",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .glass-panel {
+            background: rgba(13, 18, 29, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 242, 255, 0.1);
+        }
+        .pipeline-node {
+            position: relative;
+            z-index: 10;
+        }
+        .pipeline-connector {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 242, 255, 0.3), transparent);
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            z-index: 1;
+        }
+        .glow-pulse {
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.5);
+        }
+        .avatar-glow {
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.15);
+        }
+        .neon-border {
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .neon-border:hover {
+            border-color: rgba(0, 242, 255, 0.6);
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display text-white selection:bg-primary/30">
+<div class="relative flex h-screen w-full flex-col overflow-hidden">
+<header class="flex items-center justify-between px-12 py-6 z-30 border-b border-white/5">
+<div class="flex items-center gap-10">
+<div class="flex items-center gap-3">
+<div class="size-8 text-primary">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 4H42V17.3333V30.6667H24V44H6V30.6667V17.3333H24V4Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<div>
+<h1 class="text-sm font-bold tracking-[0.2em] uppercase text-white">Quantum</h1>
+<p class="text-[10px] text-primary/60 font-medium tracking-widest uppercase">Finance Hub</p>
+</div>
+</div>
+<nav class="hidden md:flex gap-8">
+<a class="text-xs font-bold tracking-widest text-primary uppercase" href="#">Pipeline</a>
+<a class="text-xs font-bold tracking-widest text-white/40 hover:text-white uppercase transition-colors" href="#">Portfolio</a>
+<a class="text-xs font-bold tracking-widest text-white/40 hover:text-white uppercase transition-colors" href="#">Intelligence</a>
+</nav>
+</div>
+<div class="flex items-center gap-8">
+<div class="flex gap-6 items-center">
+<div class="text-right">
+<p class="text-[9px] text-white/40 uppercase font-bold tracking-tighter">System Load</p>
+<div class="flex items-center gap-1 justify-end">
+<div class="h-1 w-8 bg-white/10 rounded-full overflow-hidden">
+<div class="h-full w-2/3 bg-primary"></div>
+</div>
+<span class="text-[10px] font-mono text-primary">64%</span>
+</div>
+</div>
+<div class="h-8 w-px bg-white/10"></div>
+<div class="bg-center bg-cover rounded-full size-8 border border-white/10 avatar-glow" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA9eFJSBUSMXWhNKS1NOffVgsBBKcAYNsAqDyUwmiWSOnaaR-P4bHE9_HU2Z0svNoPfO7DZ2ZF_CoY4RHYMd179KSNxAzQ1QHbaVULWHYJcvlP5-rgcwwhmnlhlFZ6olsqpZD6xxof-YOPCfJGuoRTUfYe6kUpLglTQpVDzFLI6QYI2CkE_dEHs6UTHzyR5SY8iiK4pww0-6wv5YU8wfnWb5nLnmbVXwQtAS4Aj4nBBU3e3nsEE_Dbdr-pBM6CP5AYFoMLTYZhdvXmE");'></div>
+</div>
+</div>
+</header>
+<main class="flex-1 relative flex flex-col items-center justify-center p-4">
+<div class="absolute top-16 text-center">
+<h2 class="text-white text-xs font-black tracking-[0.5em] uppercase mb-4 opacity-80">AI Workflow Orchestration</h2>
+<div class="flex items-center justify-center gap-2">
+<div class="h-[1px] w-12 bg-gradient-to-r from-transparent to-primary/40"></div>
+<div class="size-1.5 rounded-full bg-primary glow-pulse"></div>
+<div class="h-[1px] w-12 bg-gradient-to-l from-transparent to-primary/40"></div>
+</div>
+</div>
+<div class="relative w-full max-w-[1400px] flex items-center justify-between px-12">
+<div class="pipeline-connector"></div>
+<div class="pipeline-node flex flex-col items-center gap-6">
+<div class="relative">
+<div class="size-20 rounded-full bg-background-dark border-2 border-primary/40 p-1 avatar-glow transition-transform hover:scale-110 duration-500">
+<img class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCH3Z_ymOBKQDpvNVCc-vmv02oMfh1DGkWe9LjLpBncLNvEIrILMr4YeaDN2Bga3vGSNMfnQT1G1cCZvpTx4fyHYHSmeGWRonBMgrIF2hEgaZA1j2mC67VhuaFh6peS7wbdgwiZ86UQwyo8jTC2ouC0DT6QoRKak73Y_MYxagjylr1ubIOJksWF5p83rGtKCEN-7mBWen6JME5YQ9pjiM7nLUerP4ZE-GSeeZY5cn9cJvrxLMA9do8PdYbl9sqYJkyWoI7UnCdJklSm"/>
+</div>
+<div class="absolute -top-1 -right-1 size-4 bg-primary rounded-full border-2 border-background-dark glow-pulse"></div>
+</div>
+<div class="glass-panel neon-border w-48 p-4 rounded-xl flex flex-col items-center text-center">
+<h3 class="text-white text-sm font-bold tracking-tight mb-1">Data Scientist</h3>
+<p class="text-[10px] text-white/40 mb-4 h-8 overflow-hidden">Signal engineering &amp; data extraction</p>
+<div class="flex flex-col w-full gap-2">
+<div class="flex items-center justify-between px-2 py-1 bg-primary/5 rounded border border-primary/10">
+<span class="text-[8px] text-primary font-bold uppercase tracking-widest">Status</span>
+<span class="text-[8px] text-white font-mono uppercase">Optimizing</span>
+</div>
+<button class="w-full py-2 bg-primary text-background-dark text-[10px] font-black uppercase tracking-widest rounded hover:bg-white transition-colors">Enter</button>
+</div>
+</div>
+</div>
+<div class="pipeline-node flex flex-col items-center gap-6">
+<div class="relative">
+<div class="size-20 rounded-full bg-background-dark border-2 border-primary/40 p-1 avatar-glow transition-transform hover:scale-110 duration-500">
+<img class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4raWNT-zuo2ddRMhHM7gm5AgZw2hYSV5Ol5DIElddd0H_FDTgooGBpA5BdbCmrnVWxGgjIHadrwSEqJNwFlTKc5R7pK6_pD_IS8N-ZIKZV-2bb-QmDxujE0vfuVHco8vOzjd4ydW8LJWoBGKUOgrK1gIpOAb1XNtgWQIVkLSgqC2PCAFMO0rDdpoSTrGGOG_wLQzSzehSTDVMRHH0PWFq3KmPX8c1uGplDtTYxFL5OD7eRSRtlNl2aDGu0A3eNPZCFSDTE7F8Vds_"/>
+</div>
+<div class="absolute -top-1 -right-1 size-4 bg-primary rounded-full border-2 border-background-dark glow-pulse"></div>
+</div>
+<div class="glass-panel neon-border w-48 p-4 rounded-xl flex flex-col items-center text-center">
+<h3 class="text-white text-sm font-bold tracking-tight mb-1">Researcher</h3>
+<p class="text-[10px] text-white/40 mb-4 h-8 overflow-hidden">Sentiment analysis &amp; macro trends</p>
+<div class="flex flex-col w-full gap-2">
+<div class="flex items-center justify-between px-2 py-1 bg-primary/5 rounded border border-primary/10">
+<span class="text-[8px] text-primary font-bold uppercase tracking-widest">Status</span>
+<span class="text-[8px] text-white font-mono uppercase">Scanning</span>
+</div>
+<button class="w-full py-2 bg-primary text-background-dark text-[10px] font-black uppercase tracking-widest rounded hover:bg-white transition-colors">Enter</button>
+</div>
+</div>
+</div>
+<div class="pipeline-node flex flex-col items-center gap-6">
+<div class="relative">
+<div class="size-20 rounded-full bg-background-dark border-2 border-orange-500/50 p-1 transition-transform hover:scale-110 duration-500">
+<img class="w-full h-full object-cover rounded-full grayscale group-hover:grayscale-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_QNTx0BbotH6lg2KwdWld1iavqqAON8bRJ6jOVHNGwNec1YWFW5hMBNNDHJHI7pBIFPWtBlqPQfALpiHd2CNcp8b1hjWcYSnt1almrA8wqiDtNpk_lpwf3zr6XyLGPsD4Yh7fsIStsgJRpNGGh6zYg292_3lFw5NTT1syl4IY9hWqFmxYqqay-rMGb1LGSSqi7kvcrq5Un5VyQ1fA-IWszQC-vOtDC0KK_wcNBD9-y1LUPCKQmAK_IPA9grqNoUzqfFyG_KHkqmuh"/>
+</div>
+<div class="absolute -top-1 -right-1 size-4 bg-orange-500 rounded-full border-2 border-background-dark animate-pulse"></div>
+</div>
+<div class="glass-panel border-orange-500/20 w-48 p-4 rounded-xl flex flex-col items-center text-center">
+<h3 class="text-white text-sm font-bold tracking-tight mb-1">Analyst</h3>
+<p class="text-[10px] text-white/40 mb-4 h-8 overflow-hidden">Fundamental risk evaluation</p>
+<div class="flex flex-col w-full gap-2">
+<div class="flex items-center justify-between px-2 py-1 bg-orange-500/5 rounded border border-orange-500/10">
+<span class="text-[8px] text-orange-400 font-bold uppercase tracking-widest">Warning</span>
+<span class="text-[8px] text-white font-mono uppercase">Review Req.</span>
+</div>
+<button class="w-full py-2 bg-orange-500 text-white text-[10px] font-black uppercase tracking-widest rounded hover:bg-orange-600 transition-colors">Review</button>
+</div>
+</div>
+</div>
+<div class="pipeline-node flex flex-col items-center gap-6 opacity-40 hover:opacity-100 transition-opacity duration-500">
+<div class="relative">
+<div class="size-20 rounded-full bg-background-dark border-2 border-white/10 p-1 flex items-center justify-center">
+<span class="material-symbols-outlined text-white/20 text-3xl">psychology</span>
+</div>
+</div>
+<div class="glass-panel border-white/5 w-48 p-4 rounded-xl flex flex-col items-center text-center">
+<h3 class="text-white/60 text-sm font-bold tracking-tight mb-1">Strategist</h3>
+<p class="text-[10px] text-white/20 mb-4 h-8 overflow-hidden">Model architecture &amp; allocation</p>
+<button class="w-full py-2 bg-white/5 border border-white/10 text-white/60 text-[10px] font-black uppercase tracking-widest rounded hover:bg-white hover:text-background-dark transition-all">Hire Agent</button>
+</div>
+</div>
+<div class="pipeline-node flex flex-col items-center gap-6 opacity-40 hover:opacity-100 transition-opacity duration-500">
+<div class="relative">
+<div class="size-20 rounded-full bg-background-dark border-2 border-white/10 p-1 flex items-center justify-center">
+<span class="material-symbols-outlined text-white/20 text-3xl">bolt</span>
+</div>
+</div>
+<div class="glass-panel border-white/5 w-48 p-4 rounded-xl flex flex-col items-center text-center">
+<h3 class="text-white/60 text-sm font-bold tracking-tight mb-1">Trader</h3>
+<p class="text-[10px] text-white/20 mb-4 h-8 overflow-hidden">Execution &amp; order management</p>
+<button class="w-full py-2 bg-white/5 border border-white/10 text-white/60 text-[10px] font-black uppercase tracking-widest rounded hover:bg-white hover:text-background-dark transition-all">Hire Agent</button>
+</div>
+</div>
+<div class="pipeline-node flex flex-col items-center gap-6 opacity-40 hover:opacity-100 transition-opacity duration-500">
+<div class="relative">
+<div class="size-20 rounded-full bg-background-dark border-2 border-white/10 p-1 flex items-center justify-center">
+<span class="material-symbols-outlined text-white/20 text-3xl">account_balance</span>
+</div>
+</div>
+<div class="glass-panel border-white/5 w-48 p-4 rounded-xl flex flex-col items-center text-center">
+<h3 class="text-white/60 text-sm font-bold tracking-tight mb-1">Portfolio Mgr</h3>
+<p class="text-[10px] text-white/20 mb-4 h-8 overflow-hidden">Global oversight &amp; risk monitoring</p>
+<button class="w-full py-2 bg-white/5 border border-white/10 text-white/60 text-[10px] font-black uppercase tracking-widest rounded hover:bg-white hover:text-background-dark transition-all">Hire Agent</button>
+</div>
+</div>
+</div>
+<div class="absolute bottom-12 w-full max-w-5xl px-12">
+<div class="glass-panel rounded-lg p-3 flex items-center justify-between border-l-2 border-l-primary">
+<div class="flex items-center gap-4 text-[10px] font-mono tracking-tight overflow-hidden whitespace-nowrap">
+<span class="text-primary font-bold">[09:41:02] SYS_READY</span>
+<span class="text-white/40">|</span>
+<span class="text-white/80"><span class="text-primary">Researcher:</span> Scanning SEC filings for new disclosure trends...</span>
+<span class="text-white/40">|</span>
+<span class="text-white/60">Data latency: 12ms</span>
+</div>
+<div class="flex items-center gap-3 pl-6 border-l border-white/10">
+<div class="size-1.5 rounded-full bg-primary glow-pulse"></div>
+<span class="text-[9px] font-black text-white/40 uppercase tracking-widest">Syncing</span>
+</div>
+</div>
+</div>
+</main>
+<div class="fixed right-6 top-1/2 -translate-y-1/2 flex flex-col gap-3">
+<button class="size-10 flex items-center justify-center rounded-lg glass-panel border-white/10 text-white/40 hover:text-primary hover:border-primary/40 transition-all">
+<span class="material-symbols-outlined text-xl">settings</span>
+</button>
+<button class="size-10 flex items-center justify-center rounded-lg glass-panel border-white/10 text-white/40 hover:text-primary hover:border-primary/40 transition-all">
+<span class="material-symbols-outlined text-xl">layers</span>
+</button>
+<button class="size-10 flex items-center justify-center rounded-lg glass-panel border-white/10 text-white/40 hover:text-primary hover:border-primary/40 transition-all">
+<span class="material-symbols-outlined text-xl">database</span>
+</button>
+</div>
+<div class="absolute inset-0 z-[-1] pointer-events-none opacity-[0.03]" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+</div>
+
+</body></html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Data Scientist Workspace | Quantum Finance Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00f2ff",
+                        "accent": "#1152d4",
+                        "background-dark": "#06090f",
+                        "card-dark": "#0d121d",
+                        "border-dark": "#1a1f2e",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .glass-panel {
+            background: rgba(13, 18, 29, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 242, 255, 0.05);
+        }
+        .glow-pulse {
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.5);
+        }
+        .task-card {
+            background: rgba(13, 18, 29, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+        .task-card:hover {
+            border-color: rgba(0, 242, 255, 0.3);
+            background: rgba(13, 18, 29, 0.6);
+        }
+        .material-card {
+            background: rgba(13, 18, 29, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .material-card.selected {
+            border-color: #00f2ff;
+            background: rgba(0, 242, 255, 0.05);
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display text-white selection:bg-primary/30 overflow-hidden">
+<div class="flex h-screen w-full flex-col">
+<header class="flex h-16 items-center justify-between px-6 z-30 border-b border-white/5 bg-background-dark/80 backdrop-blur-md">
+<div class="flex items-center gap-10">
+<div class="flex items-center gap-3">
+<div class="size-7 text-primary">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 4H42V17.3333V30.6667H24V44H6V30.6667V17.3333H24V4Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<div>
+<h1 class="text-xs font-bold tracking-[0.2em] uppercase text-white leading-tight">Quantum</h1>
+<p class="text-[9px] text-primary/60 font-medium tracking-widest uppercase">Data Module</p>
+</div>
+</div>
+<nav class="hidden md:flex gap-6">
+<a class="text-[10px] font-bold tracking-widest text-white/40 hover:text-white uppercase transition-colors" href="#">Pipeline</a>
+<a class="text-[10px] font-bold tracking-widest text-primary border-b-2 border-primary pb-5 mt-5 uppercase" href="#">Workspace</a>
+<a class="text-[10px] font-bold tracking-widest text-white/40 hover:text-white uppercase transition-colors" href="#">History</a>
+<a class="text-[10px] font-bold tracking-widest text-white/40 hover:text-white uppercase transition-colors" href="#">Settings</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative">
+<span class="material-symbols-outlined text-white/40 text-xl cursor-pointer hover:text-white transition-colors">notifications</span>
+<div class="absolute -top-0.5 -right-0.5 size-2 bg-primary rounded-full border-2 border-background-dark"></div>
+</div>
+<div class="h-8 w-px bg-white/10"></div>
+<div class="flex items-center gap-3">
+<div class="text-right">
+<p class="text-[10px] text-white font-semibold">User Admin</p>
+<p class="text-[9px] text-white/40 uppercase tracking-tighter">Enterprise Tier</p>
+</div>
+<div class="bg-center bg-cover rounded-full size-8 border border-white/10" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA9eFJSBUSMXWhNKS1NOffVgsBBKcAYNsAqDyUwmiWSOnaaR-P4bHE9_HU2Z0svNoPfO7DZ2ZF_CoY4RHYMd179KSNxAzQ1QHbaVULWHYJcvlP5-rgcwwhmnlhlFZ6olsqpZD6xxof-YOPCfJGuoRTUfYe6kUpLglTQpVDzFLI6QYI2CkE_dEHs6UTHzyR5SY8iiK4pww0-6wv5YU8wfnWb5nLnmbVXwQtAS4Aj4nBBU3e3nsEE_Dbdr-pBM6CP5AYFoMLTYZhdvXmE");'></div>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<aside class="w-64 border-r border-white/5 bg-[#080c14] flex flex-col">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-8">
+<div class="size-10 rounded-full border border-primary/30 p-0.5 bg-background-dark overflow-hidden">
+<img class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCH3Z_ymOBKQDpvNVCc-vmv02oMfh1DGkWe9LjLpBncLNvEIrILMr4YeaDN2Bga3vGSNMfnQT1G1cCZvpTx4fyHYHSmeGWRonBMgrIF2hEgaZA1j2mC67VhuaFh6peS7wbdgwiZ86UQwyo8jTC2ouC0DT6QoRKak73Y_MYxagjylr1ubIOJksWF5p83rGtKCEN-7mBWen6JME5YQ9pjiM7nLUerP4ZE-GSeeZY5cn9cJvrxLMA9do8PdYbl9sqYJkyWoI7UnCdJklSm"/>
+</div>
+<div>
+<h2 class="text-sm font-bold text-white">Data Scientist</h2>
+<p class="text-[10px] text-primary/60 font-mono">STATUS: ONLINE</p>
+</div>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 bg-primary/10 text-primary rounded-lg text-xs font-medium" href="#">
+<span class="material-symbols-outlined text-lg">database</span>
+                            Data Control
+                        </a>
+<a class="flex items-center gap-3 px-3 py-2 text-white/40 hover:bg-white/5 hover:text-white rounded-lg text-xs font-medium transition-all" href="#">
+<span class="material-symbols-outlined text-lg">analytics</span>
+                            Analysis
+                        </a>
+<a class="flex items-center gap-3 px-3 py-2 text-white/40 hover:bg-white/5 hover:text-white rounded-lg text-xs font-medium transition-all" href="#">
+<span class="material-symbols-outlined text-lg">schema</span>
+                            Models
+                        </a>
+<a class="flex items-center gap-3 px-3 py-2 text-white/40 hover:bg-white/5 hover:text-white rounded-lg text-xs font-medium transition-all" href="#">
+<span class="material-symbols-outlined text-lg">description</span>
+                            Reports
+                        </a>
+</nav>
+</div>
+<div class="mt-auto p-6">
+<div class="p-4 rounded-xl border border-white/5 bg-white/[0.02]">
+<div class="flex items-center gap-2 mb-2">
+<div class="size-2 bg-green-500 rounded-full glow-pulse"></div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-white/60">System Status</span>
+</div>
+<p class="text-[10px] text-white/40 leading-relaxed">All modules operational. Latency: 12ms</p>
+</div>
+</div>
+</aside>
+<main class="flex-1 bg-background-dark overflow-y-auto p-8">
+<div class="max-w-5xl mx-auto">
+<div class="flex items-center justify-between mb-8">
+<div>
+<p class="text-[10px] text-primary font-bold uppercase tracking-[0.2em] mb-1">Workspace / Data Scientist</p>
+<h2 class="text-3xl font-extrabold text-white tracking-tight">Data Module Configuration</h2>
+<p class="text-sm text-white/40 mt-1">Manage tasks and coordinate with the system specialist</p>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs font-bold transition-all">
+<span class="material-symbols-outlined text-lg">upload</span>
+                            Export Config
+                        </button>
+</div>
+<section class="mb-10">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-sm font-bold text-white uppercase tracking-widest">Materials</h3>
+<span class="text-[10px] text-white/40 uppercase font-bold tracking-widest">4 Sources Selected</span>
+</div>
+<div class="grid grid-cols-4 gap-4">
+<div class="material-card selected p-4 rounded-xl relative cursor-pointer group">
+<div class="absolute top-3 right-3 text-primary">
+<span class="material-symbols-outlined text-lg">check_circle</span>
+</div>
+<div class="size-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary mb-3">
+<span class="material-symbols-outlined text-xl">csv</span>
+</div>
+<h4 class="text-[11px] font-bold text-white mb-0.5">research_v1.csv</h4>
+<p class="text-[9px] text-white/40 uppercase">Uploaded File</p>
+</div>
+<div class="material-card selected p-4 rounded-xl relative cursor-pointer group">
+<div class="absolute top-3 right-3 text-primary">
+<span class="material-symbols-outlined text-lg">check_circle</span>
+</div>
+<div class="size-8 bg-red-500/10 rounded-lg flex items-center justify-center text-red-400 mb-3">
+<span class="material-symbols-outlined text-xl">picture_as_pdf</span>
+</div>
+<h4 class="text-[11px] font-bold text-white mb-0.5">market_trends.pdf</h4>
+<p class="text-[9px] text-white/40 uppercase">Uploaded File</p>
+</div>
+<div class="material-card selected p-4 rounded-xl relative cursor-pointer group">
+<div class="absolute top-3 right-3 text-primary">
+<span class="material-symbols-outlined text-lg">check_circle</span>
+</div>
+<div class="size-8 bg-blue-500/10 rounded-lg flex items-center justify-center text-blue-400 mb-3">
+<span class="material-symbols-outlined text-xl">api</span>
+</div>
+<h4 class="text-[11px] font-bold text-white mb-0.5">Yahoo Finance API</h4>
+<p class="text-[9px] text-white/40 uppercase">Market API</p>
+</div>
+<div class="material-card p-4 rounded-xl relative cursor-pointer group">
+<div class="size-8 bg-white/5 rounded-lg flex items-center justify-center text-white/20 mb-3">
+<span class="material-symbols-outlined text-xl">rss_feed</span>
+</div>
+<h4 class="text-[11px] font-bold text-white/60 mb-0.5">Sentiment Feed</h4>
+<p class="text-[9px] text-white/20 uppercase">Public Feed</p>
+</div>
+</div>
+</section>
+<section>
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-sm font-bold text-white uppercase tracking-widest">Active Tasks</h3>
+<button class="text-[10px] text-primary uppercase font-bold tracking-widest hover:underline">Add Task</button>
+</div>
+<div class="space-y-3">
+<div class="task-card p-4 rounded-xl flex items-center gap-4">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">sync_alt</span>
+</div>
+<div class="flex-1">
+<h4 class="text-sm font-bold text-white">Classify &amp; Label</h4>
+<p class="text-[11px] text-white/40">Organizing market data by volatility index</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="px-3 py-1 bg-primary/20 text-primary text-[9px] font-black uppercase tracking-widest rounded-full">Processing</div>
+<span class="material-symbols-outlined text-white/20">chevron_right</span>
+</div>
+</div>
+<div class="task-card p-4 rounded-xl flex items-center gap-4">
+<div class="size-10 rounded-lg bg-white/5 flex items-center justify-center text-white/40">
+<span class="material-symbols-outlined">merge</span>
+</div>
+<div class="flex-1">
+<h4 class="text-sm font-bold text-white">Consolidate Data</h4>
+<p class="text-[11px] text-white/40">Merging CSV and PDF text extractions</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="px-3 py-1 bg-white/5 text-white/40 text-[9px] font-black uppercase tracking-widest rounded-full">To-Do</div>
+<span class="material-symbols-outlined text-white/20">chevron_right</span>
+</div>
+</div>
+<div class="task-card p-4 rounded-xl flex items-center gap-4 opacity-70">
+<div class="size-10 rounded-lg bg-white/5 flex items-center justify-center text-white/40">
+<span class="material-symbols-outlined">filter_list</span>
+</div>
+<div class="flex-1">
+<h4 class="text-sm font-bold text-white">Filter Noise</h4>
+<p class="text-[11px] text-white/40">Remove outliers from high-frequency sentiment data</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="px-3 py-1 bg-white/5 text-white/40 text-[9px] font-black uppercase tracking-widest rounded-full">To-Do</div>
+<span class="material-symbols-outlined text-white/20">chevron_right</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<aside class="w-96 border-l border-white/5 bg-[#080c14] flex flex-col">
+<div class="p-4 border-b border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-xl">smart_toy</span>
+</div>
+<div>
+<h3 class="text-xs font-bold text-white">System Specialist</h3>
+<p class="text-[9px] text-green-400 font-mono">ONLINE &amp; ANALYZING</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-white/20 cursor-pointer">more_vert</span>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-6">
+<div class="space-y-2">
+<div class="flex items-center justify-between">
+<span class="text-[9px] font-bold text-primary uppercase tracking-widest">Specialist <span class="text-white/20 ml-1">10:42 AM</span></span>
+</div>
+<div class="bg-white/[0.03] border border-white/5 p-3 rounded-2xl rounded-tl-none">
+<p class="text-xs text-white/80 leading-relaxed">
+                                I found <span class="text-primary underline cursor-pointer">3 potential correlations</span> in your recent uploads between the market_trends.pdf and the sentiment feed. Would you like me to map these for the 'Classify &amp; Label' task?
+                            </p>
+</div>
+</div>
+<div class="space-y-2 flex flex-col items-end">
+<span class="text-[9px] font-bold text-white/40 uppercase tracking-widest">You <span class="text-white/20 ml-1">10:44 AM</span></span>
+<div class="bg-primary/20 border border-primary/20 p-3 rounded-2xl rounded-tr-none">
+<p class="text-xs text-white leading-relaxed">
+                                Yes, prioritize the volatility markers. How long will the noise filtering take?
+                            </p>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex items-center justify-between">
+<span class="text-[9px] font-bold text-primary uppercase tracking-widest">Specialist <span class="text-white/20 ml-1">Just Now</span></span>
+</div>
+<div class="bg-white/[0.03] border border-white/5 p-3 rounded-2xl rounded-tl-none">
+<p class="text-xs text-white/80 leading-relaxed">
+                                Ready to filter noise when you are. Based on the current dataset volume, it will take approximately <span class="text-primary font-mono">2.4 seconds</span>.
+                            </p>
+</div>
+<div class="flex gap-1 pl-1">
+<div class="size-1 bg-primary/40 rounded-full"></div>
+<div class="size-1 bg-primary/40 rounded-full"></div>
+<div class="size-1 bg-primary/40 rounded-full"></div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-background-dark/50 border-t border-white/5">
+<div class="relative mb-3">
+<input class="w-full bg-white/[0.03] border border-white/10 rounded-lg px-4 py-2.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-primary/40 transition-all" placeholder="Type a command..." type="text"/>
+<button class="absolute right-2 top-1.5 size-7 bg-primary rounded-md flex items-center justify-center text-background-dark">
+<span class="material-symbols-outlined text-lg">send</span>
+</button>
+</div>
+<div class="flex gap-2">
+<button class="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded text-[9px] font-bold text-white/60 uppercase tracking-widest transition-all">Start Filtering</button>
+<button class="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded text-[9px] font-bold text-white/60 uppercase tracking-widest transition-all">Summarize Sources</button>
+</div>
+</div>
+</aside>
+</div>
+<div class="fixed right-96 mr-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-20">
+<button class="size-9 flex items-center justify-center rounded-lg glass-panel border-white/10 text-white/40 hover:text-primary hover:border-primary/40 transition-all">
+<span class="material-symbols-outlined text-lg">settings</span>
+</button>
+<button class="size-9 flex items-center justify-center rounded-lg glass-panel border-white/10 text-white/40 hover:text-primary hover:border-primary/40 transition-all">
+<span class="material-symbols-outlined text-lg">layers</span>
+</button>
+<button class="size-9 flex items-center justify-center rounded-lg glass-panel border-white/10 text-white/40 hover:text-primary hover:border-primary/40 transition-all">
+<span class="material-symbols-outlined text-lg">database</span>
+</button>
+</div>
+<div class="absolute inset-0 z-[-1] pointer-events-none opacity-[0.02]" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+</div>
+
+</body></html>

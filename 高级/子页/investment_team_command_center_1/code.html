@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Portfolio Manager Workspace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00f2ff",
+                        "accent": "#1152d4",
+                        "background-dark": "#06090f",
+                        "card-dark": "#0d121d",
+                        "sidebar-dark": "#0a0e16",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .glass-panel {
+            background: rgba(13, 18, 29, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 242, 255, 0.1);
+        }
+        .glow-pulse {
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.5);
+        }
+        .avatar-glow {
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.15);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(0, 242, 255, 0.2);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display text-white selection:bg-primary/30 h-screen overflow-hidden">
+<div class="flex h-full w-full">
+<aside class="w-64 bg-sidebar-dark border-r border-white/5 flex flex-col z-30">
+<div class="p-6 border-b border-white/5">
+<div class="flex items-center gap-3">
+<div class="size-8 text-primary">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 4H42V17.3333V30.6667H24V44H6V30.6667V17.3333H24V4Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<div>
+<h1 class="text-xs font-bold tracking-[0.2em] uppercase text-white leading-tight">Quantum</h1>
+<p class="text-[9px] text-primary/60 font-medium tracking-widest uppercase">Finance Hub</p>
+</div>
+</div>
+</div>
+<div class="p-6">
+<div class="mb-8">
+<p class="text-[10px] text-white/40 uppercase font-bold tracking-widest mb-4">Current Workspace</p>
+<div class="flex items-center gap-3 mb-2">
+<div class="size-10 rounded-full border border-primary/40 p-0.5">
+<img class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9eFJSBUSMXWhNKS1NOffVgsBBKcAYNsAqDyUwmiWSOnaaR-P4bHE9_HU2Z0svNoPfO7DZ2ZF_CoY4RHYMd179KSNxAzQ1QHbaVULWHYJcvlP5-rgcwwhmnlhlFZ6olsqpZD6xxof-YOPCfJGuoRTUfYe6kUpLglTQpVDzFLI6QYI2CkE_dEHs6UTHzyR5SY8iiK4pww0-6wv5YU8wfnWb5nLnmbVXwQtAS4Aj4nBBU3e3nsEE_Dbdr-pBM6CP5AYFoMLTYZhdvXmE"/>
+</div>
+<div>
+<p class="text-xs font-bold text-white">Portfolio Manager</p>
+<p class="text-[10px] text-primary font-mono uppercase">Global Oversight</p>
+</div>
+</div>
+</div>
+<nav class="space-y-4">
+<a class="flex items-center gap-3 text-white/40 hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">dashboard</span>
+<span class="text-xs font-bold uppercase tracking-widest">Global View</span>
+</a>
+<a class="flex items-center gap-3 text-primary group" href="#">
+<span class="material-symbols-outlined text-lg">account_balance_wallet</span>
+<span class="text-xs font-bold uppercase tracking-widest">Construction</span>
+</a>
+<a class="flex items-center gap-3 text-white/40 hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">analytics</span>
+<span class="text-xs font-bold uppercase tracking-widest">Exposure</span>
+</a>
+<a class="flex items-center gap-3 text-white/40 hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">history</span>
+<span class="text-xs font-bold uppercase tracking-widest">Performance</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-6 border-t border-white/5">
+<div class="bg-primary/5 rounded-lg p-3 border border-primary/10">
+<p class="text-[9px] text-white/40 uppercase font-bold tracking-widest mb-2">System Health</p>
+<div class="flex items-center gap-2">
+<div class="h-1 flex-1 bg-white/10 rounded-full overflow-hidden">
+<div class="h-full w-[88%] bg-primary"></div>
+</div>
+<span class="text-[10px] font-mono text-primary">88%</span>
+</div>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col bg-background-dark overflow-y-auto custom-scrollbar">
+<header class="h-16 border-b border-white/5 flex items-center justify-between px-8 bg-background-dark/80 backdrop-blur sticky top-0 z-20">
+<div>
+<nav class="flex gap-6">
+<a class="text-[10px] font-bold tracking-widest text-white/40 hover:text-white uppercase" href="#">Pipeline</a>
+<a class="text-[10px] font-bold tracking-widest text-primary uppercase" href="#">Workspaces</a>
+<a class="text-[10px] font-bold tracking-widest text-white/40 hover:text-white uppercase" href="#">Intelligence</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-white/40 hover:text-white"><span class="material-symbols-outlined text-xl">search</span></button>
+<button class="text-white/40 hover:text-white"><span class="material-symbols-outlined text-xl">notifications</span></button>
+<div class="h-6 w-px bg-white/10"></div>
+<div class="flex items-center gap-2">
+<span class="text-[10px] font-bold text-white/60">WORKSPACE / PM_HUB</span>
+</div>
+</div>
+</header>
+<div class="p-8 max-w-6xl mx-auto w-full">
+<div class="flex justify-between items-end mb-8">
+<div>
+<h2 class="text-3xl font-black text-white tracking-tight">Portfolio Manager Workspace</h2>
+<p class="text-white/40 text-sm mt-1">Holistic risk monitoring and strategic rebalancing proposal overview.</p>
+</div>
+<button class="px-4 py-2 bg-primary/10 border border-primary/20 rounded text-primary text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-background-dark transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">export_notes</span>
+                    Export Execution Plans
+                </button>
+</div>
+<section class="mb-10">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-xs font-bold uppercase tracking-[0.2em] text-white/80">Materials &amp; Plans</h3>
+<span class="text-[10px] text-white/40 font-mono">4 SOURCES ACTIVE</span>
+</div>
+<div class="grid grid-cols-4 gap-4">
+<div class="glass-panel p-4 rounded-xl border-l-2 border-l-primary/50">
+<div class="flex items-center gap-3 mb-3">
+<span class="material-symbols-outlined text-primary">description</span>
+<span class="text-[10px] font-bold uppercase tracking-wider text-white">Execution_Plan_Q4</span>
+</div>
+<p class="text-[10px] text-white/40 mb-2">Detailed multi-asset routing strategy</p>
+<div class="flex items-center justify-between">
+<span class="text-[9px] font-mono text-primary/60">PDF / 2.4MB</span>
+<span class="material-symbols-outlined text-sm text-white/20">check_circle</span>
+</div>
+</div>
+<div class="glass-panel p-4 rounded-xl">
+<div class="flex items-center gap-3 mb-3">
+<span class="material-symbols-outlined text-orange-400">history</span>
+<span class="text-[10px] font-bold uppercase tracking-wider text-white">Hist_Perf_Index</span>
+</div>
+<p class="text-[10px] text-white/40 mb-2">10-year volatility benchmarks</p>
+<div class="flex items-center justify-between">
+<span class="text-[9px] font-mono text-primary/60">CSV / 12.1MB</span>
+<span class="material-symbols-outlined text-sm text-white/20">check_circle</span>
+</div>
+</div>
+<div class="glass-panel p-4 rounded-xl">
+<div class="flex items-center gap-3 mb-3">
+<span class="material-symbols-outlined text-white/40">map</span>
+<span class="text-[10px] font-bold uppercase tracking-wider text-white">Risk_Exposure_Map</span>
+</div>
+<p class="text-[10px] text-white/40 mb-2">Geopolitical stress-test data</p>
+<div class="flex items-center justify-between">
+<span class="text-[9px] font-mono text-primary/60">JSON / 840KB</span>
+<span class="material-symbols-outlined text-sm text-white/20">check_circle</span>
+</div>
+</div>
+<div class="glass-panel p-4 rounded-xl border border-dashed border-white/10 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-white/20 mb-1">add</span>
+<span class="text-[9px] font-bold uppercase text-white/20">Add Reference</span>
+</div>
+</div>
+</section>
+<section class="mb-10">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-xs font-bold uppercase tracking-[0.2em] text-white/80">Active Oversight Tasks</h3>
+<button class="text-[10px] text-primary font-bold uppercase hover:underline">Add Task</button>
+</div>
+<div class="space-y-3">
+<div class="glass-panel p-4 rounded-xl flex items-center justify-between group hover:border-primary/30 transition-all">
+<div class="flex items-center gap-4">
+<div class="size-8 rounded bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg">layers</span>
+</div>
+<div>
+<h4 class="text-sm font-bold text-white">Portfolio Construction</h4>
+<p class="text-[10px] text-white/40">Aggregating signals for multi-factor allocation</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<span class="px-2 py-1 bg-primary/10 rounded text-[9px] font-bold text-primary uppercase">Processing</span>
+<span class="material-symbols-outlined text-white/20">chevron_right</span>
+</div>
+</div>
+<div class="glass-panel p-4 rounded-xl flex items-center justify-between group hover:border-primary/30 transition-all">
+<div class="flex items-center gap-4">
+<div class="size-8 rounded bg-white/5 flex items-center justify-center text-white/40">
+<span class="material-symbols-outlined text-lg">security</span>
+</div>
+<div>
+<h4 class="text-sm font-bold text-white">Exposure Control</h4>
+<p class="text-[10px] text-white/40">Validating hard limits across sector clusters</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<span class="px-2 py-1 bg-white/5 rounded text-[9px] font-bold text-white/40 uppercase">To-Do</span>
+<span class="material-symbols-outlined text-white/20">chevron_right</span>
+</div>
+</div>
+<div class="glass-panel p-4 rounded-xl flex items-center justify-between group hover:border-primary/30 transition-all">
+<div class="flex items-center gap-4">
+<div class="size-8 rounded bg-white/5 flex items-center justify-center text-white/40">
+<span class="material-symbols-outlined text-lg">rebase_edit</span>
+</div>
+<div>
+<h4 class="text-sm font-bold text-white">Rebalance Proposal</h4>
+<p class="text-[10px] text-white/40">Finalize drift correction for 09:30 market open</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<span class="px-2 py-1 bg-white/5 rounded text-[9px] font-bold text-white/40 uppercase">To-Do</span>
+<span class="material-symbols-outlined text-white/20">chevron_right</span>
+</div>
+</div>
+</div>
+</section>
+<section class="grid grid-cols-2 gap-6">
+<div class="glass-panel p-6 rounded-2xl">
+<h3 class="text-[11px] font-bold uppercase tracking-widest text-white/60 mb-6">Asset Weight Distribution</h3>
+<div class="h-48 flex items-end justify-between gap-4 px-4">
+<div class="w-full bg-primary/20 rounded-t h-[70%] relative group">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-mono text-primary opacity-0 group-hover:opacity-100 transition-opacity">70%</div>
+</div>
+<div class="w-full bg-primary/40 rounded-t h-[45%] relative group">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-mono text-primary opacity-0 group-hover:opacity-100 transition-opacity">45%</div>
+</div>
+<div class="w-full bg-primary/60 rounded-t h-[90%] relative group">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-mono text-primary opacity-0 group-hover:opacity-100 transition-opacity">90%</div>
+</div>
+<div class="w-full bg-primary/30 rounded-t h-[30%] relative group">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-mono text-primary opacity-0 group-hover:opacity-100 transition-opacity">30%</div>
+</div>
+<div class="w-full bg-primary/50 rounded-t h-[60%] relative group">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-mono text-primary opacity-0 group-hover:opacity-100 transition-opacity">60%</div>
+</div>
+</div>
+<div class="flex justify-between mt-4 px-4 text-[9px] font-bold text-white/20 uppercase tracking-tighter">
+<span>EQTY</span><span>FIXD</span><span>COMM</span><span>CRYP</span><span>CASH</span>
+</div>
+</div>
+<div class="glass-panel p-6 rounded-2xl">
+<h3 class="text-[11px] font-bold uppercase tracking-widest text-white/60 mb-6">Systemic Risk Exposure</h3>
+<div class="relative h-48 flex items-center justify-center">
+<div class="absolute inset-0 border border-white/5 rounded-full"></div>
+<div class="absolute inset-8 border border-white/5 rounded-full"></div>
+<div class="absolute inset-16 border border-white/5 rounded-full"></div>
+<svg class="w-full h-full rotate-[-90deg]" viewBox="0 0 100 100">
+<polygon fill="rgba(0,242,255,0.15)" points="50,10 80,40 70,80 30,80 20,40" stroke="rgba(0,242,255,0.6)" stroke-width="0.5"></polygon>
+</svg>
+<div class="absolute top-0 text-[8px] font-bold text-primary/40">INFLATION</div>
+<div class="absolute bottom-0 text-[8px] font-bold text-primary/40">LIQUIDITY</div>
+<div class="absolute left-0 text-[8px] font-bold text-primary/40">GEOPOL</div>
+<div class="absolute right-0 text-[8px] font-bold text-primary/40">CREDIT</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<aside class="w-96 bg-sidebar-dark border-l border-white/5 flex flex-col z-30">
+<div class="p-6 border-b border-white/5 bg-background-dark/50">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">smart_toy</span>
+</div>
+<div>
+<h2 class="text-sm font-bold text-white">System Specialist</h2>
+<div class="flex items-center gap-2">
+<div class="size-1.5 rounded-full bg-primary glow-pulse"></div>
+<span class="text-[10px] text-primary/60 font-mono">ONLINE &amp; REVIEWING</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+<div class="space-y-4">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-[10px] font-bold text-white/40 uppercase tracking-widest">
+<span>Specialist</span>
+<span>•</span>
+<span>10:42 AM</span>
+</div>
+<div class="bg-white/5 border border-white/10 p-4 rounded-2xl rounded-tl-none">
+<p class="text-xs leading-relaxed text-white/80">
+                            I have audited the proposed rebalance against the Q4 Execution Plan. I've identified <span class="text-primary font-bold">2 systemic risk outliers</span> in the current exposure control weights.
+                        </p>
+</div>
+</div>
+<div class="flex flex-col gap-2 items-end">
+<div class="flex items-center gap-2 text-[10px] font-bold text-white/40 uppercase tracking-widest">
+<span>Portfolio Manager</span>
+<span>•</span>
+<span>10:44 AM</span>
+</div>
+<div class="bg-primary border border-primary/20 p-4 rounded-2xl rounded-tr-none">
+<p class="text-xs leading-relaxed text-background-dark font-medium">
+                            Adjust the sector weights to neutralize the volatility spikes. What is the impact on predicted alpha?
+                        </p>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-[10px] font-bold text-white/40 uppercase tracking-widest">
+<span>Specialist</span>
+<span>•</span>
+<span>Just now</span>
+</div>
+<div class="bg-white/5 border border-white/10 p-4 rounded-2xl rounded-tl-none">
+<p class="text-xs leading-relaxed text-white/80">
+                            Neutralizing volatility would require a <span class="text-primary font-bold">4.2% shift</span> from Tech to Consumer Staples. Estimated Alpha impact: <span class="text-orange-400">-0.12 bps</span>, but downside protection increases by <span class="text-primary font-bold">18%</span>.
+                        </p>
+<div class="mt-4 flex gap-2">
+<button class="flex-1 py-2 bg-primary/10 border border-primary/20 rounded text-[9px] font-bold uppercase text-primary hover:bg-primary/20 transition-all">Apply Adjustment</button>
+<button class="flex-1 py-2 bg-white/5 border border-white/10 rounded text-[9px] font-bold uppercase text-white/40 hover:bg-white/10 transition-all">Reject</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6 border-t border-white/5 bg-background-dark/50">
+<div class="relative">
+<input class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none text-white placeholder:text-white/20" placeholder="Propose adjustment or query risk..." type="text"/>
+<button class="absolute right-2 top-1/2 -translate-y-1/2 size-8 bg-primary rounded-lg flex items-center justify-center text-background-dark">
+<span class="material-symbols-outlined text-sm">send</span>
+</button>
+</div>
+<div class="flex gap-2 mt-4">
+<button class="text-[9px] font-bold uppercase tracking-widest text-white/40 border border-white/5 px-3 py-1.5 rounded hover:bg-white/5">Audit Risk</button>
+<button class="text-[9px] font-bold uppercase tracking-widest text-white/40 border border-white/5 px-3 py-1.5 rounded hover:bg-white/5">Summarize Proposal</button>
+</div>
+</div>
+</aside>
+</div>
+<div class="absolute inset-0 z-[-1] pointer-events-none opacity-[0.03]" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+
+</body></html>

@@ -48,6 +48,15 @@
               ]"
               :style="{ color: $route.path === '/deep-research' ? (isDark ? '#fff' : '#1e293b') : (isDark ? tokens.colors.text.tertiary : '#334155') }"
             >{{ $t('nav.deepResearch') }}</router-link>
+            <router-link 
+              to="/advanced" 
+              class="text-sm font-medium transition-colors hover-underline-effect nav-link"
+              :class="[
+                isDark ? 'hover:text-white' : 'hover:text-slate-900',
+                $route.path.startsWith('/advanced') ? 'nav-link-active' : ''
+              ]"
+              :style="{ color: $route.path.startsWith('/advanced') ? (isDark ? '#fff' : '#1e293b') : (isDark ? tokens.colors.text.tertiary : '#334155') }"
+            >{{ $t('nav.advanced') }}</router-link>
           </div>
         </div>
 
